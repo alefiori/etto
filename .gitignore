@@ -13,6 +13,15 @@ dist-ssr
 .env
 .env.*
 !.env.example
+# .env.test holds only non-secret stub values for the hermetic E2E build.
+!.env.test
+
+# test output
+coverage
+playwright-report
+test-results
+blob-report
+/playwright/.cache
 
 # editor / OS
 .DS_Store

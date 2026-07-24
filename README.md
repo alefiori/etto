@@ -182,9 +182,13 @@ Open the printed local URL (default <http://localhost:5173>).
 Other scripts:
 
 ```bash
-npm run build      # type-check + production build
-npm run preview    # preview the production build
-npm run typecheck  # type-check only (no emit)
+npm run build         # type-check + production build
+npm run preview       # preview the production build
+npm run typecheck     # type-check only (no emit)
+npm run test          # unit + component tests (Vitest)
+npm run test:watch    # Vitest in watch mode
+npm run test:coverage # unit tests with a V8 coverage report
+npm run e2e           # end-to-end tests (Playwright)
 ```
 
 ## How external food data is modeled
@@ -252,6 +256,44 @@ supabase/
   functions/    # food-search Edge Function (external food data proxy)
   migrations/   # SQL schema + RLS + profiles + community foods
 ```
+
+## Testing
+
+- **Unit + component tests** run on [Vitest](https://vitest.dev) with
+  [React Testing Library](https://testing-library.com/). Test files live next to
+  the code they cover (`src/**/*.test.ts[x]`); shared helpers and fixture
+  factories are in [`src/test/`](src/test/). Run `npm run test` (or
+  `npm run test:coverage` for a report). The Supabase client is mocked, so no
+  backend is needed.
+- **End-to-end tests** run on [Playwright](https://playwright.dev) from the
+  [`e2e/`](e2e/) directory and are **fully hermetic** — every Supabase request
+  (auth, PostgREST, the Edge Function) is stubbed in
+  [`e2e/fixtures/supabase.ts`](e2e/fixtures/supabase.ts), backed by an in-memory
+  store, so the suite needs no secrets and never hits the network. Run
+  `npm run e2e` (first time locally: `npx playwright install chromium`). The
+  build is driven by [`.env.test`](.env.test), whose stub host the fixtures
+  intercept.
+
+## Continuous integration
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and PR:
+the app **build**, the **unit** suite (coverage uploaded as an artifact, not
+gated), and the **E2E** suite. On pushes to `main` only, two deploy jobs also
+run: the existing **Netlify deploy status** check, and a **Supabase deploy** that
+applies database migrations (`supabase db push`) and redeploys the `food-search`
+Edge Function. The Supabase job is skipped (with a warning, not a failure) unless
+these repository secrets are set:
+
+| Secret                  | Purpose                                                        |
+| ----------------------- | ------------------------------------------------------------- |
+| `SUPABASE_ACCESS_TOKEN` | Personal access token (Supabase dashboard → Account → Tokens) |
+| `SUPABASE_PROJECT_REF`  | Hosted project ref (the `<ref>` in `<ref>.supabase.co`)       |
+| `SUPABASE_DB_PASSWORD`  | Database password, used by `supabase db push`                 |
+
+The Edge Function deploy pushes **code only** — it doesn't touch the function
+secrets from step 4 (`USDA_API_KEY`, `EDAMAM_*`, `OFF_*`). If a first `db push`
+fails because the remote schema diverged from the migration history, run a
+one-time [`supabase migration repair`](https://supabase.com/docs/reference/cli/supabase-migration-repair).
 
 ## Credits
 
