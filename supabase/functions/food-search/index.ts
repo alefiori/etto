@@ -26,10 +26,15 @@
 //          that otherwise 503s under load. Sign up at https://world.openfoodfacts.org)
 // Local:   supabase functions serve food-search
 
-// Text search uses the legacy CGI search endpoint. The newer Search-a-licious
-// host (search.openfoodfacts.org) was previously used here but now returns 502
-// for anonymous traffic, so it can no longer be relied on.
-const OFF_SEARCH_URL = 'https://world.openfoodfacts.org/cgi/search.pl'
+// Text search uses Open Food Facts' Search-a-licious endpoint
+// (search.openfoodfacts.org) — the search API OFF actively maintains. It stays
+// responsive under the bursty traffic a debounced search box generates, whereas
+// the legacy CGI search.pl 503s after only a few rapid anonymous calls. That
+// throttling silently drops OFF from results (a failing source degrades to []),
+// and with it any product that lives *only* in OFF — i.e. exactly the newer /
+// niche foods USDA and Edamam don't cover. Barcode lookup still uses the v2
+// product endpoint, which isn't affected.
+const OFF_SEARCH_URL = 'https://search.openfoodfacts.org/search'
 const OFF_PRODUCT_URL = 'https://world.openfoodfacts.org/api/v2/product'
 const USDA_SEARCH_URL = 'https://api.nal.usda.gov/fdc/v1/foods/search'
 const EDAMAM_PARSER_URL = 'https://api.edamam.com/api/food-database/v2/parser'
@@ -185,24 +190,23 @@ function normalizeOff(p: OffProduct, lang: string): ExternalFood | null {
 
 const searchOpenFoodFacts: SearchFn = async (q, lang, signal) => {
   const params = new URLSearchParams({
-    search_terms: q,
-    search_simple: '1',
-    action: 'process',
-    json: '1',
+    q,
     page_size: PAGE_SIZE,
-    lc: lang,
+    // `lang` drives which localized product_name_<lang> Search-a-licious fills in.
+    lang,
     fields: offFields(lang),
   })
   const res = await fetch(`${OFF_SEARCH_URL}?${params.toString()}`, {
     headers: offHeaders(),
     signal,
   })
-  // Under load OFF answers anonymous search traffic with a 503 HTML page;
-  // gating on res.ok keeps us from trying to JSON-parse it (the failure then
-  // degrades this source to [] upstream rather than sinking the whole search).
+  // A non-2xx (e.g. a 5xx HTML page under load) is gated here so we never try to
+  // JSON-parse it; the failure then degrades this source to [] upstream rather
+  // than sinking the whole search.
   if (!res.ok) throw new Error(`Open Food Facts search failed (${res.status})`)
-  const data = (await res.json()) as { products?: OffProduct[] }
-  return (data.products ?? []).map((p) => normalizeOff(p, lang)).filter((f): f is ExternalFood => !!f)
+  // Search-a-licious returns matches under `hits` (the legacy CGI used `products`).
+  const data = (await res.json()) as { hits?: OffProduct[] }
+  return (data.hits ?? []).map((p) => normalizeOff(p, lang)).filter((f): f is ExternalFood => !!f)
 }
 
 async function lookupOffBarcode(
@@ -387,14 +391,67 @@ const SOURCES: { name: string; search: SearchFn }[] = [
   { name: 'edamam', search: searchEdamam },
 ]
 
+// ---------------------------------------------------------------------------
+// Short-lived response cache
+// ---------------------------------------------------------------------------
+//
+// A debounced search box fires a burst of near-identical requests as the user
+// types and pauses ("mil" -> "milk"), and the same queries recur constantly
+// across users. Caching merged results for a short window collapses that burst
+// onto a single upstream fan-out per (query, lang): fewer round trips for the
+// user, and far less pressure on the external sources' rate limits — the very
+// throttling that was making OFF (and its newer foods) drop out.
+const CACHE_TTL_MS = 60_000
+const CACHE_MAX_ENTRIES = 200
+const searchCache = new Map<string, { at: number; foods: ExternalFood[] }>()
+
+function cacheKey(q: string, lang: string): string {
+  // NUL never appears in a URL query param, so it separates lang from query
+  // unambiguously — two different (lang, q) pairs can never collide on one key.
+  return `${lang} ${q.toLowerCase()}`
+}
+
+function cacheGet(key: string): ExternalFood[] | null {
+  const hit = searchCache.get(key)
+  if (!hit) return null
+  if (Date.now() - hit.at > CACHE_TTL_MS) {
+    searchCache.delete(key)
+    return null
+  }
+  // Re-insert so this key becomes most-recently-used (Map keeps insertion order).
+  searchCache.delete(key)
+  searchCache.set(key, hit)
+  return hit.foods
+}
+
+function cacheSet(key: string, foods: ExternalFood[]): void {
+  searchCache.set(key, { at: Date.now(), foods })
+  // Evict the oldest (least-recently-used) entries once over the cap.
+  while (searchCache.size > CACHE_MAX_ENTRIES) {
+    const oldest = searchCache.keys().next().value
+    if (oldest === undefined) break
+    searchCache.delete(oldest)
+  }
+}
+
 /** Run every source in parallel; a failing source degrades to [] (never the whole search). */
 async function searchAllSources(q: string, lang: string, signal: AbortSignal): Promise<ExternalFood[]> {
+  const key = cacheKey(q, lang)
+  const cached = cacheGet(key)
+  if (cached) return cached
+
   const settled = await Promise.allSettled(SOURCES.map((s) => s.search(q, lang, signal)))
   const merged: ExternalFood[] = []
+  let allOk = true
   for (const r of settled) {
     if (r.status === 'fulfilled') merged.push(...r.value)
+    else allOk = false
   }
-  return dedupe(merged)
+  const result = dedupe(merged)
+  // Only cache a clean fan-out (every source answered, request not aborted) so a
+  // transient source failure is never pinned as a degraded result for the TTL.
+  if (allOk && !signal.aborted) cacheSet(key, result)
+  return result
 }
 
 // ---------------------------------------------------------------------------
