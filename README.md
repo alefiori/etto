@@ -115,6 +115,9 @@ This is required: [Open Food Facts](https://world.openfoodfacts.org)' search API
 sends no CORS headers, so browsers can't call it directly, and the USDA/Edamam
 API keys must not ship in the client bundle. The function fans out to every
 source in parallel, normalizes results to a shared shape, and de-duplicates them.
+It also caches each merged result briefly (60 s per query + language) so the
+burst of requests a debounced search box fires as you type collapses onto a
+single upstream fan-out — keeping the app well under the sources' rate limits.
 
 ```bash
 supabase functions deploy food-search --project-ref <your-project-ref>
@@ -137,13 +140,17 @@ rate-limited (and may return 429s under load). Edamam credentials come from the
 (free tier available); without them the Edamam source is silently skipped and
 the other sources still work.
 
-Open Food Facts needs no API key — read access is fully open. It does, however,
-throttle **anonymous** traffic during peak load (returning 503s), so OFF results
-are best-effort by default. To make them reliable, set `OFF_USERNAME` /
-`OFF_PASSWORD` to a free [Open Food Facts account](https://world.openfoodfacts.org):
-the function then sends those over HTTP Basic Auth (OFF's only credential — there
-are no keys) and the requests skip the anonymous limit. When unset, OFF calls
-stay anonymous.
+Open Food Facts needs no API key — read access is fully open. Text search uses
+OFF's **Search-a-licious** endpoint (`search.openfoodfacts.org`), which OFF
+actively maintains and which stays responsive under the bursty traffic a search
+box generates; the legacy CGI `search.pl` endpoint, by contrast, 503s after only
+a few rapid anonymous calls, which would silently drop OFF — and the newer/niche
+products only OFF covers — from results. Barcode lookup still uses OFF's v2
+product endpoint, which can throttle **anonymous** traffic during peak load
+(returning 503s). To lift that, set `OFF_USERNAME` / `OFF_PASSWORD` to a free
+[Open Food Facts account](https://world.openfoodfacts.org): the function then
+sends those over HTTP Basic Auth (OFF's only credential — there are no keys) and
+the requests skip the anonymous limit. When unset, OFF calls stay anonymous.
 
 > **Until the function is deployed, food search and barcode lookup return
 > nothing** — the client no longer calls the food APIs directly.
@@ -202,7 +209,13 @@ result is logged, the app **upserts** it into `foods` with the appropriate
 (barcode/code for OFF, `fdcId` for USDA, `foodId` for Edamam), and
 `is_custom=false` — de-duplicating on
 `(source, off_id)` — before inserting the `food_logs` row. Logs always reference
-a stable local food. Results missing carbohydrate/protein/fat data are skipped.
+a stable local food. A result with **no** macro data at all is skipped, but one
+that carries only *some* macros is kept with the missing values treated as `0`
+(mirroring how Edamam omits zero-valued nutrients). This keeps the many
+newly-added / community-entered Open Food Facts products — which often have
+partial nutrition — visible in search rather than silently dropped; the imported
+food can be edited as a custom food to correct any blank. (USDA, whose entries
+are curated and macro-complete, still requires all three.)
 
 Search ([`useFoodSearch`](src/hooks/useFoodSearch.ts)) queries the user's own
 foods (locally, via Supabase) alongside a single call to the
@@ -211,7 +224,11 @@ thin client ([`src/lib/foodApi.ts`](src/lib/foodApi.ts)). The function holds a
 small registry of source adapters — currently Open Food Facts, USDA, and
 Edamam — runs them in parallel, normalizes each to the shared
 `ExternalFood` shape, and merges + de-duplicates across sources; a failing source
-degrades gracefully to no results from that source. **Adding a new source**
+degrades gracefully to no results from that source. The pure
+raw-JSON-to-`ExternalFood` mapping lives in a Deno-free
+[`normalize.ts`](supabase/functions/food-search/normalize.ts) so it can be
+unit-tested from Vitest ([`normalize.test.ts`](supabase/functions/food-search/normalize.test.ts)),
+while `index.ts` keeps the fetch / env / caching concerns. **Adding a new source**
 (e.g. FatSecret, Nutritionix) is a server-side-only change: add an adapter to the
 function's `SOURCES` array — no client or env changes needed. All math (4/4/9 kcal
 per gram, per-serving scaling, per-100g conversion, remaining-vs-target, ring

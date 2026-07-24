@@ -15,7 +15,11 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.test.{ts,tsx}'],
+    // App unit tests live under src/. The food-search Edge Function's pure
+    // normalization module (supabase/functions/food-search/normalize.ts) has no
+    // Deno globals, so its tests run here too — index.ts (which does use Deno.*)
+    // is never imported by them.
+    include: ['src/**/*.test.{ts,tsx}', 'supabase/functions/**/*.test.ts'],
     // supabase.ts throws at import when these are unset (see src/lib/supabase.ts);
     // foodApi.ts / foods.ts pull it in transitively, so give the tests dummy values.
     env: {
