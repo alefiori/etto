@@ -1,6 +1,11 @@
 /** Hand-written types mirroring the SQL schema in supabase/migrations. */
 
-export type MealKey = 'breakfast' | 'lunch' | 'dinner' | 'snack'
+/**
+ * The slug stored on `food_logs.meal`, matching a `meals.key` row of the same
+ * user. Meals are user-editable, so this is free-form text rather than a fixed
+ * union — see {@link BuiltInMealKey} in lib/constants for the four defaults.
+ */
+export type MealKey = string
 export type FoodSource = 'custom' | 'openfoodfacts' | 'usda' | 'edamam'
 /** External (non-custom) food databases the app imports from. */
 export type ExternalSource = Exclude<FoodSource, 'custom'>
@@ -44,6 +49,22 @@ export type Profile = {
   updated_at: string
 }
 
+/**
+ * One of the user's meals. `key` is the stable slug food logs point at; `name`
+ * is null while the meal still uses its built-in localized label.
+ */
+export type Meal = {
+  id: string
+  user_id: string
+  key: MealKey
+  name: string | null
+  /** Material Symbols icon name. */
+  icon: string
+  position: number
+  created_at: string
+  updated_at: string
+}
+
 export type FoodLog = {
   id: string
   user_id: string
@@ -80,6 +101,13 @@ export interface Database {
         Row: FoodLog
         Insert: Omit<FoodLog, 'id' | 'created_at'> & Partial<Pick<FoodLog, 'id' | 'created_at'>>
         Update: Partial<FoodLog>
+        Relationships: []
+      }
+      meals: {
+        Row: Meal
+        Insert: Omit<Meal, 'id' | 'created_at' | 'updated_at'> &
+          Partial<Pick<Meal, 'id' | 'created_at' | 'updated_at'>>
+        Update: Partial<Meal>
         Relationships: []
       }
       profiles: {

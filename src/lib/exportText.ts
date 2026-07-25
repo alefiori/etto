@@ -3,7 +3,7 @@
  * Produces compact, emoji-annotated text and hands it to the Web Share API,
  * falling back to the clipboard where no share sheet exists.
  */
-import { MACROS, MEALS, type MealKey } from '@/lib/constants'
+import { MACROS, isBuiltInMealKey, type BuiltInMealKey, type MealKey } from '@/lib/constants'
 import { caloriesForServings, round, scaleMacros, sumMacros } from '@/lib/macros'
 import { formatLong } from '@/lib/date'
 import type { TranslationKey } from '@/lib/i18n'
@@ -11,11 +11,22 @@ import type { FoodLogWithFood } from '@/lib/database.types'
 
 type TFunction = (key: TranslationKey, params?: Record<string, string | number>) => string
 
-const MEAL_EMOJI: Record<MealKey, string> = {
+/** The bit of a meal the export needs: its key (for the emoji) and its label. */
+export interface ExportMeal {
+  key: MealKey
+  label: string
+}
+
+const MEAL_EMOJI: Record<BuiltInMealKey, string> = {
   breakfast: '🌅',
   lunch: '🌞',
   dinner: '🌙',
   snack: '🍎',
+}
+
+/** Meals the user created have no emoji of their own — use a neutral one. */
+function mealEmoji(key: MealKey): string {
+  return isBuiltInMealKey(key) ? MEAL_EMOJI[key] : '🍽️'
 }
 
 /** e.g. "C 54g · P 11g · F 6g" using the locale's macro abbreviations. */
@@ -43,7 +54,7 @@ function foodLines(logs: FoodLogWithFood[], t: TFunction): string[] {
 
 /** Chat-ready text for a single meal on a date. Empty string when no logs. */
 export function formatMealText(
-  meal: MealKey,
+  meal: ExportMeal,
   logs: FoodLogWithFood[],
   date: string,
   locale: string,
@@ -51,7 +62,7 @@ export function formatMealText(
 ): string {
   if (logs.length === 0) return ''
   const lines = [
-    `${MEAL_EMOJI[meal]} ${t(`meal.${meal}`)} — ${formatLong(date, locale)}`,
+    `${mealEmoji(meal.key)} ${meal.label} — ${formatLong(date, locale)}`,
     ...foodLines(logs, t),
     '',
     `${t('export.total')}: ${kcalTotal(logs)} ${t('common.kcal')} · ${macroLine(logs, t)}`,
@@ -59,20 +70,24 @@ export function formatMealText(
   return lines.join('\n')
 }
 
-/** Chat-ready text for a whole day, grouped by meal (empty meals skipped). */
+/**
+ * Chat-ready text for a whole day, grouped by the user's meals in their own
+ * order (empty meals skipped).
+ */
 export function formatDayText(
   logs: FoodLogWithFood[],
   date: string,
   locale: string,
   t: TFunction,
+  meals: ExportMeal[],
 ): string {
   if (logs.length === 0) return ''
-  const sections = MEALS.flatMap((meal) => {
+  const sections = meals.flatMap((meal) => {
     const mealLogs = logs.filter((l) => l.meal === meal.key)
     if (mealLogs.length === 0) return []
     return [
       [
-        `${MEAL_EMOJI[meal.key]} ${t(`meal.${meal.key}`)} · ${kcalTotal(mealLogs)} ${t('common.kcal')}`,
+        `${mealEmoji(meal.key)} ${meal.label} · ${kcalTotal(mealLogs)} ${t('common.kcal')}`,
         ...foodLines(mealLogs, t),
       ].join('\n'),
     ]

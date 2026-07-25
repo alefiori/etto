@@ -16,9 +16,14 @@ interface AuthContextValue {
   /** True while signed in as an anonymous (guest) user. */
   isAnonymous: boolean
   signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string) => Promise<{ needsConfirmation: boolean }>
+  /**
+   * Create an account. `locale` (the language picked on the auth page) rides
+   * along as user metadata, so the profile row the database trigger creates
+   * starts in the right language.
+   */
+  signUp: (email: string, password: string, locale?: string) => Promise<{ needsConfirmation: boolean }>
   /** Start a guest session with no email/password (Supabase anonymous auth). */
-  signInAnonymously: () => Promise<void>
+  signInAnonymously: (locale?: string) => Promise<void>
   /** Convert the current guest into a permanent account, keeping their data. */
   upgradeAccount: (email: string, password: string) => Promise<{ needsConfirmation: boolean }>
   signOut: () => Promise<void>
@@ -56,14 +61,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
       },
-      async signUp(email, password) {
-        const { data, error } = await supabase.auth.signUp({ email, password })
+      async signUp(email, password, locale) {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: locale ? { data: { locale } } : undefined,
+        })
         if (error) throw error
         // When email confirmation is enabled, there's no active session yet.
         return { needsConfirmation: !data.session }
       },
-      async signInAnonymously() {
-        const { error } = await supabase.auth.signInAnonymously()
+      async signInAnonymously(locale) {
+        const { error } = await supabase.auth.signInAnonymously(
+          locale ? { options: { data: { locale } } } : undefined,
+        )
         if (error) throw error
       },
       async upgradeAccount(email, password) {

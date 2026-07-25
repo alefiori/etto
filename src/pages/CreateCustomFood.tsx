@@ -4,7 +4,8 @@ import { Icon } from '@/components/ui/Icon'
 import { Spinner, LoadingBlock } from '@/components/ui/Spinner'
 import { useAppShell } from '@/context/AppShellContext'
 import { useI18n } from '@/context/I18nContext'
-import { MACROS, SERVING_UNITS, MEALS, type MealKey } from '@/lib/constants'
+import { useMeals } from '@/context/MealsContext'
+import { MACROS, SERVING_UNITS, type MealKey } from '@/lib/constants'
 import { calories } from '@/lib/macros'
 import {
   createCustomFood,
@@ -24,6 +25,7 @@ export default function CreateCustomFood() {
   const isEdit = Boolean(id)
   const { selectedDate, bumpFoodLogVersion } = useAppShell()
   const { t } = useI18n()
+  const { meals } = useMeals()
 
   // When arriving from "Edit & save as custom" on an API food, the source
   // values ride along in router state. Create-mode only — saving always makes a
@@ -39,7 +41,9 @@ export default function CreateCustomFood() {
   const [carbs, setCarbs] = useState(prefill ? String(prefill.carbs_g) : '0')
   const [protein, setProtein] = useState(prefill ? String(prefill.protein_g) : '0')
   const [fats, setFats] = useState(prefill ? String(prefill.fats_g) : '0')
-  const [meal, setMeal] = useState<MealKey>('breakfast')
+  // Empty until the user picks one; the first meal is the implicit default,
+  // since the list only arrives once the meals have loaded.
+  const [meal, setMeal] = useState<MealKey>('')
 
   const [loading, setLoading] = useState(isEdit)
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -85,6 +89,7 @@ export default function CreateCustomFood() {
     [carbs, protein, fats],
   )
   const kcal = calories(macros)
+  const selectedMeal = meal || meals[0]?.key || ''
   const setters = { carbs_g: setCarbs, protein_g: setProtein, fats_g: setFats }
   const valueOf = { carbs_g: carbs, protein_g: protein, fats_g: fats }
 
@@ -114,7 +119,7 @@ export default function CreateCustomFood() {
       }
       const food = isEdit ? await updateCustomFood(id!, payload) : await createCustomFood(payload)
       if (addToday) {
-        await logFoodEntry({ foodId: food.id, date: selectedDate, meal, servings: 1 })
+        await logFoodEntry({ foodId: food.id, date: selectedDate, meal: selectedMeal, servings: 1 })
         bumpFoodLogVersion()
         navigate('/')
       } else {
@@ -284,18 +289,19 @@ export default function CreateCustomFood() {
               {t('createFood.mealIfAddingToday')}
             </label>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {MEALS.map((mm) => (
+              {meals.map((mm) => (
                 <button
                   key={mm.key}
                   type="button"
                   onClick={() => setMeal(mm.key)}
-                  className={`rounded-lg border py-2 font-label-md text-label-md transition-colors ${
-                    meal === mm.key
+                  aria-pressed={selectedMeal === mm.key}
+                  className={`truncate rounded-lg border py-2 font-label-md text-label-md transition-colors ${
+                    selectedMeal === mm.key
                       ? 'border-primary bg-primary text-on-primary'
                       : 'border-outline-variant bg-surface-container-low text-on-surface hover:bg-surface-container-high'
                   }`}
                 >
-                  {t(`meal.${mm.key}`)}
+                  {mm.label}
                 </button>
               ))}
             </div>

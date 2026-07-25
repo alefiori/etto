@@ -15,7 +15,8 @@ import { useAppShell } from '@/context/AppShellContext'
 import { useAuth } from '@/context/AuthContext'
 import { useProfile } from '@/context/ProfileContext'
 import { useI18n } from '@/context/I18nContext'
-import { MACROS, MEALS, type MealKey } from '@/lib/constants'
+import { useMeals } from '@/context/MealsContext'
+import { MACROS, type MealKey } from '@/lib/constants'
 import { calories, caloriesForServings, scaleMacros, round, type MacroGrams } from '@/lib/macros'
 import { compatibleUnits, servingsFor } from '@/lib/units'
 import { logFoodEntry, upsertExternalFood, type CustomFoodPrefill } from '@/lib/foods'
@@ -60,10 +61,11 @@ export function AddFoodModal({
   const { offLanguage, locale } = useProfile()
   const { user } = useAuth()
   const { t } = useI18n()
+  const { meals } = useMeals()
 
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<SearchResult | null>(null)
-  const [meal, setMeal] = useState<MealKey>(initialMeal ?? 'breakfast')
+  const [meal, setMeal] = useState<MealKey>(initialMeal ?? meals[0]?.key ?? '')
   // Quantity is entered as an amount in a unit of measure (e.g. 80 g, 10 lb).
   // It is converted to a `servings` multiplier at log time.
   const [amount, setAmount] = useState(1)
@@ -81,7 +83,7 @@ export function AddFoodModal({
     if (open) {
       setQuery('')
       setSelected(null)
-      setMeal(initialMeal ?? 'breakfast')
+      setMeal(initialMeal ?? meals[0]?.key ?? '')
       setAmount(1)
       setAmountUnit('g')
       setError(null)
@@ -90,6 +92,12 @@ export function AddFoodModal({
       setLookupMsg(null)
     }
   }, [open, initialMeal])
+
+  // The meals may still be loading when the modal opens — pick the first one as
+  // soon as they arrive, without disturbing anything the user has typed.
+  useEffect(() => {
+    if (!meal && meals.length > 0) setMeal(initialMeal ?? meals[0].key)
+  }, [meal, meals, initialMeal])
 
   const detail = useMemo(() => (selected ? normalize(selected) : null), [selected])
   const unitOptions = useMemo(
@@ -438,17 +446,18 @@ export function AddFoodModal({
                 <div>
                   <label className="mb-2 block font-label-md text-label-md text-on-surface-variant">{t('addFood.meal')}</label>
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                    {MEALS.map((m) => (
+                    {meals.map((m) => (
                       <button
                         key={m.key}
                         onClick={() => setMeal(m.key)}
-                        className={`rounded-lg border py-2 font-label-md text-label-md transition-colors ${
+                        aria-pressed={meal === m.key}
+                        className={`truncate rounded-lg border py-2 font-label-md text-label-md transition-colors ${
                           meal === m.key
                             ? 'border-primary bg-primary text-on-primary'
                             : 'border-outline-variant bg-surface-container-low text-on-surface hover:bg-surface-container-high'
                         }`}
                       >
-                        {t(`meal.${m.key}`)}
+                        {m.label}
                       </button>
                     ))}
                   </div>

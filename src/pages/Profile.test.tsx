@@ -18,6 +18,21 @@ vi.mock('@/context/AuthContext', () => ({
 vi.mock('@/context/ProfileContext', () => ({
   useProfile: () => h.profile,
 }))
+// The meals section has its own test — stub it out to a stable, empty list.
+vi.mock('@/context/MealsContext', () => ({
+  useMeals: () => ({
+    meals: [],
+    loading: false,
+    error: null,
+    atLimit: false,
+    labelFor: (key: string) => key,
+    addMeal: vi.fn(),
+    rename: vi.fn(),
+    move: vi.fn(),
+    remove: vi.fn(),
+    refetch: vi.fn(),
+  }),
+}))
 
 import Profile from './Profile'
 

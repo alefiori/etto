@@ -5,6 +5,7 @@ import { useI18n } from '@/context/I18nContext'
 import { LOCALES, type Locale } from '@/lib/i18n'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
+import { MealSettings } from '@/components/profile/MealSettings'
 
 export default function Profile() {
   const { user, signOut } = useAuth()
@@ -95,6 +96,11 @@ export default function Profile() {
             <p className="font-label-md text-label-md text-error">{langError}</p>
           )}
         </div>
+
+        <hr className="border-surface-container-highest" />
+
+        {/* Meals: names, how many there are, and their order */}
+        <MealSettings />
 
         <hr className="border-surface-container-highest" />
 

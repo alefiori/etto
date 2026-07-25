@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useI18n } from '@/context/I18nContext'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
+import { LanguagePicker } from '@/components/ui/LanguagePicker'
 
 type Tab = 'signin' | 'signup'
 
@@ -12,7 +13,7 @@ const inputClass =
 
 export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }) {
   const { session, signIn, signUp, signInAnonymously } = useAuth()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const navigate = useNavigate()
 
   const [tab, setTab] = useState<Tab>(initialTab)
@@ -42,7 +43,8 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
         await signIn(email, password)
         navigate('/', { replace: true })
       } else {
-        const { needsConfirmation } = await signUp(email, password)
+        // Carry the language chosen here into the new account's profile.
+        const { needsConfirmation } = await signUp(email, password, locale)
         if (needsConfirmation) {
           setNotice(t('auth.checkInbox'))
           setTab('signin')
@@ -68,7 +70,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
     setNotice(null)
     setBusy(true)
     try {
-      await signInAnonymously()
+      await signInAnonymously(locale)
       navigate('/', { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : t('auth.somethingWrong'))
@@ -84,6 +86,11 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
 
       <main className="relative z-10 flex w-full flex-grow items-center justify-center p-container-margin-mobile md:p-container-margin-desktop">
         <div className="flex w-full max-w-[480px] flex-col gap-lg rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-lg shadow-card md:p-xl">
+          {/* Language — pickable before signing in, and kept for the account */}
+          <div className="flex justify-end">
+            <LanguagePicker />
+          </div>
+
           {/* Branding */}
           <div className="flex flex-col items-center gap-sm text-center">
             <div className="mb-xs flex h-16 w-16 items-center justify-center rounded-full bg-surface-container">

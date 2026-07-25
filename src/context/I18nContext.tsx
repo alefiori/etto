@@ -1,5 +1,5 @@
-import { createContext, useContext, useMemo, type ReactNode } from 'react'
-import { detectBrowserLocale, translate, type Locale, type TranslationKey } from '@/lib/i18n'
+import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react'
+import { initialLocale, translate, type Locale, type TranslationKey } from '@/lib/i18n'
 import { useProfile } from '@/context/ProfileContext'
 
 type TFunction = (key: TranslationKey, params?: Record<string, string | number>) => string
@@ -13,8 +13,9 @@ const I18nContext = createContext<I18nValue | undefined>(undefined)
 
 /**
  * Provides the translation function for the active locale. The locale comes
- * from the user's profile (a single preference that also drives Open Food Facts
- * results), so this must sit inside a ProfileProvider.
+ * from {@link useProfile} — the user's profile preference once signed in, the
+ * remembered/browser language before that — so this must sit inside a
+ * ProfileProvider, and it wraps the whole app (auth pages included).
  */
 export function I18nProvider({ children }: { children: ReactNode }) {
   const { locale } = useProfile()
@@ -22,18 +23,24 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     () => ({ locale, t: (key, params) => translate(locale, key, params) }),
     [locale],
   )
+
+  // Keep the document language in sync, for screen readers and hyphenation.
+  useEffect(() => {
+    document.documentElement.lang = locale
+  }, [locale])
+
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
 }
 
 /**
- * Translation function for the active locale. Inside an I18nProvider this is
- * the user's profile locale; on pre-login screens (no provider) it falls back
- * to the browser's language so auth pages are still localized.
+ * Translation function for the active locale. Outside an I18nProvider (unit
+ * tests rendering a single component) it falls back to the remembered or
+ * browser language rather than throwing.
  */
 // eslint-disable-next-line react-refresh/only-export-components
 export function useI18n(): I18nValue {
   const ctx = useContext(I18nContext)
   if (ctx) return ctx
-  const locale = detectBrowserLocale()
+  const locale = initialLocale()
   return { locale, t: (key, params) => translate(locale, key, params) }
 }

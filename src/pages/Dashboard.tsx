@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom'
 import { useAppShell } from '@/context/AppShellContext'
 import { useProfile } from '@/context/ProfileContext'
 import { useI18n } from '@/context/I18nContext'
+import { useMeals } from '@/context/MealsContext'
 import { useTargets } from '@/hooks/useTargets'
 import { useFoodLogs } from '@/hooks/useFoodLogs'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner, LoadingBlock } from '@/components/ui/Spinner'
 import { ProgressRing } from '@/components/ui/ProgressRing'
-import { MACROS, MEALS, type MealKey } from '@/lib/constants'
+import { MACROS, type MealKey } from '@/lib/constants'
 import {
   calories,
   caloriesForServings,
@@ -43,6 +44,7 @@ export default function Dashboard() {
   const { logs, loading: logsLoading, error } = useFoodLogs(selectedDate, foodLogVersion)
   const { locale } = useProfile()
   const { t } = useI18n()
+  const { meals, loading: mealsLoading, labelFor } = useMeals()
 
   const [pasting, setPasting] = useState(false)
   const [pastingMeal, setPastingMeal] = useState<MealKey | null>(null)
@@ -128,7 +130,7 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-sm">
           <button
-            onClick={() => handleShare(formatDayText(logs, selectedDate, locale, t))}
+            onClick={() => handleShare(formatDayText(logs, selectedDate, locale, t, meals))}
             disabled={logsLoading || logs.length === 0}
             className="flex items-center gap-xs rounded-full bg-surface-container-low px-3 py-2 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-40"
             aria-label={t('dashboard.shareDayAria')}
@@ -211,7 +213,7 @@ export default function Dashboard() {
             <p className="truncate font-body-md text-body-md">
               {t(copiedMeal.count === 1 ? 'dashboard.mealCopiedOne' : 'dashboard.mealCopiedOther', {
                 count: copiedMeal.count,
-                meal: t(`meal.${copiedMeal.meal}`),
+                meal: labelFor(copiedMeal.meal),
               })}{' '}
               <span className="font-label-md text-label-md">{formatShort(copiedMeal.date, locale)}</span>
             </p>
@@ -312,22 +314,22 @@ export default function Dashboard() {
                   {error}
                 </p>
               )}
-              {logsLoading ? (
+              {logsLoading || mealsLoading ? (
                 <LoadingBlock label={t('dashboard.loadingMeals')} />
               ) : (
-                MEALS.map((meal) => {
+                meals.map((meal) => {
                   const mealLogs = logs.filter((l) => l.meal === meal.key)
                   return (
                     <MealCard
                       key={meal.key}
-                      mealKey={meal.key}
+                      label={meal.label}
                       icon={meal.icon}
                       logs={mealLogs}
                       onAdd={() => openAddFood({ meal: meal.key })}
                       onChanged={bumpFoodLogVersion}
                       onCopy={() => copyMeal(selectedDate, meal.key, mealLogs.length)}
                       onShare={() =>
-                        handleShare(formatMealText(meal.key, mealLogs, selectedDate, locale, t))
+                        handleShare(formatMealText(meal, mealLogs, selectedDate, locale, t))
                       }
                       canPaste={copiedMeal !== null}
                       pasting={pastingMeal === meal.key}
@@ -380,7 +382,7 @@ export default function Dashboard() {
 }
 
 function MealCard({
-  mealKey,
+  label,
   icon,
   logs,
   onAdd,
@@ -391,7 +393,7 @@ function MealCard({
   pasting,
   onPaste,
 }: {
-  mealKey: MealKey
+  label: string
   icon: string
   logs: FoodLogWithFood[]
   onAdd: () => void
@@ -403,7 +405,6 @@ function MealCard({
   onPaste: () => void
 }) {
   const { t } = useI18n()
-  const label = t(`meal.${mealKey}`)
   const mealKcal = logs.reduce((sum, l) => sum + caloriesForServings(l.food, l.servings), 0)
   const empty = logs.length === 0
 

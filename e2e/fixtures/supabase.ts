@@ -20,6 +20,7 @@ type Row = Record<string, unknown>
 export interface Store {
   profiles: Row[]
   macro_targets: Row[]
+  meals: Row[]
   foods: Row[]
   food_logs: Row[]
 }
@@ -62,6 +63,9 @@ function defaultStore(): Store {
       { id: USER_ID, off_language: 'en', created_at: '2024-01-01', updated_at: '2024-01-01' },
     ],
     macro_targets: [],
+    // Empty on purpose: the app seeds the default meals on first load, exactly
+    // as it does for an account created before the meals migration.
+    meals: [],
     foods: [],
     food_logs: [],
   }
@@ -140,18 +144,22 @@ async function handleRest(route: Route, store: Store) {
     const parsed = JSON.parse(bodyText)
     const incoming: Row[] = Array.isArray(parsed) ? parsed : [parsed]
     const prefer = req.headers()['prefer'] ?? ''
-    const isUpsert = prefer.includes('merge-duplicates') || table === 'profiles'
+    const ignoreDuplicates = prefer.includes('resolution=ignore-duplicates')
+    const isUpsert = prefer.includes('merge-duplicates') || ignoreDuplicates || table === 'profiles'
 
     const saved: Row[] = incoming.map((row) => {
       if (isUpsert) {
-        // Merge on a natural key: id for profiles, (user_id, day_of_week) for targets.
-        const match = store[table].find((r) =>
-          table === 'macro_targets'
-            ? r['user_id'] === row['user_id'] && r['day_of_week'] === row['day_of_week']
-            : r['id'] === row['id'],
-        )
+        // Merge on a natural key: id for profiles, (user_id, day_of_week) for
+        // targets, (user_id, key) for meals.
+        const match = store[table].find((r) => {
+          if (table === 'macro_targets')
+            return r['user_id'] === row['user_id'] && r['day_of_week'] === row['day_of_week']
+          if (table === 'meals')
+            return r['user_id'] === row['user_id'] && r['key'] === row['key']
+          return r['id'] === row['id']
+        })
         if (match) {
-          Object.assign(match, row)
+          if (!ignoreDuplicates) Object.assign(match, row)
           return match
         }
       }
@@ -187,7 +195,7 @@ async function handleRest(route: Route, store: Store) {
   return json(route, [], 200)
 }
 
-async function handleAuth(route: Route) {
+async function handleAuth(route: Route, store: Store) {
   const req = route.request()
   const url = new URL(req.url())
   const path = url.pathname
@@ -200,7 +208,18 @@ async function handleAuth(route: Route) {
   }
 
   if (path.endsWith('/signup')) {
-    const body = JSON.parse(req.postData() ?? '{}') as { email?: string }
+    const body = JSON.parse(req.postData() ?? '{}') as {
+      email?: string
+      data?: { locale?: string }
+    }
+    // The database trigger seeds the new profile from the sign-up metadata, so
+    // the language picked on the auth page survives the sign-up (0007_meals.sql).
+    const locale = body.data?.locale
+    if (locale) {
+      const profile = store.profiles.find((p) => p['id'] === USER_ID)
+      if (profile) profile['off_language'] = locale
+      else store.profiles.push({ id: USER_ID, off_language: locale })
+    }
     // No email → anonymous sign-in (guest); otherwise a normal auto-confirmed signup.
     const user = makeUser({ anonymous: !body.email, email: body.email })
     return json(route, makeSession(user))
@@ -239,7 +258,7 @@ export async function installSupabaseStubs(page: Page): Promise<Store> {
     // Satisfy CORS preflight for every endpoint.
     if (route.request().method() === 'OPTIONS') return noContent(route, 204)
     const path = new URL(route.request().url()).pathname
-    if (path.startsWith('/auth/v1/')) return handleAuth(route)
+    if (path.startsWith('/auth/v1/')) return handleAuth(route, store)
     if (path.startsWith('/rest/v1/')) return handleRest(route, store)
     if (path.startsWith('/functions/v1/')) return handleFunction(route)
     return json(route, {}, 200)

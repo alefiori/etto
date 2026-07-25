@@ -6,7 +6,7 @@ test.describe('authentication', () => {
     await page.getByRole('button', { name: 'Continue as guest' }).click()
 
     // Landed on the authenticated app shell.
-    await expect(page.getByRole('link', { name: 'Weekly Targets' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Weekly Targets', exact: true })).toBeVisible()
     // Guests are nudged to save their data (the upgrade prompt).
     await expect(page.getByRole('button', { name: 'Save my data' })).toBeVisible()
   })
@@ -18,6 +18,6 @@ test.describe('authentication', () => {
     // Submit the form (Enter avoids the sign-in tab / submit button ambiguity).
     await page.getByLabel('Password', { exact: true }).press('Enter')
 
-    await expect(page.getByRole('link', { name: 'Weekly Targets' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Weekly Targets', exact: true })).toBeVisible()
   })
 })

@@ -54,6 +54,36 @@ export function detectBrowserLocale(): Locale {
   return DEFAULT_LOCALE
 }
 
+/**
+ * Where the active locale is mirrored locally. The profile row stays the source
+ * of truth for a signed-in user, but the auth pages render before any profile is
+ * available — so the last used (or explicitly picked) language is kept here and
+ * read back on the next visit.
+ */
+const LOCALE_STORAGE_KEY = 'macrotrack.locale'
+
+export function getStoredLocale(): Locale | null {
+  try {
+    const stored = localStorage.getItem(LOCALE_STORAGE_KEY)
+    return stored && isLocale(stored) ? stored : null
+  } catch {
+    return null // Storage can be unavailable (private mode, blocked cookies).
+  }
+}
+
+export function storeLocale(code: Locale): void {
+  try {
+    localStorage.setItem(LOCALE_STORAGE_KEY, code)
+  } catch {
+    // Not being able to remember the choice is not worth failing over.
+  }
+}
+
+/** The locale to start from: the remembered one, else the browser's. */
+export function initialLocale(): Locale {
+  return getStoredLocale() ?? detectBrowserLocale()
+}
+
 /** All dot-path keys into the catalog, e.g. `"dashboard.today"`. */
 export type TranslationKey = Paths<Translation>
 

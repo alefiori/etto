@@ -1,19 +1,46 @@
 /** Shared domain constants: meals, weekdays, and macro display metadata. */
 
-export type MealKey = 'breakfast' | 'lunch' | 'dinner' | 'snack'
+import type { MealKey } from './database.types'
+
+export type { MealKey }
+
+/**
+ * The meal keys the app ships with. Users can rename, reorder, remove or add
+ * meals (see the `meals` table), so a meal key is only *built-in* when it is
+ * one of these — those get a translated label from the i18n catalog under
+ * `meal.<key>`, everything else uses the name the user typed.
+ */
+export type BuiltInMealKey = 'breakfast' | 'lunch' | 'dinner' | 'snack'
+
+const BUILTIN_MEAL_KEYS: BuiltInMealKey[] = ['breakfast', 'lunch', 'dinner', 'snack']
+
+export function isBuiltInMealKey(key: string): key is BuiltInMealKey {
+  return (BUILTIN_MEAL_KEYS as string[]).includes(key)
+}
 
 export interface MealMeta {
   key: MealKey
   icon: string // Material Symbols name
+  position: number
 }
 
-/** Display labels come from the i18n catalog under `meal.<key>`. */
-export const MEALS: MealMeta[] = [
-  { key: 'breakfast', icon: 'wb_sunny' },
-  { key: 'lunch', icon: 'light_mode' },
-  { key: 'dinner', icon: 'nights_stay' },
-  { key: 'snack', icon: 'cookie' },
+/**
+ * The meal set every new user starts from. Snack sits third — between lunch and
+ * dinner — which is when most people actually eat it. Kept in sync with
+ * `public.default_meals()` in supabase/migrations/0007_meals.sql.
+ */
+export const DEFAULT_MEALS: MealMeta[] = [
+  { key: 'breakfast', icon: 'wb_sunny', position: 0 },
+  { key: 'lunch', icon: 'light_mode', position: 1 },
+  { key: 'snack', icon: 'cookie', position: 2 },
+  { key: 'dinner', icon: 'nights_stay', position: 3 },
 ]
+
+/** Icon given to meals the user creates. */
+export const DEFAULT_MEAL_ICON = 'restaurant'
+
+/** Upper bound on how many meals a day can hold, to keep the dashboard usable. */
+export const MAX_MEALS = 10
 
 export type MacroKey = 'carbs' | 'protein' | 'fats'
 
@@ -36,27 +63,18 @@ export const MACROS: MacroMeta[] = [
   { key: 'fats', field: 'fats_g', color: '#EF4444', textColor: '#B91C1C', tint: '#FEE2E2', icon: 'water_drop' },
 ]
 
-/** Weekday labels indexed by JS getDay() (0 = Sunday). */
-export const WEEKDAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-export const WEEKDAYS_LONG = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-]
-
-/** Order used in the weekly-targets grid (Mon → Sun), with day_of_week index. */
-export const TARGET_DAYS: { dow: number; short: string; long: string }[] = [
-  { dow: 1, short: 'Mon', long: 'Monday' },
-  { dow: 2, short: 'Tue', long: 'Tuesday' },
-  { dow: 3, short: 'Wed', long: 'Wednesday' },
-  { dow: 4, short: 'Thu', long: 'Thursday' },
-  { dow: 5, short: 'Fri', long: 'Friday' },
-  { dow: 6, short: 'Sat', long: 'Saturday' },
-  { dow: 0, short: 'Sun', long: 'Sunday' },
+/**
+ * Order used in the weekly-targets grid (Mon → Sun), with day_of_week index.
+ * Labels come from the i18n catalog under `weekday.short.*`, never from here.
+ */
+export const TARGET_DAYS: { dow: number }[] = [
+  { dow: 1 },
+  { dow: 2 },
+  { dow: 3 },
+  { dow: 4 },
+  { dow: 5 },
+  { dow: 6 },
+  { dow: 0 },
 ]
 
 export const SERVING_UNITS = ['g', 'ml', 'oz', 'cup', 'piece', 'tbsp', 'tsp', 'serving']

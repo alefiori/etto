@@ -37,6 +37,10 @@ and the per-screen `code.html` files.
 - **Copy day & copy meal** — duplicate a whole day's logs onto another date, or
   copy a single meal into any meal slot on any day (appends, preserving
   servings).
+- **Editable meals** — rename your meals, add or remove them, and reorder them
+  from the Profile page. Everyone starts from breakfast, lunch, snack, dinner;
+  logged items follow a meal when it's renamed or moved, and deleting a meal
+  moves its items to the one above it rather than losing them.
 - **Add Food** — debounced search merging your own foods, community foods, and
   live Open Food Facts / USDA / Edamam results (each tagged with its source);
   pick a meal, adjust servings, and log. Includes a **barcode scanner**
@@ -48,10 +52,11 @@ and the per-screen `code.html` files.
 - **Share meals & days** — export a meal or a whole day as compact,
   emoji-annotated plain text via the native share sheet (WhatsApp, iMessage, …),
   falling back to the clipboard where no share sheet exists.
-- **Internationalization** — the UI is available in English, Italian, French,
-  Spanish, German, Portuguese, and Dutch. A single preference on the Profile
-  page drives both the interface language **and** the language of Open Food Facts
-  results.
+- **Internationalization** — the whole UI, sign-in and reset-password screens
+  included, is available in English, Italian, French, Spanish, German,
+  Portuguese, and Dutch. The language can be picked before signing in; a single
+  preference then drives both the interface language **and** the language of
+  Open Food Facts results.
 - **Installable PWA** — add to home screen / install as an app; the app shell is
   precached so it launches offline.
 
@@ -92,14 +97,16 @@ supabase db push
 ```
 
 **Option B — Supabase SQL Editor:** open the SQL Editor in the dashboard and run
-each migration file **in order** (`0001_init.sql` → `0006_community_food_safety.sql`).
+each migration file **in order** (`0001_init.sql` → `0007_meals.sql`).
 
-Together the migrations create `macro_targets`, `foods`, `food_logs`, and
-`profiles`; enable RLS with owner-only policies (global foods with a null
-`user_id` are readable by everyone); add the `usda` and `edamam` food sources;
-add per-user profile settings (preferred language); and add **community foods**
-(`foods.is_public`) — including the guards that keep a shared food safe to
-unshare and prevent deleting one that other people have logged.
+Together the migrations create `macro_targets`, `foods`, `food_logs`,
+`profiles`, and `meals`; enable RLS with owner-only policies (global foods with a
+null `user_id` are readable by everyone); add the `usda` and `edamam` food
+sources; add per-user profile settings (preferred language); add **community
+foods** (`foods.is_public`) — including the guards that keep a shared food safe
+to unshare and prevent deleting one that other people have logged; and make
+meals **per-user rows** (seeded with the defaults for new and existing accounts)
+instead of a fixed enum on `food_logs.meal`.
 
 ### 3. Enable guest sign-in (optional but recommended)
 
@@ -247,31 +254,55 @@ edit/delete rights. Two safety guards back this (see
 - **A shared food that others have logged can't be deleted** — deletion would
   cascade to other people's logs, so the owner must unshare it instead.
 
+## Meals
+
+Meals are rows in the `meals` table, one set per user, so their **names, count
+and order** are all editable from the Profile page. `meals.key` is a stable slug
+that `food_logs.meal` points at: renaming a meal only changes its `name`, so
+logged items follow it. A null `name` means "use the built-in translated label",
+which keeps the four defaults localized until someone renames them; meals a user
+creates carry their own name in every language.
+
+New accounts are seeded (by the `handle_new_user` trigger) with **breakfast,
+lunch, snack, dinner** — snack sits third, between lunch and dinner, which is
+when most people actually eat it. Existing accounts were backfilled by the same
+migration, and the app re-seeds any account that somehow has no meals. Deleting a
+meal first moves anything logged in it to the meal above, so no entry is lost,
+and the last remaining meal can't be deleted.
+
 ## Internationalization
 
 The UI ships in 7 languages (English, Italian, French, Spanish, German,
-Portuguese, Dutch). The i18n core ([`src/lib/i18n/`](src/lib/i18n/)) is
-dependency-free: catalogs are plain nested objects and `translate()` resolves
-dot-paths with `{name}` interpolation, falling back to English then the raw key
-so a missing translation never throws. The English catalog
-([`locales/en.ts`](src/lib/i18n/locales/en.ts)) is canonical — TypeScript
-enforces that every other locale matches its shape. The selected locale is the
-same value stored in `profiles.off_language`, so **one preference drives both the
-UI language and the Open Food Facts result language**.
+Portuguese, Dutch) — including the **sign-in, sign-up and reset-password
+screens**, which carry their own language picker. The i18n core
+([`src/lib/i18n/`](src/lib/i18n/)) is dependency-free: catalogs are plain nested
+objects and `translate()` resolves dot-paths with `{name}` interpolation, falling
+back to English then the raw key so a missing translation never throws. The
+English catalog ([`locales/en.ts`](src/lib/i18n/locales/en.ts)) is canonical —
+TypeScript enforces that every other locale matches its shape.
+
+Signed in, the selected locale is the value stored in `profiles.off_language`, so
+**one preference drives both the UI language and the Open Food Facts result
+language**. Signed out there is no profile row yet, so the language picked on the
+auth pages is remembered locally (falling back to the browser's languages on a
+first visit) and passed along at sign-up, which is where the database trigger
+seeds the new profile from it.
 
 ## Project structure
 
 ```
 src/
-  components/   # layout (incl. guest banner), UI primitives, Add Food modal, barcode scanner
-  context/      # AuthContext, ProfileContext, I18nContext, AppShellContext
+  components/   # layout (incl. guest banner), UI primitives, profile settings,
+                #   Add Food modal, barcode scanner
+  context/      # AuthContext, ProfileContext, I18nContext, MealsContext, AppShellContext
   hooks/        # useFoodLogs, useTargets, useFoodSearch, useDebounce, useScrollLock
   lib/          # supabase client, macros math, foodApi (Edge Function client),
-                #   foods (CRUD/copy/share), exportText (chat share), i18n, types
+                #   foods (CRUD/copy/share), meals (rename/reorder), exportText
+                #   (chat share), i18n, types
   pages/        # Auth, ForgotPassword, Dashboard, Targets, MyFoods, CreateCustomFood, Profile
 supabase/
   functions/    # food-search Edge Function (external food data proxy)
-  migrations/   # SQL schema + RLS + profiles + community foods
+  migrations/   # SQL schema + RLS + profiles + community foods + editable meals
 ```
 
 ## Testing
