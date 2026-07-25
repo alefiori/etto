@@ -169,7 +169,9 @@ export default function Targets() {
   return (
     <div className="flex flex-col">
       {/* Page header */}
-      <div className="sticky top-[72px] z-20 flex flex-col justify-between gap-xs border-b border-outline-variant/10 bg-surface-bright/80 px-container-margin-mobile py-lg backdrop-blur-sm md:flex-row md:items-end md:gap-md lg:top-0 lg:px-container-margin-desktop lg:py-xl">
+      {/* `top-0` is relative to <main>, which already offsets the fixed mobile
+          top bar — an extra 72px here would pin the header over the first card. */}
+      <div className="sticky top-0 z-20 flex flex-col justify-between gap-xs border-b border-outline-variant/10 bg-surface-bright/80 px-container-margin-mobile py-lg backdrop-blur-sm md:flex-row md:items-end md:gap-md lg:px-container-margin-desktop lg:py-xl">
         <div>
           <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface lg:font-headline-lg lg:text-headline-lg">
             {t('targets.title')}
