@@ -1,6 +1,35 @@
 import { test, expect, seedSession } from './fixtures/supabase'
 
 test.describe('internationalization', () => {
+  // A device set to German, with an account that has no language of its own.
+  test.describe('on a German device', () => {
+    test.use({ locale: 'de-DE' })
+
+    test('the app starts in the device language, signed out and in', async ({ page }) => {
+      await page.goto('/signin')
+      await expect(page.getByRole('button', { name: 'Als Gast fortfahren' })).toBeVisible()
+
+      await seedSession(page)
+      await page.goto('/profile')
+      await expect(page.getByRole('link', { name: 'Wochenziele', exact: true })).toBeVisible()
+      // …and the Profile page says the language is only following the device.
+      await expect(page.getByText('Folgt der Sprache deines Geräts.')).toBeVisible()
+    })
+
+    test('an explicit choice wins over the device language', async ({ page }) => {
+      await seedSession(page)
+      await page.goto('/profile')
+
+      await page.getByRole('combobox').first().selectOption('fr')
+      await expect(page.getByRole('link', { name: 'Objectifs hebdomadaires', exact: true })).toBeVisible()
+      await expect(page.getByText('Folgt der Sprache deines Geräts.')).toHaveCount(0)
+
+      // It sticks across a reload, even though the device still says German.
+      await page.reload()
+      await expect(page.getByRole('link', { name: 'Objectifs hebdomadaires', exact: true })).toBeVisible()
+    })
+  })
+
   test('a visitor can pick a language before signing in', async ({ page }) => {
     await page.goto('/signin')
     await expect(page.getByRole('button', { name: 'Continue as guest' })).toBeVisible()

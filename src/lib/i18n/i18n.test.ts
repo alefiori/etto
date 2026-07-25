@@ -3,6 +3,10 @@ import {
   translate,
   isLocale,
   detectBrowserLocale,
+  clearStoredLocale,
+  getStoredLocale,
+  initialLocale,
+  storeLocale,
   DEFAULT_LOCALE,
   LOCALES,
   translations,
@@ -69,6 +73,44 @@ describe('detectBrowserLocale', () => {
   it('falls back to the default locale when none match', () => {
     vi.stubGlobal('navigator', { languages: ['zh-CN'] })
     expect(detectBrowserLocale()).toBe(DEFAULT_LOCALE)
+  })
+})
+
+describe('stored locale', () => {
+  afterEach(() => {
+    clearStoredLocale()
+    vi.unstubAllGlobals()
+  })
+
+  it('round-trips an explicit choice and forgets it on demand', () => {
+    expect(getStoredLocale()).toBeNull()
+    storeLocale('de')
+    expect(getStoredLocale()).toBe('de')
+    clearStoredLocale()
+    expect(getStoredLocale()).toBeNull()
+  })
+
+  it('ignores a stored value that is not a supported locale', () => {
+    localStorage.setItem('macrotrack.locale', 'xx')
+    expect(getStoredLocale()).toBeNull()
+  })
+})
+
+describe('initialLocale', () => {
+  afterEach(() => {
+    clearStoredLocale()
+    vi.unstubAllGlobals()
+  })
+
+  it('uses the device language when nothing has been chosen', () => {
+    vi.stubGlobal('navigator', { languages: ['es-ES'] })
+    expect(initialLocale()).toBe('es')
+  })
+
+  it('prefers an explicit choice over the device language', () => {
+    vi.stubGlobal('navigator', { languages: ['es-ES'] })
+    storeLocale('nl')
+    expect(initialLocale()).toBe('nl')
   })
 })
 

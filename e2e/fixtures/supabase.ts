@@ -59,8 +59,10 @@ const genId = () => `stub-${++idCounter}`
 
 function defaultStore(): Store {
   return {
+    // off_language null = no explicit choice yet, so the app follows the
+    // device language (the browser context's `locale`).
     profiles: [
-      { id: USER_ID, off_language: 'en', created_at: '2024-01-01', updated_at: '2024-01-01' },
+      { id: USER_ID, off_language: null, created_at: '2024-01-01', updated_at: '2024-01-01' },
     ],
     macro_targets: [],
     // Empty on purpose: the app seeds the default meals on first load, exactly

@@ -253,6 +253,7 @@ export const en = {
     signedInAs: 'Signed in as',
     languageLabel: 'Language',
     languageDescription: 'Language for the app interface and Open Food Facts search and barcode results.',
+    languageFollowsDevice: 'Following your device language.',
     couldNotSaveLanguage: 'Could not save language. Please try again.',
     signOut: 'Sign out',
   },

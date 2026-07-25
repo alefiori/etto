@@ -5,9 +5,10 @@ import userEvent from '@testing-library/user-event'
 const h = vi.hoisted(() => ({
   signOut: vi.fn(),
   setLocale: vi.fn(),
-  profile: { locale: 'en', setLocale: vi.fn(), loading: false } as {
+  profile: { locale: 'en', setLocale: vi.fn(), isLocaleExplicit: true, loading: false } as {
     locale: string
     setLocale: (c: string) => Promise<void> | void
+    isLocaleExplicit: boolean
     loading: boolean
   },
 }))
@@ -38,13 +39,24 @@ import Profile from './Profile'
 
 beforeEach(() => {
   vi.clearAllMocks()
-  h.profile = { locale: 'en', setLocale: h.setLocale, loading: false }
+  h.profile = { locale: 'en', setLocale: h.setLocale, isLocaleExplicit: true, loading: false }
 })
 
 describe('Profile page', () => {
   it('shows the signed-in email', () => {
     render(<Profile />)
     expect(screen.getByText('sam@example.com')).toBeInTheDocument()
+  })
+
+  it('says so while the language just follows the device', () => {
+    h.profile = { locale: 'en', setLocale: h.setLocale, isLocaleExplicit: false, loading: false }
+    render(<Profile />)
+    expect(screen.getByText('Following your device language.')).toBeInTheDocument()
+  })
+
+  it('drops the device-language note once a language is chosen', () => {
+    render(<Profile />) // isLocaleExplicit: true
+    expect(screen.queryByText('Following your device language.')).not.toBeInTheDocument()
   })
 
   it('saves the language when the picker changes', async () => {

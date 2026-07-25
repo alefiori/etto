@@ -248,6 +248,7 @@ export const de: Translation = {
     signedInAs: 'Angemeldet als',
     languageLabel: 'Sprache',
     languageDescription: 'Sprache für die App-Oberfläche sowie für die Open Food Facts-Suche und Barcode-Ergebnisse.',
+    languageFollowsDevice: 'Folgt der Sprache deines Geräts.',
     couldNotSaveLanguage: 'Sprache konnte nicht gespeichert werden. Bitte versuche es erneut.',
     signOut: 'Abmelden',
   },

@@ -54,9 +54,10 @@ and the per-screen `code.html` files.
   falling back to the clipboard where no share sheet exists.
 - **Internationalization** — the whole UI, sign-in and reset-password screens
   included, is available in English, Italian, French, Spanish, German,
-  Portuguese, and Dutch. The language can be picked before signing in; a single
-  preference then drives both the interface language **and** the language of
-  Open Food Facts results.
+  Portuguese, and Dutch. **First run follows the device language**; picking one
+  (before signing in, or from the Profile page) pins it, and that single
+  preference drives both the interface language **and** the language of Open
+  Food Facts results.
 - **Installable PWA** — add to home screen / install as an app; the app shell is
   precached so it launches offline.
 
@@ -97,7 +98,7 @@ supabase db push
 ```
 
 **Option B — Supabase SQL Editor:** open the SQL Editor in the dashboard and run
-each migration file **in order** (`0001_init.sql` → `0007_meals.sql`).
+each migration file **in order** (`0001_init.sql` → `0008_device_default_language.sql`).
 
 Together the migrations create `macro_targets`, `foods`, `food_logs`,
 `profiles`, and `meals`; enable RLS with owner-only policies (global foods with a
@@ -106,7 +107,8 @@ sources; add per-user profile settings (preferred language); add **community
 foods** (`foods.is_public`) — including the guards that keep a shared food safe
 to unshare and prevent deleting one that other people have logged; and make
 meals **per-user rows** (seeded with the defaults for new and existing accounts)
-instead of a fixed enum on `food_logs.meal`.
+instead of a fixed enum on `food_logs.meal`; and make `profiles.off_language`
+nullable, where NULL means "no explicit choice — follow the device language".
 
 ### 3. Enable guest sign-in (optional but recommended)
 
@@ -281,12 +283,19 @@ back to English then the raw key so a missing translation never throws. The
 English catalog ([`locales/en.ts`](src/lib/i18n/locales/en.ts)) is canonical —
 TypeScript enforces that every other locale matches its shape.
 
-Signed in, the selected locale is the value stored in `profiles.off_language`, so
-**one preference drives both the UI language and the Open Food Facts result
-language**. Signed out there is no profile row yet, so the language picked on the
-auth pages is remembered locally (falling back to the browser's languages on a
-first visit) and passed along at sign-up, which is where the database trigger
-seeds the new profile from it.
+**The default is the device language.** `profiles.off_language` is NULL until
+someone actually picks a language, and a NULL resolves against
+`navigator.languages` on every load — so a first run (and every run after it, on
+an account nobody has set a language for) speaks the device's language, and
+follows it if the device changes. The Profile page says as much while that's the
+case.
+
+Picking a language pins it: it's written to `profiles.off_language` and mirrored
+to local storage, so it survives a reload, applies before sign-in on the auth
+pages, and **one preference then drives both the UI language and the Open Food
+Facts result language**. A choice made on the auth pages rides along as sign-up
+metadata, which the database trigger uses to seed the new profile; without one,
+the account starts with no preference rather than being frozen at English.
 
 ## Project structure
 

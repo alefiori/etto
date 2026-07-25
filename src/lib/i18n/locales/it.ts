@@ -248,6 +248,7 @@ export const it: Translation = {
     signedInAs: 'Accesso effettuato come',
     languageLabel: 'Lingua',
     languageDescription: 'Lingua per l’interfaccia dell’app e per i risultati di ricerca e codici a barre di Open Food Facts.',
+    languageFollowsDevice: 'Segue la lingua del tuo dispositivo.',
     couldNotSaveLanguage: 'Impossibile salvare la lingua. Riprova.',
     signOut: 'Esci',
   },

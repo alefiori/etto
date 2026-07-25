@@ -44,7 +44,8 @@ export type Food = {
 
 export type Profile = {
   id: string
-  off_language: string
+  /** Explicit language choice; null means "follow the device language". */
+  off_language: string | null
   created_at: string
   updated_at: string
 }

@@ -9,7 +9,7 @@ import { MealSettings } from '@/components/profile/MealSettings'
 
 export default function Profile() {
   const { user, signOut } = useAuth()
-  const { locale, setLocale, loading: profileLoading } = useProfile()
+  const { locale, setLocale, isLocaleExplicit, loading: profileLoading } = useProfile()
   const { t } = useI18n()
   const [busy, setBusy] = useState(false)
   const [savingLang, setSavingLang] = useState(false)
@@ -69,6 +69,12 @@ export default function Profile() {
           <p className="font-body-md text-sm text-on-surface-variant">
             {t('profile.languageDescription')}
           </p>
+          {!profileLoading && !isLocaleExplicit && (
+            <p className="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant">
+              <Icon name="smartphone" className="text-[16px]" />
+              {t('profile.languageFollowsDevice')}
+            </p>
+          )}
           <div className="relative">
             <select
               id="locale"

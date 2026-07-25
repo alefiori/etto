@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useI18n } from '@/context/I18nContext'
+import { useProfile } from '@/context/ProfileContext'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { LanguagePicker } from '@/components/ui/LanguagePicker'
@@ -14,6 +15,10 @@ const inputClass =
 export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }) {
   const { session, signIn, signUp, signInAnonymously } = useAuth()
   const { t, locale } = useI18n()
+  const { isLocaleExplicit } = useProfile()
+  // Only a language the visitor actually picked is worth saving on the new
+  // account; otherwise it starts with none and follows the device.
+  const chosenLocale = isLocaleExplicit ? locale : undefined
   const navigate = useNavigate()
 
   const [tab, setTab] = useState<Tab>(initialTab)
@@ -43,8 +48,8 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
         await signIn(email, password)
         navigate('/', { replace: true })
       } else {
-        // Carry the language chosen here into the new account's profile.
-        const { needsConfirmation } = await signUp(email, password, locale)
+        // Carry a language chosen here into the new account's profile.
+        const { needsConfirmation } = await signUp(email, password, chosenLocale)
         if (needsConfirmation) {
           setNotice(t('auth.checkInbox'))
           setTab('signin')
@@ -70,7 +75,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
     setNotice(null)
     setBusy(true)
     try {
-      await signInAnonymously(locale)
+      await signInAnonymously(chosenLocale)
       navigate('/', { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : t('auth.somethingWrong'))

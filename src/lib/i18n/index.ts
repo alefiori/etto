@@ -42,8 +42,9 @@ export function isLocale(code: string): code is Locale {
 }
 
 /**
- * Best-effort locale from the browser's languages, for pre-login screens where
- * no profile preference is available yet. Falls back to {@link DEFAULT_LOCALE}.
+ * The device's language, as reported by the browser — the default until the
+ * user picks one explicitly. Falls back to {@link DEFAULT_LOCALE} when the
+ * device speaks a language the app doesn't.
  */
 export function detectBrowserLocale(): Locale {
   const langs = typeof navigator !== 'undefined' ? navigator.languages ?? [navigator.language] : []
@@ -55,10 +56,14 @@ export function detectBrowserLocale(): Locale {
 }
 
 /**
- * Where the active locale is mirrored locally. The profile row stays the source
- * of truth for a signed-in user, but the auth pages render before any profile is
- * available — so the last used (or explicitly picked) language is kept here and
- * read back on the next visit.
+ * Where an **explicit** language choice is mirrored locally. The profile row
+ * stays the source of truth for a signed-in user, but the auth pages render
+ * before any profile is available, so a choice made there is kept here and read
+ * back on the next visit.
+ *
+ * Nothing is stored until the user actually picks a language: an empty slot is
+ * what makes the device language the first-run default (see
+ * {@link initialLocale}), and it must stay empty for the device to keep winning.
  */
 const LOCALE_STORAGE_KEY = 'macrotrack.locale'
 
@@ -79,7 +84,19 @@ export function storeLocale(code: Locale): void {
   }
 }
 
-/** The locale to start from: the remembered one, else the browser's. */
+/** Forget the explicit choice, so the device language takes over again. */
+export function clearStoredLocale(): void {
+  try {
+    localStorage.removeItem(LOCALE_STORAGE_KEY)
+  } catch {
+    // Same as above — storage may be unavailable.
+  }
+}
+
+/**
+ * The locale to start from: the explicitly chosen one if there is one, and
+ * otherwise the device language.
+ */
 export function initialLocale(): Locale {
   return getStoredLocale() ?? detectBrowserLocale()
 }
