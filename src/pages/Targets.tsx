@@ -42,6 +42,8 @@ export default function Targets() {
   const [values, setValues] = useState<Values>({})
   const [status, setStatus] = useState<SaveStatus>('idle')
   const [saveError, setSaveError] = useState<string | null>(null)
+  /** The day currently held for pasting (day_of_week), or null. */
+  const [copied, setCopied] = useState<number | null>(null)
 
   // Autosave bookkeeping. The current values also live in a ref so the
   // debounced flush always writes what is on screen, without every keystroke
@@ -144,26 +146,24 @@ export default function Targets() {
     edit({ ...valuesRef.current, [dow]: { ...current, [field]: v } }, [dow])
   }
 
-  /** Copy one day's macros onto every other day — same action on every card. */
-  function copyToAll(sourceDow: number) {
-    const src = valuesRef.current[sourceDow]
+  /**
+   * Paste the copied day's macros into `dow`. Copying arms a day, pasting
+   * applies it one day at a time — the same flow the dashboard uses for meals.
+   */
+  function pasteInto(dow: number) {
+    if (copied === null) return
+    const src = valuesRef.current[copied]
+    const prev = valuesRef.current[dow]
     if (!src) return
-    const next: Values = {}
-    const changed: number[] = []
-    for (const { dow } of TARGET_DAYS) {
-      const prev = valuesRef.current[dow]
-      next[dow] = { ...src }
-      if (
-        !prev ||
-        prev.carbs_g !== src.carbs_g ||
-        prev.protein_g !== src.protein_g ||
-        prev.fats_g !== src.fats_g
-      ) {
-        changed.push(dow)
-      }
+    if (
+      prev &&
+      prev.carbs_g === src.carbs_g &&
+      prev.protein_g === src.protein_g &&
+      prev.fats_g === src.fats_g
+    ) {
+      return
     }
-    if (changed.length === 0) return
-    edit(next, changed)
+    edit({ ...valuesRef.current, [dow]: { ...src } }, [dow])
   }
 
   return (
@@ -228,6 +228,24 @@ export default function Targets() {
           </p>
         )}
 
+        {copied !== null && (
+          <div className="mb-md flex items-center justify-between gap-sm rounded-2xl border border-primary/30 bg-primary-container/10 p-md shadow-card">
+            <div className="flex min-w-0 items-center gap-sm text-on-surface">
+              <Icon name="content_paste" className="shrink-0 text-primary" />
+              <p className="truncate font-body-md text-body-md">
+                {t('targets.dayCopied', { day: t(DOW_KEY[copied]) })}
+              </p>
+            </div>
+            <button
+              onClick={() => setCopied(null)}
+              aria-label={t('targets.clearCopiedDay')}
+              className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high"
+            >
+              <Icon name="close" className="text-sm" />
+            </button>
+          </div>
+        )}
+
         {loading ? (
           <LoadingBlock label={t('targets.loading')} />
         ) : (
@@ -241,22 +259,38 @@ export default function Targets() {
                   key={dow}
                   className="flex flex-col gap-md rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-md shadow-card transition-all hover:shadow-card-hover"
                 >
-                  <div className="flex items-center justify-between border-b border-outline-variant/10 pb-sm">
+                  <div className="flex items-center justify-between gap-xs border-b border-outline-variant/10 pb-sm">
                     <h3
-                      className={`font-headline-md text-headline-md ${
+                      className={`truncate font-headline-md text-headline-md ${
                         dow === 0 || dow === 6 ? 'text-on-surface-variant' : 'text-on-surface'
                       }`}
                     >
                       {dayLabel}
                     </h3>
-                    <button
-                      onClick={() => copyToAll(dow)}
-                      aria-label={t('targets.copyDayToAll', { day: dayLabel })}
-                      title={t('targets.copyDayToAll', { day: dayLabel })}
-                      className="rounded-full p-1 text-outline-variant transition-colors hover:bg-surface-container-high hover:text-primary"
-                    >
-                      <Icon name="content_copy" className="text-[18px]" />
-                    </button>
+                    <div className="flex shrink-0 items-center gap-xs">
+                      {copied !== null && copied !== dow && (
+                        <button
+                          onClick={() => pasteInto(dow)}
+                          aria-label={t('targets.pasteIntoDay', { day: dayLabel })}
+                          title={t('targets.pasteIntoDay', { day: dayLabel })}
+                          className="rounded-full bg-primary p-1 text-on-primary transition-opacity hover:opacity-90"
+                        >
+                          <Icon name="content_paste" className="text-[18px]" />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => setCopied(dow)}
+                        aria-label={t('targets.copyDayAria', { day: dayLabel })}
+                        title={t('targets.copyDayAria', { day: dayLabel })}
+                        className={`rounded-full p-1 transition-colors hover:bg-surface-container-high hover:text-primary ${
+                          copied === dow
+                            ? 'bg-surface-container-high text-primary'
+                            : 'text-outline-variant'
+                        }`}
+                      >
+                        <Icon name="content_copy" className="text-[18px]" />
+                      </button>
+                    </div>
                   </div>
 
                   <div className="flex flex-col gap-sm">

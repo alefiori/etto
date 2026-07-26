@@ -51,7 +51,7 @@ describe('Targets page', () => {
     expect(await screen.findByText('All changes saved')).toBeInTheDocument()
   })
 
-  it('copies a day to the whole week only when its copy button is used', async () => {
+  it('copies a day and pastes it into one other day at a time', async () => {
     const user = userEvent.setup()
     render(<Targets />)
 
@@ -60,14 +60,41 @@ describe('Targets page', () => {
     // Typing into Monday leaves every other day alone.
     expect(rowsOf(0)).toHaveLength(1)
 
-    await user.click(screen.getByRole('button', { name: 'Copy Mon to all days' }))
+    // Nothing to paste until a day is copied.
+    expect(screen.queryByRole('button', { name: /^Paste into/ })).toBeNull()
+
+    await user.click(screen.getByRole('button', { name: 'Copy Mon' }))
+    expect(screen.getByText('Mon copied — paste it into any other day')).toBeInTheDocument()
+    // The copied day offers no paste button to itself, so six remain.
+    expect(screen.getAllByRole('button', { name: /^Paste into/ })).toHaveLength(6)
+
+    await user.click(screen.getByRole('button', { name: 'Paste into Wed' }))
 
     await waitFor(() => expect(h.upsert).toHaveBeenCalledTimes(2), waitOpts)
-    // The other six days now match Monday (Monday itself was already saved).
-    const rows = rowsOf(1)
-    expect(rows).toHaveLength(6)
-    expect(rows.every((r) => r.carbs_g === 200)).toBe(true)
-    expect(rows.map((r) => r.day_of_week).sort()).toEqual([0, 2, 3, 4, 5, 6])
+    // Only Wednesday was written — the rest of the week is untouched.
+    expect(rowsOf(1)).toEqual([
+      { user_id: 'user-1', day_of_week: 3, carbs_g: 200, protein_g: 0, fats_g: 0 },
+    ])
+    expect(screen.getByLabelText('Carbs (g)', { selector: '#target-3-carbs' })).toHaveValue(200)
+  })
+
+  it('keeps the copied day until it is cleared, so it can be pasted repeatedly', async () => {
+    const user = userEvent.setup()
+    render(<Targets />)
+
+    await user.type(screen.getByLabelText('Carbs (g)', { selector: '#target-1-carbs' }), '200')
+    await waitFor(() => expect(h.upsert).toHaveBeenCalledTimes(1), waitOpts)
+
+    await user.click(screen.getByRole('button', { name: 'Copy Mon' }))
+    await user.click(screen.getByRole('button', { name: 'Paste into Tue' }))
+    await waitFor(() => expect(h.upsert).toHaveBeenCalledTimes(2), waitOpts)
+
+    await user.click(screen.getByRole('button', { name: 'Paste into Sun' }))
+    await waitFor(() => expect(h.upsert).toHaveBeenCalledTimes(3), waitOpts)
+    expect(rowsOf(2)[0].day_of_week).toBe(0)
+
+    await user.click(screen.getByRole('button', { name: 'Clear copied day' }))
+    expect(screen.queryByRole('button', { name: /^Paste into/ })).toBeNull()
   })
 
   it('surfaces a failed autosave and retries on demand', async () => {

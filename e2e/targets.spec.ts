@@ -16,20 +16,28 @@ test.describe('weekly targets', () => {
     expect(store.macro_targets[0]).toMatchObject({ day_of_week: 1, carbs_g: 200 })
   })
 
-  test('copies a day across the week from its own card, and autosaves', async ({ page, store }) => {
+  test('copies a day and pastes it into the days you pick', async ({ page, store }) => {
     await seedSession(page)
     await page.goto('/targets')
 
     await page.locator('#target-1-carbs').fill('200')
     await expect(page.getByText('All changes saved')).toBeVisible()
 
-    // Monday has no special header shortcut: every card copies from its own
-    // button, and only when it is clicked.
-    await page.getByRole('button', { name: 'Copy Mon to all days' }).click()
+    // Copy arms Monday — nothing moves until a paste, same as meals.
+    await page.getByRole('button', { name: 'Copy Mon' }).click()
+    await expect(page.getByText('Mon copied — paste it into any other day')).toBeVisible()
+
+    await page.getByRole('button', { name: 'Paste into Wed' }).click()
+    await page.getByRole('button', { name: 'Paste into Sun' }).click()
 
     // The status text is already on screen from the first save, so wait on the
     // rows themselves rather than on it changing.
-    await expect.poll(() => store.macro_targets.length).toBe(7)
+    await expect.poll(() => store.macro_targets.length).toBe(3)
+    expect(store.macro_targets.map((t) => t.day_of_week).sort()).toEqual([0, 1, 3])
     expect(store.macro_targets.every((t) => t.carbs_g === 200)).toBe(true)
+
+    // Clearing puts the paste buttons away again.
+    await page.getByRole('button', { name: 'Clear copied day' }).click()
+    await expect(page.getByRole('button', { name: /^Paste into/ })).toHaveCount(0)
   })
 })
