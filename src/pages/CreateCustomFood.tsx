@@ -35,7 +35,7 @@ export default function CreateCustomFood() {
   const [name, setName] = useState(prefill?.name ?? '')
   const [brand, setBrand] = useState(prefill?.brand ?? '')
   const [servingAmount, setServingAmount] = useState(
-    prefill ? String(prefill.serving_amount) : '1',
+    prefill ? String(prefill.serving_amount) : '100',
   )
   const [servingUnit, setServingUnit] = useState(prefill?.serving_unit ?? 'g')
   const [carbs, setCarbs] = useState(prefill ? String(prefill.carbs_g) : '0')
@@ -212,7 +212,7 @@ export default function CreateCustomFood() {
                   step="any"
                   value={servingAmount}
                   onChange={(e) => setServingAmount(e.target.value)}
-                  placeholder="1"
+                  placeholder="100"
                   className={fieldClass}
                 />
               </div>
