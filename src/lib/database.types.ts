@@ -62,8 +62,19 @@ export type Profile = {
   /** Unsigned magnitude; goal_direction carries the sign. 0 = maintain. */
   goal_rate_kg_per_week: number | null
   unit_system: UnitSystem
+  /** Explicit daily hydration goal in ml; null means derive it from bodyweight. */
+  water_goal_ml: number | null
   created_at: string
   updated_at: string
+}
+
+/** One drink. Append-only — a day's intake is the sum of its rows. */
+export type WaterLog = {
+  id: string
+  user_id: string
+  log_date: string // YYYY-MM-DD
+  amount_ml: number
+  created_at: string
 }
 
 /** One weigh-in. At most one row per user per day; always kilograms. */
@@ -144,6 +155,12 @@ export interface Database {
         // that out beats an Omit/Pick pair listing all of the body columns.
         Insert: Pick<Profile, 'id'> & Partial<Omit<Profile, 'id'>>
         Update: Partial<Profile>
+        Relationships: []
+      }
+      water_logs: {
+        Row: WaterLog
+        Insert: Omit<WaterLog, 'id' | 'created_at'> & Partial<Pick<WaterLog, 'id' | 'created_at'>>
+        Update: Partial<WaterLog>
         Relationships: []
       }
       weight_logs: {

@@ -7,6 +7,7 @@ import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { MealSettings } from '@/components/profile/MealSettings'
 import { BodyMetrics } from '@/components/profile/BodyMetrics'
+import { WaterSettings } from '@/components/profile/WaterSettings'
 
 export default function Profile() {
   const { user, signOut } = useAuth()
@@ -108,6 +109,11 @@ export default function Profile() {
 
         {/* Body + goal: the inputs an energy estimate needs */}
         <BodyMetrics />
+
+        <hr className="border-surface-container-highest" />
+
+        {/* Hydration goal (empty = derived from bodyweight) */}
+        <WaterSettings />
 
         <hr className="border-surface-container-highest" />
 

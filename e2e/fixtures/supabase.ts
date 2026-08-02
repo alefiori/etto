@@ -24,6 +24,7 @@ export interface Store {
   foods: Row[]
   food_logs: Row[]
   weight_logs: Row[]
+  water_logs: Row[]
 }
 
 export function makeUser(opts: { anonymous?: boolean; email?: string } = {}) {
@@ -78,6 +79,7 @@ function defaultStore(): Store {
     foods: [],
     food_logs: [],
     weight_logs: [],
+    water_logs: [],
   }
 }
 

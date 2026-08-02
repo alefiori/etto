@@ -11,6 +11,9 @@ interface AppShellValue {
   /** Bumped whenever food logs change, so views can refetch. */
   foodLogVersion: number
   bumpFoodLogVersion: () => void
+  /** The same idea for hydration, kept separate so a drink doesn't refetch food. */
+  waterVersion: number
+  bumpWaterVersion: () => void
   /** A day's foods captured for pasting into another day, or null. */
   copiedDay: { date: string; count: number } | null
   copyDay: (date: string, count: number) => void
@@ -29,6 +32,7 @@ const AppShellContext = createContext<AppShellValue | undefined>(undefined)
 export function AppShellProvider({ children }: { children: ReactNode }) {
   const [selectedDate, setSelectedDate] = useState<string>(todayISO())
   const [foodLogVersion, setFoodLogVersion] = useState(0)
+  const [waterVersion, setWaterVersion] = useState(0)
   const [addFood, setAddFood] = useState<{ open: boolean; meal?: MealKey }>({ open: false })
   const [copiedDay, setCopiedDay] = useState<{ date: string; count: number } | null>(null)
   const [copiedMeal, setCopiedMeal] = useState<
@@ -40,6 +44,8 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
     setSelectedDate,
     foodLogVersion,
     bumpFoodLogVersion: () => setFoodLogVersion((v) => v + 1),
+    waterVersion,
+    bumpWaterVersion: () => setWaterVersion((v) => v + 1),
     copiedDay,
     copyDay: (date, count) => setCopiedDay({ date, count }),
     clearCopiedDay: () => setCopiedDay(null),
