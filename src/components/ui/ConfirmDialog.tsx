@@ -1,6 +1,7 @@
 import { useEffect, useId, type ReactNode } from 'react'
 import { useScrollLock } from '@/hooks/useScrollLock'
 import { useI18n } from '@/context/I18nContext'
+import { pushOverlay } from '@/lib/nativeBootstrap'
 
 /**
  * A compact, app-styled confirmation dialog replacing the native
@@ -40,7 +41,12 @@ export function ConfirmDialog({
       if (e.key === 'Escape') onCancel()
     }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    // See Modal: Android sends no Escape, so back must find this too.
+    const unregister = pushOverlay(onCancel)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      unregister()
+    }
   }, [open, onCancel])
 
   if (!open) return null

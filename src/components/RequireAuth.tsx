@@ -11,7 +11,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-[100dvh] items-center justify-center">
         <LoadingBlock label={t('auth.loadingAccount')} />
       </div>
     )

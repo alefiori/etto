@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from 'react'
 import { useScrollLock } from '@/hooks/useScrollLock'
+import { pushOverlay } from '@/lib/nativeBootstrap'
 
 /**
  * Overlay container. On desktop it renders as a centered modal; on mobile as a
@@ -24,8 +25,12 @@ export function Modal({
       if (e.key === 'Escape') onClose()
     }
     window.addEventListener('keydown', onKey)
+    // Android has no Escape key; register with the hardware-back stack too, or
+    // back would exit the app from inside an open modal.
+    const unregister = pushOverlay(onClose)
     return () => {
       window.removeEventListener('keydown', onKey)
+      unregister()
     }
   }, [open, onClose])
 

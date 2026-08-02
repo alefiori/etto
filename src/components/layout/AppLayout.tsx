@@ -30,7 +30,7 @@ function Sidebar() {
   const { t } = useI18n()
 
   return (
-    <aside className="z-30 hidden h-screen w-[280px] shrink-0 flex-col gap-md border-r border-surface-container-high bg-surface-container-low p-lg shadow-sidebar lg:fixed lg:left-0 lg:top-0 lg:flex">
+    <aside className="z-30 hidden h-[100dvh] w-[280px] shrink-0 flex-col gap-md border-r border-surface-container-high bg-surface-container-low p-lg shadow-sidebar lg:fixed lg:left-0 lg:top-0 lg:flex">
       {/* Brand */}
       <div className="mb-xl flex items-center gap-md px-sm">
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-container text-on-primary-container">
@@ -105,7 +105,7 @@ function Sidebar() {
 function TopAppBar() {
   const { t } = useI18n()
   return (
-    <nav className="fixed top-0 z-40 flex w-full items-center justify-between bg-surface px-container-margin-mobile py-md shadow-sm lg:hidden">
+    <nav className="fixed top-0 z-40 flex w-full items-center justify-between bg-surface px-container-margin-mobile py-md pt-[calc(theme(spacing.md)+theme(spacing.safe-top))] shadow-sm lg:hidden">
       <h1 className="font-headline-md text-headline-md font-bold text-primary">MacroTrack</h1>
       <NavLink
         to="/profile"
@@ -121,7 +121,7 @@ function TopAppBar() {
 function BottomNav() {
   const { t } = useI18n()
   return (
-    <nav className="fixed bottom-0 left-0 z-50 flex w-full items-center justify-around border-t border-surface-container-high bg-surface px-4 py-2 shadow-bottomnav lg:hidden">
+    <nav className="fixed bottom-0 left-0 z-50 flex w-full items-center justify-around border-t border-surface-container-high bg-surface px-4 py-2 pb-[calc(theme(spacing.2)+theme(spacing.safe-bottom))] shadow-bottomnav lg:hidden">
       {NAV_ITEMS.map((item) => (
         <NavLink
           key={item.to}
@@ -154,11 +154,11 @@ export default function AppLayout() {
   const { t } = useI18n()
 
   return (
-    <div className="flex min-h-screen bg-background text-on-surface antialiased">
+    <div className="flex min-h-[100dvh] bg-background text-on-surface antialiased">
       <Sidebar />
       <TopAppBar />
 
-      <main className="w-full flex-1 overflow-y-auto pb-[80px] pt-[72px] lg:ml-[280px] lg:pb-0 lg:pt-0">
+      <main className="w-full flex-1 overflow-y-auto pb-bottomnav pt-topbar lg:ml-[280px] lg:pb-0 lg:pt-0">
         <GuestBanner />
         <Outlet />
       </main>
@@ -169,7 +169,7 @@ export default function AppLayout() {
       <button
         onClick={() => openAddFood()}
         aria-label={t('nav.addFood')}
-        className="fixed bottom-[88px] right-container-margin-mobile z-40 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-on-primary shadow-lg transition-transform active:scale-95 lg:hidden"
+        className="fixed bottom-fab right-container-margin-mobile z-40 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-on-primary shadow-lg transition-transform active:scale-95 lg:hidden"
       >
         <Icon name="add" className="text-2xl" />
       </button>
