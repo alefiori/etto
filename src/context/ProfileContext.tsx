@@ -9,8 +9,24 @@ import {
   type Locale,
 } from '@/lib/i18n'
 import { useAuth } from '@/context/AuthContext'
+import type { Profile, UnitSystem } from '@/lib/database.types'
 
 interface ProfileValue {
+  /**
+   * The full profile row, or null when signed out (the auth pages still need a
+   * locale, which is why this provider sits above RequireAuth).
+   */
+  profile: Profile | null
+  /**
+   * Display units for weight and height. Everything is stored metric; this only
+   * decides what the user sees. Metric until they say otherwise.
+   */
+  unitSystem: UnitSystem
+  /**
+   * Patch any subset of the profile row. Optimistic, rolls back and rethrows on
+   * failure — the same contract as {@link setLocale}.
+   */
+  updateProfile: (patch: Partial<Omit<Profile, 'id' | 'created_at' | 'updated_at'>>) => Promise<void>
   /**
    * The language in effect. Drives both the UI language and the Open Food Facts
    * result language. It is the user's explicit choice when they have made one —
@@ -44,12 +60,14 @@ function firstRunLocale(): { locale: Locale; explicit: boolean } {
 export function ProfileProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth()
   const [{ locale, explicit }, setChoice] = useState(firstRunLocale)
+  const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     // Signed out (auth pages): the stored choice, or the device language.
     if (!user) {
+      setProfile(null)
       if (!authLoading) setLoading(false)
       return
     }
@@ -57,11 +75,12 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     setLoading(true)
     supabase
       .from('profiles')
-      .select('off_language')
+      .select('*')
       .eq('id', user.id)
       .maybeSingle()
       .then(({ data, error }) => {
         if (cancelled) return
+        setProfile(data ?? null)
         if (error) setError(error.message)
         else if (data?.off_language && isLocale(data.off_language)) {
           // The account has a language of its own: it wins everywhere.
@@ -98,11 +117,35 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       setError(error.message)
       throw error
     }
+    setProfile((p) => (p ? { ...p, off_language: code } : p))
+  }
+
+  async function updateProfile(patch: Partial<Omit<Profile, 'id' | 'created_at' | 'updated_at'>>) {
+    if (!user) throw new Error('Not authenticated.')
+    const previous = profile
+    setProfile((p) => (p ? { ...p, ...patch } : p)) // optimistic
+    setError(null)
+    // Upsert rather than update: the signup trigger normally creates the row,
+    // but an account that predates it would otherwise silently no-op.
+    const { data, error } = await supabase
+      .from('profiles')
+      .upsert({ id: user.id, ...patch }, { onConflict: 'id' })
+      .select('*')
+      .single()
+    if (error) {
+      setProfile(previous)
+      setError(error.message)
+      throw error
+    }
+    setProfile(data)
   }
 
   return (
     <ProfileContext.Provider
       value={{
+        profile,
+        unitSystem: profile?.unit_system ?? 'metric',
+        updateProfile,
         locale,
         isLocaleExplicit: explicit,
         setLocale,

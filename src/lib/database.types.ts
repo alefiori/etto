@@ -42,10 +42,36 @@ export type Food = {
   created_at: string
 }
 
+/** Biological sex, used only as a coefficient in the BMR equation. */
+export type Sex = 'female' | 'male'
+export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active'
+export type GoalDirection = 'lose' | 'maintain' | 'gain'
+/** Display units only — everything is stored metric and converted at the UI edge. */
+export type UnitSystem = 'metric' | 'imperial'
+
 export type Profile = {
   id: string
   /** Explicit language choice; null means "follow the device language". */
   off_language: string | null
+  /** Body metrics. Null means "not answered yet", never a guessed default. */
+  sex: Sex | null
+  birthdate: string | null // YYYY-MM-DD
+  height_cm: number | null
+  activity_level: ActivityLevel | null
+  goal_direction: GoalDirection | null
+  /** Unsigned magnitude; goal_direction carries the sign. 0 = maintain. */
+  goal_rate_kg_per_week: number | null
+  unit_system: UnitSystem
+  created_at: string
+  updated_at: string
+}
+
+/** One weigh-in. At most one row per user per day; always kilograms. */
+export type WeightLog = {
+  id: string
+  user_id: string
+  log_date: string // YYYY-MM-DD
+  weight_kg: number
   created_at: string
   updated_at: string
 }
@@ -113,9 +139,18 @@ export interface Database {
       }
       profiles: {
         Row: Profile
-        Insert: Omit<Profile, 'created_at' | 'updated_at'> &
-          Partial<Pick<Profile, 'off_language' | 'created_at' | 'updated_at'>>
+        // Every column except the primary key is either nullable or server-
+        // defaulted, so `id` is the only thing an insert must carry. Spelling
+        // that out beats an Omit/Pick pair listing all of the body columns.
+        Insert: Pick<Profile, 'id'> & Partial<Omit<Profile, 'id'>>
         Update: Partial<Profile>
+        Relationships: []
+      }
+      weight_logs: {
+        Row: WeightLog
+        Insert: Omit<WeightLog, 'id' | 'created_at' | 'updated_at'> &
+          Partial<Pick<WeightLog, 'id' | 'created_at' | 'updated_at'>>
+        Update: Partial<WeightLog>
         Relationships: []
       }
     }

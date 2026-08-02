@@ -32,6 +32,27 @@ export function isToday(iso: string): boolean {
   return iso === todayISO()
 }
 
+/**
+ * Whole days from `from` to `to` (negative when `to` is earlier).
+ *
+ * Both ends are snapped to local midnight before subtracting, so a DST
+ * transition inside the range can't round the result to 0.96 of a day.
+ */
+export function diffDays(fromISO: string, toISO: string): number {
+  const MS_PER_DAY = 86_400_000
+  const from = fromISODate(fromISO)
+  const to = fromISODate(toISO)
+  return Math.round((to.getTime() - from.getTime()) / MS_PER_DAY)
+}
+
+/** Every date from `from` to `to` inclusive. Empty when `to` precedes `from`. */
+export function dateRange(fromISO: string, toISO: string): string[] {
+  const out: string[] = []
+  const total = diffDays(fromISO, toISO)
+  for (let i = 0; i <= total; i++) out.push(addDays(fromISO, i))
+  return out
+}
+
 /** e.g. "Thursday, October 26" — localized when a locale is given. */
 export function formatLong(iso: string, locale?: string): string {
   return fromISODate(iso).toLocaleDateString(locale, {
