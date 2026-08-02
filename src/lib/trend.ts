@@ -109,6 +109,15 @@ export interface ChartOptions {
   height?: number
   /** Inset in user units, so stroke width and dots aren't clipped at the edges. */
   padding?: number
+  /**
+   * Plot against this value range instead of the series' own.
+   *
+   * Needed whenever two series share one chart: without it each would derive
+   * its own scale and the overlay would silently misalign.
+   */
+  domain?: { min: number; max: number }
+  /** Likewise for the x axis — the date range the width represents. */
+  dateSpan?: { from: string; to: string }
 }
 
 /**
@@ -119,25 +128,45 @@ export interface ChartOptions {
  * only two weigh-ins) is centred rather than divided by a zero range.
  */
 export function chartGeometry(series: SeriesPoint[], options: ChartOptions = {}): ChartGeometry {
-  const { width = 320, height = 120, padding = 4 } = options
+  const { width = 320, height = 120, padding = 4, domain, dateSpan } = options
 
   if (series.length === 0) {
-    return { width, height, line: '', area: '', points: [], min: 0, max: 0 }
+    return {
+      width,
+      height,
+      line: '',
+      area: '',
+      points: [],
+      min: domain?.min ?? 0,
+      max: domain?.max ?? 0,
+    }
   }
 
-  const values = series.map((p) => p.value)
-  const rawMin = Math.min(...values)
-  const rawMax = Math.max(...values)
-  // A flat line still needs a non-zero range to divide by; half a unit either
-  // side keeps it centred without exaggerating the scale.
-  const pad = rawMax === rawMin ? 0.5 : (rawMax - rawMin) * 0.05
-  const min = rawMin - pad
-  const max = rawMax + pad
+  let min: number
+  let max: number
+  if (domain) {
+    ;({ min, max } = domain)
+  } else {
+    const values = series.map((p) => p.value)
+    const rawMin = Math.min(...values)
+    const rawMax = Math.max(...values)
+    // A flat line still needs a non-zero range to divide by; half a unit either
+    // side keeps it centred without exaggerating the scale.
+    const pad = rawMax === rawMin ? 0.5 : (rawMax - rawMin) * 0.05
+    min = rawMin - pad
+    max = rawMax + pad
+  }
+  // Guard against a caller-supplied zero-width domain.
+  if (max === min) {
+    min -= 0.5
+    max += 0.5
+  }
 
   const innerW = Math.max(0, width - padding * 2)
   const innerH = Math.max(0, height - padding * 2)
-  const origin = series[0].date
-  const span = Math.max(1, diffDays(origin, series[series.length - 1].date))
+  const origin = dateSpan?.from ?? series[0].date
+  const end = dateSpan?.to ?? series[series.length - 1].date
+  const span = Math.max(1, diffDays(origin, end))
 
   const points: ChartPoint[] = series.map((p) => ({
     ...p,
@@ -153,6 +182,21 @@ export function chartGeometry(series: SeriesPoint[], options: ChartOptions = {})
       : ''
 
   return { width, height, line, area, points, min, max }
+}
+
+/**
+ * A padded value range covering every given series, for charts that overlay
+ * more than one (raw weigh-ins behind a smoothed trend, say). Pass the result
+ * as `ChartOptions.domain` to every series so they share one scale.
+ */
+export function sharedDomain(...series: SeriesPoint[][]): { min: number; max: number } | undefined {
+  const values = series.flat().map((p) => p.value)
+  if (values.length === 0) return undefined
+
+  const rawMin = Math.min(...values)
+  const rawMax = Math.max(...values)
+  const pad = rawMax === rawMin ? 0.5 : (rawMax - rawMin) * 0.05
+  return { min: rawMin - pad, max: rawMax + pad }
 }
 
 /** Two decimals is plenty for path data and keeps the DOM readable. */

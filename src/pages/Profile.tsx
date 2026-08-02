@@ -6,6 +6,7 @@ import { LOCALES, type Locale } from '@/lib/i18n'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { MealSettings } from '@/components/profile/MealSettings'
+import { BodyMetrics } from '@/components/profile/BodyMetrics'
 
 export default function Profile() {
   const { user, signOut } = useAuth()
@@ -102,6 +103,11 @@ export default function Profile() {
             <p className="font-label-md text-label-md text-error">{langError}</p>
           )}
         </div>
+
+        <hr className="border-surface-container-highest" />
+
+        {/* Body + goal: the inputs an energy estimate needs */}
+        <BodyMetrics />
 
         <hr className="border-surface-container-highest" />
 

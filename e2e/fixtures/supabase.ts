@@ -23,6 +23,7 @@ export interface Store {
   meals: Row[]
   foods: Row[]
   food_logs: Row[]
+  weight_logs: Row[]
 }
 
 export function makeUser(opts: { anonymous?: boolean; email?: string } = {}) {
@@ -62,7 +63,13 @@ function defaultStore(): Store {
     // off_language null = no explicit choice yet, so the app follows the
     // device language (the browser context's `locale`).
     profiles: [
-      { id: USER_ID, off_language: null, created_at: '2024-01-01', updated_at: '2024-01-01' },
+      {
+        id: USER_ID,
+        off_language: null,
+        unit_system: 'metric',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-01',
+      },
     ],
     macro_targets: [],
     // Empty on purpose: the app seeds the default meals on first load, exactly
@@ -70,6 +77,7 @@ function defaultStore(): Store {
     meals: [],
     foods: [],
     food_logs: [],
+    weight_logs: [],
   }
 }
 
@@ -82,6 +90,12 @@ function applyFilters(rows: Row[], url: URL): Row[] {
     if (value.startsWith('eq.')) {
       const v = value.slice(3)
       out = out.filter((r) => String(r[key]) === v)
+    } else if (value.startsWith('gte.')) {
+      const v = value.slice(4)
+      out = out.filter((r) => String(r[key]) >= v)
+    } else if (value.startsWith('lte.')) {
+      const v = value.slice(4)
+      out = out.filter((r) => String(r[key]) <= v)
     } else if (value.startsWith('ilike.')) {
       const needle = value.slice(6).replace(/%/g, '').toLowerCase()
       out = out.filter((r) => String(r['name'] ?? '').toLowerCase().includes(needle))
@@ -152,12 +166,14 @@ async function handleRest(route: Route, store: Store) {
     const saved: Row[] = incoming.map((row) => {
       if (isUpsert) {
         // Merge on a natural key: id for profiles, (user_id, day_of_week) for
-        // targets, (user_id, key) for meals.
+        // targets, (user_id, key) for meals, (user_id, log_date) for weights.
         const match = store[table].find((r) => {
           if (table === 'macro_targets')
             return r['user_id'] === row['user_id'] && r['day_of_week'] === row['day_of_week']
           if (table === 'meals')
             return r['user_id'] === row['user_id'] && r['key'] === row['key']
+          if (table === 'weight_logs')
+            return r['user_id'] === row['user_id'] && r['log_date'] === row['log_date']
           return r['id'] === row['id']
         })
         if (match) {
@@ -168,6 +184,7 @@ async function handleRest(route: Route, store: Store) {
       const created: Row = {
         id: row['id'] ?? genId(),
         created_at: '2024-01-01T00:00:00.000Z',
+        updated_at: '2024-01-01T00:00:00.000Z',
         is_public: false,
         ...row,
       }

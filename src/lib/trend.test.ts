@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { ewma, trendPerDay, chartGeometry, type SeriesPoint } from './trend'
+import { ewma, trendPerDay, chartGeometry, sharedDomain, type SeriesPoint } from './trend'
 
 /** Build a daily series starting at 2026-01-01. */
 function daily(values: number[], startDay = 1): SeriesPoint[] {
@@ -170,5 +170,78 @@ describe('chartGeometry', () => {
     const g = chartGeometry(daily([80]), { width: 100, height: 50, padding: 0 })
     expect(g.points).toHaveLength(1)
     expect(g.line).not.toContain('NaN')
+  })
+})
+
+describe('chartGeometry with an explicit domain', () => {
+  it('uses the given range instead of deriving one', () => {
+    const g = chartGeometry(daily([80, 82]), {
+      width: 100,
+      height: 100,
+      padding: 0,
+      domain: { min: 70, max: 90 },
+    })
+    expect(g.min).toBe(70)
+    expect(g.max).toBe(90)
+    // 80 sits halfway up a 70-90 range, so halfway down a 100-tall box.
+    expect(g.points[0].y).toBeCloseTo(50, 5)
+  })
+
+  it('puts two series on the same scale so they line up', () => {
+    const trend = daily([80, 81])
+    const raw = daily([78, 83])
+    const domain = sharedDomain(trend, raw)
+    const opts = { width: 100, height: 100, padding: 0, domain }
+    const a = chartGeometry(trend, opts)
+    const b = chartGeometry(raw, opts)
+    expect(a.min).toBe(b.min)
+    expect(a.max).toBe(b.max)
+    // The raw low is below the trend low on screen (larger y = lower).
+    expect(b.points[0].y).toBeGreaterThan(a.points[0].y)
+  })
+
+  it('survives a caller-supplied zero-width domain', () => {
+    const g = chartGeometry(daily([80]), {
+      width: 100,
+      height: 100,
+      padding: 0,
+      domain: { min: 80, max: 80 },
+    })
+    expect(Number.isFinite(g.points[0].y)).toBe(true)
+    expect(g.line).not.toContain('NaN')
+  })
+
+  it('honours an explicit date span so a short series keeps its position', () => {
+    const g = chartGeometry(
+      [
+        { date: '2026-01-05', value: 80 },
+        { date: '2026-01-06', value: 81 },
+      ],
+      {
+        width: 100,
+        height: 50,
+        padding: 0,
+        dateSpan: { from: '2026-01-01', to: '2026-01-11' },
+      },
+    )
+    // Day 5 of an 10-day span is 40% across, not at the left edge.
+    expect(g.points[0].x).toBeCloseTo(40, 5)
+  })
+})
+
+describe('sharedDomain', () => {
+  it('is undefined when every series is empty', () => {
+    expect(sharedDomain([], [])).toBeUndefined()
+  })
+
+  it('spans the extremes of all series with padding', () => {
+    const d = sharedDomain(daily([80, 81]), daily([75, 90]))!
+    expect(d.min).toBeLessThan(75)
+    expect(d.max).toBeGreaterThan(90)
+  })
+
+  it('pads a single flat value into a usable range', () => {
+    const d = sharedDomain(daily([80]))!
+    expect(d.max).toBeGreaterThan(d.min)
   })
 })

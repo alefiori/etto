@@ -2,15 +2,21 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+interface ProfileStub {
+  locale: string
+  setLocale: (c: string) => Promise<void> | void
+  isLocaleExplicit: boolean
+  loading: boolean
+  profile: Record<string, unknown> | null
+  unitSystem: string
+  updateProfile: (patch: Record<string, unknown>) => Promise<void>
+}
+
 const h = vi.hoisted(() => ({
   signOut: vi.fn(),
   setLocale: vi.fn(),
-  profile: { locale: 'en', setLocale: vi.fn(), isLocaleExplicit: true, loading: false } as {
-    locale: string
-    setLocale: (c: string) => Promise<void> | void
-    isLocaleExplicit: boolean
-    loading: boolean
-  },
+  updateProfile: vi.fn(),
+  profile: null as unknown as ProfileStub,
 }))
 
 vi.mock('@/context/AuthContext', () => ({
@@ -37,9 +43,22 @@ vi.mock('@/context/MealsContext', () => ({
 
 import Profile from './Profile'
 
+function stubProfile(overrides: Partial<ProfileStub> = {}): ProfileStub {
+  return {
+    locale: 'en',
+    setLocale: h.setLocale,
+    isLocaleExplicit: true,
+    loading: false,
+    profile: null,
+    unitSystem: 'metric',
+    updateProfile: h.updateProfile,
+    ...overrides,
+  }
+}
+
 beforeEach(() => {
   vi.clearAllMocks()
-  h.profile = { locale: 'en', setLocale: h.setLocale, isLocaleExplicit: true, loading: false }
+  h.profile = stubProfile()
 })
 
 describe('Profile page', () => {
@@ -49,7 +68,7 @@ describe('Profile page', () => {
   })
 
   it('says so while the language just follows the device', () => {
-    h.profile = { locale: 'en', setLocale: h.setLocale, isLocaleExplicit: false, loading: false }
+    h.profile = stubProfile({ isLocaleExplicit: false })
     render(<Profile />)
     expect(screen.getByText('Following your device language.')).toBeInTheDocument()
   })
@@ -64,7 +83,9 @@ describe('Profile page', () => {
     const user = userEvent.setup()
     render(<Profile />)
 
-    await user.selectOptions(screen.getByRole('combobox'), 'it')
+    // The page now has several selects (body metrics), so target this one by
+    // its label rather than assuming it is the only combobox.
+    await user.selectOptions(screen.getByLabelText('Language'), 'it')
     expect(h.setLocale).toHaveBeenCalledWith('it')
   })
 
