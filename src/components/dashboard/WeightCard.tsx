@@ -3,7 +3,7 @@ import { useI18n } from '@/context/I18nContext'
 import { useProfile } from '@/context/ProfileContext'
 import { useWeightLogs } from '@/hooks/useWeightLogs'
 import { saveWeight } from '@/lib/weights'
-import { ewma, trendPerDay, type SeriesPoint } from '@/lib/trend'
+import { ewma, robustTrendPerDay, type SeriesPoint } from '@/lib/trend'
 import { weightForDisplay, weightToKg, weightUnit } from '@/lib/units'
 import { todayISO } from '@/lib/date'
 import { Icon } from '@/components/ui/Icon'
@@ -57,8 +57,12 @@ export function WeightCard() {
       date: l.log_date,
       value: weightForDisplay(l.weight_kg, unitSystem),
     }))
+    // The EWMA is what gets drawn; the *rate* is measured from the raw
+    // readings, because fitting a slope to a smoothed series lags the trend and
+    // reports about half the real rate. Theil-Sen keeps that honesty without
+    // letting one water spike tilt the answer.
     const trendSeries = ewma(rawSeries)
-    const slope = trendPerDay(trendSeries)
+    const slope = robustTrendPerDay(rawSeries)
     return {
       raw: rawSeries,
       trend: trendSeries,

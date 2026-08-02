@@ -77,7 +77,9 @@ test.describe('weight tracking', () => {
     await page.goto('/')
 
     await expect(page.getByRole('img', { name: /Weight trend over the last/ })).toBeVisible()
-    await expect(page.getByText(/^Down /)).toBeVisible()
+    // 0.1 kg/day is 0.7 kg/week, and the reported rate must not be attenuated
+    // by the smoothing used to draw the line.
+    await expect(page.getByText('Down 0.7 kg/week')).toBeVisible()
     await expect(page.getByText('80 kg')).toBeVisible()
   })
 

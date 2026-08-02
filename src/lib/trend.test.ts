@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import { ewma, trendPerDay, chartGeometry, sharedDomain, type SeriesPoint } from './trend'
+import {
+  ewma,
+  trendPerDay,
+  robustTrendPerDay,
+  chartGeometry,
+  sharedDomain,
+  type SeriesPoint,
+} from './trend'
 
 /** Build a daily series starting at 2026-01-01. */
 function daily(values: number[], startDay = 1): SeriesPoint[] {
@@ -243,5 +250,66 @@ describe('sharedDomain', () => {
   it('pads a single flat value into a usable range', () => {
     const d = sharedDomain(daily([80]))!
     expect(d.max).toBeGreaterThan(d.min)
+  })
+})
+
+describe('robustTrendPerDay', () => {
+  it('returns null with fewer than two points', () => {
+    expect(robustTrendPerDay([])).toBeNull()
+    expect(robustTrendPerDay(daily([80]))).toBeNull()
+  })
+
+  it('returns null when every reading shares one date', () => {
+    expect(
+      robustTrendPerDay([
+        { date: '2026-01-01', value: 80 },
+        { date: '2026-01-01', value: 81 },
+      ]),
+    ).toBeNull()
+  })
+
+  it('recovers a steady rate exactly', () => {
+    expect(robustTrendPerDay(daily([80, 79.9, 79.8, 79.7, 79.6]))).toBeCloseTo(-0.1, 10)
+  })
+
+  it('is zero for a flat series', () => {
+    expect(robustTrendPerDay(daily([80, 80, 80, 80]))).toBeCloseTo(0, 10)
+  })
+
+  it('shrugs off a single spike that tilts least squares', () => {
+    // Two flat weeks, then one 2kg water day at the end — highest leverage.
+    const series = daily([...Array(14).fill(80), 82])
+    // Least squares reads this as a real gain...
+    expect(Math.abs(trendPerDay(series)!)).toBeGreaterThan(0.04)
+    // ...the median of pairwise slopes does not.
+    expect(robustTrendPerDay(series)).toBeCloseTo(0, 6)
+  })
+
+  it('does not attenuate a real trend the way smoothing does', () => {
+    // A steady 0.1/day fall over a fortnight.
+    const series = daily(Array.from({ length: 15 }, (_, i) => 80 - i * 0.1))
+    expect(robustTrendPerDay(series)).toBeCloseTo(-0.1, 6)
+    // Fitting the EWMA instead reports roughly half the true rate — the bias
+    // this estimator exists to avoid.
+    expect(Math.abs(trendPerDay(ewma(series))!)).toBeLessThan(0.07)
+  })
+
+  it('handles gaps between readings', () => {
+    expect(
+      robustTrendPerDay([
+        { date: '2026-01-01', value: 80 },
+        { date: '2026-01-11', value: 79 },
+        { date: '2026-01-21', value: 78 },
+      ]),
+    ).toBeCloseTo(-0.1, 6)
+  })
+
+  it('ignores same-day pairs rather than dividing by zero', () => {
+    const out = robustTrendPerDay([
+      { date: '2026-01-01', value: 80 },
+      { date: '2026-01-01', value: 81 },
+      { date: '2026-01-11', value: 79 },
+    ])
+    expect(Number.isFinite(out!)).toBe(true)
   })
 })

@@ -62,7 +62,20 @@ export function ewma(series: SeriesPoint[], halfLifeDays = 7): SeriesPoint[] {
  * Least-squares slope of `series` in units per day, or null when there are
  * fewer than two distinct dates to fit through.
  *
- * Run this on a smoothed series — fitting the raw one just measures noise.
+ * Two cautions, both of which cost real accuracy if ignored:
+ *
+ *   - **Do not fit this to an EWMA-smoothed series.** Smoothing lags a
+ *     sustained trend, so the fitted slope comes out systematically shallow —
+ *     for a steady 0.1 kg/day loss over a fortnight it reports roughly half the
+ *     true rate. Least squares is already a noise-averaging estimator; running
+ *     it over raw readings is unbiased, running it over smoothed ones is not.
+ *   - It is sensitive to an outlier at either end, where leverage is highest.
+ *     One 2 kg water spike on the most recent day tilts a flat fortnight into a
+ *     false 0.35 kg/week gain.
+ *
+ * When either matters — and for weight it always does — use
+ * {@link robustTrendPerDay} instead. This remains for cases where the series is
+ * already clean and the classic fit is what's wanted.
  */
 export function trendPerDay(series: SeriesPoint[]): number | null {
   if (series.length < 2) return null
@@ -84,6 +97,42 @@ export function trendPerDay(series: SeriesPoint[]): number | null {
   }
 
   return den === 0 ? null : num / den
+}
+
+/**
+ * Theil–Sen slope: the median of the slopes between every pair of points, in
+ * units per day. Null when no two points sit on different dates.
+ *
+ * This is the estimator to use for weight. It is unbiased for a genuine linear
+ * trend — so, unlike fitting a smoothed series, it reports the real rate — and
+ * it tolerates outliers up to roughly a third of the data, so a single water
+ * spike moves the median hardly at all. Both properties matter here: the number
+ * feeds an energy-balance calculation where a 2x error is a few hundred
+ * calories a day, and bathroom-scale readings are full of one-day artefacts.
+ *
+ * O(n^2) in the number of readings, which is nothing at the scale of a year of
+ * daily weigh-ins.
+ */
+export function robustTrendPerDay(series: SeriesPoint[]): number | null {
+  if (series.length < 2) return null
+
+  const origin = series[0].date
+  const points = series.map((p) => ({ x: diffDays(origin, p.date), y: p.value }))
+
+  const slopes: number[] = []
+  for (let i = 0; i < points.length; i++) {
+    for (let j = i + 1; j < points.length; j++) {
+      const dx = points[j].x - points[i].x
+      // Two readings on the same day say nothing about a rate.
+      if (dx === 0) continue
+      slopes.push((points[j].y - points[i].y) / dx)
+    }
+  }
+
+  if (slopes.length === 0) return null
+  slopes.sort((a, b) => a - b)
+  const mid = slopes.length >> 1
+  return slopes.length % 2 === 1 ? slopes[mid] : (slopes[mid - 1] + slopes[mid]) / 2
 }
 
 export interface ChartPoint extends SeriesPoint {
