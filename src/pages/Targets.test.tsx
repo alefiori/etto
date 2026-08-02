@@ -7,6 +7,7 @@ const h = vi.hoisted(() => ({
   // Stable identity: the real hook keeps this in state, and the page re-seeds
   // its inputs whenever it changes.
   byDay: {},
+  adaptive: false,
 }))
 
 vi.mock('@/lib/supabase', () => ({
@@ -17,6 +18,17 @@ vi.mock('@/context/AuthContext', () => ({
 }))
 vi.mock('@/hooks/useTargets', () => ({
   useTargets: () => ({ byDay: h.byDay, loading: false, error: null, refetch: vi.fn() }),
+}))
+vi.mock('@/context/ProfileContext', () => ({
+  useProfile: () => ({
+    profile: { adaptive_targets_enabled: h.adaptive },
+    updateProfile: vi.fn(),
+  }),
+}))
+// The adaptive panel has its own colocated test; stub it here so these cases
+// stay about the manual grid and its autosave.
+vi.mock('@/components/targets/AdaptiveTargets', () => ({
+  AdaptiveTargets: () => null,
 }))
 
 import Targets from './Targets'
@@ -31,6 +43,7 @@ const waitOpts = { timeout: 3000 }
 beforeEach(() => {
   vi.clearAllMocks()
   h.upsert.mockResolvedValue({ error: null })
+  h.adaptive = false
 })
 
 describe('Targets page', () => {
@@ -113,5 +126,18 @@ describe('Targets page', () => {
       { user_id: 'user-1', day_of_week: 1, carbs_g: 150, protein_g: 0, fats_g: 0 },
     ])
     expect(await screen.findByText('All changes saved')).toBeInTheDocument()
+  })
+})
+
+describe('Targets page under adaptive mode', () => {
+  it('locks the manual inputs so the two writers cannot race', () => {
+    h.adaptive = true
+    render(<Targets />)
+    expect(screen.getByLabelText('Carbs (g)', { selector: '#target-1-carbs' })).toBeDisabled()
+  })
+
+  it('leaves them editable when adaptive mode is off', () => {
+    render(<Targets />)
+    expect(screen.getByLabelText('Carbs (g)', { selector: '#target-1-carbs' })).toBeEnabled()
   })
 })

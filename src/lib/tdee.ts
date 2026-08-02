@@ -99,6 +99,8 @@ export interface AdaptiveResult {
   weeklyChangeKg: number | null
   /** Mean logged intake over the window. */
   meanIntakeKcal: number | null
+  /** Most recent weigh-in inside the window — what macroSplit anchors protein to. */
+  latestWeightKg: number | null
   /** How many of the window's days had a credible log. */
   loggedDays: number
   /** True when the step was capped by MAX_STEP_KCAL. */
@@ -182,6 +184,7 @@ export function computeAdaptiveTarget(opts: {
     targetKcal: null,
     weeklyChangeKg: null,
     meanIntakeKcal: null,
+    latestWeightKg: null,
     loggedDays: 0,
     clamped: false,
   }
@@ -211,6 +214,7 @@ export function computeAdaptiveTarget(opts: {
       status: formula != null ? 'estimated' : 'needs-weigh-ins',
       tdeeKcal: formula,
       targetKcal: formula != null ? clampTarget(formula + offset, null) : null,
+      latestWeightKg: latestWeight,
       loggedDays: credible.length,
     }
   }
@@ -222,6 +226,7 @@ export function computeAdaptiveTarget(opts: {
       status: formula != null ? 'estimated' : 'needs-weigh-ins',
       tdeeKcal: formula,
       targetKcal: formula != null ? clampTarget(formula + offset, null) : null,
+      latestWeightKg: latestWeight,
       loggedDays: credible.length,
     }
   }
@@ -234,6 +239,7 @@ export function computeAdaptiveTarget(opts: {
       // Deliberately no target: a measured estimate is impossible and silently
       // falling back to the formula would hide that the logs are the problem.
       targetKcal: null,
+      latestWeightKg: latestWeight,
       loggedDays: credible.length,
     }
   }
@@ -248,6 +254,7 @@ export function computeAdaptiveTarget(opts: {
       status: formula != null ? 'estimated' : 'needs-weigh-ins',
       tdeeKcal: formula,
       targetKcal: formula != null ? clampTarget(formula + offset, null) : null,
+      latestWeightKg: latestWeight,
       loggedDays: credible.length,
     }
   }
@@ -267,6 +274,7 @@ export function computeAdaptiveTarget(opts: {
     targetKcal: target,
     weeklyChangeKg: round(perDay * 7, 2),
     meanIntakeKcal: Math.round(meanIntake),
+    latestWeightKg: latestWeight,
     loggedDays: credible.length,
     clamped: previousTargetKcal != null && Math.abs(raw - previousTargetKcal) > MAX_STEP_KCAL,
   }

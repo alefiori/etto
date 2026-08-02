@@ -64,6 +64,8 @@ export type Profile = {
   unit_system: UnitSystem
   /** Explicit daily hydration goal in ml; null means derive it from bodyweight. */
   water_goal_ml: number | null
+  /** When true, the adaptive engine owns macro_targets and the manual grid is read-only. */
+  adaptive_targets_enabled: boolean
   created_at: string
   updated_at: string
 }
