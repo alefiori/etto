@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { useI18n, type TFunction } from '@/context/I18nContext'
 import { useProfile } from '@/context/ProfileContext'
 import { useAdaptiveTargets } from '@/hooks/useAdaptiveTargets'
+import { useEntitlement } from '@/context/EntitlementContext'
+import { useAppShell } from '@/context/AppShellContext'
+import { ProGate } from '@/components/paywall/ProGate'
 import { macroSplit, type AdaptiveResult } from '@/lib/tdee'
 import { calories } from '@/lib/macros'
 import { MACROS } from '@/lib/constants'
@@ -30,7 +33,12 @@ export function AdaptiveTargets({
 }) {
   const { t } = useI18n()
   const { profile, updateProfile } = useProfile()
-  const enabled = profile?.adaptive_targets_enabled ?? false
+  const { isPro } = useEntitlement()
+  const { openPaywall } = useAppShell()
+  // Gate the calculation as well as the UI: a non-subscriber should not be
+  // issuing the queries behind a paid feature, and `enabled` is what the hook
+  // keys off.
+  const enabled = isPro && (profile?.adaptive_targets_enabled ?? false)
   const { result, loading, error } = useAdaptiveTargets(byDay, enabled)
 
   const [toggling, setToggling] = useState(false)
@@ -63,6 +71,10 @@ export function AdaptiveTargets({
     } finally {
       setApplying(false)
     }
+  }
+
+  if (!isPro) {
+    return <ProGate title={t('adaptive.description')} onUpgrade={openPaywall}>{null}</ProGate>
   }
 
   return (

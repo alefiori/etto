@@ -8,6 +8,8 @@ interface AppShellValue {
   setSelectedDate: (iso: string) => void
   /** Open the Add Food overlay, optionally pre-selecting a meal. */
   openAddFood: (opts?: { meal?: MealKey }) => void
+  /** Open the Pro paywall. Same arrangement as openAddFood. */
+  openPaywall: () => void
   /** Bumped whenever food logs change, so views can refetch. */
   foodLogVersion: number
   bumpFoodLogVersion: () => void
@@ -22,9 +24,11 @@ interface AppShellValue {
   copiedMeal: { date: string; meal: MealKey; count: number } | null
   copyMeal: (date: string, meal: MealKey, count: number) => void
   clearCopiedMeal: () => void
-  /** internal — consumed by AppLayout to render the modal */
+  /** internal — consumed by AppLayout to render the modals */
   _addFood: { open: boolean; meal?: MealKey }
   _closeAddFood: () => void
+  _paywallOpen: boolean
+  _closePaywall: () => void
 }
 
 const AppShellContext = createContext<AppShellValue | undefined>(undefined)
@@ -34,6 +38,7 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
   const [foodLogVersion, setFoodLogVersion] = useState(0)
   const [waterVersion, setWaterVersion] = useState(0)
   const [addFood, setAddFood] = useState<{ open: boolean; meal?: MealKey }>({ open: false })
+  const [paywallOpen, setPaywallOpen] = useState(false)
   const [copiedDay, setCopiedDay] = useState<{ date: string; count: number } | null>(null)
   const [copiedMeal, setCopiedMeal] = useState<
     { date: string; meal: MealKey; count: number } | null
@@ -53,8 +58,11 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
     copyMeal: (date, meal, count) => setCopiedMeal({ date, meal, count }),
     clearCopiedMeal: () => setCopiedMeal(null),
     openAddFood: (opts) => setAddFood({ open: true, meal: opts?.meal }),
+    openPaywall: () => setPaywallOpen(true),
     _addFood: addFood,
     _closeAddFood: () => setAddFood({ open: false }),
+    _paywallOpen: paywallOpen,
+    _closePaywall: () => setPaywallOpen(false),
   }
 
   return <AppShellContext.Provider value={value}>{children}</AppShellContext.Provider>

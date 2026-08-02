@@ -6,6 +6,8 @@ import type { AdaptiveResult } from '@/lib/tdee'
 const h = vi.hoisted(() => ({
   updateProfile: vi.fn(),
   onApply: vi.fn(),
+  openPaywall: vi.fn(),
+  isPro: true,
   profile: { adaptive_targets_enabled: true } as Record<string, unknown> | null,
   adaptive: null as unknown as { result: AdaptiveResult | null; loading: boolean; error: string | null },
 }))
@@ -15,6 +17,12 @@ vi.mock('@/context/ProfileContext', () => ({
 }))
 vi.mock('@/hooks/useAdaptiveTargets', () => ({
   useAdaptiveTargets: () => h.adaptive,
+}))
+vi.mock('@/context/EntitlementContext', () => ({
+  useEntitlement: () => ({ isPro: h.isPro }),
+}))
+vi.mock('@/context/AppShellContext', () => ({
+  useAppShell: () => ({ openPaywall: h.openPaywall }),
 }))
 
 import { AdaptiveTargets } from './AdaptiveTargets'
@@ -43,6 +51,7 @@ beforeEach(() => {
   h.onApply.mockResolvedValue(undefined)
   h.profile = { adaptive_targets_enabled: true }
   h.adaptive = { result: result(), loading: false, error: null }
+  h.isPro = true
 })
 
 describe('AdaptiveTargets', () => {
@@ -158,5 +167,32 @@ describe('AdaptiveTargets', () => {
   it('always carries the not-medical-advice line while enabled', () => {
     renderPanel()
     expect(screen.getByText(/not medical advice/)).toBeInTheDocument()
+  })
+})
+
+describe('AdaptiveTargets for a free user', () => {
+  beforeEach(() => {
+    h.isPro = false
+  })
+
+  it('shows an upgrade prompt instead of the panel', () => {
+    renderPanel()
+    expect(screen.getByText('Pro feature')).toBeInTheDocument()
+    expect(screen.queryByRole('switch')).not.toBeInTheDocument()
+  })
+
+  it('opens the paywall from the prompt', async () => {
+    const user = userEvent.setup()
+    renderPanel()
+
+    await user.click(screen.getByRole('button', { name: 'See Pro' }))
+    expect(h.openPaywall).toHaveBeenCalledTimes(1)
+  })
+
+  it('says what the feature is, so the lock can convert', () => {
+    renderPanel()
+    expect(
+      screen.getByText(/Work out your targets from what you actually eat/),
+    ).toBeInTheDocument()
   })
 })

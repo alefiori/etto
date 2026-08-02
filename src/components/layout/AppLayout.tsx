@@ -5,6 +5,7 @@ import { useI18n } from '@/context/I18nContext'
 import { Icon } from '@/components/ui/Icon'
 import type { TranslationKey } from '@/lib/i18n'
 import { AddFoodModal } from '@/components/addfood/AddFoodModal'
+import { PaywallModal } from '@/components/paywall/PaywallModal'
 import { GuestBanner } from '@/components/layout/GuestBanner'
 
 interface NavItem {
@@ -149,7 +150,7 @@ function BottomNav() {
 }
 
 export default function AppLayout() {
-  const { openAddFood, _addFood, _closeAddFood } = useAppShell()
+  const { openAddFood, _addFood, _closeAddFood, _paywallOpen, _closePaywall } = useAppShell()
   const { t } = useI18n()
 
   return (
@@ -174,6 +175,8 @@ export default function AppLayout() {
       </button>
 
       <AddFoodModal open={_addFood.open} initialMeal={_addFood.meal} onClose={_closeAddFood} />
+
+      <PaywallModal open={_paywallOpen} onClose={_closePaywall} />
     </div>
   )
 }

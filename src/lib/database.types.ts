@@ -70,6 +70,32 @@ export type Profile = {
   updated_at: string
 }
 
+export type Store = 'app_store' | 'play_store' | 'stripe' | 'promotional' | 'unknown'
+export type PeriodType = 'normal' | 'trial' | 'intro'
+
+/**
+ * A user's Pro entitlement, written only by the revenuecat-webhook function.
+ *
+ * The client can read its own row and can never write one — public.subscriptions
+ * has a select policy and deliberately no others. Treat this as read-only here
+ * too; there is no Insert/Update path exposed on purpose.
+ */
+export type Subscription = {
+  user_id: string
+  entitlement: string
+  product_id: string | null
+  store: Store | null
+  period_type: PeriodType | null
+  original_transaction_id: string | null
+  /** null means the entitlement never expires — the lifetime unlock. */
+  expires_at: string | null
+  billing_issue: boolean
+  last_event_id: string | null
+  last_event_at: string | null
+  created_at: string
+  updated_at: string
+}
+
 /** One drink. Append-only — a day's intake is the sum of its rows. */
 export type WaterLog = {
   id: string
@@ -157,6 +183,15 @@ export interface Database {
         // that out beats an Omit/Pick pair listing all of the body columns.
         Insert: Pick<Profile, 'id'> & Partial<Omit<Profile, 'id'>>
         Update: Partial<Profile>
+        Relationships: []
+      }
+      subscriptions: {
+        Row: Subscription
+        // Read-only by design: RLS grants select and nothing else, so an insert
+        // or update from the client is denied by the database. `never` makes
+        // that a compile error instead of a runtime surprise.
+        Insert: never
+        Update: never
         Relationships: []
       }
       water_logs: {

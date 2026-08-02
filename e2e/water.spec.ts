@@ -124,6 +124,8 @@ test.describe('water tracking', () => {
     await seedSession(page)
     await page.goto('/profile')
 
+    await expect(page.getByLabel('Daily water goal (ml)')).toHaveValue('')
+
     await page.getByLabel('Daily water goal (ml)').fill('2500')
     await page.getByLabel('Daily water goal (ml)').blur()
 
@@ -134,6 +136,11 @@ test.describe('water tracking', () => {
     store.profiles[0].water_goal_ml = 2500
     await seedSession(page)
     await page.goto('/profile')
+
+    // Wait for the stored goal to land before clearing it: blurring an
+    // already-empty field is correctly a no-op, so clearing too early would
+    // assert nothing.
+    await expect(page.getByLabel('Daily water goal (ml)')).toHaveValue('2500')
 
     await page.getByLabel('Daily water goal (ml)').fill('')
     await page.getByLabel('Daily water goal (ml)').blur()

@@ -1,4 +1,4 @@
-import { test, expect, seedSession, USER_ID } from './fixtures/supabase'
+import { test, expect, seedSession, seedPro, USER_ID } from './fixtures/supabase'
 
 function daysAgo(n: number): string {
   const d = new Date()
@@ -75,6 +75,7 @@ function seedIntake(
 
 test.describe('adaptive targets', () => {
   test('is off by default and leaves the grid editable', async ({ page, store }) => {
+    seedPro(store)
     await seedSession(page)
     await page.goto('/targets')
 
@@ -87,6 +88,7 @@ test.describe('adaptive targets', () => {
   })
 
   test('turning it on persists the choice and locks the manual grid', async ({ page, store }) => {
+    seedPro(store)
     await seedSession(page)
     await page.goto('/targets')
 
@@ -98,6 +100,7 @@ test.describe('adaptive targets', () => {
 
   test('asks for a goal before it will estimate anything', async ({ page, store }) => {
     store.profiles[0].adaptive_targets_enabled = true
+    seedPro(store)
     await seedSession(page)
     await page.goto('/targets')
 
@@ -109,6 +112,7 @@ test.describe('adaptive targets', () => {
     seedWeights(store, 80, -0.05)
     seedIntake(store, 2000, 3)
 
+    seedPro(store)
     await seedSession(page)
     await page.goto('/targets')
 
@@ -121,6 +125,7 @@ test.describe('adaptive targets', () => {
     Object.assign(store.profiles[0], completeProfile())
     seedIntake(store, 2000, 14)
 
+    seedPro(store)
     await seedSession(page)
     await page.goto('/targets')
 
@@ -139,6 +144,7 @@ test.describe('adaptive targets', () => {
     seedWeights(store, 80, 0, 2)
     seedIntake(store, 2000, 14)
 
+    seedPro(store)
     await seedSession(page)
     await page.goto('/targets')
 
@@ -155,6 +161,7 @@ test.describe('adaptive targets', () => {
     seedWeights(store, 80, -0.5 / 7)
     seedIntake(store, 2000, 14)
 
+    seedPro(store)
     await seedSession(page)
     await page.goto('/targets')
 
@@ -168,6 +175,7 @@ test.describe('adaptive targets', () => {
     seedWeights(store, 80, -0.5 / 7)
     seedIntake(store, 2000, 14)
 
+    seedPro(store)
     await seedSession(page)
     await page.goto('/targets')
 
@@ -184,5 +192,46 @@ test.describe('adaptive targets', () => {
     for (const row of store.macro_targets) {
       expect(Number(row.protein_g)).toBeCloseTo(79 * 1.8, 0)
     }
+  })
+})
+
+test.describe('adaptive targets behind the paywall', () => {
+  test('a free user sees an upgrade prompt instead of the panel', async ({ page }) => {
+    await seedSession(page)
+    await page.goto('/targets')
+
+    await expect(page.getByText('Pro feature')).toBeVisible()
+    await expect(page.getByRole('switch', { name: 'Adaptive targets' })).toHaveCount(0)
+    // The manual grid stays fully usable — nothing that already shipped is
+    // taken away.
+    await expect(page.locator('#target-1-carbs')).toBeEnabled()
+  })
+
+  test('an expired subscription does not unlock it', async ({ page, store }) => {
+    seedPro(store, { expires_at: '2020-01-01T00:00:00.000Z' })
+    await seedSession(page)
+    await page.goto('/targets')
+
+    await expect(page.getByText('Pro feature')).toBeVisible()
+  })
+
+  test('a lifetime purchase with no expiry does unlock it', async ({ page, store }) => {
+    seedPro(store, { expires_at: null, product_id: 'macrotrack_pro_lifetime' })
+    await seedSession(page)
+    await page.goto('/targets')
+
+    await expect(page.getByRole('switch', { name: 'Adaptive targets' })).toBeVisible()
+  })
+
+  test('the paywall opens from the prompt and lists the plans', async ({ page }) => {
+    await seedSession(page)
+    await page.goto('/targets')
+
+    await page.getByRole('button', { name: 'See Pro' }).click()
+
+    await expect(page.getByRole('heading', { name: 'MacroTrack Pro' })).toBeVisible()
+    await expect(page.getByText('€24.99/year')).toBeVisible()
+    // Both stores require the renewal terms on the paywall itself.
+    await expect(page.getByText(/Subscriptions renew automatically/)).toBeVisible()
   })
 })

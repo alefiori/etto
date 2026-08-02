@@ -25,6 +25,7 @@ export interface Store {
   food_logs: Row[]
   weight_logs: Row[]
   water_logs: Row[]
+  subscriptions: Row[]
 }
 
 export function makeUser(opts: { anonymous?: boolean; email?: string } = {}) {
@@ -80,7 +81,34 @@ function defaultStore(): Store {
     food_logs: [],
     weight_logs: [],
     water_logs: [],
+    // Empty by default: a fresh account is not Pro.
+    subscriptions: [],
   }
+}
+
+/**
+ * Give the seeded user an active Pro entitlement.
+ *
+ * Mutates the store directly rather than going through any client path, which
+ * mirrors production: the row is written by the RevenueCat webhook using the
+ * service role, never by the app.
+ */
+export function seedPro(store: Store, overrides: Row = {}) {
+  store.subscriptions.push({
+    user_id: USER_ID,
+    entitlement: 'pro',
+    product_id: 'macrotrack_pro_yearly',
+    store: 'app_store',
+    period_type: 'normal',
+    original_transaction_id: 'txn-1',
+    expires_at: new Date(Date.now() + 365 * 86_400_000).toISOString(),
+    billing_issue: false,
+    last_event_id: 'evt-1',
+    last_event_at: new Date().toISOString(),
+    created_at: '2024-01-01T00:00:00.000Z',
+    updated_at: '2024-01-01T00:00:00.000Z',
+    ...overrides,
+  })
 }
 
 /** Apply PostgREST-style `col=eq.value` filters from the query string. */
