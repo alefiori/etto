@@ -8,6 +8,7 @@ import {
 } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
+import { suppressAutoGuest } from '@/lib/guestSession'
 
 interface AuthContextValue {
   session: Session | null
@@ -86,6 +87,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { needsConfirmation: Boolean(data.user?.new_email) }
       },
       async signOut() {
+        // Signing out leaves no session, which is exactly the state that
+        // triggers the automatic guest sign-in — so record that this one was
+        // deliberate, or the user would be handed a fresh anonymous account
+        // instead of the sign-in screen.
+        suppressAutoGuest()
         const { error } = await supabase.auth.signOut()
         if (error) throw error
       },

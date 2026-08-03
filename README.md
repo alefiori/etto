@@ -25,10 +25,16 @@ and the per-screen `code.html` files.
 
 - **Email/password auth** (sign up, sign in, sign out, forgot password) with a
   persisted session; all app routes are gated behind an auth guard.
-- **Guest mode** — "continue as guest" starts an anonymous session so you can
-  try the app with zero signup. A persistent banner offers to **upgrade to a
-  permanent account** later, keeping the same `user_id` so all logged data
-  carries over.
+- **No login wall** — opening the app starts an anonymous session automatically,
+  so a first-time visitor can log a meal before deciding whether to sign up. The
+  account is real: a persistent banner offers to **upgrade to a permanent
+  account** later, keeping the same `user_id` so everything logged in the
+  meantime carries over. Signing out is the one case that reaches the sign-in
+  screen instead of a fresh guest — see
+  [`lib/guestSession.ts`](src/lib/guestSession.ts) for why that needs an
+  explicit flag. If anonymous sign-in is disabled on the project (or its per-IP
+  hourly limit is hit), the app falls back to the sign-in screen rather than
+  stalling.
 - **My Targets** — per-weekday carbs/protein/fats goals with live calorie totals
   and "copy one day to all days".
 - **Daily Tracker** — date selector, three macro progress rings (consumed vs.
@@ -127,7 +133,14 @@ nullable, where NULL means "no explicit choice — follow the device language".
 
 The "continue as guest" flow uses Supabase **anonymous sign-ins**. Enable them
 under **Authentication → Providers → Anonymous Sign-Ins** in the dashboard.
-Without this, only email/password auth works.
+Without this the app cannot start a session on its own and every visitor lands
+on the sign-in screen, so it is effectively required rather than optional.
+
+> **Note for the web deploy:** every first visit now creates an `auth.users`
+> row, which crawler traffic will inflate. Supabase's per-IP hourly limit on
+> anonymous sign-ins (`anonymous_users`, default 30) caps the damage, and you
+> can additionally require a CAPTCHA on anonymous sign-ins under
+> **Authentication → Settings**. On the native apps this is a non-issue.
 
 ### 4. Deploy the `food-search` Edge Function
 

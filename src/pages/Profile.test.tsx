@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import { renderWithProviders as render } from '@/test/utils'
 import userEvent from '@testing-library/user-event'
 
 interface ProfileStub {
@@ -14,13 +15,15 @@ interface ProfileStub {
 
 const h = vi.hoisted(() => ({
   signOut: vi.fn(),
+  user: { email: 'sam@example.com' } as { email: string } | null,
+  isAnonymous: false,
   setLocale: vi.fn(),
   updateProfile: vi.fn(),
   profile: null as unknown as ProfileStub,
 }))
 
 vi.mock('@/context/AuthContext', () => ({
-  useAuth: () => ({ user: { email: 'sam@example.com' }, signOut: h.signOut }),
+  useAuth: () => ({ user: h.user, isAnonymous: h.isAnonymous, signOut: h.signOut }),
 }))
 vi.mock('@/context/ProfileContext', () => ({
   useProfile: () => h.profile,
@@ -59,6 +62,8 @@ function stubProfile(overrides: Partial<ProfileStub> = {}): ProfileStub {
 beforeEach(() => {
   vi.clearAllMocks()
   h.profile = stubProfile()
+  h.user = { email: 'sam@example.com' }
+  h.isAnonymous = false
 })
 
 describe('Profile page', () => {
@@ -87,6 +92,14 @@ describe('Profile page', () => {
     // its label rather than assuming it is the only combobox.
     await user.selectOptions(screen.getByLabelText('Language'), 'it')
     expect(h.setLocale).toHaveBeenCalledWith('it')
+  })
+
+  it('labels a guest rather than showing a blank email', () => {
+    // Guests are the default entry point now, so this is the common case.
+    h.isAnonymous = true
+    h.user = null
+    render(<Profile />)
+    expect(screen.getByText('Guest account')).toBeInTheDocument()
   })
 
   it('signs out when the sign-out button is clicked', async () => {

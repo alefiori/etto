@@ -253,6 +253,7 @@ export const nl: Translation = {
     languageDescription: 'Taal voor de app-interface en voor de zoek- en barcoderesultaten van Open Food Facts.',
     languageFollowsDevice: 'Volgt de taal van je apparaat.',
     couldNotSaveLanguage: 'Taal kon niet worden opgeslagen. Probeer het opnieuw.',
+    guestAccount: 'Gastaccount',
     signOut: 'Afmelden',
   },
   body: {

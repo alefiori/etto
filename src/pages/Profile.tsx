@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useProfile } from '@/context/ProfileContext'
 import { useI18n } from '@/context/I18nContext'
@@ -10,7 +11,8 @@ import { BodyMetrics } from '@/components/profile/BodyMetrics'
 import { WaterSettings } from '@/components/profile/WaterSettings'
 
 export default function Profile() {
-  const { user, signOut } = useAuth()
+  const { user, signOut, isAnonymous } = useAuth()
+  const navigate = useNavigate()
   const { locale, setLocale, isLocaleExplicit, loading: profileLoading } = useProfile()
   const { t } = useI18n()
   const [busy, setBusy] = useState(false)
@@ -21,6 +23,9 @@ export default function Profile() {
     setBusy(true)
     try {
       await signOut()
+      // Guarded routes start a guest session when there is none, so leaving the
+      // user here would drop them straight into a new anonymous account.
+      navigate('/signin', { replace: true })
     } finally {
       setBusy(false)
     }
@@ -51,7 +56,11 @@ export default function Profile() {
           </div>
           <div className="min-w-0">
             <p className="font-label-md text-label-md text-on-surface-variant">{t('profile.signedInAs')}</p>
-            <p className="truncate font-headline-md text-headline-md text-on-surface">{user?.email}</p>
+            {/* Guests are the default entry point now, and they have no email
+                — showing an empty line here would read as a bug. */}
+            <p className="truncate font-headline-md text-headline-md text-on-surface">
+              {isAnonymous || !user?.email ? t('profile.guestAccount') : user.email}
+            </p>
           </div>
         </div>
 

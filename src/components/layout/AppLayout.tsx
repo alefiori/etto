@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useAppShell } from '@/context/AppShellContext'
 import { useI18n } from '@/context/I18nContext'
@@ -26,6 +26,7 @@ const NAV_ITEMS: NavItem[] = [
 
 function Sidebar() {
   const { user, signOut } = useAuth()
+  const navigate = useNavigate()
   const { openAddFood } = useAppShell()
   const { t } = useI18n()
 
@@ -81,7 +82,11 @@ function Sidebar() {
             </span>
           </div>
           <button
-            onClick={() => signOut()}
+            onClick={async () => {
+              await signOut()
+              // See Profile: without this the guard would hand back a new guest.
+              navigate('/signin', { replace: true })
+            }}
             aria-label={t('nav.signOut')}
             title={t('nav.signOut')}
             className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-error-container hover:text-on-error-container"
