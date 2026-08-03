@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [main]
 
+# A new push to a pull request makes the in-flight run obsolete, so cancel it
+# rather than paying for both — this matters most for the macOS iOS job, which
+# bills at 10x. Pushes to main are never cancelled: those runs deploy.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build:
     name: Build
@@ -133,14 +140,12 @@ jobs:
 
   ios:
     name: iOS build
-    # macOS runners bill at 10x the minutes of Linux ones, so this does not run
-    # on every pull request. The Android job above already catches the shared
-    # failure modes — a broken capacitor.config.ts, a missing plugin, a failing
-    # web build — and only genuinely iOS-specific breakage (CocoaPods, Swift
-    # plugin compatibility) escapes it.
-    #
-    # To run it on pull requests too, delete the `if:` line below.
-    if: github.event_name != 'pull_request'
+    # Runs on pull requests as well as main. macOS runners bill at 10x the
+    # minutes of Linux ones, so this is the most expensive job here by a wide
+    # margin — the workflow-level `concurrency` above cancels superseded runs to
+    # keep that in check. It earns its cost by catching the breakage the Android
+    # job cannot see: CocoaPods resolution, Swift plugin compatibility, and the
+    # iPad invariants checked below.
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4

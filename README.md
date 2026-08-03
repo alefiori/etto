@@ -479,8 +479,8 @@ supabase/
 
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and PR:
 the app **build**, the **unit** suite (coverage uploaded as an artifact, not
-gated), the **E2E** suite, and an **Android build**. On pushes to `main` (not on
-PRs — see below) an **iOS build** runs too. Then, on `main` pushes only, the
+gated), the **E2E** suite, an **Android build** and an **iOS build**. Then, on
+`main` pushes only, the
 existing **Netlify deploy status** check and a **Supabase deploy** that applies
 database migrations (`supabase db push`) and redeploys both Edge Functions —
 `food-search` and `revenuecat-webhook` (the latter with `--no-verify-jwt`, since
@@ -506,14 +506,18 @@ the projects from scratch. That is deliberate: it means CI validates
 platform build.
 
 Neither job needs a secret. Android assembles a **debug APK** (uploaded as an
-artifact) and iOS does an **unsigned simulator build** — enough to prove the
-projects compile.
+artifact) and iOS does an **unsigned simulator build** plus the
+[iPad configuration check](#ipad) — enough to prove the projects compile and
+still target iPad.
 
-**iOS does not run on pull requests.** macOS runners bill at 10× the minutes of
-Linux ones, and the Android job already catches everything the two share — a
-broken `capacitor.config.ts`, a missing plugin, a failing web build. Only
-genuinely iOS-specific breakage (CocoaPods, Swift plugin compatibility) escapes
-it. To run it on PRs anyway, delete the `if:` line on the `ios` job.
+**Cost note.** macOS runners bill at 10× the minutes of Linux ones, so the iOS
+job is by far the most expensive here — on the order of 80 billed minutes per
+run against a 2,000-minute free monthly allowance. The workflow sets
+`cancel-in-progress` for pull requests so that pushing repeatedly to a PR
+supersedes the earlier run instead of paying for both; `main` pushes are never
+cancelled, since those runs deploy. If the spend becomes a problem, gating the
+`ios` job with `if: github.event_name != 'pull_request'` restores main-only
+builds — the Android job still covers everything the two platforms share.
 
 ### Signed releases
 
