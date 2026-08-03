@@ -448,11 +448,13 @@ supabase/
 
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and PR:
 the app **build**, the **unit** suite (coverage uploaded as an artifact, not
-gated), and the **E2E** suite. On pushes to `main` only, two deploy jobs also
-run: the existing **Netlify deploy status** check, and a **Supabase deploy** that
-applies database migrations (`supabase db push`) and redeploys the `food-search`
-Edge Function. The Supabase job is skipped (with a warning, not a failure) unless
-these repository secrets are set:
+gated), the **E2E** suite, and an **Android build**. On pushes to `main` (not on
+PRs — see below) an **iOS build** runs too. Then, on `main` pushes only, the
+existing **Netlify deploy status** check and a **Supabase deploy** that applies
+database migrations (`supabase db push`) and redeploys both Edge Functions —
+`food-search` and `revenuecat-webhook` (the latter with `--no-verify-jwt`, since
+RevenueCat sends no Supabase JWT). The Supabase job is skipped (with a warning,
+not a failure) unless these repository secrets are set:
 
 | Secret                  | Purpose                                                        |
 | ----------------------- | ------------------------------------------------------------- |
@@ -464,6 +466,49 @@ The Edge Function deploy pushes **code only** — it doesn't touch the function
 secrets from step 4 (`USDA_API_KEY`, `EDAMAM_*`, `OFF_*`). If a first `db push`
 fails because the remote schema diverged from the migration history, run a
 one-time [`supabase migration repair`](https://supabase.com/docs/reference/cli/supabase-migration-repair).
+
+### Native builds
+
+`ios/` and `android/` are gitignored, so both jobs run `npx cap add` to generate
+the projects from scratch. That is deliberate: it means CI validates
+`capacitor.config.ts` and the installed plugin set on every run, not just the
+platform build.
+
+Neither job needs a secret. Android assembles a **debug APK** (uploaded as an
+artifact) and iOS does an **unsigned simulator build** — enough to prove the
+projects compile.
+
+**iOS does not run on pull requests.** macOS runners bill at 10× the minutes of
+Linux ones, and the Android job already catches everything the two share — a
+broken `capacitor.config.ts`, a missing plugin, a failing web build. Only
+genuinely iOS-specific breakage (CocoaPods, Swift plugin compatibility) escapes
+it. To run it on PRs anyway, delete the `if:` line on the `ios` job.
+
+### Signed releases
+
+[`.github/workflows/release-mobile.yml`](.github/workflows/release-mobile.yml)
+produces store-ready artifacts — a signed Android **AAB** and a signed iOS
+**IPA**. It runs on a `v*` tag or on manual dispatch, and each job skips with a
+warning when its secrets are missing, so it is harmless to merge before you have
+a developer account.
+
+| Secret | Used by | Purpose |
+| --- | --- | --- |
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | both | Inlined into the bundle at build time — a release build must carry the real project's values |
+| `ANDROID_KEYSTORE_BASE64` | Android | `base64 -w0 release.jks` |
+| `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | Android | Keystore credentials |
+| `APPLE_CERTIFICATE_P12_BASE64`, `APPLE_CERTIFICATE_PASSWORD` | iOS | Distribution certificate |
+| `APPLE_PROVISIONING_PROFILE_BASE64`, `APPLE_PROVISIONING_PROFILE_NAME` | iOS | App Store provisioning profile |
+| `APPLE_TEAM_ID` | iOS | Team identifier |
+
+Android signing is injected via Gradle properties rather than a checked-in
+`signingConfig`, because the project is generated fresh each run. iOS signing
+uses an ephemeral keychain created and deleted inside the job with the `security`
+CLI, keeping this workflow's dependencies to first-party `actions/*` only.
+
+Both jobs stop at the artifact. Uploading to the Play Console or App Store
+Connect is left as an explicit step to add once the store listings exist —
+neither has been exercised against a real developer account yet.
 
 ## Credits
 

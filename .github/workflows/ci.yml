@@ -80,6 +80,104 @@ jobs:
           path: playwright-report/
           if-no-files-found: ignore
 
+  android:
+    name: Android build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # Capacitor 6 ships AGP 8.2, which requires JDK 17.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Placeholders only. The bundle inlines these at build time and the app
+      # throws without them, but this job verifies the native project compiles
+      # rather than producing a runnable APK — the release workflow passes the
+      # real values.
+      - name: Build the native web bundle
+        env:
+          VITE_SUPABASE_URL: https://ci.supabase.co
+          VITE_SUPABASE_ANON_KEY: ci-anon-key
+        run: npm run build:native
+
+      # ios/ and android/ are gitignored, so the projects are generated fresh
+      # each run. That also means this job validates capacitor.config.ts and the
+      # installed plugin set, not just the Gradle build.
+      - name: Generate the Android project
+        run: |
+          npx cap add android
+          npx cap sync android
+
+      - name: Assemble debug APK
+        run: |
+          chmod +x android/gradlew
+          android/gradlew -p android assembleDebug --no-daemon
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-debug-apk
+          path: android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+  ios:
+    name: iOS build
+    # macOS runners bill at 10x the minutes of Linux ones, so this does not run
+    # on every pull request. The Android job above already catches the shared
+    # failure modes — a broken capacitor.config.ts, a missing plugin, a failing
+    # web build — and only genuinely iOS-specific breakage (CocoaPods, Swift
+    # plugin compatibility) escapes it.
+    #
+    # To run it on pull requests too, delete the `if:` line below.
+    if: github.event_name != 'pull_request'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the native web bundle
+        env:
+          VITE_SUPABASE_URL: https://ci.supabase.co
+          VITE_SUPABASE_ANON_KEY: ci-anon-key
+        run: npm run build:native
+
+      - name: Generate the iOS project
+        run: |
+          npx cap add ios
+          npx cap sync ios
+
+      # Compile only. Signing needs an Apple Developer account, so this proves
+      # the project builds without needing any secret; the release workflow does
+      # the signed archive.
+      - name: Build for the simulator (unsigned)
+        run: |
+          xcodebuild \
+            -workspace ios/App/App.xcworkspace \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
   supabase-deploy:
     name: Supabase deploy (migrations + functions)
     needs: [build, unit, e2e]
@@ -118,7 +216,14 @@ jobs:
           # are managed out-of-band and left untouched.
           $SUPABASE functions deploy food-search --project-ref "$SUPABASE_PROJECT_REF"
 
-          echo "### Supabase deploy: :white_check_mark: migrations applied and food-search deployed" >> "$GITHUB_STEP_SUMMARY"
+          echo "Deploying the revenuecat-webhook Edge Function ..."
+          # --no-verify-jwt is required: RevenueCat is not a Supabase client and
+          # sends no Supabase JWT. It authenticates with the shared secret in
+          # REVENUECAT_WEBHOOK_SECRET, which is a function secret set
+          # out-of-band and left untouched here.
+          $SUPABASE functions deploy revenuecat-webhook --project-ref "$SUPABASE_PROJECT_REF" --no-verify-jwt
+
+          echo "### Supabase deploy: :white_check_mark: migrations applied, food-search and revenuecat-webhook deployed" >> "$GITHUB_STEP_SUMMARY"
 
   netlify-deploy-status:
     name: Netlify deploy status
