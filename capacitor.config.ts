@@ -11,13 +11,24 @@ const config: CapacitorConfig = {
   appId: 'app.macrotrack',
   appName: 'MacroTrack',
   webDir: 'dist',
-  // The PWA manifest's orientation/theme are inert natively, so they are
-  // re-declared here and via @capacitor/status-bar at runtime.
+  // The PWA manifest's orientation/theme are inert natively; the theme is set
+  // via @capacitor/status-bar at runtime.
+  //
+  // Orientation is deliberately *not* locked. The manifest asks for portrait,
+  // which is right for a phone, but an iPad app that refuses to rotate cannot
+  // support Split View and reads as a blown-up phone app. Capacitor's iOS
+  // template already ships all four orientations under
+  // UISupportedInterfaceOrientations~ipad and TARGETED_DEVICE_FAMILY = "1,2";
+  // scripts/verify-ipad.mjs asserts both, since ios/ is regenerated each build.
   backgroundColor: '#f8f9ff',
   ios: {
-    // Keeps the WebView from bouncing past the fixed header and bottom nav.
+    // Keeps the WebView from bouncing past the fixed header and bottom nav;
+    // <main> scrolls internally instead.
     scrollEnabled: false,
-    contentInset: 'always',
+    // 'never', not 'always'. index.html sets viewport-fit=cover and the layout
+    // pads itself with env(safe-area-inset-*) — letting UIKit also inset the
+    // scroll view would apply the notch and home-indicator margins twice.
+    contentInset: 'never',
   },
   android: {
     // The app talks only to HTTPS, so cleartext stays off.

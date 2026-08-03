@@ -164,6 +164,13 @@ jobs:
           npx cap add ios
           npx cap sync ios
 
+      # ios/ is regenerated every run, so there is no checked-in project file to
+      # review. This asserts the iPad invariants Capacitor's template currently
+      # gives us for free, so a template change in a future upgrade fails here
+      # instead of silently shipping an iPhone-only app.
+      - name: Verify the iPad configuration
+        run: npm run verify:ipad
+
       # Compile only. Signing needs an Apple Developer account, so this proves
       # the project builds without needing any secret; the release workflow does
       # the signed archive.

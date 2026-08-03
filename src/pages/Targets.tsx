@@ -311,7 +311,10 @@ export default function Targets() {
         {loading ? (
           <LoadingBlock label={t('targets.loading')} />
         ) : (
-          <div className="grid grid-cols-1 items-start gap-md lg:grid-cols-7 lg:gap-sm">
+          // One column on a phone, seven across a desktop. The middle steps
+          // matter for tablets: a single column of seven day cards is a very
+          // long scroll, and seven across is far too cramped.
+          <div className="grid grid-cols-1 items-start gap-md sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-7 xl:gap-sm">
             {TARGET_DAYS.map(({ dow }) => {
               const v = values[dow] ?? EMPTY
               const kcal = calories(v)

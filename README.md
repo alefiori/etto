@@ -76,7 +76,11 @@ and the per-screen `code.html` files.
   when the data can't support one.
 - **Installable PWA** — add to home screen / install as an app; the app shell is
   precached so it launches offline.
-- **Native iOS + Android** via Capacitor, from the same bundle.
+- **Native iOS, iPadOS and Android** via Capacitor, from the same bundle. The
+  layout has three window classes rather than two: bottom nav on a phone, a
+  Material 3 **navigation rail** at tablet widths, and the full drawer on a
+  desktop — so an iPad in portrait, in Split View or in Stage Manager gets a
+  layout built for its size instead of stretched phone chrome.
 
 ## Tech stack
 
@@ -258,6 +262,33 @@ npx cap open ios          # or: npx cap open android
 | Share / clipboard | Web Share API → clipboard | `@capacitor/share` → `@capacitor/clipboard`; both Web APIs are unavailable on the custom scheme |
 | Hardware back | — | Closes the topmost overlay, else goes back, else exits ([`nativeBootstrap.ts`](src/lib/nativeBootstrap.ts)) |
 | Purchases | Reported unavailable | RevenueCat (see below) |
+
+### iPad
+
+The iPad build is the same target as iPhone — Capacitor's template already sets
+`TARGETED_DEVICE_FAMILY = "1,2"` and ships all four `~ipad` orientations, so
+nothing native needed patching. What did need doing was the layout: between
+768px and the drawer's 1024px breakpoint the app used to render phone chrome,
+which on an iPad in portrait meant a bottom bar stretched across 820pt and a
+floating button marooned in the corner. That range now gets a
+[navigation rail](src/components/layout/AppLayout.tsx) — 80px, icons over short
+labels, primary action at the top — which is what Material 3 specifies for its
+"medium" window class.
+
+Orientation is deliberately **not** locked. The PWA manifest asks for portrait,
+which is right on a phone, but an iPad app that refuses to rotate cannot support
+Split View and reads as a blown-up phone app.
+
+Because `ios/` is regenerated on every build, [`scripts/verify-ipad.mjs`](scripts/verify-ipad.mjs)
+re-checks three invariants after `cap sync` — device family includes iPad, the
+iPad orientation list includes portrait and both landscapes, and
+`UIRequiresFullScreen` is not set (it would disable Split View). It runs in CI
+and from `npm run sync:native`, so a Capacitor upgrade that changes the template
+fails loudly instead of quietly shipping an iPhone-only app.
+
+`e2e/tablet.spec.ts` covers all of it at real device widths: iPhone, iPad
+portrait and landscape, half-width Split View, and the 320pt Slide Over pane
+(where it also asserts nothing overflows horizontally).
 
 **Fonts are self-hosted** ([`public/fonts/`](public/fonts)) rather than loaded
 from the Google Fonts CDN. This is not an optimization:

@@ -107,10 +107,71 @@ function Sidebar() {
   )
 }
 
+/**
+ * Navigation rail — the tablet-width layout.
+ *
+ * Between 768px and the sidebar's 1024px breakpoint the app used to render
+ * phone chrome: a bottom bar stretched across an iPad in portrait, with a
+ * floating button marooned in the corner. Material 3 calls this the "medium"
+ * window class and specifies a rail for it, which is what this is: 80px, icons
+ * over short labels, with the primary action at the top rather than floating.
+ *
+ * It reuses NAV_ITEMS, so adding a destination still means editing one array.
+ */
+function NavRail() {
+  const { openAddFood } = useAppShell()
+  const { t } = useI18n()
+
+  return (
+    <aside className="fixed left-0 top-0 z-30 hidden h-[100dvh] w-[80px] shrink-0 flex-col items-center gap-sm border-r border-surface-container-high bg-surface-container-low pl-safe-left pt-[calc(theme(spacing.md)+theme(spacing.safe-top))] pb-[calc(theme(spacing.md)+theme(spacing.safe-bottom))] md:flex lg:hidden">
+      <NavLink to="/" aria-label="MacroTrack" className="mb-md">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-container text-on-primary-container">
+          <Icon name="track_changes" fill />
+        </div>
+      </NavLink>
+
+      {/* M3 puts the primary action at the top of the rail, not floating. */}
+      <button
+        onClick={() => openAddFood()}
+        aria-label={t('nav.addFood')}
+        className="mb-md flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-on-primary shadow-sm transition-transform active:scale-95"
+      >
+        <Icon name="add" className="text-2xl" />
+      </button>
+
+      <nav className="flex flex-1 flex-col items-center gap-sm">
+        {NAV_ITEMS.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.to === '/'}
+            className={({ isActive }) =>
+              `flex w-[64px] flex-col items-center justify-center rounded-2xl py-2 transition-all duration-200 active:scale-95 ${
+                isActive
+                  ? 'bg-primary-container text-on-primary-container'
+                  : 'text-on-surface-variant hover:bg-surface-container-high'
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <Icon name={item.icon} fill={isActive} />
+                <span className="mt-0.5 text-center font-label-md text-[10px] leading-tight">
+                  {t(item.shortKey)}
+                </span>
+              </>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+    </aside>
+  )
+}
+
 function TopAppBar() {
   const { t } = useI18n()
   return (
-    <nav className="fixed top-0 z-40 flex w-full items-center justify-between bg-surface px-container-margin-mobile py-md pt-[calc(theme(spacing.md)+theme(spacing.safe-top))] shadow-sm lg:hidden">
+    <nav className="fixed top-0 z-40 flex w-full items-center justify-between bg-surface px-container-margin-mobile py-md pt-[calc(theme(spacing.md)+theme(spacing.safe-top))] shadow-sm md:hidden">
       <h1 className="font-headline-md text-headline-md font-bold text-primary">MacroTrack</h1>
       <NavLink
         to="/profile"
@@ -126,7 +187,7 @@ function TopAppBar() {
 function BottomNav() {
   const { t } = useI18n()
   return (
-    <nav className="fixed bottom-0 left-0 z-50 flex w-full items-center justify-around border-t border-surface-container-high bg-surface px-4 py-2 pb-[calc(theme(spacing.2)+theme(spacing.safe-bottom))] shadow-bottomnav lg:hidden">
+    <nav className="fixed bottom-0 left-0 z-50 flex w-full items-center justify-around border-t border-surface-container-high bg-surface px-4 py-2 pb-[calc(theme(spacing.2)+theme(spacing.safe-bottom))] shadow-bottomnav md:hidden">
       {NAV_ITEMS.map((item) => (
         <NavLink
           key={item.to}
@@ -161,9 +222,10 @@ export default function AppLayout() {
   return (
     <div className="flex min-h-[100dvh] bg-background text-on-surface antialiased">
       <Sidebar />
+      <NavRail />
       <TopAppBar />
 
-      <main className="w-full flex-1 overflow-y-auto pb-bottomnav pt-topbar lg:ml-[280px] lg:pb-0 lg:pt-0">
+      <main className="w-full flex-1 overflow-y-auto pb-bottomnav pt-topbar md:ml-[80px] md:pb-0 md:pt-0 lg:ml-[280px]">
         <GuestBanner />
         <Outlet />
       </main>
@@ -174,7 +236,7 @@ export default function AppLayout() {
       <button
         onClick={() => openAddFood()}
         aria-label={t('nav.addFood')}
-        className="fixed bottom-fab right-container-margin-mobile z-40 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-on-primary shadow-lg transition-transform active:scale-95 lg:hidden"
+        className="fixed bottom-fab right-container-margin-mobile z-40 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-on-primary shadow-lg transition-transform active:scale-95 md:hidden"
       >
         <Icon name="add" className="text-2xl" />
       </button>
