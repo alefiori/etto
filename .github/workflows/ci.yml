@@ -103,7 +103,21 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-          cache: gradle
+
+      # Cached separately rather than via setup-java's `cache: gradle`, which
+      # builds its key by hashing **/*.gradle* — files that do not exist yet at
+      # that point, because android/ is generated further down. It fails the job
+      # outright rather than just missing the cache. Keyed on package-lock
+      # instead: the Capacitor version pins the AGP, Gradle and plugin versions
+      # that decide what gets downloaded.
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: gradle-${{ runner.os }}-
 
       - name: Install dependencies
         run: npm ci
