@@ -205,6 +205,28 @@ export async function copyMealFoods(
   return rows.length
 }
 
+/**
+ * Copy a single logged food into a meal on a (possibly different) day,
+ * preserving its servings. Appends a new food_logs row — it never mutates the
+ * source entry, so the original stays put.
+ */
+export async function copyFoodLog(
+  foodId: string,
+  servings: number,
+  toDate: string,
+  toMeal: MealKey,
+): Promise<void> {
+  const userId = await currentUserId()
+  const { error } = await supabase.from('food_logs').insert({
+    user_id: userId,
+    food_id: foodId,
+    log_date: toDate,
+    meal: toMeal,
+    servings,
+  })
+  if (error) throw new Error(error.message)
+}
+
 /** Share (or unshare) a custom food to the community. RLS enforces ownership. */
 export async function setFoodPublic(id: string, isPublic: boolean): Promise<void> {
   const { error } = await supabase.from('foods').update({ is_public: isPublic }).eq('id', id)

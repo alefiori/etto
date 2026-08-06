@@ -57,6 +57,12 @@ export const en = {
     mealCopiedOther: '{count} items copied from {meal} on',
     clearCopiedMeal: 'Clear copied meal',
     failedPasteMeal: 'Failed to paste meal.',
+    foodCopied: 'Food copied — paste it into any meal:',
+    clearCopiedFood: 'Clear copied food',
+    pasteFoodHere: 'Paste food',
+    failedPasteFood: 'Failed to paste food.',
+    copyFoodAria: 'Copy food',
+    infoAria: 'Food info',
     shareDay: 'Share',
     shareDayAria: "Share this day's macros",
     shareMealAria: 'Share {meal}',
@@ -89,6 +95,10 @@ export const en = {
     editAria: 'Edit',
     deleteAria: 'Delete',
     amountInUnit: 'Amount in {unit}',
+  },
+  foodInfo: {
+    perServing: 'Per serving: {amount} {unit} · {kcal} kcal',
+    copyFood: 'Copy food',
   },
   auth: {
     tagline: 'Track your macros, every day.',

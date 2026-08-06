@@ -52,6 +52,12 @@ export const nl: Translation = {
     mealCopiedOther: '{count} items gekopieerd uit {meal} van',
     clearCopiedMeal: 'Gekopieerde maaltijd wissen',
     failedPasteMeal: 'Maaltijd plakken mislukt.',
+    foodCopied: 'Voedsel gekopieerd — plak het in een maaltijd:',
+    clearCopiedFood: 'Gekopieerd voedsel wissen',
+    pasteFoodHere: 'Plakken',
+    failedPasteFood: 'Voedsel plakken mislukt.',
+    copyFoodAria: 'Voedsel kopiëren',
+    infoAria: 'Voedselinfo',
     shareDay: 'Delen',
     shareDayAria: "Macro's van deze dag delen",
     shareMealAria: '{meal} delen',
@@ -84,6 +90,10 @@ export const nl: Translation = {
     editAria: 'Bewerken',
     deleteAria: 'Verwijderen',
     amountInUnit: 'Hoeveelheid in {unit}',
+  },
+  foodInfo: {
+    perServing: 'Per portie: {amount} {unit} · {kcal} kcal',
+    copyFood: 'Voedsel kopiëren',
   },
   auth: {
     tagline: 'Houd elke dag je macro’s bij.',

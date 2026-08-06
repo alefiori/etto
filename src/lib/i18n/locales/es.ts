@@ -52,6 +52,12 @@ export const es: Translation = {
     mealCopiedOther: '{count} elementos copiados de {meal} el',
     clearCopiedMeal: 'Borrar comida copiada',
     failedPasteMeal: 'No se pudo pegar la comida.',
+    foodCopied: 'Alimento copiado: pégalo en cualquier comida:',
+    clearCopiedFood: 'Descartar alimento copiado',
+    pasteFoodHere: 'Pegar',
+    failedPasteFood: 'No se pudo pegar el alimento.',
+    copyFoodAria: 'Copiar alimento',
+    infoAria: 'Información del alimento',
     shareDay: 'Compartir',
     shareDayAria: 'Compartir los macros de este día',
     shareMealAria: 'Compartir {meal}',
@@ -84,6 +90,10 @@ export const es: Translation = {
     editAria: 'Editar',
     deleteAria: 'Eliminar',
     amountInUnit: 'Cantidad en {unit}',
+  },
+  foodInfo: {
+    perServing: 'Por ración: {amount} {unit} · {kcal} kcal',
+    copyFood: 'Copiar alimento',
   },
   auth: {
     tagline: 'Controla tus macros, cada día.',

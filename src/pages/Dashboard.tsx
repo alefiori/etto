@@ -9,6 +9,7 @@ import { useFoodLogs } from '@/hooks/useFoodLogs'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner, LoadingBlock } from '@/components/ui/Spinner'
 import { ProgressRing } from '@/components/ui/ProgressRing'
+import { FoodInfoModal } from '@/components/FoodInfoModal'
 import { MACROS, type MealKey } from '@/lib/constants'
 import {
   calories,
@@ -20,7 +21,7 @@ import {
   type MacroGrams,
 } from '@/lib/macros'
 import { addDays, dayOfWeek, formatLong, formatMonthDay, formatShort, formatWeekday, isToday, todayISO } from '@/lib/date'
-import { copyDayFoods, copyMealFoods, deleteFoodLog, updateLogServings } from '@/lib/foods'
+import { copyDayFoods, copyFoodLog, copyMealFoods, deleteFoodLog, updateLogServings } from '@/lib/foods'
 import { formatDayText, formatMealText, shareText } from '@/lib/exportText'
 import type { FoodLogWithFood } from '@/lib/database.types'
 
@@ -39,6 +40,9 @@ export default function Dashboard() {
     copiedMeal,
     copyMeal,
     clearCopiedMeal,
+    copiedFood,
+    copyFood,
+    clearCopiedFood,
   } = useAppShell()
   const { byDay, loading: targetsLoading } = useTargets()
   const { logs, loading: logsLoading, error } = useFoodLogs(selectedDate, foodLogVersion)
@@ -48,6 +52,7 @@ export default function Dashboard() {
 
   const [pasting, setPasting] = useState(false)
   const [pastingMeal, setPastingMeal] = useState<MealKey | null>(null)
+  const [pastingFood, setPastingFood] = useState<MealKey | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [shareNotice, setShareNotice] = useState<string | null>(null)
   const shareNoticeTimer = useRef<ReturnType<typeof setTimeout>>()
@@ -98,6 +103,20 @@ export default function Dashboard() {
       setActionError(e instanceof Error ? e.message : t('dashboard.failedPasteMeal'))
     } finally {
       setPastingMeal(null)
+    }
+  }
+
+  async function handlePasteFood(targetMeal: MealKey) {
+    if (!copiedFood) return
+    setPastingFood(targetMeal)
+    setActionError(null)
+    try {
+      await copyFoodLog(copiedFood.foodId, copiedFood.servings, selectedDate, targetMeal)
+      bumpFoodLogVersion()
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : t('dashboard.failedPasteFood'))
+    } finally {
+      setPastingFood(null)
     }
   }
 
@@ -228,6 +247,25 @@ export default function Dashboard() {
         </div>
       )}
 
+      {copiedFood && (
+        <div className="flex items-center justify-between gap-sm rounded-2xl border border-primary/30 bg-primary-container/10 p-md shadow-card">
+          <div className="flex min-w-0 items-center gap-sm text-on-surface">
+            <Icon name="content_paste" className="shrink-0 text-primary" />
+            <p className="truncate font-body-md text-body-md">
+              {t('dashboard.foodCopied')}{' '}
+              <span className="font-label-md text-label-md">{copiedFood.name}</span>
+            </p>
+          </div>
+          <button
+            onClick={clearCopiedFood}
+            className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high"
+            aria-label={t('dashboard.clearCopiedFood')}
+          >
+            <Icon name="close" className="text-sm" />
+          </button>
+        </div>
+      )}
+
       {shareNotice && (
         <p className="flex items-center gap-sm rounded-2xl border border-primary/30 bg-primary-container/10 px-md py-sm font-label-md text-label-md text-on-surface">
           <Icon name="check_circle" className="text-sm text-primary" />
@@ -328,12 +366,16 @@ export default function Dashboard() {
                       onAdd={() => openAddFood({ meal: meal.key })}
                       onChanged={bumpFoodLogVersion}
                       onCopy={() => copyMeal(selectedDate, meal.key, mealLogs.length)}
+                      onCopyFood={(log) => copyFood(log.food_id, log.food.name, log.servings)}
                       onShare={() =>
                         handleShare(formatMealText(meal, mealLogs, selectedDate, locale, t))
                       }
                       canPaste={copiedMeal !== null}
                       pasting={pastingMeal === meal.key}
                       onPaste={() => handlePasteMeal(meal.key)}
+                      canPasteFood={copiedFood !== null}
+                      pastingFood={pastingFood === meal.key}
+                      onPasteFood={() => handlePasteFood(meal.key)}
                     />
                   )
                 })
@@ -388,10 +430,14 @@ function MealCard({
   onAdd,
   onChanged,
   onCopy,
+  onCopyFood,
   onShare,
   canPaste,
   pasting,
   onPaste,
+  canPasteFood,
+  pastingFood,
+  onPasteFood,
 }: {
   label: string
   icon: string
@@ -399,10 +445,14 @@ function MealCard({
   onAdd: () => void
   onChanged: () => void
   onCopy: () => void
+  onCopyFood: (log: FoodLogWithFood) => void
   onShare: () => void
   canPaste: boolean
   pasting: boolean
   onPaste: () => void
+  canPasteFood: boolean
+  pastingFood: boolean
+  onPasteFood: () => void
 }) {
   const { t } = useI18n()
   const mealKcal = logs.reduce((sum, l) => sum + caloriesForServings(l.food, l.servings), 0)
@@ -435,6 +485,17 @@ function MealCard({
             >
               {pasting ? <Spinner className="h-4 w-4" /> : <Icon name="content_paste" className="text-sm" />}
               <span className="hidden sm:inline">{t('dashboard.pasteMealHere')}</span>
+            </button>
+          )}
+          {canPasteFood && (
+            <button
+              onClick={onPasteFood}
+              disabled={pastingFood}
+              className="flex items-center gap-xs rounded-full border border-primary px-3 py-1 font-label-md text-label-md text-primary transition-colors hover:bg-primary-container/10 disabled:opacity-40"
+              title={t('dashboard.pasteFoodHere')}
+            >
+              {pastingFood ? <Spinner className="h-4 w-4" /> : <Icon name="content_paste" className="text-sm" />}
+              <span className="hidden sm:inline">{t('dashboard.pasteFoodHere')}</span>
             </button>
           )}
           {!empty && (
@@ -479,7 +540,7 @@ function MealCard({
       ) : (
         <div className="flex flex-col gap-sm">
           {logs.map((log) => (
-            <FoodLogRow key={log.id} log={log} onChanged={onChanged} />
+            <FoodLogRow key={log.id} log={log} onChanged={onChanged} onCopy={() => onCopyFood(log)} />
           ))}
           <button
             onClick={onAdd}
@@ -500,9 +561,18 @@ function dominantColor(m: MacroGrams): string {
   return entries[0].val > 0 ? entries[0].meta.color : '#bcc9c6'
 }
 
-function FoodLogRow({ log, onChanged }: { log: FoodLogWithFood; onChanged: () => void }) {
+function FoodLogRow({
+  log,
+  onChanged,
+  onCopy,
+}: {
+  log: FoodLogWithFood
+  onChanged: () => void
+  onCopy: () => void
+}) {
   const { t } = useI18n()
   const [editing, setEditing] = useState(false)
+  const [showInfo, setShowInfo] = useState(false)
   // Edit the logged quantity as an amount in the food's serving unit (e.g.
   // grams); servings is derived from it on save.
   const loggedAmount = round(log.servings * log.food.serving_amount, 2)
@@ -608,6 +678,20 @@ function FoodLogRow({ log, onChanged }: { log: FoodLogWithFood; onChanged: () =>
             </span>
             <div className="flex opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
               <button
+                onClick={() => setShowInfo(true)}
+                className="p-1 text-on-surface-variant hover:text-primary"
+                aria-label={t('dashboard.infoAria')}
+              >
+                <Icon name="info" className="text-sm" />
+              </button>
+              <button
+                onClick={onCopy}
+                className="p-1 text-on-surface-variant hover:text-primary"
+                aria-label={t('dashboard.copyFoodAria')}
+              >
+                <Icon name="content_copy" className="text-sm" />
+              </button>
+              <button
                 onClick={() => setEditing(true)}
                 className="p-1 text-on-surface-variant hover:text-primary"
                 aria-label={t('dashboard.editAria')}
@@ -626,6 +710,17 @@ function FoodLogRow({ log, onChanged }: { log: FoodLogWithFood; onChanged: () =>
           </>
         )}
       </div>
+
+      <FoodInfoModal
+        open={showInfo}
+        onClose={() => setShowInfo(false)}
+        food={log.food}
+        servings={log.servings}
+        onCopy={() => {
+          onCopy()
+          setShowInfo(false)
+        }}
+      />
     </div>
   )
 }

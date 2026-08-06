@@ -52,6 +52,12 @@ export const de: Translation = {
     mealCopiedOther: '{count} Einträge kopiert aus {meal} vom',
     clearCopiedMeal: 'Kopierte Mahlzeit verwerfen',
     failedPasteMeal: 'Mahlzeit konnte nicht eingefügt werden.',
+    foodCopied: 'Lebensmittel kopiert – in eine Mahlzeit einfügen:',
+    clearCopiedFood: 'Kopiertes Lebensmittel verwerfen',
+    pasteFoodHere: 'Einfügen',
+    failedPasteFood: 'Lebensmittel konnte nicht eingefügt werden.',
+    copyFoodAria: 'Lebensmittel kopieren',
+    infoAria: 'Lebensmittelinfo',
     shareDay: 'Teilen',
     shareDayAria: 'Makros dieses Tages teilen',
     shareMealAria: '{meal} teilen',
@@ -84,6 +90,10 @@ export const de: Translation = {
     editAria: 'Bearbeiten',
     deleteAria: 'Löschen',
     amountInUnit: 'Menge in {unit}',
+  },
+  foodInfo: {
+    perServing: 'Pro Portion: {amount} {unit} · {kcal} kcal',
+    copyFood: 'Lebensmittel kopieren',
   },
   auth: {
     tagline: 'Verfolge deine Makros, jeden Tag.',

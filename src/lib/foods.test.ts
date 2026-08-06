@@ -19,6 +19,7 @@ vi.mock('@/lib/supabase', () => ({
 import {
   upsertExternalFood,
   copyDayFoods,
+  copyFoodLog,
   copyMealFoods,
   setFoodPublic,
 } from './foods'
@@ -151,6 +152,27 @@ describe('copyMealFoods', () => {
       meal: 'snack',
       log_date: '2024-01-02',
     })
+  })
+})
+
+describe('copyFoodLog', () => {
+  it('inserts a single log into the target meal preserving servings', async () => {
+    h.state.builder = builderYielding({ error: null })
+
+    await copyFoodLog('f1', 1.5, '2024-01-02', 'snack')
+
+    expect(h.state.builder.insert).toHaveBeenCalledWith({
+      user_id: 'user-1',
+      food_id: 'f1',
+      log_date: '2024-01-02',
+      meal: 'snack',
+      servings: 1.5,
+    })
+  })
+
+  it('throws when the insert errors', async () => {
+    h.state.builder = builderYielding({ error: { message: 'denied' } })
+    await expect(copyFoodLog('f1', 1, '2024-01-02', 'snack')).rejects.toThrow('denied')
   })
 })
 
