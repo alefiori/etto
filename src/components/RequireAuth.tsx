@@ -4,7 +4,6 @@ import { useAuth } from '@/context/AuthContext'
 import { useProfile } from '@/context/ProfileContext'
 import { useI18n } from '@/context/I18nContext'
 import { LoadingBlock } from '@/components/ui/Spinner'
-import { consumeAutoGuestSuppression } from '@/lib/guestSession'
 
 /**
  * Gates app routes — but starts a guest session rather than showing a wall.
@@ -13,13 +12,14 @@ import { consumeAutoGuestSuppression } from '@/lib/guestSession'
  * Demanding a signup before someone can log a single meal is the biggest
  * drop-off on mobile, and the account is real: GuestBanner offers to attach an
  * email later, and `upgradeAccount` keeps the same `user_id` so nothing logged
- * in the meantime is lost.
+ * in the meantime is lost. Signing out returns here with no session and simply
+ * mints another guest — the sign-in screen is reached by opening it directly,
+ * not by tearing the guest session down first.
  *
- * Two cases still reach the sign-in screen:
- *   - A deliberate sign-out, via the suppression flag (see lib/guestSession).
- *   - Anonymous sign-in failing — most likely because it is disabled on the
- *     Supabase project, or its per-IP hourly limit has been hit. Falling back
- *     rather than retrying keeps the user from being stuck on a spinner.
+ * The one case that still falls through to the sign-in screen is anonymous
+ * sign-in failing — most likely because it is disabled on the Supabase project,
+ * or its per-IP hourly limit has been hit. Falling back rather than retrying
+ * keeps the user from being stuck on a spinner.
  */
 export function RequireAuth({ children }: { children: React.ReactNode }) {
   const { session, loading, signInAnonymously } = useAuth()
@@ -34,11 +34,6 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (loading || session || startedRef.current || fallBackToSignIn) return
-
-    if (consumeAutoGuestSuppression()) {
-      setFallBackToSignIn(true)
-      return
-    }
 
     startedRef.current = true
     // Only pass a locale the user actually chose; otherwise leave it unset so

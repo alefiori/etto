@@ -109,6 +109,8 @@ export const it: Translation = {
     or: 'oppure',
     continueAsGuest: 'Continua come ospite',
     loadingAccount: 'Caricamento del tuo account…',
+    switchAccountConfirm:
+      'Accedendo passerai a un altro account: i dati ospite non verranno trasferiti. Tocca di nuovo Accedi per continuare.',
   },
   meals: {
     title: 'Pasti',
@@ -134,6 +136,7 @@ export const it: Translation = {
     dialogBody: 'Aggiungi email e password per conservare i tuoi dati e usarli su qualsiasi dispositivo.',
     checkInbox: 'Controlla la posta per confermare la tua email.',
     createAccount: 'Crea account',
+    haveAccount: 'Hai già un account?',
   },
   forgotPassword: {
     title: 'Reimposta password',

@@ -25,7 +25,7 @@ const NAV_ITEMS: NavItem[] = [
 ]
 
 function Sidebar() {
-  const { user, signOut } = useAuth()
+  const { user, signOut, isAnonymous } = useAuth()
   const navigate = useNavigate()
   const { openAddFood } = useAppShell()
   const { t } = useI18n()
@@ -77,22 +77,38 @@ function Sidebar() {
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-container text-on-primary-container">
               <Icon name="person" className="text-[20px]" />
             </div>
-            <span className="truncate font-body-md text-sm text-on-surface-variant" title={user?.email ?? ''}>
-              {user?.email}
+            <span
+              className="truncate font-body-md text-sm text-on-surface-variant"
+              title={isAnonymous ? t('profile.guestAccount') : user?.email ?? ''}
+            >
+              {isAnonymous ? t('profile.guestAccount') : user?.email}
             </span>
           </div>
-          <button
-            onClick={async () => {
-              await signOut()
-              // See Profile: without this the guard would hand back a new guest.
-              navigate('/signin', { replace: true })
-            }}
-            aria-label={t('nav.signOut')}
-            title={t('nav.signOut')}
-            className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-error-container hover:text-on-error-container"
-          >
-            <Icon name="logout" className="text-[20px]" />
-          </button>
+          {isAnonymous ? (
+            // A guest can't sign out of an account they don't have; offer the
+            // sign-in screen instead, which opens over the guest session.
+            <button
+              onClick={() => navigate('/signin')}
+              aria-label={t('auth.signInAction')}
+              title={t('auth.signInAction')}
+              className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-secondary-container hover:text-on-secondary-container"
+            >
+              <Icon name="login" className="text-[20px]" />
+            </button>
+          ) : (
+            <button
+              onClick={async () => {
+                // Sign-out leaves no session, so the guard hands back a guest.
+                await signOut()
+                navigate('/', { replace: true })
+              }}
+              aria-label={t('nav.signOut')}
+              title={t('nav.signOut')}
+              className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-error-container hover:text-on-error-container"
+            >
+              <Icon name="logout" className="text-[20px]" />
+            </button>
+          )}
         </div>
 
         <button

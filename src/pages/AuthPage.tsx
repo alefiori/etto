@@ -6,6 +6,7 @@ import { useProfile } from '@/context/ProfileContext'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { LanguagePicker } from '@/components/ui/LanguagePicker'
+import { guestHasData } from '@/lib/guestData'
 
 type Tab = 'signin' | 'signup'
 
@@ -13,7 +14,7 @@ const inputClass =
   'w-full min-h-[48px] rounded-lg border border-outline-variant bg-surface px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/70 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors'
 
 export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }) {
-  const { session, signIn, signUp, signInAnonymously } = useAuth()
+  const { session, user, isAnonymous, signIn, signUp, signInAnonymously, upgradeAccount } = useAuth()
   const { t, locale } = useI18n()
   const { isLocaleExplicit } = useProfile()
   // Only a language the visitor actually picked is worth saving on the new
@@ -29,8 +30,14 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  // Set once a guest with data has been warned that signing into a different
+  // account leaves that data behind; a second submit then proceeds.
+  const [confirmSwitch, setConfirmSwitch] = useState(false)
 
-  if (session) return <Navigate to="/" replace />
+  // A guest still has a session, so it renders here instead of being bounced —
+  // that is how they reach this screen at all. Only a permanent account, which
+  // has nothing left to do here, is sent back into the app.
+  if (session && !isAnonymous) return <Navigate to="/" replace />
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -45,8 +52,27 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
     setBusy(true)
     try {
       if (tab === 'signin') {
+        // Signing into an existing account replaces the guest session and
+        // orphans anything logged as a guest. Warn once when there is data to
+        // lose; the next submit goes through.
+        if (isAnonymous && !confirmSwitch && user && (await guestHasData(user.id))) {
+          setNotice(t('auth.switchAccountConfirm'))
+          setConfirmSwitch(true)
+          setBusy(false)
+          return
+        }
         await signIn(email, password)
         navigate('/', { replace: true })
+      } else if (isAnonymous) {
+        // A guest "creating an account" is really attaching credentials to the
+        // session they already have, so their data carries over.
+        const { needsConfirmation } = await upgradeAccount(email, password)
+        if (needsConfirmation) {
+          setNotice(t('guest.checkInbox'))
+          setTab('signin')
+        } else {
+          navigate('/', { replace: true })
+        }
       } else {
         // Carry a language chosen here into the new account's profile.
         const { needsConfirmation } = await signUp(email, password, chosenLocale)
@@ -68,11 +94,18 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
     setTab(next)
     setError(null)
     setNotice(null)
+    setConfirmSwitch(false)
   }
 
   async function handleGuest() {
     setError(null)
     setNotice(null)
+    // Already a guest (the common case — they opened this screen to sign in and
+    // changed their mind): just drop back into the app, no new session.
+    if (session) {
+      navigate('/', { replace: true })
+      return
+    }
     setBusy(true)
     try {
       await signInAnonymously(chosenLocale)

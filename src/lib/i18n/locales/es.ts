@@ -109,6 +109,8 @@ export const es: Translation = {
     or: 'o',
     continueAsGuest: 'Continuar como invitado',
     loadingAccount: 'Cargando tu cuenta…',
+    switchAccountConfirm:
+      'Iniciar sesión cambia a otra cuenta: tus datos de invitado no se conservarán. Toca Iniciar sesión otra vez para continuar.',
   },
   meals: {
     title: 'Comidas',
@@ -134,6 +136,7 @@ export const es: Translation = {
     dialogBody: 'Añade un correo y una contraseña para conservar tus datos y usarlos en cualquier dispositivo.',
     checkInbox: 'Revisa tu bandeja de entrada para confirmar tu correo.',
     createAccount: 'Crear cuenta',
+    haveAccount: '¿Ya tienes una cuenta?',
   },
   forgotPassword: {
     title: 'Restablecer contraseña',

@@ -109,6 +109,8 @@ export const fr: Translation = {
     or: 'ou',
     continueAsGuest: 'Continuer en tant qu’invité',
     loadingAccount: 'Chargement de votre compte…',
+    switchAccountConfirm:
+      'Se connecter bascule vers un autre compte : vos données invité ne seront pas conservées. Touchez à nouveau Se connecter pour continuer.',
   },
   meals: {
     title: 'Repas',
@@ -134,6 +136,7 @@ export const fr: Translation = {
     dialogBody: 'Ajoutez un e-mail et un mot de passe pour conserver vos données et les utiliser sur tous vos appareils.',
     checkInbox: 'Vérifiez votre boîte de réception pour confirmer votre e-mail.',
     createAccount: 'Créer un compte',
+    haveAccount: 'Vous avez déjà un compte ?',
   },
   forgotPassword: {
     title: 'Réinitialiser le mot de passe',

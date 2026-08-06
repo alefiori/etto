@@ -22,7 +22,6 @@ vi.mock('@/context/ProfileContext', () => ({
 }))
 
 import { RequireAuth } from './RequireAuth'
-import { suppressAutoGuest, consumeAutoGuestSuppression } from '@/lib/guestSession'
 
 function renderGuard() {
   return render(
@@ -49,8 +48,6 @@ beforeEach(() => {
   h.locale = 'en'
   h.isLocaleExplicit = false
   h.signInAnonymously.mockResolvedValue(undefined)
-  // The suppression flag is module scope, so drain any left by a prior test.
-  consumeAutoGuestSuppression()
 })
 
 describe('RequireAuth', () => {
@@ -115,20 +112,11 @@ describe('RequireAuth', () => {
     expect(await screen.findByText('sign in screen')).toBeInTheDocument()
   })
 
-  it('shows the sign-in screen after a deliberate sign-out, not a new guest', async () => {
-    suppressAutoGuest()
-    renderGuard()
-    expect(await screen.findByText('sign in screen')).toBeInTheDocument()
-    expect(h.signInAnonymously).not.toHaveBeenCalled()
-  })
-
-  it('resumes auto-guest on the next visit after that sign-out', async () => {
-    suppressAutoGuest()
-    renderGuard()
-    await screen.findByText('sign in screen')
-
-    // The flag is one-shot: a later visit should get a guest session again.
+  it('mints a fresh guest after a sign-out leaves no session', async () => {
+    // Sign-out no longer routes to a login wall: the guard just hands back
+    // another guest, the app's default state.
     renderGuard()
     await waitFor(() => expect(h.signInAnonymously).toHaveBeenCalledTimes(1))
+    expect(screen.queryByText('sign in screen')).not.toBeInTheDocument()
   })
 })

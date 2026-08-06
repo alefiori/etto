@@ -109,6 +109,8 @@ export const de: Translation = {
     or: 'oder',
     continueAsGuest: 'Als Gast fortfahren',
     loadingAccount: 'Dein Konto wird geladen…',
+    switchAccountConfirm:
+      'Beim Anmelden wechselst du zu einem anderen Konto – deine Gastdaten werden nicht übernommen. Tippe erneut auf Anmelden, um fortzufahren.',
   },
   meals: {
     title: 'Mahlzeiten',
@@ -134,6 +136,7 @@ export const de: Translation = {
     dialogBody: 'Füge E-Mail und Passwort hinzu, um deine Daten zu behalten und auf jedem Gerät zu nutzen.',
     checkInbox: 'Prüfe dein Postfach, um deine E-Mail zu bestätigen.',
     createAccount: 'Konto erstellen',
+    haveAccount: 'Hast du schon ein Konto?',
   },
   forgotPassword: {
     title: 'Passwort zurücksetzen',

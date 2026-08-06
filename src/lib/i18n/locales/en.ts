@@ -114,6 +114,8 @@ export const en = {
     or: 'or',
     continueAsGuest: 'Continue as guest',
     loadingAccount: 'Loading your account…',
+    switchAccountConfirm:
+      'Signing in switches to a different account — your guest data won’t carry over. Tap sign in again to continue.',
   },
   meals: {
     title: 'Meals',
@@ -139,6 +141,7 @@ export const en = {
     dialogBody: 'Add an email and password to keep your data and use it on any device.',
     checkInbox: 'Check your inbox to confirm your email.',
     createAccount: 'Create account',
+    haveAccount: 'Already have an account?',
   },
   forgotPassword: {
     title: 'Reset password',

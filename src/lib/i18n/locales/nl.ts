@@ -109,6 +109,8 @@ export const nl: Translation = {
     or: 'of',
     continueAsGuest: 'Doorgaan als gast',
     loadingAccount: 'Je account wordt geladen…',
+    switchAccountConfirm:
+      'Inloggen schakelt over naar een ander account — je gastgegevens gaan niet mee. Tik nogmaals op Inloggen om door te gaan.',
   },
   meals: {
     title: 'Maaltijden',
@@ -134,6 +136,7 @@ export const nl: Translation = {
     dialogBody: 'Voeg een e-mailadres en wachtwoord toe om je gegevens te behouden en op elk apparaat te gebruiken.',
     checkInbox: 'Controleer je inbox om je e-mailadres te bevestigen.',
     createAccount: 'Account aanmaken',
+    haveAccount: 'Heb je al een account?',
   },
   forgotPassword: {
     title: 'Wachtwoord resetten',

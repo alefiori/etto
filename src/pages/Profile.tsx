@@ -23,9 +23,9 @@ export default function Profile() {
     setBusy(true)
     try {
       await signOut()
-      // Guarded routes start a guest session when there is none, so leaving the
-      // user here would drop them straight into a new anonymous account.
-      navigate('/signin', { replace: true })
+      // No session means the guard hands back a guest — the default state — so
+      // land them on the dashboard rather than a login wall.
+      navigate('/', { replace: true })
     } finally {
       setBusy(false)
     }
@@ -131,14 +131,27 @@ export default function Profile() {
 
         <hr className="border-surface-container-highest" />
 
-        <button
-          onClick={handleSignOut}
-          disabled={busy}
-          className="flex min-h-[48px] items-center justify-center gap-sm rounded-full bg-error-container font-label-md text-label-md text-on-error-container transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
-        >
-          {busy ? <Spinner className="h-4 w-4" /> : <Icon name="logout" className="text-[20px]" />}
-          {t('profile.signOut')}
-        </button>
+        {/* A guest has no account to sign out of — the useful action is signing
+            into an existing one (which opens over the guest session). Real
+            accounts keep the sign-out, which now returns to guest mode. */}
+        {isAnonymous ? (
+          <button
+            onClick={() => navigate('/signin')}
+            className="flex min-h-[48px] items-center justify-center gap-sm rounded-full bg-secondary-container font-label-md text-label-md text-on-secondary-container transition-all hover:opacity-90 active:scale-95"
+          >
+            <Icon name="login" className="text-[20px]" />
+            {t('auth.signInAction')}
+          </button>
+        ) : (
+          <button
+            onClick={handleSignOut}
+            disabled={busy}
+            className="flex min-h-[48px] items-center justify-center gap-sm rounded-full bg-error-container font-label-md text-label-md text-on-error-container transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
+          >
+            {busy ? <Spinner className="h-4 w-4" /> : <Icon name="logout" className="text-[20px]" />}
+            {t('profile.signOut')}
+          </button>
+        )}
       </div>
     </div>
   )
