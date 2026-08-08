@@ -50,17 +50,46 @@ export interface MacroMeta {
   field: 'carbs_g' | 'protein_g' | 'fats_g'
   /** Bright accent for graphics only (rings, dots) — too light for text on white. */
   color: string
-  /** Darkened accent that meets WCAG AA (≥4.5:1) as small text on the light surface. */
+  /** Accent variant that meets WCAG AA (≥4.5:1) as small text on the card surface. */
   textColor: string
   tint: string
   icon: string
 }
 
-/** Macro accent colors, used consistently everywhere (rings, dots, inputs). */
+/**
+ * Macro accent colors, used consistently everywhere (rings, dots, inputs).
+ *
+ * These are `rgb(var(--…))` references rather than literals because the accents
+ * are brightened for the dark scheme (see src/index.css) and every consumer
+ * feeds them to an inline `style` or an SVG paint, where a Tailwind `dark:`
+ * class cannot reach. Resolving through the variable means the swap is pure
+ * CSS: no theme hook to thread through, and no React re-render on the flip.
+ */
 export const MACROS: MacroMeta[] = [
-  { key: 'carbs', field: 'carbs_g', color: '#F59E0B', textColor: '#B45309', tint: '#FEF3C7', icon: 'bakery_dining' },
-  { key: 'protein', field: 'protein_g', color: '#3B82F6', textColor: '#1D4ED8', tint: '#DBEAFE', icon: 'set_meal' },
-  { key: 'fats', field: 'fats_g', color: '#EF4444', textColor: '#B91C1C', tint: '#FEE2E2', icon: 'water_drop' },
+  {
+    key: 'carbs',
+    field: 'carbs_g',
+    color: 'rgb(var(--carbs))',
+    textColor: 'rgb(var(--carbs-text))',
+    tint: 'rgb(var(--carbs-tint))',
+    icon: 'bakery_dining',
+  },
+  {
+    key: 'protein',
+    field: 'protein_g',
+    color: 'rgb(var(--protein))',
+    textColor: 'rgb(var(--protein-text))',
+    tint: 'rgb(var(--protein-tint))',
+    icon: 'set_meal',
+  },
+  {
+    key: 'fats',
+    field: 'fats_g',
+    color: 'rgb(var(--fats))',
+    textColor: 'rgb(var(--fats-text))',
+    tint: 'rgb(var(--fats-tint))',
+    icon: 'water_drop',
+  },
 ]
 
 /**
@@ -71,7 +100,11 @@ export const MACROS: MacroMeta[] = [
  * Hydration accent. Deliberately cyan rather than the protein blue in MACROS —
  * two rings side by side in the same blue would read as the same metric.
  */
-export const WATER_COLOR = { color: '#06B6D4', textColor: '#0E7490', tint: '#CFFAFE' } as const
+export const WATER_COLOR = {
+  color: 'rgb(var(--water))',
+  textColor: 'rgb(var(--water-text))',
+  tint: 'rgb(var(--water-tint))',
+} as const
 
 export const TARGET_DAYS: { dow: number }[] = [
   { dow: 1 },

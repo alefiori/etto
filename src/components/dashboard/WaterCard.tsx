@@ -200,7 +200,7 @@ export function WaterCard() {
           type="button"
           onClick={handleCustom}
           disabled={busy || custom.trim() === ''}
-          className="h-[44px] shrink-0 rounded-full bg-primary px-lg font-label-md text-label-md text-on-primary transition-all hover:bg-on-primary-fixed-variant active:scale-95 disabled:opacity-40"
+          className="h-[44px] shrink-0 rounded-full bg-primary px-lg font-label-md text-label-md text-on-primary transition-all hover:bg-primary-hover active:scale-95 disabled:opacity-40"
         >
           {t('water.add')}
         </button>

@@ -16,7 +16,7 @@ import {
 } from '@/lib/foods'
 
 const fieldClass =
-  'w-full min-h-[48px] rounded-lg border border-outline-variant bg-surface-bright px-4 py-3 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors'
+  'w-full min-h-[48px] rounded-lg border border-outline-variant bg-surface px-4 py-3 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors'
 
 export default function CreateCustomFood() {
   const navigate = useNavigate()
@@ -156,7 +156,7 @@ export default function CreateCustomFood() {
           </p>
           <button
             onClick={() => navigate('/foods')}
-            className="rounded-full bg-primary-container/10 px-4 py-2 font-label-md text-label-md text-primary transition-colors hover:bg-primary-container/20"
+            className="rounded-full bg-primary-tint/10 px-4 py-2 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/20"
           >
             {t('createFood.backToMyFoods')}
           </button>
@@ -275,7 +275,7 @@ export default function CreateCustomFood() {
                     value={valueOf[m.field]}
                     onChange={(e) => setters[m.field](e.target.value)}
                     onFocus={(e) => e.target.value === '0' && e.target.select()}
-                    className="min-h-[48px] w-full rounded-lg border border-outline-variant bg-surface-bright px-4 py-3 font-body-md text-body-md text-on-surface outline-none transition-colors"
+                    className="min-h-[48px] w-full rounded-lg border border-outline-variant bg-surface px-4 py-3 font-body-md text-body-md text-on-surface outline-none transition-colors"
                     style={{ caretColor: m.color }}
                   />
                 </div>
@@ -313,7 +313,7 @@ export default function CreateCustomFood() {
               type="button"
               onClick={() => save(false)}
               disabled={busy}
-              className="flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-full bg-primary font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-on-primary-fixed-variant hover:shadow-md active:scale-95 disabled:opacity-60"
+              className="flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-full bg-primary font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-hover hover:shadow-md active:scale-95 disabled:opacity-60"
             >
               {busy ? <Spinner className="h-4 w-4" /> : <Icon name="save" className="text-[20px]" />}
               {isEdit ? t('createFood.saveChanges') : t('createFood.saveFood')}
@@ -322,7 +322,7 @@ export default function CreateCustomFood() {
               type="button"
               onClick={() => save(true)}
               disabled={busy}
-              className="flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-full bg-primary-container/20 font-label-md text-label-md font-semibold text-primary transition-all hover:bg-primary-container/30 active:scale-95 disabled:opacity-60"
+              className="flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-full bg-primary-tint/20 font-label-md text-label-md font-semibold text-primary transition-all hover:bg-primary-tint/30 active:scale-95 disabled:opacity-60"
             >
               <Icon name="add_task" className="text-[20px]" />
               {t('createFood.saveAddToday')}

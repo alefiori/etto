@@ -101,7 +101,7 @@ export default function MyFoods() {
         </div>
         <Link
           to="/foods/new"
-          className="flex h-[48px] items-center justify-center gap-sm rounded-full bg-primary px-lg font-label-md text-label-md text-on-primary shadow-sm transition-all hover:bg-on-primary-fixed-variant hover:shadow-md active:scale-95"
+          className="flex h-[48px] items-center justify-center gap-sm rounded-full bg-primary px-lg font-label-md text-label-md text-on-primary shadow-sm transition-all hover:bg-primary-hover hover:shadow-md active:scale-95"
         >
           <Icon name="add" />
           {t('myFoods.createCustomFood')}
@@ -141,7 +141,7 @@ export default function MyFoods() {
           {foods.length === 0 && (
             <Link
               to="/foods/new"
-              className="mt-2 rounded-full bg-primary-container/10 px-4 py-2 font-label-md text-label-md text-primary transition-colors hover:bg-primary-container/20"
+              className="mt-2 rounded-full bg-primary-tint/10 px-4 py-2 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/20"
             >
               {t('myFoods.createFirstFood')}
             </Link>

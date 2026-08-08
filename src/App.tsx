@@ -6,6 +6,7 @@ import { ProfileProvider } from '@/context/ProfileContext'
 import { EntitlementProvider } from '@/context/EntitlementContext'
 import { isNativePlatform } from '@/lib/platform'
 import { I18nProvider, useI18n } from '@/context/I18nContext'
+import { ThemeProvider } from '@/context/ThemeContext'
 import { MealsProvider } from '@/context/MealsContext'
 import { RequireAuth } from '@/components/RequireAuth'
 import { LoadingBlock } from '@/components/ui/Spinner'
@@ -40,45 +41,48 @@ const Router = isNativePlatform() ? HashRouter : BrowserRouter
 export default function App() {
   return (
     <Router>
-      {/* Profile + i18n wrap everything, so the auth pages are localized too.
-          Entitlement sits beside them rather than inside RequireAuth, so the
-          paywall and restore-purchases flow work before the guarded routes. */}
+      {/* Profile, theme and i18n wrap everything, so the auth pages are
+          localized and correctly themed too. Entitlement sits beside them
+          rather than inside RequireAuth, so the paywall and restore-purchases
+          flow work before the guarded routes. */}
       <AuthProvider>
         <ProfileProvider>
-          <EntitlementProvider>
-            <I18nProvider>
-              <Suspense fallback={<RouteFallback />}>
-                <Routes>
-                  {/* Public auth routes */}
-                  <Route path="/signin" element={<AuthPage initialTab="signin" />} />
-                  <Route path="/signup" element={<AuthPage initialTab="signup" />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
+          <ThemeProvider>
+            <EntitlementProvider>
+              <I18nProvider>
+                <Suspense fallback={<RouteFallback />}>
+                  <Routes>
+                    {/* Public auth routes */}
+                    <Route path="/signin" element={<AuthPage initialTab="signin" />} />
+                    <Route path="/signup" element={<AuthPage initialTab="signup" />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
 
-                  {/* Guarded app routes */}
-                  <Route
-                    element={
-                      <RequireAuth>
-                        <MealsProvider>
-                          <AppShellProvider>
-                            <AppLayout />
-                          </AppShellProvider>
-                        </MealsProvider>
-                      </RequireAuth>
-                    }
-                  >
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/targets" element={<Targets />} />
-                    <Route path="/foods" element={<MyFoods />} />
-                    <Route path="/foods/new" element={<CreateCustomFood />} />
-                    <Route path="/foods/:id/edit" element={<CreateCustomFood />} />
-                    <Route path="/profile" element={<Profile />} />
-                  </Route>
+                    {/* Guarded app routes */}
+                    <Route
+                      element={
+                        <RequireAuth>
+                          <MealsProvider>
+                            <AppShellProvider>
+                              <AppLayout />
+                            </AppShellProvider>
+                          </MealsProvider>
+                        </RequireAuth>
+                      }
+                    >
+                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/targets" element={<Targets />} />
+                      <Route path="/foods" element={<MyFoods />} />
+                      <Route path="/foods/new" element={<CreateCustomFood />} />
+                      <Route path="/foods/:id/edit" element={<CreateCustomFood />} />
+                      <Route path="/profile" element={<Profile />} />
+                    </Route>
 
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </Suspense>
-            </I18nProvider>
-          </EntitlementProvider>
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </Suspense>
+              </I18nProvider>
+            </EntitlementProvider>
+          </ThemeProvider>
         </ProfileProvider>
       </AuthProvider>
     </Router>

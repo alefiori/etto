@@ -49,6 +49,157 @@
 }
 
 @layer base {
+  /* -------------------------------------------------------------------------
+   * Color tokens.
+   *
+   * Every color in tailwind.config.ts resolves to one of these variables, so a
+   * `.dark` class on <html> reskins the whole app without a single component
+   * knowing which theme is on. Values are space-separated RGB channels rather
+   * than hex, which is what lets Tailwind's `<alpha-value>` placeholder work —
+   * `bg-primary/10` still compiles to `rgb(var(--primary) / 0.1)`.
+   *
+   * The Material 3 *fixed* roles (primary-fixed, on-secondary-fixed, …) are by
+   * definition identical in both schemes, so they stay literal in the config
+   * and are absent here.
+   * ---------------------------------------------------------------------- */
+  :root {
+    --background: 248 249 255;
+    --surface: 248 249 255;
+    --surface-bright: 248 249 255;
+    --surface-dim: 203 219 245;
+    --surface-container-lowest: 255 255 255;
+    --surface-container-low: 239 244 255;
+    --surface-container: 229 238 255;
+    --surface-container-high: 220 233 255;
+    --surface-container-highest: 211 228 254;
+    --surface-variant: 211 228 254;
+    --surface-tint: 0 106 97;
+    --on-background: 11 28 48;
+    --on-surface: 11 28 48;
+    --on-surface-variant: 61 73 71;
+    --outline: 109 122 119;
+    --outline-variant: 188 201 198;
+    --primary: 0 104 95;
+    --on-primary: 255 255 255;
+    --primary-container: 0 131 120;
+    --on-primary-container: 244 255 252;
+    /* Hover state for filled primary surfaces. Light darkens the fill; dark
+       dims it instead, because darkening a light-on-dark accent would send it
+       towards the page rather than away from it. */
+    --primary-hover: 0 80 73;
+    /* Base for the low-opacity primary washes behind `text-primary` (selected
+       rows, active nav, tinted buttons). It is its own token because the tint
+       has to move the *opposite* way from the fill it sits under: light tints
+       towards the deeper primary-container, dark towards the bright primary,
+       so the wash always lifts off the page rather than sinking into it. */
+    --primary-tint: 0 131 120;
+    --secondary: 92 95 97;
+    --on-secondary: 255 255 255;
+    --secondary-container: 224 227 229;
+    --on-secondary-container: 98 101 103;
+    --tertiary: 85 92 110;
+    --on-tertiary: 255 255 255;
+    --tertiary-container: 110 116 135;
+    --on-tertiary-container: 254 252 255;
+    --error: 186 26 26;
+    --on-error: 255 255 255;
+    --error-container: 255 218 214;
+    --on-error-container: 147 0 10;
+    --inverse-surface: 33 49 69;
+    --inverse-on-surface: 234 241 255;
+    --inverse-primary: 107 216 203;
+
+    /* Macro + hydration accents. `-text` is the variant that clears WCAG AA as
+       small text on the theme's card surface; the bare token is graphics-only
+       (rings, dots) and `-tint` is the ring track behind it. */
+    --carbs: 245 158 11;
+    --carbs-text: 180 83 9;
+    --carbs-tint: 254 243 199;
+    --protein: 59 130 246;
+    --protein-text: 29 78 216;
+    --protein-tint: 219 234 254;
+    --fats: 239 68 68;
+    --fats-text: 185 28 28;
+    --fats-tint: 254 226 226;
+    --water: 6 182 212;
+    --water-text: 14 116 144;
+    --water-tint: 207 250 254;
+    /* Weight trend line, and the fill of the raw weigh-in dots behind it. */
+    --trend: 0 104 95;
+    --trend-dot: 244 255 252;
+
+    /* Elevation. Not a color triple, so these are whole shadow values.
+       In dark the 4%-black card shadow is invisible against the page, so the
+       dark values both deepen it and add a 1px ring — cards are separated by a
+       hairline border there, the way the light build separates them by lift. */
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.04);
+    --shadow-card-hover: 0 4px 24px rgba(0, 104, 95, 0.05);
+    --shadow-sidebar: 4px 0 24px rgba(0, 0, 0, 0.02);
+    --shadow-bottomnav: 0 -4px 20px rgba(0, 0, 0, 0.05);
+    --scrollbar-thumb: #cbd5e1;
+  }
+
+  .dark {
+    --background: 13 21 38;
+    --surface: 13 21 38;
+    --surface-bright: 19 29 51;
+    --surface-dim: 9 15 28;
+    --surface-container-lowest: 19 29 51;
+    --surface-container-low: 23 34 58;
+    --surface-container: 27 39 64;
+    --surface-container-high: 34 48 73;
+    --surface-container-highest: 42 58 85;
+    --surface-variant: 42 58 85;
+    --surface-tint: 137 245 231;
+    --on-background: 228 235 247;
+    --on-surface: 228 235 247;
+    --on-surface-variant: 168 182 203;
+    --outline: 125 139 159;
+    --outline-variant: 58 71 96;
+    --primary: 137 245 231;
+    --on-primary: 0 32 29;
+    --primary-container: 0 80 73;
+    --on-primary-container: 137 245 231;
+    --primary-hover: 107 216 203;
+    --primary-tint: 137 245 231;
+    --secondary: 169 173 175;
+    --on-secondary: 47 49 50;
+    --secondary-container: 44 48 51;
+    --on-secondary-container: 201 204 206;
+    --tertiary: 192 198 219;
+    --on-tertiary: 38 45 61;
+    --tertiary-container: 61 68 86;
+    --on-tertiary-container: 220 226 247;
+    --error: 255 180 171;
+    --on-error: 105 0 5;
+    --error-container: 147 0 10;
+    --on-error-container: 255 218 214;
+    --inverse-surface: 228 235 247;
+    --inverse-on-surface: 23 34 58;
+    --inverse-primary: 0 104 95;
+
+    --carbs: 251 191 36;
+    --carbs-text: 252 211 77;
+    --carbs-tint: 62 46 12;
+    --protein: 96 165 250;
+    --protein-text: 147 197 253;
+    --protein-tint: 22 41 74;
+    --fats: 248 113 113;
+    --fats-text: 252 165 165;
+    --fats-tint: 63 29 32;
+    --water: 34 211 238;
+    --water-text: 103 232 249;
+    --water-tint: 11 53 64;
+    --trend: 107 216 203;
+    --trend-dot: 19 29 51;
+
+    --shadow-card: 0 0 0 1px rgb(34 48 73), 0 4px 20px rgba(0, 0, 0, 0.4);
+    --shadow-card-hover: 0 0 0 1px rgb(34 48 73), 0 4px 24px rgba(0, 0, 0, 0.5);
+    --shadow-sidebar: 4px 0 24px rgba(0, 0, 0, 0.35);
+    --shadow-bottomnav: 0 -4px 20px rgba(0, 0, 0, 0.35);
+    --scrollbar-thumb: #475569;
+  }
+
   /* Safe-area insets, behind custom properties rather than inlined `env()`.
      The spacing tokens in tailwind.config.ts read these. The indirection is
      what makes them testable: `env()` cannot be overridden and a desktop
@@ -76,6 +227,17 @@
   }
   body {
     @apply bg-background text-on-surface font-sans antialiased;
+    /* Softens the light/dark swap. Deliberately only on the page ground: every
+       card, chip and ring is a descendant, and animating a few hundred of them
+       at once janks the switch far more than the snap it would hide. */
+    transition:
+      background-color 200ms ease,
+      color 200ms ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body {
+      transition: none;
+    }
   }
   /* Prevent iOS Safari from auto-zooming when a form control is focused.
      Mobile browsers zoom in on any focused input whose font-size is below
@@ -134,6 +296,6 @@ input[type='number'] {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
+  background-color: var(--scrollbar-thumb);
   border-radius: 20px;
 }

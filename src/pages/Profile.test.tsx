@@ -45,6 +45,19 @@ vi.mock('@/context/MealsContext', () => ({
 }))
 
 import Profile from './Profile'
+import { ThemeProvider } from '@/context/ThemeContext'
+
+/**
+ * The appearance control is the one part of this page that needs a real
+ * provider — everything else here reads a mocked context. ThemeProvider sits on
+ * the mocked ProfileContext above, so the profile write it makes is `h.updateProfile`.
+ */
+const renderThemed = () =>
+  render(
+    <ThemeProvider>
+      <Profile />
+    </ThemeProvider>,
+  )
 
 function stubProfile(overrides: Partial<ProfileStub> = {}): ProfileStub {
   return {
@@ -61,6 +74,8 @@ function stubProfile(overrides: Partial<ProfileStub> = {}): ProfileStub {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  // ThemeProvider writes to <html>, which RTL's cleanup does not undo.
+  document.documentElement.classList.remove('dark')
   h.profile = stubProfile()
   h.user = { email: 'sam@example.com' }
   h.isAnonymous = false
@@ -100,6 +115,37 @@ describe('Profile page', () => {
     h.user = null
     render(<Profile />)
     expect(screen.getByText('Guest account')).toBeInTheDocument()
+  })
+
+  it('starts the appearance control on System, since nothing is chosen', () => {
+    renderThemed()
+    expect(screen.getByRole('radio', { name: 'System' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'Dark' })).not.toBeChecked()
+  })
+
+  it('applies and remembers the chosen appearance', async () => {
+    const user = userEvent.setup()
+    renderThemed()
+
+    await user.click(screen.getByRole('radio', { name: 'Dark' }))
+
+    expect(screen.getByRole('radio', { name: 'Dark' })).toBeChecked()
+    expect(document.documentElement).toHaveClass('dark')
+    expect(localStorage.getItem('macrotrack.theme')).toBe('dark')
+  })
+
+  it('reports a failed appearance save', async () => {
+    h.profile = stubProfile({ profile: { theme: null } })
+    h.updateProfile.mockRejectedValue(new Error('offline'))
+    const user = userEvent.setup()
+    renderThemed()
+
+    await user.click(screen.getByRole('radio', { name: 'Dark' }))
+
+    expect(
+      await screen.findByText('Could not save appearance. Please try again.'),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: 'System' })).toBeChecked()
   })
 
   it('signs out when the sign-out button is clicked', async () => {

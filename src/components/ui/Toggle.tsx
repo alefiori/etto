@@ -34,7 +34,7 @@ export function Toggle({
       }`}
     >
       <span
-        className={`inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-sm transition-transform ${
+        className={`inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-sm transition-transform dark:bg-on-surface ${
           checked ? 'translate-x-[24px]' : 'translate-x-[4px]'
         }`}
       />

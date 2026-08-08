@@ -287,7 +287,7 @@ export default function Targets() {
         )}
 
         {copied !== null && (
-          <div className="mb-md flex items-center justify-between gap-sm rounded-2xl border border-primary/30 bg-primary-container/10 p-md shadow-card">
+          <div className="mb-md flex items-center justify-between gap-sm rounded-2xl border border-primary/30 bg-primary-tint/10 p-md shadow-card">
             <div className="flex min-w-0 items-center gap-sm text-on-surface">
               <Icon name="content_paste" className="shrink-0 text-primary" />
               <p className="truncate font-body-md text-body-md">

@@ -174,7 +174,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
           </div>
 
           {notice && (
-            <p className="rounded-lg bg-primary-container/10 px-md py-sm font-label-md text-label-md text-primary">
+            <p className="rounded-lg bg-primary-tint/10 px-md py-sm font-label-md text-label-md text-primary">
               {notice}
             </p>
           )}
@@ -250,7 +250,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
                 <button
                   type="button"
                   onClick={() => navigate('/forgot-password')}
-                  className="font-label-md text-label-md text-primary transition-colors hover:text-on-primary-fixed-variant"
+                  className="font-label-md text-label-md text-primary transition-colors hover:text-primary-hover"
                 >
                   {t('auth.forgotPassword')}
                 </button>
@@ -260,7 +260,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
             <button
               type="submit"
               disabled={busy}
-              className="mt-sm flex min-h-[48px] w-full items-center justify-center gap-sm rounded-lg bg-primary font-label-md text-label-md text-on-primary shadow-sm transition-all hover:bg-on-primary-fixed-variant hover:shadow-md active:scale-[0.98] disabled:opacity-60"
+              className="mt-sm flex min-h-[48px] w-full items-center justify-center gap-sm rounded-lg bg-primary font-label-md text-label-md text-on-primary shadow-sm transition-all hover:bg-primary-hover hover:shadow-md active:scale-[0.98] disabled:opacity-60"
             >
               {busy ? (
                 <Spinner className="h-4 w-4" />

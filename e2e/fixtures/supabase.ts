@@ -62,12 +62,14 @@ const genId = () => `stub-${++idCounter}`
 
 function defaultStore(): Store {
   return {
-    // off_language null = no explicit choice yet, so the app follows the
-    // device language (the browser context's `locale`).
+    // off_language / theme null = no explicit choice yet, so the app follows
+    // the device language (the browser context's `locale`) and the device color
+    // scheme (`colorScheme`).
     profiles: [
       {
         id: USER_ID,
         off_language: null,
+        theme: null,
         unit_system: 'metric',
         created_at: '2024-01-01',
         updated_at: '2024-01-01',

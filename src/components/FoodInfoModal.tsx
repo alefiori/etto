@@ -49,7 +49,7 @@ export function FoodInfoModal({
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-end justify-center bg-black/30 p-0 backdrop-blur-[4px] sm:items-center sm:p-lg"
+      className="fixed inset-0 z-[80] flex items-end justify-center bg-black/30 p-0 backdrop-blur-[4px] dark:bg-black/60 sm:items-center sm:p-lg"
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}

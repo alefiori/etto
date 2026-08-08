@@ -10,6 +10,10 @@ import { chartGeometry, sharedDomain, type SeriesPoint } from '@/lib/trend'
  * to its container (`preserveAspectRatio="none"` is deliberately *not* used, so
  * the stroke stays even) and is labelled for screen readers by `label`, since
  * the series itself conveys nothing to them.
+ *
+ * Paints go through `style` rather than the `fill`/`stroke`/`stop-color`
+ * presentation attributes: callers pass `rgb(var(--…))` references so the chart
+ * follows the theme, and var() is not substituted inside those attributes.
  */
 export function TrendChart({
   trend,
@@ -55,8 +59,8 @@ export function TrendChart({
     >
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.22" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
+          <stop offset="0%" style={{ stopColor: color, stopOpacity: 0.22 }} />
+          <stop offset="100%" style={{ stopColor: color, stopOpacity: 0 }} />
         </linearGradient>
       </defs>
 
@@ -65,25 +69,34 @@ export function TrendChart({
       {/* Raw weigh-ins: visible enough to show the scatter the trend smooths
           out, faint enough not to compete with the line. */}
       {rawGeo.points.map((p) => (
-        <circle key={p.date} cx={p.x} cy={p.y} r={2} fill={tint} stroke={color} strokeWidth={1} />
+        <circle
+          key={p.date}
+          cx={p.x}
+          cy={p.y}
+          r={2}
+          strokeWidth={1}
+          style={{ fill: tint, stroke: color }}
+        />
       ))}
 
       <path
         d={geo.line}
         fill="none"
-        stroke={color}
+        style={{ stroke: color }}
         strokeWidth={2.5}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
 
-      {/* The most recent point, emphasised — it's the number the user came for. */}
+      {/* The most recent point, emphasised — it's the number the user came for.
+          Its halo is the card it sits on rather than white, so the dot still
+          reads as lifted off the surface in the dark scheme. */}
       <circle
         cx={geo.points[geo.points.length - 1].x}
         cy={geo.points[geo.points.length - 1].y}
         r={4}
-        fill={color}
-        stroke="#ffffff"
+        className="stroke-surface-container-lowest"
+        style={{ fill: color }}
         strokeWidth={2}
       />
     </svg>

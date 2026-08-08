@@ -125,7 +125,7 @@ export function MealSettings() {
         <button
           type="submit"
           disabled={atLimit || adding || newName.trim() === ''}
-          className="flex min-h-[44px] shrink-0 items-center gap-xs rounded-full bg-primary-container/20 px-4 font-label-md text-label-md text-primary transition-colors hover:bg-primary-container/30 disabled:opacity-40"
+          className="flex min-h-[44px] shrink-0 items-center gap-xs rounded-full bg-primary-tint/20 px-4 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/30 disabled:opacity-40"
         >
           {adding ? <Spinner className="h-4 w-4" /> : <Icon name="add" className="text-[18px]" />}
           {t('meals.addMeal')}

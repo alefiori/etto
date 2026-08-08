@@ -1,23 +1,33 @@
 <svg width="2732" height="2732" viewBox="0 0 2732 2732" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Dark-mode splash — intentionally identical to splash.svg. The app is
-       light-only, so a dark splash would flash before opening into a light UI.
-       Keeping the light splash in OS dark mode stays consistent with the app. -->
-  <rect width="2732" height="2732" fill="#f8f9ff"/>
-  <g transform="translate(1366 1366) scale(1.7) translate(-256 -256)">
-    <rect width="512" height="512" rx="112" fill="#00685f"/>
+  
+  <rect width="2732" height="2732" fill="#0b1420"></rect>
+
+  <g transform="translate(1980 640) scale(2.6) translate(-256 -256)" opacity="0.42">
     <g fill="none" stroke-linecap="round" transform="rotate(-90 256 256)">
-      <!-- carbs ring (outer) -->
-      <circle cx="256" cy="256" r="150" stroke="#00504a" stroke-width="34"/>
-      <circle cx="256" cy="256" r="150" stroke="#F59E0B" stroke-width="34"
-        stroke-dasharray="942" stroke-dashoffset="236"/>
-      <!-- protein ring (middle) -->
-      <circle cx="256" cy="256" r="106" stroke="#00504a" stroke-width="34"/>
-      <circle cx="256" cy="256" r="106" stroke="#3B82F6" stroke-width="34"
-        stroke-dasharray="666" stroke-dashoffset="200"/>
-      <!-- fats ring (inner) -->
-      <circle cx="256" cy="256" r="62" stroke="#00504a" stroke-width="34"/>
-      <circle cx="256" cy="256" r="62" stroke="#8B5CF6" stroke-width="34"
-        stroke-dasharray="390" stroke-dashoffset="156"/>
+      <circle cx="256" cy="256" r="150" stroke="#16263a" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="150" stroke="#F59E0B" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
+      <circle cx="256" cy="256" r="106" stroke="#16263a" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="106" stroke="#3B82F6" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
+      <circle cx="256" cy="256" r="62" stroke="#16263a" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="62" stroke="#8B5CF6" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
     </g>
   </g>
+
+  <g transform="translate(830 1120) scale(0.469)">
+    <rect width="512" height="512" rx="112" fill="#00685f"></rect>
+    <g fill="none" stroke-linecap="round" transform="rotate(-90 256 256)">
+      <circle cx="256" cy="256" r="150" stroke="#00504a" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="150" stroke="#F59E0B" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
+      <circle cx="256" cy="256" r="106" stroke="#00504a" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="106" stroke="#3B82F6" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
+      <circle cx="256" cy="256" r="62" stroke="#00504a" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="62" stroke="#8B5CF6" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
+    </g>
+  </g>
+
+  <text x="830" y="1560" font-family="Manrope, -apple-system, Roboto, &#39;Helvetica Neue&#39;, sans-serif" font-size="140" font-weight="800" letter-spacing="-4" fill="#eaf1ff">MacroTrack</text>
+  <text x="830" y="1650" font-family="Manrope, -apple-system, Roboto, &#39;Helvetica Neue&#39;, sans-serif" font-size="56" font-weight="400" fill="#9fb0c2">Track your macros, every day.</text>
+
+  <rect x="830" y="1730" width="330" height="10" rx="5" fill="#1b2c3f"></rect>
+  <rect x="830" y="1730" width="140" height="10" rx="5" fill="#6bd8cb"></rect>
 </svg>

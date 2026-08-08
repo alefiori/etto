@@ -7,64 +7,87 @@ import type { Config } from 'tailwindcss'
  * The macro accent colors (carbs/protein/fats) are hardcoded as literals
  * throughout the export; we promote them to named tokens so they're used
  * consistently everywhere.
+ *
+ * Every role that differs between light and dark points at a CSS variable
+ * declared in src/index.css, so `bg-surface` / `text-on-surface` keep working
+ * unchanged and the `.dark` class on <html> is the only thing that switches.
+ * `rgb(<var> / <alpha-value>)` is what preserves the opacity modifiers
+ * (`bg-primary/10`), which a plain `var(--x)` color would break.
+ *
+ * The Material 3 *fixed* roles are the exception: they are specified to hold
+ * the same value in both schemes, so they stay literal.
  */
+const token = (name: string) => `rgb(var(--${name}) / <alpha-value>)`
+
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   darkMode: 'class',
   theme: {
     extend: {
       colors: {
+        // --- Fixed roles: identical in both schemes, by definition ---
         'secondary-fixed-dim': '#c4c7c9',
-        'surface-container-high': '#dce9ff',
         'on-tertiary-fixed': '#141b2b',
-        'on-background': '#0b1c30',
-        'on-error': '#ffffff',
-        outline: '#6d7a77',
         'tertiary-fixed': '#dce2f7',
         'primary-fixed-dim': '#6bd8cb',
-        error: '#ba1a1a',
         'on-primary-fixed': '#00201d',
         'tertiary-fixed-dim': '#c0c6db',
-        'on-primary': '#ffffff',
-        'on-secondary-container': '#626567',
-        'inverse-on-surface': '#eaf1ff',
-        tertiary: '#555c6e',
-        'on-secondary': '#ffffff',
-        'surface-variant': '#d3e4fe',
-        'on-error-container': '#93000a',
-        'secondary-container': '#e0e3e5',
         'secondary-fixed': '#e0e3e5',
-        'error-container': '#ffdad6',
-        'on-tertiary': '#ffffff',
-        'on-primary-container': '#f4fffc',
-        'outline-variant': '#bcc9c6',
-        'surface-tint': '#006a61',
-        surface: '#f8f9ff',
-        'tertiary-container': '#6e7487',
-        'surface-container-lowest': '#ffffff',
-        'primary-container': '#008378',
-        'primary-fixed': '#89f5e7',
-        primary: '#00685f',
-        'surface-container': '#e5eeff',
         'on-secondary-fixed': '#191c1e',
-        'inverse-primary': '#6bd8cb',
         'on-tertiary-fixed-variant': '#404758',
-        secondary: '#5c5f61',
-        'inverse-surface': '#213145',
-        'surface-dim': '#cbdbf5',
-        'surface-container-low': '#eff4ff',
-        'surface-bright': '#f8f9ff',
-        background: '#f8f9ff',
         'on-secondary-fixed-variant': '#444749',
-        'on-surface': '#0b1c30',
-        'on-surface-variant': '#3d4947',
-        'on-tertiary-container': '#fefcff',
-        'surface-container-highest': '#d3e4fe',
         'on-primary-fixed-variant': '#005049',
-        // Macro accents (data visualization only)
-        carbs: { DEFAULT: '#F59E0B', tint: '#FEF3C7' },
-        protein: { DEFAULT: '#3B82F6', tint: '#DBEAFE' },
-        fats: { DEFAULT: '#8B5CF6', tint: '#EDE9FE' },
+
+        // --- Scheme-dependent roles ---
+        background: token('background'),
+        surface: token('surface'),
+        'surface-bright': token('surface-bright'),
+        'surface-dim': token('surface-dim'),
+        'surface-container-lowest': token('surface-container-lowest'),
+        'surface-container-low': token('surface-container-low'),
+        'surface-container': token('surface-container'),
+        'surface-container-high': token('surface-container-high'),
+        'surface-container-highest': token('surface-container-highest'),
+        'surface-variant': token('surface-variant'),
+        'surface-tint': token('surface-tint'),
+        'on-background': token('on-background'),
+        'on-surface': token('on-surface'),
+        'on-surface-variant': token('on-surface-variant'),
+        outline: token('outline'),
+        'outline-variant': token('outline-variant'),
+        primary: token('primary'),
+        'on-primary': token('on-primary'),
+        'primary-container': token('primary-container'),
+        'on-primary-container': token('on-primary-container'),
+        /** Hover fill for filled-primary surfaces — darker in light, dimmer in dark. */
+        'primary-hover': token('primary-hover'),
+        /** Base for low-opacity primary washes: only ever used as `primary-tint/N`. */
+        'primary-tint': token('primary-tint'),
+        secondary: token('secondary'),
+        'on-secondary': token('on-secondary'),
+        'secondary-container': token('secondary-container'),
+        'on-secondary-container': token('on-secondary-container'),
+        tertiary: token('tertiary'),
+        'on-tertiary': token('on-tertiary'),
+        'tertiary-container': token('tertiary-container'),
+        'on-tertiary-container': token('on-tertiary-container'),
+        error: token('error'),
+        'on-error': token('on-error'),
+        'error-container': token('error-container'),
+        'on-error-container': token('on-error-container'),
+        'inverse-surface': token('inverse-surface'),
+        'inverse-on-surface': token('inverse-on-surface'),
+        'inverse-primary': token('inverse-primary'),
+
+        // Macro + hydration accents (data visualization only)
+        carbs: { DEFAULT: token('carbs'), text: token('carbs-text'), tint: token('carbs-tint') },
+        protein: {
+          DEFAULT: token('protein'),
+          text: token('protein-text'),
+          tint: token('protein-tint'),
+        },
+        fats: { DEFAULT: token('fats'), text: token('fats-text'), tint: token('fats-tint') },
+        water: { DEFAULT: token('water'), text: token('water-text'), tint: token('water-tint') },
       },
       borderRadius: {
         // Tailwind defaults already match the export (DEFAULT .25 / lg .5 / xl .75).
@@ -118,11 +141,14 @@ export default {
         'data-display': ['40px', { lineHeight: '48px', letterSpacing: '-0.03em', fontWeight: '800' }],
       },
       boxShadow: {
-        // Level 1 ambient card shadow from DESIGN.md
-        card: '0 4px 20px rgba(0,0,0,0.04)',
-        'card-hover': '0 4px 24px rgba(0,104,95,0.05)',
-        sidebar: '4px 0 24px rgba(0,0,0,0.02)',
-        bottomnav: '0 -4px 20px rgba(0,0,0,0.05)',
+        // Level 1 ambient card shadow from DESIGN.md. Behind a variable
+        // (src/index.css) because a 4%-black lift is invisible on a dark page:
+        // the dark scheme deepens it and prepends a 1px ring, so `shadow-card`
+        // keeps separating cards in both themes without any component knowing.
+        card: 'var(--shadow-card)',
+        'card-hover': 'var(--shadow-card-hover)',
+        sidebar: 'var(--shadow-sidebar)',
+        bottomnav: 'var(--shadow-bottomnav)',
       },
       scale: {
         '98': '0.98',

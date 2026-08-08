@@ -3,21 +3,38 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useProfile } from '@/context/ProfileContext'
 import { useI18n } from '@/context/I18nContext'
+import { useTheme } from '@/context/ThemeContext'
 import { LOCALES, type Locale } from '@/lib/i18n'
+import { THEME_PREFERENCES, type ThemePreference } from '@/lib/theme'
+import type { TranslationKey } from '@/lib/i18n'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { MealSettings } from '@/components/profile/MealSettings'
 import { BodyMetrics } from '@/components/profile/BodyMetrics'
 import { WaterSettings } from '@/components/profile/WaterSettings'
 
+const APPEARANCE_ICON: Record<ThemePreference, string> = {
+  system: 'smartphone',
+  light: 'light_mode',
+  dark: 'nights_stay',
+}
+
+const APPEARANCE_LABEL: Record<ThemePreference, TranslationKey> = {
+  system: 'profile.appearanceSystem',
+  light: 'profile.appearanceLight',
+  dark: 'profile.appearanceDark',
+}
+
 export default function Profile() {
   const { user, signOut, isAnonymous } = useAuth()
   const navigate = useNavigate()
   const { locale, setLocale, isLocaleExplicit, loading: profileLoading } = useProfile()
+  const { preference: themePreference, setPreference } = useTheme()
   const { t } = useI18n()
   const [busy, setBusy] = useState(false)
   const [savingLang, setSavingLang] = useState(false)
   const [langError, setLangError] = useState<string | null>(null)
+  const [themeError, setThemeError] = useState<string | null>(null)
 
   async function handleSignOut() {
     setBusy(true)
@@ -28,6 +45,15 @@ export default function Profile() {
       navigate('/', { replace: true })
     } finally {
       setBusy(false)
+    }
+  }
+
+  async function handleAppearanceChange(next: ThemePreference) {
+    setThemeError(null)
+    try {
+      await setPreference(next)
+    } catch {
+      setThemeError(t('profile.couldNotSaveAppearance'))
     }
   }
 
@@ -62,6 +88,51 @@ export default function Profile() {
               {isAnonymous || !user?.email ? t('profile.guestAccount') : user.email}
             </p>
           </div>
+        </div>
+
+        <hr className="border-surface-container-highest" />
+
+        {/* Appearance. "System" is the absence of a choice, not a third scheme:
+            picking it clears the stored preference so the app goes back to
+            following prefers-color-scheme — the same shape as the language
+            setting below, which treats a null column the same way. */}
+        <div className="flex flex-col gap-sm">
+          <div className="flex items-center gap-2">
+            <Icon name="light_mode" className="text-[20px] text-on-surface-variant" />
+            <span className="font-label-md text-label-md text-on-surface">
+              {t('profile.appearanceLabel')}
+            </span>
+          </div>
+          <p className="font-body-md text-sm text-on-surface-variant">
+            {t('profile.appearanceDescription')}
+          </p>
+          <div
+            role="radiogroup"
+            aria-label={t('profile.appearanceLabel')}
+            className="flex gap-1 rounded-full bg-surface-container-low p-1"
+          >
+            {THEME_PREFERENCES.map((option) => {
+              const active = themePreference === option
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => handleAppearanceChange(option)}
+                  className={`flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 font-label-md text-label-md transition-colors ${
+                    active
+                      ? 'bg-primary text-on-primary'
+                      : 'text-on-surface-variant hover:bg-surface-container-high'
+                  }`}
+                >
+                  <Icon name={APPEARANCE_ICON[option]} className="text-[18px]" />
+                  {t(APPEARANCE_LABEL[option])}
+                </button>
+              )
+            })}
+          </div>
+          {themeError && <p className="font-label-md text-label-md text-error">{themeError}</p>}
         </div>
 
         <hr className="border-surface-container-highest" />

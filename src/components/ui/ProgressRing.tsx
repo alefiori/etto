@@ -2,8 +2,14 @@ import { RING, ringOffset } from '@/lib/macros'
 
 /**
  * SVG macro progress ring — viewBox 100×100, r=45, stroke-width 10,
- * circumference ≈283, rounded linecaps, light-tinted track in the macro color.
+ * circumference ≈283, rounded linecaps, tinted track in the macro color.
  * The progress arc's stroke-dashoffset is driven by consumed/target.
+ *
+ * `color` and `trackColor` are applied through `style` rather than the `stroke`
+ * presentation attribute so that a `rgb(var(--carbs))` reference resolves:
+ * var() substitution does not happen inside presentation attributes, which is
+ * how the accents in lib/constants.ts are expressed so they can flip with the
+ * theme.
  */
 export function ProgressRing({
   consumed,
@@ -35,7 +41,7 @@ export function ProgressRing({
           cy="50"
           r={RING.radius}
           fill="none"
-          stroke={trackColor}
+          style={{ stroke: trackColor }}
           strokeWidth={RING.strokeWidth}
         />
         <circle
@@ -44,7 +50,7 @@ export function ProgressRing({
           cy="50"
           r={RING.radius}
           fill="none"
-          stroke={color}
+          style={{ stroke: color }}
           strokeWidth={RING.strokeWidth}
           strokeLinecap="round"
           strokeDasharray={RING.circumference}

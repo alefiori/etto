@@ -64,6 +64,11 @@ and the per-screen `code.html` files.
   (before signing in, or from the Profile page) pins it, and that single
   preference drives both the interface language **and** the language of Open
   Food Facts results.
+- **Light & dark themes** — every screen has a dark counterpart: deep
+  navy-tinted surfaces, brightened macro accents, and chrome one step lighter
+  than the page. Like the language, it **follows the device by default**; the
+  Appearance control on the Profile page (System / Light / Dark) pins a choice
+  to the account, and the native status bar and splash screen follow along.
 - **Weight tracking** — one weigh-in a day with a trend chart that separates the
   signal from the noise: raw readings are dots, the smoothed EWMA is the line,
   and the reported weekly rate uses a Theil–Sen fit so an overnight water swing
@@ -121,7 +126,7 @@ supabase db push
 ```
 
 **Option B — Supabase SQL Editor:** open the SQL Editor in the dashboard and run
-each migration file **in order** (`0001_init.sql` → `0008_device_default_language.sql`).
+each migration file **in order** (`0001_init.sql` → `0013_theme.sql`).
 
 Together the migrations create `macro_targets`, `foods`, `food_logs`,
 `profiles`, and `meals`; enable RLS with owner-only policies (global foods with a
@@ -130,8 +135,9 @@ sources; add per-user profile settings (preferred language); add **community
 foods** (`foods.is_public`) — including the guards that keep a shared food safe
 to unshare and prevent deleting one that other people have logged; and make
 meals **per-user rows** (seeded with the defaults for new and existing accounts)
-instead of a fixed enum on `food_logs.meal`; and make `profiles.off_language`
-nullable, where NULL means "no explicit choice — follow the device language".
+instead of a fixed enum on `food_logs.meal`; make `profiles.off_language`
+nullable, where NULL means "no explicit choice — follow the device language";
+and add `profiles.theme`, which follows the same rule for light/dark.
 
 ### 3. Enable guest sign-in (optional but recommended)
 
@@ -470,17 +476,55 @@ Facts result language**. A choice made on the auth pages rides along as sign-up
 metadata, which the database trigger uses to seed the new profile; without one,
 the account starts with no preference rather than being frozen at English.
 
+## Theming
+
+The color scheme is one layer of CSS variables. Every Material 3 role that
+differs between light and dark is declared as space-separated RGB channels on
+`:root` and redeclared under `.dark` in
+[`src/index.css`](src/index.css); [`tailwind.config.ts`](tailwind.config.ts)
+points each color token at its variable as
+`rgb(var(--token) / <alpha-value>)`. So `bg-surface`, `text-on-surface` and
+`bg-primary/10` are all written once and mean the right thing in both schemes —
+the `dark` class on `<html>` is the only switch, and there are barely any
+`dark:` variants in the components.
+
+Three things can't ride on a Tailwind class and are handled explicitly:
+
+- **Macro accents** (`MACROS` / `WATER_COLOR` in
+  [`src/lib/constants.ts`](src/lib/constants.ts)) reach the DOM as inline styles
+  and SVG paints, so they are `rgb(var(--carbs))`-style references rather than
+  literals. That keeps the swap in CSS: no theme hook threaded through eight
+  files, and no React re-render when the scheme flips. Note that SVG *presentation
+  attributes* don't substitute `var()`, which is why `ProgressRing`/`TrendChart`
+  set `style={{ stroke }}` instead of `stroke=`.
+- **Elevation.** A 4%-black card shadow is invisible on a dark page, so
+  `shadow-card` is a variable too — dark deepens it *and* prepends a 1px ring,
+  giving cards a hairline border where the light build gives them lift.
+- **The calorie card** is the one surface where primary doesn't flip. A
+  full-bleed panel of the dark scheme's near-white primary is blinding at night,
+  so it drops to `primary-container`, which is M3's own rule for large filled
+  surfaces.
+
+**The default is the device scheme**, exactly like the language:
+`profiles.theme` is NULL until someone picks one, and NULL resolves against
+`prefers-color-scheme` on every load (and follows it live, without a reload). An
+explicit choice is written to the profile and mirrored to local storage — which
+[`index.html`](index.html) reads in a tiny inline script *before* the module
+bundle runs, since a module only executes after the document is parsed and the
+app would otherwise flash white on every dark-mode load.
+
 ## Project structure
 
 ```
 src/
   components/   # layout (incl. guest banner), UI primitives, profile settings,
                 #   Add Food modal, barcode scanner
-  context/      # AuthContext, ProfileContext, I18nContext, MealsContext, AppShellContext
+  context/      # AuthContext, ProfileContext, ThemeContext, I18nContext,
+                #   MealsContext, AppShellContext
   hooks/        # useFoodLogs, useTargets, useFoodSearch, useDebounce, useScrollLock
   lib/          # supabase client, macros math, foodApi (Edge Function client),
                 #   foods (CRUD/copy/share), meals (rename/reorder), exportText
-                #   (chat share), i18n, types
+                #   (chat share), i18n, theme (light/dark), types
   pages/        # Auth, ForgotPassword, Dashboard, Targets, MyFoods, CreateCustomFood, Profile
 supabase/
   functions/    # food-search Edge Function (external food data proxy)

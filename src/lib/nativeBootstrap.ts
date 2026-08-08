@@ -11,21 +11,36 @@
  */
 
 import { isNativePlatform } from './platform'
+import { CHROME_COLOR, documentTheme, type ResolvedTheme } from './theme'
 
 export async function bootstrapNative(): Promise<void> {
   if (!isNativePlatform()) return
 
-  await Promise.all([configureStatusBar(), configureKeyboard()])
+  // The theme the inline bootstrap in index.html already put on <html>.
+  // ThemeProvider re-syncs this as soon as it mounts; doing it here too means
+  // the status bar is never light behind a dark first paint.
+  await Promise.all([syncNativeChrome(documentTheme()), configureKeyboard()])
   await registerBackButton()
   await hideSplash()
 }
 
-async function configureStatusBar(): Promise<void> {
+/**
+ * Point the native status bar at the app's chrome color for a theme.
+ *
+ * A no-op on the web, so ThemeProvider can call it unconditionally whenever the
+ * resolved theme changes — the status bar is the one piece of chrome that does
+ * not follow the CSS variables, and leaving it light behind a dark app is the
+ * most visible way to get dark mode wrong.
+ */
+export async function syncNativeChrome(theme: ResolvedTheme): Promise<void> {
+  if (!isNativePlatform()) return
   try {
     const { StatusBar, Style } = await import('@capacitor/status-bar')
     // The PWA manifest's theme_color does not apply natively.
-    await StatusBar.setStyle({ style: Style.Light })
-    await StatusBar.setBackgroundColor({ color: '#f8f9ff' })
+    // Style is named for the *content*: Light draws dark glyphs for a light
+    // background, Dark draws light glyphs for a dark one.
+    await StatusBar.setStyle({ style: theme === 'dark' ? Style.Dark : Style.Light })
+    await StatusBar.setBackgroundColor({ color: CHROME_COLOR[theme] })
   } catch {
     // iOS ignores setBackgroundColor and older shells may lack the plugin;
     // neither is worth failing start-up over.

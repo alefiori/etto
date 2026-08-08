@@ -53,6 +53,8 @@ export type Profile = {
   id: string
   /** Explicit language choice; null means "follow the device language". */
   off_language: string | null
+  /** Explicit appearance choice; null means "follow the device scheme". */
+  theme: 'light' | 'dark' | null
   /** Body metrics. Null means "not answered yet", never a guessed default. */
   sex: Sex | null
   birthdate: string | null // YYYY-MM-DD

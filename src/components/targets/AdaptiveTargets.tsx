@@ -78,7 +78,7 @@ export function AdaptiveTargets({
   }
 
   return (
-    <section className="flex flex-col gap-sm rounded-2xl border border-primary/30 bg-primary-container/10 p-md shadow-card">
+    <section className="flex flex-col gap-sm rounded-2xl border border-primary/30 bg-primary-tint/10 p-md shadow-card">
       <div className="flex items-start justify-between gap-md">
         <div className="min-w-0">
           <h3 className="flex items-center gap-2 font-headline-md text-headline-md text-on-surface">
@@ -217,7 +217,7 @@ function AdaptiveBody({
         type="button"
         onClick={onApply}
         disabled={applying}
-        className="mt-xs flex h-[44px] w-full items-center justify-center gap-2 rounded-full bg-primary font-label-md text-label-md text-on-primary transition-all hover:bg-on-primary-fixed-variant active:scale-95 disabled:opacity-40 sm:w-auto sm:px-lg"
+        className="mt-xs flex h-[44px] w-full items-center justify-center gap-2 rounded-full bg-primary font-label-md text-label-md text-on-primary transition-all hover:bg-primary-hover active:scale-95 disabled:opacity-40 sm:w-auto sm:px-lg"
       >
         {applying && <Spinner className="h-4 w-4" />}
         {applied ? t('adaptive.applied') : t('adaptive.apply')}

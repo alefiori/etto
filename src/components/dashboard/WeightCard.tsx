@@ -16,9 +16,16 @@ const RANGES = [
   { days: 365, labelKey: 'weight.range365' },
 ] as const
 
-/** Weight readings are noisy, so the chart leads with the smoothed trend. */
-const TREND_COLOR = '#00685f' // primary
-const TREND_TINT = '#f4fffc' // on-primary-container
+/**
+ * Weight readings are noisy, so the chart leads with the smoothed trend.
+ *
+ * Both are theme variables (src/index.css): the light build draws a primary
+ * line with a near-white dot fill, and the dark one dims the line to
+ * primary-fixed-dim and fills the dots with the card surface, so they keep
+ * reading as raw readings punched out of the line rather than as blobs.
+ */
+const TREND_COLOR = 'rgb(var(--trend))'
+const TREND_TINT = 'rgb(var(--trend-dot))'
 
 /**
  * Rates below this read as "holding steady" rather than as a number.
@@ -146,7 +153,7 @@ export function WeightCard() {
           type="button"
           onClick={handleSave}
           disabled={saving || draft.trim() === ''}
-          className="flex h-[48px] shrink-0 items-center gap-2 rounded-full bg-primary px-lg font-label-md text-label-md text-on-primary transition-all hover:bg-on-primary-fixed-variant active:scale-95 disabled:opacity-40"
+          className="flex h-[48px] shrink-0 items-center gap-2 rounded-full bg-primary px-lg font-label-md text-label-md text-on-primary transition-all hover:bg-primary-hover active:scale-95 disabled:opacity-40"
         >
           {saving ? <Spinner className="h-4 w-4" /> : null}
           {justSaved ? t('weight.saved') : t('weight.save')}

@@ -58,13 +58,13 @@ export default function ForgotPassword() {
 
           {sent ? (
             <div className="flex flex-col gap-md">
-              <p className="rounded-lg bg-primary-container/10 px-md py-sm font-label-md text-label-md text-primary">
+              <p className="rounded-lg bg-primary-tint/10 px-md py-sm font-label-md text-label-md text-primary">
                 {t('forgotPassword.linkSent', { email })}
               </p>
               <button
                 type="button"
                 onClick={() => navigate('/signin')}
-                className="flex min-h-[48px] w-full items-center justify-center rounded-lg bg-primary font-label-md text-label-md text-on-primary shadow-sm transition-all hover:bg-on-primary-fixed-variant active:scale-[0.98]"
+                className="flex min-h-[48px] w-full items-center justify-center rounded-lg bg-primary font-label-md text-label-md text-on-primary shadow-sm transition-all hover:bg-primary-hover active:scale-[0.98]"
               >
                 {t('forgotPassword.backToSignIn')}
               </button>
@@ -94,14 +94,14 @@ export default function ForgotPassword() {
               <button
                 type="submit"
                 disabled={busy}
-                className="mt-sm flex min-h-[48px] w-full items-center justify-center gap-sm rounded-lg bg-primary font-label-md text-label-md text-on-primary shadow-sm transition-all hover:bg-on-primary-fixed-variant hover:shadow-md active:scale-[0.98] disabled:opacity-60"
+                className="mt-sm flex min-h-[48px] w-full items-center justify-center gap-sm rounded-lg bg-primary font-label-md text-label-md text-on-primary shadow-sm transition-all hover:bg-primary-hover hover:shadow-md active:scale-[0.98] disabled:opacity-60"
               >
                 {busy ? <Spinner className="h-4 w-4" /> : t('forgotPassword.sendResetLink')}
               </button>
               <button
                 type="button"
                 onClick={() => navigate('/signin')}
-                className="text-center font-label-md text-label-md text-primary hover:text-on-primary-fixed-variant"
+                className="text-center font-label-md text-label-md text-primary hover:text-primary-hover"
               >
                 {t('forgotPassword.backToSignIn')}
               </button>

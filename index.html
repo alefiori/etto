@@ -29,6 +29,47 @@
       crossorigin
     />
     <link rel="preload" href="/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!--
+      Live browser-chrome color, rewritten by src/lib/theme.ts whenever the
+      scheme changes.
+
+      It carries an id because vite-plugin-pwa appends a second theme-color meta
+      at the end of <head>, built from the manifest's `theme_color` (the brand
+      teal, which is the *install* color: the PWA title bar and task switcher).
+      A user agent uses the first matching tag, so this one governs the running
+      document — but everything that writes it must target the id, or it would
+      be a coin flip which of the two it found.
+    -->
+    <meta id="app-theme-color" name="theme-color" content="#f8f9ff" />
+    <!--
+      Theme, before the first paint.
+
+      This has to run inline and synchronously: the bundle is a module, so it
+      only executes after the document has been parsed and painted, and the app
+      would flash white before React could add the `dark` class. Kept
+      deliberately tiny and duplicated rather than imported — it mirrors
+      getStoredTheme/detectDeviceTheme/applyTheme in src/lib/theme.ts, including
+      the storage key, and those are the source of truth for everything after
+      this moment.
+    -->
+    <script>
+      ;(function () {
+        try {
+          var stored = localStorage.getItem('macrotrack.theme')
+          var dark =
+            stored === 'dark' ||
+            (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.classList.toggle('dark', dark)
+          document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+          document
+            .getElementById('app-theme-color')
+            .setAttribute('content', dark ? '#17223a' : '#f8f9ff')
+        } catch (e) {
+          /* No storage or no matchMedia: light, which is the markup default. */
+        }
+      })()
+    </script>
   </head>
   <body class="h-full">
     <div id="root" class="h-full"></div>

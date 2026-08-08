@@ -51,7 +51,7 @@ export function GuestBanner() {
   return (
     <>
       <div className="mx-auto flex max-w-[1200px] flex-col gap-sm px-container-margin-mobile pt-md md:flex-row md:items-center md:justify-between md:px-container-margin-desktop">
-        <div className="flex items-center gap-sm rounded-2xl border border-primary/30 bg-primary-container/10 p-md text-on-surface md:flex-1">
+        <div className="flex items-center gap-sm rounded-2xl border border-primary/30 bg-primary-tint/10 p-md text-on-surface md:flex-1">
           <Icon name="info" className="shrink-0 text-primary" />
           <p className="font-body-md text-body-md">{t('guest.message')}</p>
           <button
@@ -65,7 +65,7 @@ export function GuestBanner() {
 
       {open && (
         <div
-          className="fixed inset-0 z-[80] flex items-end justify-center bg-black/30 backdrop-blur-[4px] sm:items-center sm:p-lg"
+          className="fixed inset-0 z-[80] flex items-end justify-center bg-black/30 backdrop-blur-[4px] dark:bg-black/60 sm:items-center sm:p-lg"
           role="dialog"
           aria-modal="true"
           onMouseDown={(e) => {
@@ -86,7 +86,7 @@ export function GuestBanner() {
             <p className="font-body-md text-body-md text-on-surface-variant">{t('guest.dialogBody')}</p>
 
             {notice && (
-              <p className="rounded-lg bg-primary-container/10 px-md py-sm font-label-md text-label-md text-primary">
+              <p className="rounded-lg bg-primary-tint/10 px-md py-sm font-label-md text-label-md text-primary">
                 {notice}
               </p>
             )}
@@ -130,7 +130,7 @@ export function GuestBanner() {
               <button
                 type="submit"
                 disabled={busy}
-                className="mt-sm flex min-h-[48px] w-full items-center justify-center gap-sm rounded-lg bg-primary font-label-md text-label-md text-on-primary shadow-sm transition-all hover:bg-on-primary-fixed-variant disabled:opacity-60"
+                className="mt-sm flex min-h-[48px] w-full items-center justify-center gap-sm rounded-lg bg-primary font-label-md text-label-md text-on-primary shadow-sm transition-all hover:bg-primary-hover disabled:opacity-60"
               >
                 {busy ? <Spinner className="h-4 w-4" /> : <span>{t('guest.createAccount')}</span>}
               </button>
@@ -142,7 +142,7 @@ export function GuestBanner() {
               <button
                 type="button"
                 onClick={() => navigate('/signin')}
-                className="font-label-md text-label-md text-primary transition-colors hover:text-on-primary-fixed-variant"
+                className="font-label-md text-label-md text-primary transition-colors hover:text-primary-hover"
               >
                 {t('auth.signInAction')}
               </button>

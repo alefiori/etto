@@ -196,7 +196,7 @@ export default function Dashboard() {
       </header>
 
       {copiedDay && (
-        <div className="flex flex-col gap-sm rounded-2xl border border-primary/30 bg-primary-container/10 p-md shadow-card sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-sm rounded-2xl border border-primary/30 bg-primary-tint/10 p-md shadow-card sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-sm text-on-surface">
             <Icon name="content_paste" className="text-primary" />
             <p className="font-body-md text-body-md">
@@ -228,7 +228,7 @@ export default function Dashboard() {
       )}
 
       {copiedMeal && (
-        <div className="flex items-center justify-between gap-sm rounded-2xl border border-primary/30 bg-primary-container/10 p-md shadow-card">
+        <div className="flex items-center justify-between gap-sm rounded-2xl border border-primary/30 bg-primary-tint/10 p-md shadow-card">
           <div className="flex min-w-0 items-center gap-sm text-on-surface">
             <Icon name="content_paste" className="shrink-0 text-primary" />
             <p className="truncate font-body-md text-body-md">
@@ -250,7 +250,7 @@ export default function Dashboard() {
       )}
 
       {copiedFood && (
-        <div className="flex items-center justify-between gap-sm rounded-2xl border border-primary/30 bg-primary-container/10 p-md shadow-card">
+        <div className="flex items-center justify-between gap-sm rounded-2xl border border-primary/30 bg-primary-tint/10 p-md shadow-card">
           <div className="flex min-w-0 items-center gap-sm text-on-surface">
             <Icon name="content_paste" className="shrink-0 text-primary" />
             <p className="truncate font-body-md text-body-md">
@@ -269,7 +269,7 @@ export default function Dashboard() {
       )}
 
       {shareNotice && (
-        <p className="flex items-center gap-sm rounded-2xl border border-primary/30 bg-primary-container/10 px-md py-sm font-label-md text-label-md text-on-surface">
+        <p className="flex items-center gap-sm rounded-2xl border border-primary/30 bg-primary-tint/10 px-md py-sm font-label-md text-label-md text-on-surface">
           <Icon name="check_circle" className="text-sm text-primary" />
           {shareNotice}
         </p>
@@ -295,7 +295,7 @@ export default function Dashboard() {
               </div>
               <Link
                 to="/targets"
-                className="rounded-full bg-primary-container/10 px-4 py-2 font-label-md text-label-md text-primary transition-colors hover:bg-primary-container/20"
+                className="rounded-full bg-primary-tint/10 px-4 py-2 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/20"
               >
                 {t('dashboard.setWeeklyTargets')}
               </Link>
@@ -386,11 +386,17 @@ export default function Dashboard() {
 
             {/* Calorie summary */}
             <div className="flex flex-col gap-lg lg:col-span-1">
-              <div className="relative overflow-hidden rounded-2xl bg-primary p-lg text-on-primary shadow-sm">
-                <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
+              {/* The one surface where primary does *not* flip with the theme.
+                  A full-bleed panel of the dark scheme's near-white primary is
+                  blinding at night, so it drops to primary-container — M3's own
+                  rule for large filled surfaces. Its internal white/black veils
+                  become tints of primary-fixed for the same reason: white over
+                  a dark teal reads as haze rather than as lift. */}
+              <div className="relative overflow-hidden rounded-2xl bg-primary p-lg text-on-primary shadow-sm dark:bg-primary-container dark:text-on-primary-container">
+                <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl dark:bg-primary-fixed/[0.14]" />
                 <h3 className="relative z-10 mb-xl font-headline-md text-headline-md">{t('dashboard.calories')}</h3>
                 <div className="relative z-10 mb-lg flex flex-col items-center justify-center">
-                  <div className="flex h-[160px] w-[160px] items-center justify-center rounded-full border-4 border-white/20 bg-white/10">
+                  <div className="flex h-[160px] w-[160px] items-center justify-center rounded-full border-4 border-white/20 bg-white/10 dark:border-primary-fixed/25 dark:bg-primary-fixed/[0.08]">
                     <div className="text-center">
                       <span className="block font-data-display text-data-display leading-none">
                         {Math.round(consumedKcal).toLocaleString()}
@@ -401,14 +407,14 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-                <div className="relative z-10 flex items-center justify-between rounded-xl bg-black/10 p-md backdrop-blur-sm">
+                <div className="relative z-10 flex items-center justify-between rounded-xl bg-black/10 p-md backdrop-blur-sm dark:bg-black/25">
                   <div className="text-center">
                     <span className="block text-sm opacity-80">{t('dashboard.goal')}</span>
                     <span className="font-label-md text-label-md">
                       {Math.round(goalKcal).toLocaleString()}
                     </span>
                   </div>
-                  <div className="h-8 w-px bg-white/20" />
+                  <div className="h-8 w-px bg-white/20 dark:bg-primary-fixed/25" />
                   <div className="text-center">
                     <span className="block text-sm opacity-80">{t('dashboard.remainingLabel')}</span>
                     <span className="font-label-md text-label-md">
@@ -497,7 +503,7 @@ function MealCard({
             <button
               onClick={onPasteFood}
               disabled={pastingFood}
-              className="flex items-center gap-xs rounded-full border border-primary px-3 py-1 font-label-md text-label-md text-primary transition-colors hover:bg-primary-container/10 disabled:opacity-40"
+              className="flex items-center gap-xs rounded-full border border-primary px-3 py-1 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/10 disabled:opacity-40"
               title={t('dashboard.pasteFoodHere')}
             >
               {pastingFood ? <Spinner className="h-4 w-4" /> : <Icon name="content_paste" className="text-sm" />}
@@ -538,7 +544,7 @@ function MealCard({
           <p className="text-sm text-on-surface-variant">{t('dashboard.noItemsLogged')}</p>
           <button
             onClick={onAdd}
-            className="mt-2 rounded-xl bg-primary-container/10 px-4 py-2 font-label-md text-label-md text-primary transition-colors hover:bg-primary-container/20"
+            className="mt-2 rounded-xl bg-primary-tint/10 px-4 py-2 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/20"
           >
             {t('dashboard.addMeal', { meal: label })}
           </button>
@@ -550,7 +556,7 @@ function MealCard({
           ))}
           <button
             onClick={onAdd}
-            className="mt-sm flex w-full items-center justify-center gap-xs rounded-xl py-2 font-label-md text-label-md text-primary transition-colors hover:bg-primary-container/10"
+            className="mt-sm flex w-full items-center justify-center gap-xs rounded-xl py-2 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/10"
           >
             <Icon name="add_circle" className="text-sm" /> {t('dashboard.addMealItem', { meal: label })}
           </button>
@@ -560,11 +566,11 @@ function MealCard({
   )
 }
 
-/** Dominant-macro color for the leading dot. */
+/** Dominant-macro color for the leading dot; outline-variant when there is none. */
 function dominantColor(m: MacroGrams): string {
   const entries = MACROS.map((meta) => ({ meta, val: m[meta.field] }))
   entries.sort((a, b) => b.val - a.val)
-  return entries[0].val > 0 ? entries[0].meta.color : '#bcc9c6'
+  return entries[0].val > 0 ? entries[0].meta.color : 'rgb(var(--outline-variant))'
 }
 
 function FoodLogRow({
@@ -653,7 +659,7 @@ function FoodLogRow({
             <button
               onClick={save}
               disabled={busy || amount <= 0}
-              className="rounded-full p-1 text-primary hover:bg-primary-container/10"
+              className="rounded-full p-1 text-primary hover:bg-primary-tint/10"
               aria-label={t('dashboard.saveServingsAria')}
             >
               {busy ? <Spinner className="h-4 w-4" /> : <Icon name="check" className="text-sm" />}

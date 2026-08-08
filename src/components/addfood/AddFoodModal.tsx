@@ -213,7 +213,7 @@ export function AddFoodModal({
             </h2>
             <button
               onClick={onClose}
-              className="rounded-full bg-surface-container-high p-2 text-on-surface transition-colors hover:bg-surface-variant"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-container-high text-on-surface transition-colors hover:bg-surface-variant"
               aria-label={t('addFood.close')}
             >
               <Icon name="close" />
@@ -272,7 +272,7 @@ export function AddFoodModal({
                 </p>
                 <button
                   onClick={() => goCreateCustom()}
-                  className="rounded-full bg-primary-container/10 px-4 py-2 font-label-md text-label-md text-primary transition-colors hover:bg-primary-container/20"
+                  className="rounded-full bg-primary-tint/10 px-4 py-2 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/20"
                 >
                   {t('addFood.createCustomFood')}
                 </button>
@@ -322,7 +322,7 @@ export function AddFoodModal({
                     onClick={() => selectFood(r)}
                     className={`flex items-center justify-between gap-sm rounded-xl border p-md text-left transition-colors ${
                       isSelected
-                        ? 'border-primary/20 bg-primary-container/10'
+                        ? 'border-primary/20 bg-primary-tint/10'
                         : 'border-transparent hover:bg-surface-container-low'
                     }`}
                   >
@@ -378,7 +378,7 @@ export function AddFoodModal({
           <div className="border-t border-surface-variant p-md">
             <button
               onClick={() => goCreateCustom()}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#F0FDFA] py-3 font-label-md text-label-md text-primary transition-colors hover:bg-surface-container-high"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#F0FDFA] py-3 font-label-md text-label-md text-primary transition-colors hover:bg-surface-container-high dark:bg-primary/10"
             >
               <Icon name="add_circle" />
               {t('addFood.createCustomFood')}
@@ -516,7 +516,7 @@ export function AddFoodModal({
                 <button
                   onClick={handleAdd}
                   disabled={saving || servings <= 0}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 font-headline-md text-headline-md text-on-primary shadow-md transition-all hover:bg-on-primary-fixed-variant active:scale-[0.98] disabled:opacity-60"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 font-headline-md text-headline-md text-on-primary shadow-md transition-all hover:bg-primary-hover active:scale-[0.98] disabled:opacity-60"
                 >
                   {saving ? (
                     <Spinner className="h-5 w-5" />

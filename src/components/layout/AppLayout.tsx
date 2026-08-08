@@ -55,7 +55,7 @@ function Sidebar() {
             className={({ isActive }) =>
               `flex items-center gap-md rounded-2xl px-md py-3 font-label-md text-label-md transition-transform active:scale-98 ${
                 isActive
-                  ? 'bg-primary-container/10 text-primary'
+                  ? 'bg-primary-tint/10 text-primary'
                   : 'text-on-surface-variant hover:bg-secondary-container'
               }`
             }
@@ -113,7 +113,7 @@ function Sidebar() {
 
         <button
           onClick={() => openAddFood()}
-          className="flex w-full items-center justify-center gap-sm rounded-2xl bg-primary px-4 py-3 font-label-md text-label-md text-on-primary shadow-sm transition-colors hover:bg-on-primary-fixed-variant hover:shadow-md"
+          className="flex w-full items-center justify-center gap-sm rounded-2xl bg-primary px-4 py-3 font-label-md text-label-md text-on-primary shadow-sm transition-colors hover:bg-primary-hover hover:shadow-md"
         >
           <Icon name="add" />
           {t('nav.addFood')}
@@ -184,10 +184,16 @@ function NavRail() {
   )
 }
 
+/**
+ * Phone chrome. Both bars are painted `surface` in light and lifted one step to
+ * `surface-container-low` in dark: on a dark page, chrome painted in the page's
+ * own color is indistinguishable from the content scrolling under it, which is
+ * the same reason the sidebar sits a step above the page in both schemes.
+ */
 function TopAppBar() {
   const { t } = useI18n()
   return (
-    <nav className="fixed top-0 z-40 flex w-full items-center justify-between bg-surface px-container-margin-mobile py-md pt-[calc(theme(spacing.md)+theme(spacing.safe-top))] shadow-sm md:hidden">
+    <nav className="fixed top-0 z-40 flex w-full items-center justify-between bg-surface px-container-margin-mobile py-md pt-[calc(theme(spacing.md)+theme(spacing.safe-top))] shadow-sm dark:bg-surface-container-low md:hidden">
       <h1 className="font-headline-md text-headline-md font-bold text-primary">MacroTrack</h1>
       <NavLink
         to="/profile"
@@ -203,7 +209,7 @@ function TopAppBar() {
 function BottomNav() {
   const { t } = useI18n()
   return (
-    <nav className="fixed bottom-0 left-0 z-50 flex w-full items-center justify-around border-t border-surface-container-high bg-surface px-4 py-2 pb-[calc(theme(spacing.2)+theme(spacing.safe-bottom))] shadow-bottomnav md:hidden">
+    <nav className="fixed bottom-0 left-0 z-50 flex w-full items-center justify-around border-t border-surface-container-high bg-surface px-4 py-2 pb-[calc(theme(spacing.2)+theme(spacing.safe-bottom))] shadow-bottomnav dark:bg-surface-container-low md:hidden">
       {NAV_ITEMS.map((item) => (
         <NavLink
           key={item.to}
