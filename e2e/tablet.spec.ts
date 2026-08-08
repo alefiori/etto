@@ -32,6 +32,17 @@ test.describe('phone width', () => {
     // and drawer put the same action inside themselves.
     await expect(page.locator('button[aria-label="Add Food"]:visible')).toHaveCount(1)
   })
+
+  test('hides the floating action button on the custom food form', async ({ page }) => {
+    await page.goto('/foods/new')
+    await expect(page.getByRole('heading', { name: 'Create Custom Food' })).toBeVisible()
+
+    // The page is an add-food flow already, with its own save actions at the
+    // bottom — a FAB opening the add-food modal over it only covers them up.
+    await expect(page.locator('button[aria-label="Add Food"]:visible')).toHaveCount(0)
+    // The rest of the phone chrome stays put.
+    await expect(page.getByRole('link', { name: 'Targets', exact: true })).toBeVisible()
+  })
 })
 
 test.describe('iPad portrait', () => {

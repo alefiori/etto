@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet, useMatch, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useAppShell } from '@/context/AppShellContext'
 import { useI18n } from '@/context/I18nContext'
@@ -241,6 +241,11 @@ export default function AppLayout() {
   const { openAddFood, _addFood, _closeAddFood, _paywallOpen, _closePaywall } = useAppShell()
   const { t } = useI18n()
 
+  // The custom-food form is itself an add-food flow, with its own save actions
+  // at the bottom of the page. A FAB that opens the add-food modal on top of it
+  // has nothing to add there and overlaps those buttons, so it stays hidden.
+  const onCustomFoodForm = Boolean(useMatch('/foods/new') || useMatch('/foods/:id/edit'))
+
   return (
     <div className="flex h-[100dvh] overflow-hidden bg-background text-on-surface antialiased">
       <Sidebar />
@@ -255,13 +260,15 @@ export default function AppLayout() {
       <BottomNav />
 
       {/* Floating action button (mobile) */}
-      <button
-        onClick={() => openAddFood()}
-        aria-label={t('nav.addFood')}
-        className="fixed bottom-fab right-container-margin-mobile z-40 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-on-primary shadow-lg transition-transform active:scale-95 md:hidden"
-      >
-        <Icon name="add" className="text-2xl" />
-      </button>
+      {!onCustomFoodForm && (
+        <button
+          onClick={() => openAddFood()}
+          aria-label={t('nav.addFood')}
+          className="fixed bottom-fab right-container-margin-mobile z-40 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-on-primary shadow-lg transition-transform active:scale-95 md:hidden"
+        >
+          <Icon name="add" className="text-2xl" />
+        </button>
+      )}
 
       <AddFoodModal open={_addFood.open} initialMeal={_addFood.meal} onClose={_closeAddFood} />
 
