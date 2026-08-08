@@ -118,11 +118,16 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
   }
 
   return (
-    <div className="relative flex min-h-[100dvh] flex-col antialiased">
+    // Outside AppLayout, so nothing else insets this route: the safe padding
+    // keeps the card (and the language picker in its corner) clear of the
+    // notch, and the page scrolls itself — the native iOS shell disables the
+    // WebView's own scrolling, so a form taller than the screen would
+    // otherwise have no way to reach its submit button.
+    <div className="relative h-[100dvh] overflow-y-auto pb-safe-bottom pl-safe-left pr-safe-right pt-safe-top antialiased">
       {/* Ambient decorative background */}
       <div className="pointer-events-none fixed left-0 top-0 -z-10 h-[512px] w-full bg-gradient-to-b from-surface-container to-background" />
 
-      <main className="relative z-10 flex w-full flex-grow items-center justify-center p-container-margin-mobile md:p-container-margin-desktop">
+      <main className="relative z-10 flex min-h-full w-full items-center justify-center p-container-margin-mobile md:p-container-margin-desktop">
         <div className="flex w-full max-w-[480px] flex-col gap-lg rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-lg shadow-card md:p-xl">
           {/* Language — pickable before signing in, and kept for the account */}
           <div className="flex justify-end">

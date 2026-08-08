@@ -5,6 +5,15 @@ import { pushOverlay } from '@/lib/nativeBootstrap'
 /**
  * Overlay container. On desktop it renders as a centered modal; on mobile as a
  * full-screen bottom sheet. The backdrop uses a 20% blur (DESIGN.md overlays).
+ *
+ * The panel — not the backdrop — carries the safe-area insets. Full-bleed on a
+ * phone, it used to run its own children under the notch, which is where every
+ * one of these modals puts its close button. Padding the panel rather than the
+ * backdrop keeps its surface colour behind the status bar (the bar's text is
+ * dark, set once in nativeBootstrap, so it needs a light backing) and keeps the
+ * scrolling content inside it from sliding up under the notch. It applies at
+ * every width because a landscape phone still clears `sm:`, and there the card
+ * is wide enough to reach the side inset.
  */
 export function Modal({
   open,
@@ -46,7 +55,7 @@ export function Modal({
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <div className="flex h-full w-full flex-col overflow-hidden bg-surface-container-lowest shadow-card sm:h-[90vh] sm:max-w-5xl sm:rounded-2xl">
+      <div className="flex h-full w-full flex-col overflow-hidden bg-surface-container-lowest pb-safe-bottom pl-safe-left pr-safe-right pt-safe-top shadow-card sm:h-[90vh] sm:max-w-5xl sm:rounded-2xl">
         {children}
       </div>
     </div>

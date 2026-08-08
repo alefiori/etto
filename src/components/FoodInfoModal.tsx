@@ -57,7 +57,7 @@ export function FoodInfoModal({
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <div className="flex w-full flex-col gap-md rounded-t-2xl bg-surface-container-lowest p-lg shadow-card sm:max-w-md sm:rounded-2xl">
+      <div className="flex w-full flex-col gap-md rounded-t-2xl bg-surface-container-lowest p-lg pb-[calc(theme(spacing.lg)+theme(spacing.safe-bottom))] shadow-card sm:max-w-md sm:rounded-2xl sm:pb-lg">
         <div className="flex items-start justify-between gap-sm">
           <div className="min-w-0">
             <h2 id={titleId} className="font-headline-md text-headline-md text-on-surface">

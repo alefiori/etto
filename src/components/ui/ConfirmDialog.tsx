@@ -61,7 +61,9 @@ export function ConfirmDialog({
         if (e.target === e.currentTarget) onCancel()
       }}
     >
-      <div className="flex w-full flex-col gap-md rounded-t-2xl bg-surface-container-lowest p-lg shadow-card sm:max-w-md sm:rounded-2xl">
+      {/* The sheet stays flush with the bottom edge and clears the home
+          indicator with padding, so its actions are not half under it. */}
+      <div className="flex w-full flex-col gap-md rounded-t-2xl bg-surface-container-lowest p-lg pb-[calc(theme(spacing.lg)+theme(spacing.safe-bottom))] shadow-card sm:max-w-md sm:rounded-2xl sm:pb-lg">
         <h2 id={titleId} className="font-headline-md text-headline-md text-on-surface">
           {title}
         </h2>

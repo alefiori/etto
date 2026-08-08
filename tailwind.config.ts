@@ -81,17 +81,21 @@ export default {
         '2xl': '48px',
         gutter: '16px',
         'container-margin-mobile': '16px',
-        // Safe areas. index.html already sets viewport-fit=cover, so these
-        // resolve to the notch / home-indicator insets natively and to 0 on the
-        // web, which makes them safe to apply unconditionally.
-        'safe-top': 'env(safe-area-inset-top, 0px)',
-        'safe-bottom': 'env(safe-area-inset-bottom, 0px)',
-        'safe-left': 'env(safe-area-inset-left, 0px)',
-        'safe-right': 'env(safe-area-inset-right, 0px)',
+        // Safe areas. index.html already sets viewport-fit=cover, so the
+        // variables behind these (src/index.css) resolve to the notch /
+        // home-indicator insets natively and to 0 on the web, which makes them
+        // safe to apply unconditionally.
+        // The `0px` fallbacks are not redundant with the ones in the variables:
+        // an undefined custom property makes the whole calc() invalid, which
+        // drops the padding entirely rather than falling back to zero.
+        'safe-top': 'var(--safe-top, 0px)',
+        'safe-bottom': 'var(--safe-bottom, 0px)',
+        'safe-left': 'var(--safe-left, 0px)',
+        'safe-right': 'var(--safe-right, 0px)',
         // The fixed chrome heights plus their inset, for the <main> offsets.
-        'topbar': 'calc(72px + env(safe-area-inset-top, 0px))',
-        'bottomnav': 'calc(80px + env(safe-area-inset-bottom, 0px))',
-        'fab': 'calc(88px + env(safe-area-inset-bottom, 0px))',
+        'topbar': 'calc(72px + var(--safe-top, 0px))',
+        'bottomnav': 'calc(80px + var(--safe-bottom, 0px))',
+        'fab': 'calc(88px + var(--safe-bottom, 0px))',
         'container-margin-desktop': '40px',
       },
       fontFamily: {

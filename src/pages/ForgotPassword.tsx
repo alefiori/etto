@@ -33,10 +33,12 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="relative flex min-h-[100dvh] flex-col antialiased">
+    // Insets and self-scrolling as in AuthPage — this route has no chrome of
+    // its own either.
+    <div className="relative h-[100dvh] overflow-y-auto pb-safe-bottom pl-safe-left pr-safe-right pt-safe-top antialiased">
       <div className="pointer-events-none fixed left-0 top-0 -z-10 h-[512px] w-full bg-gradient-to-b from-surface-container to-background" />
 
-      <main className="relative z-10 flex w-full flex-grow items-center justify-center p-container-margin-mobile md:p-container-margin-desktop">
+      <main className="relative z-10 flex min-h-full w-full items-center justify-center p-container-margin-mobile md:p-container-margin-desktop">
         <div className="flex w-full max-w-[480px] flex-col gap-lg rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-lg shadow-card md:p-xl">
           <div className="flex justify-end">
             <LanguagePicker />
