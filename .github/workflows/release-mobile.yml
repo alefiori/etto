@@ -93,8 +93,10 @@ jobs:
 
       # The Android project is generated fresh each run and gitignored, so there
       # is no checked-in build.gradle to hold a signingConfig. AGP's injected
-      # signing properties do the same job from the command line.
-      - name: Assemble signed AAB
+      # signing properties do the same job from the command line. Both outputs
+      # are produced: the AAB for the Play Store, the APK for the GitHub Release
+      # (directly installable / sideloadable).
+      - name: Assemble signed AAB and APK
         if: steps.gate.outputs.ready == 'true'
         env:
           STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -102,7 +104,7 @@ jobs:
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           chmod +x android/gradlew
-          android/gradlew -p android bundleRelease --no-daemon \
+          android/gradlew -p android bundleRelease assembleRelease --no-daemon \
             -Pandroid.injected.signing.store.file="$RUNNER_TEMP/release.jks" \
             -Pandroid.injected.signing.store.password="$STORE_PASSWORD" \
             -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
@@ -120,11 +122,19 @@ jobs:
           path: android/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
 
+      - name: Upload APK
+        if: steps.gate.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-apk
+          path: android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+
       - name: Summarize
         if: steps.gate.outputs.ready == 'true'
         run: |
-          echo "### Android release: :white_check_mark: signed AAB built (${{ inputs.track || 'tag' }})" >> "$GITHUB_STEP_SUMMARY"
-          echo "Upload it to the Play Console, or add a fastlane/Play publisher step here." >> "$GITHUB_STEP_SUMMARY"
+          echo "### Android release: :white_check_mark: signed AAB + APK built (${{ inputs.track || 'tag' }})" >> "$GITHUB_STEP_SUMMARY"
+          echo "The APK is attached to the GitHub Release; upload the AAB to the Play Console." >> "$GITHUB_STEP_SUMMARY"
 
   ios:
     name: iOS release archive
@@ -254,4 +264,52 @@ jobs:
         if: steps.gate.outputs.ready == 'true'
         run: |
           echo "### iOS release: :white_check_mark: signed IPA exported (${{ inputs.track || 'tag' }})" >> "$GITHUB_STEP_SUMMARY"
-          echo "Upload it with Transporter or \`xcrun altool\`, or add an App Store Connect step here." >> "$GITHUB_STEP_SUMMARY"
+          echo "The IPA is attached to the GitHub Release; upload it to App Store Connect with Transporter or \`xcrun altool\`." >> "$GITHUB_STEP_SUMMARY"
+
+  release:
+    name: Publish GitHub Release
+    needs: [android, ios]
+    # Only a tag push cuts a release. A manual workflow_dispatch run just builds
+    # the artifacts for inspection and leaves the Releases page untouched.
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download the build artifacts
+        uses: actions/download-artifact@v4
+        # No `name`, so this pulls whatever the android/ios jobs uploaded. Either
+        # may have skipped when its signing secrets were absent, and an all-skip
+        # run leaves nothing to download — tolerate that and let the next step
+        # decide whether there is anything to publish.
+        continue-on-error: true
+        with:
+          path: artifacts
+
+      - name: Attach the APK and IPA to a GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          shopt -s globstar nullglob
+          files=(artifacts/**/*.apk artifacts/**/*.ipa)
+
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "::warning::No signed APK/IPA produced (signing secrets likely absent); skipping the GitHub Release."
+            echo "### GitHub Release: :grey_question: skipped (no signed artifacts)" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          tag="$GITHUB_REF_NAME"
+          # Idempotent: re-running the same tag refreshes the existing release's
+          # assets (--clobber) rather than failing on "release already exists".
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$tag" "${files[@]}" --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$tag" "${files[@]}" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "$tag" \
+              --generate-notes
+          fi
+
+          echo "### GitHub Release: :white_check_mark: published \`$tag\` with ${#files[@]} asset(s)" >> "$GITHUB_STEP_SUMMARY"
+          printf -- '- %s\n' "${files[@]##*/}" >> "$GITHUB_STEP_SUMMARY"
