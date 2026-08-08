@@ -27,8 +27,8 @@ export const ML_PER_KG_BODYWEIGHT = 33
 /** Used when there is no weigh-in yet to derive a goal from. */
 export const DEFAULT_WATER_GOAL_ML = 2000
 
-/** The quick-add buttons: a glass and a bottle. */
-export const QUICK_ADD_ML = [250, 500] as const
+/** The quick-add buttons: a glass, a bottle, and a large bottle. */
+export const QUICK_ADD_ML = [250, 500, 1000] as const
 
 export function volumeUnit(system: UnitSystem): 'ml' | 'fl oz' {
   return system === 'imperial' ? 'fl oz' : 'ml'

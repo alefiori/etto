@@ -111,7 +111,9 @@ export function BodyMetrics() {
             <input
               id="birthdate"
               type="date"
-              className={inputClass}
+              // iOS gives date inputs a native intrinsic size that beats `w-full`, so the
+              // field renders wider and taller than its neighbours until the appearance is reset.
+              className={`${inputClass} appearance-none`}
               disabled={saving}
               value={profile?.birthdate ?? ''}
               onChange={(e) => save({ birthdate: e.target.value || null })}

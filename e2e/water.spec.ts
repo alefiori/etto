@@ -33,6 +33,18 @@ test.describe('water tracking', () => {
     })
   })
 
+  test('logs a litre from the largest quick-add', async ({ page, store }) => {
+    await seedSession(page)
+    await page.goto('/')
+
+    // Metric steps up to litres at 1000ml rather than reading "1,000 ml".
+    await page.getByLabel('Add 1 L').click()
+
+    await expect(page.getByText('1,000 of 2,000 ml')).toBeVisible()
+    expect(store.water_logs).toHaveLength(1)
+    expect(store.water_logs[0]).toMatchObject({ amount_ml: 1000 })
+  })
+
   test('appends a row per drink rather than accumulating one', async ({ page, store }) => {
     await seedSession(page)
     await page.goto('/')
@@ -118,6 +130,8 @@ test.describe('water tracking', () => {
     await expect(page.getByLabel('Custom amount in fl oz')).toBeVisible()
     // 250ml is about 8.5 US fl oz.
     await expect(page.getByLabel('Add 8.5 fl oz')).toBeVisible()
+    // Imperial has no litre step, so the largest quick-add stays in fl oz.
+    await expect(page.getByLabel('Add 33.8 fl oz')).toBeVisible()
   })
 
   test('saves an explicit goal from the profile page', async ({ page, store }) => {

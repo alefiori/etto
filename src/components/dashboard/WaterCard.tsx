@@ -143,19 +143,23 @@ export function WaterCard() {
 
       <div className="flex flex-wrap items-center gap-sm">
         {QUICK_ADD_ML.map((ml) => {
-          const shown = formatVolume(volumeForDisplay(ml, unitSystem))
+          // A litre reads better than "1,000 ml" on a button; fl oz has no such
+          // step up, so imperial keeps the card's unit throughout.
+          const asLitres = unitSystem === 'metric' && ml >= 1000
+          const shown = formatVolume(asLitres ? ml / 1000 : volumeForDisplay(ml, unitSystem))
+          const shownUnit = asLitres ? 'L' : unit
           return (
             <button
               key={ml}
               type="button"
               disabled={busy}
               onClick={() => log(ml)}
-              aria-label={t('water.addAria', { amount: shown, unit })}
+              aria-label={t('water.addAria', { amount: shown, unit: shownUnit })}
               className="flex h-10 items-center gap-1 rounded-full px-4 font-label-md text-label-md transition-all active:scale-95 disabled:opacity-40"
               style={{ backgroundColor: WATER_COLOR.tint, color: WATER_COLOR.textColor }}
             >
               <Icon name="add" className="text-[16px]" />
-              {shown} {unit}
+              {shown} {shownUnit}
             </button>
           )
         })}

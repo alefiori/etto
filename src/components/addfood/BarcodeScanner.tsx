@@ -96,7 +96,7 @@ export function BarcodeScanner({
         <h2 className="font-headline-md text-headline-md">{t('scanner.title')}</h2>
         <button
           onClick={onClose}
-          className="rounded-full bg-white/10 p-2 transition-colors hover:bg-white/20"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
           aria-label={t('scanner.closeScanner')}
         >
           <Icon name="close" />
