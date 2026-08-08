@@ -25,10 +25,16 @@ and the per-screen `code.html` files.
 
 - **Email/password auth** (sign up, sign in, sign out, forgot password) with a
   persisted session; all app routes are gated behind an auth guard.
-- **Guest mode** — "continue as guest" starts an anonymous session so you can
-  try the app with zero signup. A persistent banner offers to **upgrade to a
-  permanent account** later, keeping the same `user_id` so all logged data
-  carries over.
+- **No login wall** — opening the app starts an anonymous session automatically,
+  so a first-time visitor can log a meal before deciding whether to sign up. The
+  account is real: a persistent banner offers to **upgrade to a permanent
+  account** later, keeping the same `user_id` so everything logged in the
+  meantime carries over. Signing out is the one case that reaches the sign-in
+  screen instead of a fresh guest — see
+  [`lib/guestSession.ts`](src/lib/guestSession.ts) for why that needs an
+  explicit flag. If anonymous sign-in is disabled on the project (or its per-IP
+  hourly limit is hit), the app falls back to the sign-in screen rather than
+  stalling.
 - **My Targets** — per-weekday carbs/protein/fats goals with live calorie totals
   and "copy one day to all days".
 - **Daily Tracker** — date selector, three macro progress rings (consumed vs.
@@ -58,8 +64,23 @@ and the per-screen `code.html` files.
   (before signing in, or from the Profile page) pins it, and that single
   preference drives both the interface language **and** the language of Open
   Food Facts results.
+- **Weight tracking** — one weigh-in a day with a trend chart that separates the
+  signal from the noise: raw readings are dots, the smoothed EWMA is the line,
+  and the reported weekly rate uses a Theil–Sen fit so an overnight water swing
+  doesn't read as a gain.
+- **Water tracking** — quick-add glasses and bottles against a daily goal that
+  derives itself from your bodyweight until you set one.
+- **Adaptive targets** *(Pro)* — estimates what you actually burn from logged
+  intake versus measured weight change, rather than multiplying a BMR formula by
+  an activity guess, and explains every adjustment. Refuses to answer, by name,
+  when the data can't support one.
 - **Installable PWA** — add to home screen / install as an app; the app shell is
   precached so it launches offline.
+- **Native iOS, iPadOS and Android** via Capacitor, from the same bundle. The
+  layout has three window classes rather than two: bottom nav on a phone, a
+  Material 3 **navigation rail** at tablet widths, and the full drawer on a
+  desktop — so an iPad in portrait, in Split View or in Stage Manager gets a
+  layout built for its size instead of stretched phone chrome.
 
 ## Tech stack
 
@@ -73,6 +94,8 @@ and the per-screen `code.html` files.
 | Barcode    | `@zxing/browser` + `@zxing/library` (camera scanning)           |
 | i18n       | Zero-dependency in-house catalog (7 locales)                    |
 | PWA        | `vite-plugin-pwa` (Workbox) + `@vite-pwa/assets-generator`      |
+| Native     | Capacitor 6 (iOS + Android) from the same Vite bundle           |
+| Payments   | RevenueCat → webhook → Supabase (entitlement decided server-side) |
 
 ## Getting started
 
@@ -114,7 +137,14 @@ nullable, where NULL means "no explicit choice — follow the device language".
 
 The "continue as guest" flow uses Supabase **anonymous sign-ins**. Enable them
 under **Authentication → Providers → Anonymous Sign-Ins** in the dashboard.
-Without this, only email/password auth works.
+Without this the app cannot start a session on its own and every visitor lands
+on the sign-in screen, so it is effectively required rather than optional.
+
+> **Note for the web deploy:** every first visit now creates an `auth.users`
+> row, which crawler traffic will inflate. Supabase's per-IP hourly limit on
+> anonymous sign-ins (`anonymous_users`, default 30) caps the damage, and you
+> can additionally require a CAPTCHA on anonymous sign-ins under
+> **Authentication → Settings**. On the native apps this is a non-issue.
 
 ### 4. Deploy the `food-search` Edge Function
 
@@ -206,6 +236,120 @@ npm run test:watch    # Vitest in watch mode
 npm run test:coverage # unit tests with a V8 coverage report
 npm run e2e           # end-to-end tests (Playwright)
 ```
+
+## Mobile app (iOS + Android)
+
+The same bundle runs on the web and inside a [Capacitor](https://capacitorjs.com)
+shell — there is no separate native codebase. `capacitor.config.ts` points at
+Vite's `dist/`, and the app adapts at runtime via
+[`src/lib/platform.ts`](src/lib/platform.ts).
+
+```bash
+npm run build:native      # bundle without the service worker
+npx cap add ios           # once, on macOS with Xcode
+npx cap add android       # once, with Android Studio / SDK installed
+npm run sync:native       # rebuild + copy into the native projects
+npx cap open ios          # or: npx cap open android
+```
+
+**What differs natively, and why:**
+
+| Concern | Web | Native |
+| --- | --- | --- |
+| Router | `BrowserRouter` | `HashRouter` — a WebView has no server to fall back to `index.html`, and the service worker that provided `navigateFallback` never registers, so a reload on a path would land on a white screen |
+| Service worker | Precached app shell | Skipped (`--mode native`) — never registers under `capacitor://` |
+| `detectSessionInUrl` | `true` | `false` — under hash routing the fragment is `#/signin`, which supabase-js would try to parse as an auth callback it doesn't own |
+| Share / clipboard | Web Share API → clipboard | `@capacitor/share` → `@capacitor/clipboard`; both Web APIs are unavailable on the custom scheme |
+| Hardware back | — | Closes the topmost overlay, else goes back, else exits ([`nativeBootstrap.ts`](src/lib/nativeBootstrap.ts)) |
+| Purchases | Reported unavailable | RevenueCat (see below) |
+
+### iPad
+
+The iPad build is the same target as iPhone — Capacitor's template already sets
+`TARGETED_DEVICE_FAMILY = "1,2"` and ships all four `~ipad` orientations, so
+nothing native needed patching. What did need doing was the layout: between
+768px and the drawer's 1024px breakpoint the app used to render phone chrome,
+which on an iPad in portrait meant a bottom bar stretched across 820pt and a
+floating button marooned in the corner. That range now gets a
+[navigation rail](src/components/layout/AppLayout.tsx) — 80px, icons over short
+labels, primary action at the top — which is what Material 3 specifies for its
+"medium" window class.
+
+Orientation is deliberately **not** locked. The PWA manifest asks for portrait,
+which is right on a phone, but an iPad app that refuses to rotate cannot support
+Split View and reads as a blown-up phone app.
+
+Because `ios/` is regenerated on every build, [`scripts/verify-ipad.mjs`](scripts/verify-ipad.mjs)
+re-checks three invariants after `cap sync` — device family includes iPad, the
+iPad orientation list includes portrait and both landscapes, and
+`UIRequiresFullScreen` is not set (it would disable Split View). It runs in CI
+and from `npm run sync:native`, so a Capacitor upgrade that changes the template
+fails loudly instead of quietly shipping an iPhone-only app.
+
+`e2e/tablet.spec.ts` covers all of it at real device widths: iPhone, iPad
+portrait and landscape, half-width Split View, and the 320pt Slide Over pane
+(where it also asserts nothing overflows horizontally).
+
+**Fonts are self-hosted** ([`public/fonts/`](public/fonts)) rather than loaded
+from the Google Fonts CDN. This is not an optimization:
+[`Icon.tsx`](src/components/ui/Icon.tsx) renders Material Symbols as a
+*ligature*, so if that font fails to load every icon in the app renders as the
+literal word — "dashboard", "close", "barcode_scanner". On the web a service
+worker cached it; in a WebView none registers, making an offline first launch
+exactly that failure. Both files are subsets (the icon font carries only the
+glyphs this app uses — 57 KB against ~3.6 MB for the full set; Manrope carries
+latin + latin-ext, covering all 7 languages).
+
+Safe-area insets come from spacing tokens in
+[`tailwind.config.ts`](tailwind.config.ts) that resolve to `env(safe-area-inset-*)`
+natively and `0` on the web, so they can be applied unconditionally.
+
+### Still to do before shipping to the stores
+
+- `npx cap add ios` / `android` need macOS + Xcode and the Android SDK
+  respectively; the generated projects are gitignored.
+- Swap [`BarcodeScanner.tsx`](src/components/addfood/BarcodeScanner.tsx) to
+  `@capacitor-mlkit/barcode-scanning`. Keep its `{ onDetected, onClose }` props
+  and `AddFoodModal` needs no change; the existing `scanner.denied|notFound|inUse`
+  translations map straight onto ML Kit's states. Native ML Kit renders *behind*
+  the WebView, so `body`/`#root` need a transparent background while scanning.
+- Wire the RevenueCat SDK in [`src/lib/purchases.ts`](src/lib/purchases.ts).
+  `appUserID` **must** be the Supabase user id — that is what the webhook reads
+  from `event.app_user_id`.
+- Password reset needs a real Universal Link / App Link and a `/reset-password`
+  route; `AuthContext.resetPassword` still builds its `redirectTo` from
+  `window.location.origin`, which is `capacitor://localhost` natively.
+- Working Terms and Privacy Policy URLs — [`AuthPage.tsx`](src/pages/AuthPage.tsx)
+  currently renders them as inert `<span>`s, which both stores reject.
+
+## Pro subscription
+
+Pro unlocks adaptive targets, weight trends, hydration reminders and data
+export. Everything the app shipped with — logging, barcode scanning, custom and
+community foods, water tracking, all 7 languages — stays free.
+
+**Entitlements are decided server-side.** `public.subscriptions` is the one
+table here that is not owner-read-write: it has a `select` policy and
+deliberately **no** insert, update or delete policy, so the database denies any
+client write. The only writer is the
+[`revenuecat-webhook`](supabase/functions/revenuecat-webhook) Edge Function,
+running with the service role. RevenueCat is the source of truth because it is
+the only party that has verified the receipt with Apple or Google; the on-device
+SDK cache is a UI fast path, never authority.
+
+```bash
+supabase functions deploy revenuecat-webhook --no-verify-jwt
+supabase secrets set REVENUECAT_WEBHOOK_SECRET=<same value as RevenueCat's
+  webhook Authorization header>
+```
+
+`--no-verify-jwt` is required: RevenueCat is not a Supabase client and sends no
+Supabase JWT — the shared secret authenticates it instead.
+
+`expires_at` being NULL means "never expires", which is how the lifetime unlock
+is stored. Webhook retries can arrive out of order, so an event stamped earlier
+than the state already stored is ignored — otherwise a redelivered `EXPIRATION`
+could revoke a customer whose `RENEWAL` had already landed.
 
 ## How external food data is modeled
 
@@ -335,11 +479,13 @@ supabase/
 
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and PR:
 the app **build**, the **unit** suite (coverage uploaded as an artifact, not
-gated), and the **E2E** suite. On pushes to `main` only, two deploy jobs also
-run: the existing **Netlify deploy status** check, and a **Supabase deploy** that
-applies database migrations (`supabase db push`) and redeploys the `food-search`
-Edge Function. The Supabase job is skipped (with a warning, not a failure) unless
-these repository secrets are set:
+gated), the **E2E** suite, an **Android build** and an **iOS build**. Then, on
+`main` pushes only, the
+existing **Netlify deploy status** check and a **Supabase deploy** that applies
+database migrations (`supabase db push`) and redeploys both Edge Functions —
+`food-search` and `revenuecat-webhook` (the latter with `--no-verify-jwt`, since
+RevenueCat sends no Supabase JWT). The Supabase job is skipped (with a warning,
+not a failure) unless these repository secrets are set:
 
 | Secret                  | Purpose                                                        |
 | ----------------------- | ------------------------------------------------------------- |
@@ -351,6 +497,53 @@ The Edge Function deploy pushes **code only** — it doesn't touch the function
 secrets from step 4 (`USDA_API_KEY`, `EDAMAM_*`, `OFF_*`). If a first `db push`
 fails because the remote schema diverged from the migration history, run a
 one-time [`supabase migration repair`](https://supabase.com/docs/reference/cli/supabase-migration-repair).
+
+### Native builds
+
+`ios/` and `android/` are gitignored, so both jobs run `npx cap add` to generate
+the projects from scratch. That is deliberate: it means CI validates
+`capacitor.config.ts` and the installed plugin set on every run, not just the
+platform build.
+
+Neither job needs a secret. Android assembles a **debug APK** (uploaded as an
+artifact) and iOS does an **unsigned simulator build** plus the
+[iPad configuration check](#ipad) — enough to prove the projects compile and
+still target iPad.
+
+**Cost note.** macOS runners bill at 10× the minutes of Linux ones, so the iOS
+job is by far the most expensive here — on the order of 80 billed minutes per
+run against a 2,000-minute free monthly allowance. The workflow sets
+`cancel-in-progress` for pull requests so that pushing repeatedly to a PR
+supersedes the earlier run instead of paying for both; `main` pushes are never
+cancelled, since those runs deploy. If the spend becomes a problem, gating the
+`ios` job with `if: github.event_name != 'pull_request'` restores main-only
+builds — the Android job still covers everything the two platforms share.
+
+### Signed releases
+
+[`.github/workflows/release-mobile.yml`](.github/workflows/release-mobile.yml)
+produces store-ready artifacts — a signed Android **AAB** and a signed iOS
+**IPA**. It runs on a `v*` tag or on manual dispatch, and each job skips with a
+warning when its secrets are missing, so it is harmless to merge before you have
+a developer account.
+
+| Secret | Used by | Purpose |
+| --- | --- | --- |
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | both | Inlined into the bundle at build time — a release build must carry the real project's values |
+| `ANDROID_KEYSTORE_BASE64` | Android | `base64 -w0 release.jks` |
+| `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | Android | Keystore credentials |
+| `APPLE_CERTIFICATE_P12_BASE64`, `APPLE_CERTIFICATE_PASSWORD` | iOS | Distribution certificate |
+| `APPLE_PROVISIONING_PROFILE_BASE64`, `APPLE_PROVISIONING_PROFILE_NAME` | iOS | App Store provisioning profile |
+| `APPLE_TEAM_ID` | iOS | Team identifier |
+
+Android signing is injected via Gradle properties rather than a checked-in
+`signingConfig`, because the project is generated fresh each run. iOS signing
+uses an ephemeral keychain created and deleted inside the job with the `security`
+CLI, keeping this workflow's dependencies to first-party `actions/*` only.
+
+Both jobs stop at the artifact. Uploading to the Play Console or App Store
+Connect is left as an explicit step to add once the store listings exist —
+neither has been exercised against a real developer account yet.
 
 ## Credits
 

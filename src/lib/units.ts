@@ -8,6 +8,8 @@
  * schema change is needed, only a friendlier way to enter the quantity.
  */
 
+import type { UnitSystem } from './database.types'
+
 export type UnitFamily = 'mass' | 'volume' | 'count'
 
 interface UnitDef {
@@ -79,4 +81,42 @@ export function servingsFor(
   if (!(servingAmount > 0)) return 0
   const inServingUnit = convertUnit(amount, unit, servingUnit)
   return (inServingUnit ?? amount) / servingAmount
+}
+
+// ---------------------------------------------------------------------------
+// Body measurements
+//
+// Body weight and height are stored metric (kg, cm) and shown in whatever
+// `profiles.unit_system` says. These wrap convertUnit so callers never have to
+// remember which direction they're converting.
+// ---------------------------------------------------------------------------
+
+/** The weight unit shown to the user. */
+export function weightUnit(system: UnitSystem): 'kg' | 'lb' {
+  return system === 'imperial' ? 'lb' : 'kg'
+}
+
+/** Stored kilograms -> the number to put in front of {@link weightUnit}. */
+export function weightForDisplay(kg: number, system: UnitSystem): number {
+  return system === 'imperial' ? (convertUnit(kg, 'kg', 'lb') ?? kg) : kg
+}
+
+/** A user-entered weight in display units -> kilograms for storage. */
+export function weightToKg(value: number, system: UnitSystem): number {
+  return system === 'imperial' ? (convertUnit(value, 'lb', 'kg') ?? value) : value
+}
+
+/**
+ * Height is entered as cm or as feet + inches, so it doesn't round-trip through
+ * a single number the way weight does. These convert the stored centimetres to
+ * and from the whole-feet + inches pair the imperial input uses.
+ */
+export function cmToFeetInches(cm: number): { feet: number; inches: number } {
+  const totalInches = cm / 2.54
+  const feet = Math.floor(totalInches / 12)
+  return { feet, inches: totalInches - feet * 12 }
+}
+
+export function feetInchesToCm(feet: number, inches: number): number {
+  return (feet * 12 + inches) * 2.54
 }

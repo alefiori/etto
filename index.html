@@ -14,17 +14,21 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="MacroTrack" />
-    <!-- Fonts: Manrope + Material Symbols Outlined (as in the Stitch export) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fonts: Manrope + Material Symbols Outlined (as in the Stitch export),
+         self-hosted from /public/fonts. They must not come from a CDN: Icon.tsx
+         renders Material Symbols as a *ligature*, so if that font fails to load
+         every icon in the app renders as the literal word "dashboard", "close",
+         "barcode_scanner". In a Capacitor WebView the service worker that used
+         to cache it never registers, which makes an offline first launch
+         exactly that failure. See src/index.css for the @font-face rules. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/material-symbols-outlined.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preload" href="/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body class="h-full">
     <div id="root" class="h-full"></div>

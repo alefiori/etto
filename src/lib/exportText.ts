@@ -106,14 +106,25 @@ export function formatDayText(
   ].join('\n')
 }
 
+import { isNativePlatform } from './platform'
+
 export type ShareOutcome = 'shared' | 'copied' | 'dismissed'
 
 /**
  * Share text via the native share sheet when available, otherwise copy it to
  * the clipboard. Returns how the text left the app so the caller can show the
  * right feedback ('dismissed' = user closed the share sheet without sending).
+ *
+ * Inside a Capacitor WebView neither Web API is usable — `navigator.share` is
+ * undefined and `navigator.clipboard` is blocked on the non-secure custom
+ * scheme — so both would throw and the caller would show a share failure for
+ * something that works fine natively. The native plugins are loaded through a
+ * dynamic import so they never enter the web bundle, and the return type is
+ * unchanged so callers need no branch of their own.
  */
 export async function shareText(text: string): Promise<ShareOutcome> {
+  if (isNativePlatform()) return shareNative(text)
+
   if (typeof navigator.share === 'function') {
     try {
       await navigator.share({ text })
@@ -125,4 +136,23 @@ export async function shareText(text: string): Promise<ShareOutcome> {
   }
   await navigator.clipboard.writeText(text)
   return 'copied'
+}
+
+async function shareNative(text: string): Promise<ShareOutcome> {
+  try {
+    const { Share } = await import('@capacitor/share')
+    await Share.share({ text })
+    return 'shared'
+  } catch {
+    // @capacitor/share rejects when the user dismisses the sheet, and there is
+    // no distinguishable error for it, so fall back to the clipboard rather
+    // than reporting a failure the user caused deliberately.
+    try {
+      const { Clipboard } = await import('@capacitor/clipboard')
+      await Clipboard.write({ string: text })
+      return 'copied'
+    } catch {
+      return 'dismissed'
+    }
+  }
 }

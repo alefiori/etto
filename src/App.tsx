@@ -1,8 +1,10 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from '@/context/AuthContext'
 import { AppShellProvider } from '@/context/AppShellContext'
 import { ProfileProvider } from '@/context/ProfileContext'
+import { EntitlementProvider } from '@/context/EntitlementContext'
+import { isNativePlatform } from '@/lib/platform'
 import { I18nProvider, useI18n } from '@/context/I18nContext'
 import { MealsProvider } from '@/context/MealsContext'
 import { RequireAuth } from '@/components/RequireAuth'
@@ -24,46 +26,61 @@ function RouteFallback() {
   return <LoadingBlock label={t('common.loading')} />
 }
 
+/**
+ * Path routing on the web, hash routing in the native shell.
+ *
+ * A Capacitor WebView has no server to fall back to index.html, and the service
+ * worker that provided navigateFallback never registers under the custom
+ * scheme — so a reload or a restored deep path on BrowserRouter lands on a
+ * white screen. Hash routing needs no such fallback. The web build keeps clean
+ * paths.
+ */
+const Router = isNativePlatform() ? HashRouter : BrowserRouter
+
 export default function App() {
   return (
-    <BrowserRouter>
-      {/* Profile + i18n wrap everything, so the auth pages are localized too. */}
+    <Router>
+      {/* Profile + i18n wrap everything, so the auth pages are localized too.
+          Entitlement sits beside them rather than inside RequireAuth, so the
+          paywall and restore-purchases flow work before the guarded routes. */}
       <AuthProvider>
         <ProfileProvider>
-          <I18nProvider>
-            <Suspense fallback={<RouteFallback />}>
-              <Routes>
-                {/* Public auth routes */}
-                <Route path="/signin" element={<AuthPage initialTab="signin" />} />
-                <Route path="/signup" element={<AuthPage initialTab="signup" />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
+          <EntitlementProvider>
+            <I18nProvider>
+              <Suspense fallback={<RouteFallback />}>
+                <Routes>
+                  {/* Public auth routes */}
+                  <Route path="/signin" element={<AuthPage initialTab="signin" />} />
+                  <Route path="/signup" element={<AuthPage initialTab="signup" />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
 
-                {/* Guarded app routes */}
-                <Route
-                  element={
-                    <RequireAuth>
-                      <MealsProvider>
-                        <AppShellProvider>
-                          <AppLayout />
-                        </AppShellProvider>
-                      </MealsProvider>
-                    </RequireAuth>
-                  }
-                >
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/targets" element={<Targets />} />
-                  <Route path="/foods" element={<MyFoods />} />
-                  <Route path="/foods/new" element={<CreateCustomFood />} />
-                  <Route path="/foods/:id/edit" element={<CreateCustomFood />} />
-                  <Route path="/profile" element={<Profile />} />
-                </Route>
+                  {/* Guarded app routes */}
+                  <Route
+                    element={
+                      <RequireAuth>
+                        <MealsProvider>
+                          <AppShellProvider>
+                            <AppLayout />
+                          </AppShellProvider>
+                        </MealsProvider>
+                      </RequireAuth>
+                    }
+                  >
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/targets" element={<Targets />} />
+                    <Route path="/foods" element={<MyFoods />} />
+                    <Route path="/foods/new" element={<CreateCustomFood />} />
+                    <Route path="/foods/:id/edit" element={<CreateCustomFood />} />
+                    <Route path="/profile" element={<Profile />} />
+                  </Route>
 
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Suspense>
-          </I18nProvider>
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </Suspense>
+            </I18nProvider>
+          </EntitlementProvider>
         </ProfileProvider>
       </AuthProvider>
-    </BrowserRouter>
+    </Router>
   )
 }

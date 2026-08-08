@@ -24,6 +24,8 @@ import { addDays, dayOfWeek, formatLong, formatMonthDay, formatShort, formatWeek
 import { copyDayFoods, copyFoodLog, copyMealFoods, deleteFoodLog, updateLogServings } from '@/lib/foods'
 import { formatDayText, formatMealText, shareText } from '@/lib/exportText'
 import type { FoodLogWithFood } from '@/lib/database.types'
+import { WeightCard } from '@/components/dashboard/WeightCard'
+import { WaterCard } from '@/components/dashboard/WaterCard'
 
 const ZERO: MacroGrams = { carbs_g: 0, protein_g: 0, fats_g: 0 }
 
@@ -415,6 +417,10 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
+
+              <WaterCard />
+
+              <WeightCard />
             </div>
           </div>
         </>

@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:native": "tsc -b && vite build --mode native",
+    "sync:native": "npm run build:native && cap sync && node scripts/verify-ipad.mjs",
+    "verify:ipad": "node scripts/verify-ipad.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",
@@ -15,6 +18,14 @@
     "e2e:ui": "playwright test --ui"
   },
   "dependencies": {
+    "@capacitor/app": "^6.0.3",
+    "@capacitor/clipboard": "^6.0.3",
+    "@capacitor/core": "^6.2.1",
+    "@capacitor/keyboard": "^6.0.4",
+    "@capacitor/preferences": "^6.0.4",
+    "@capacitor/share": "^6.0.4",
+    "@capacitor/splash-screen": "^6.0.4",
+    "@capacitor/status-bar": "^6.0.3",
     "@supabase/supabase-js": "^2.45.4",
     "@zxing/browser": "^0.1.5",
     "@zxing/library": "^0.21.3",
@@ -23,6 +34,10 @@
     "react-router-dom": "^6.26.2"
   },
   "devDependencies": {
+    "@capacitor/android": "^6.2.1",
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.2.1",
+    "@capacitor/ios": "^6.2.1",
     "@playwright/test": "^1.61.1",
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.2",

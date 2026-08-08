@@ -10,6 +10,8 @@ import {
   formatWeekday,
   formatMonthDay,
   formatShort,
+  diffDays,
+  dateRange,
 } from './date'
 
 describe('toISODate / fromISODate', () => {
@@ -65,5 +67,70 @@ describe('formatters', () => {
     expect(formatWeekday('2023-10-26', 'en-US')).toBe('Thursday')
     expect(formatMonthDay('2023-10-26', 'en-US')).toBe('October 26')
     expect(formatShort('2023-10-26', 'en-US')).toBe('Oct 26, 2023')
+  })
+})
+
+describe('diffDays', () => {
+  it('counts whole days forward', () => {
+    expect(diffDays('2026-01-01', '2026-01-11')).toBe(10)
+  })
+
+  it('is negative going backwards', () => {
+    expect(diffDays('2026-01-11', '2026-01-01')).toBe(-10)
+  })
+
+  it('is zero for the same day', () => {
+    expect(diffDays('2026-03-15', '2026-03-15')).toBe(0)
+  })
+
+  it('crosses month and year boundaries', () => {
+    expect(diffDays('2026-01-31', '2026-02-01')).toBe(1)
+    expect(diffDays('2025-12-31', '2026-01-01')).toBe(1)
+  })
+
+  it('counts the leap day', () => {
+    expect(diffDays('2024-02-28', '2024-03-01')).toBe(2)
+    expect(diffDays('2025-02-28', '2025-03-01')).toBe(1)
+  })
+
+  it('returns whole days across a DST transition', () => {
+    // Late March and late October are when EU/US clocks shift; the result must
+    // stay an integer rather than 0.96 or 1.04 of a day.
+    expect(diffDays('2026-03-28', '2026-03-30')).toBe(2)
+    expect(diffDays('2026-10-24', '2026-10-26')).toBe(2)
+  })
+})
+
+describe('dateRange', () => {
+  it('includes both ends', () => {
+    expect(dateRange('2026-01-01', '2026-01-04')).toEqual([
+      '2026-01-01',
+      '2026-01-02',
+      '2026-01-03',
+      '2026-01-04',
+    ])
+  })
+
+  it('returns a single date when both ends match', () => {
+    expect(dateRange('2026-01-01', '2026-01-01')).toEqual(['2026-01-01'])
+  })
+
+  it('returns nothing when the end precedes the start', () => {
+    expect(dateRange('2026-01-05', '2026-01-01')).toEqual([])
+  })
+
+  it('rolls over a month boundary', () => {
+    expect(dateRange('2026-01-30', '2026-02-02')).toEqual([
+      '2026-01-30',
+      '2026-01-31',
+      '2026-02-01',
+      '2026-02-02',
+    ])
+  })
+
+  it('has a length matching diffDays plus one', () => {
+    expect(dateRange('2026-01-01', '2026-03-01')).toHaveLength(
+      diffDays('2026-01-01', '2026-03-01') + 1,
+    )
   })
 })

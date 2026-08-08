@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
+import { useProfile } from '@/context/ProfileContext'
+import { AdaptiveTargets } from '@/components/targets/AdaptiveTargets'
 import { useI18n } from '@/context/I18nContext'
 import { useTargets } from '@/hooks/useTargets'
 import { supabase } from '@/lib/supabase'
 import { Icon } from '@/components/ui/Icon'
 import { LoadingBlock } from '@/components/ui/Spinner'
 import { MACROS, TARGET_DAYS } from '@/lib/constants'
-import { calories } from '@/lib/macros'
+import { calories, type MacroGrams } from '@/lib/macros'
 import type { TranslationKey } from '@/lib/i18n'
 
 /** Map a JS day-of-week index (0 = Sunday) to its weekday translation key. */
@@ -38,7 +40,11 @@ type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
 export default function Targets() {
   const { user } = useAuth()
   const { t } = useI18n()
-  const { byDay, loading, error } = useTargets()
+  const { byDay, loading, error, refetch } = useTargets()
+  const { profile } = useProfile()
+  // When adaptive mode owns the targets the manual grid becomes read-only, so
+  // the two writers can never race over the same seven rows.
+  const adaptive = profile?.adaptive_targets_enabled ?? false
   const [values, setValues] = useState<Values>({})
   const [status, setStatus] = useState<SaveStatus>('idle')
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -166,6 +172,58 @@ export default function Targets() {
     edit({ ...valuesRef.current, [dow]: { ...src } }, [dow])
   }
 
+  /**
+   * Write one macro split to every weekday.
+   *
+   * This goes through the same serialized queue as the manual autosave rather
+   * than issuing its own upsert, so an in-flight hand edit can't land on top of
+   * the adaptive write. Afterwards it refetches so the grid shows what was
+   * actually stored.
+   */
+  async function applyToAllDays(macros: MacroGrams) {
+    const userId = userIdRef.current
+    if (!userId) throw new Error('Not authenticated.')
+
+    const next: Values = {}
+    for (const { dow } of TARGET_DAYS) {
+      next[dow] = { carbs_g: macros.carbs_g, protein_g: macros.protein_g, fats_g: macros.fats_g }
+    }
+    valuesRef.current = next
+    setValues(next)
+
+    // Cancel any pending debounce so the manual path can't re-write stale
+    // values a moment after this lands.
+    if (timerRef.current) clearTimeout(timerRef.current)
+    dirtyRef.current.clear()
+
+    const rows = TARGET_DAYS.map(({ dow }) => ({
+      user_id: userId,
+      day_of_week: dow,
+      ...next[dow],
+    }))
+
+    inFlightRef.current += 1
+    setStatus('saving')
+    setSaveError(null)
+    const write = queueRef.current.then(async () => {
+      const { error: upsertErr } = await supabase
+        .from('macro_targets')
+        .upsert(rows, { onConflict: 'user_id,day_of_week' })
+      inFlightRef.current -= 1
+      if (upsertErr) {
+        setSaveError(upsertErr.message)
+        setStatus('error')
+        throw new Error(upsertErr.message)
+      }
+      if (inFlightRef.current === 0 && dirtyRef.current.size === 0) setStatus('saved')
+    })
+    // The queue must survive a rejection, or every later write chains off a
+    // permanently rejected promise.
+    queueRef.current = write.catch(() => {})
+    await write
+    await refetch()
+  }
+
   return (
     <div className="flex flex-col">
       {/* Page header */}
@@ -246,10 +304,17 @@ export default function Targets() {
           </div>
         )}
 
+        <div className="mb-md">
+          <AdaptiveTargets byDay={byDay} onApply={applyToAllDays} />
+        </div>
+
         {loading ? (
           <LoadingBlock label={t('targets.loading')} />
         ) : (
-          <div className="grid grid-cols-1 items-start gap-md lg:grid-cols-7 lg:gap-sm">
+          // One column on a phone, seven across a desktop. The middle steps
+          // matter for tablets: a single column of seven day cards is a very
+          // long scroll, and seven across is far too cramped.
+          <div className="grid grid-cols-1 items-start gap-md sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-7 xl:gap-sm">
             {TARGET_DAYS.map(({ dow }) => {
               const v = values[dow] ?? EMPTY
               const kcal = calories(v)
@@ -313,8 +378,9 @@ export default function Targets() {
                           min={0}
                           placeholder="0"
                           value={v[m.field] || ''}
+                          disabled={adaptive}
                           onChange={(e) => setField(dow, m.field, e.target.value)}
-                          className="h-[48px] w-full rounded-lg border border-outline-variant/50 bg-surface px-md text-right font-body-md text-body-md text-on-surface outline-none transition-all placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary"
+                          className="h-[48px] w-full rounded-lg border border-outline-variant/50 bg-surface px-md text-right font-body-md text-body-md text-on-surface outline-none transition-all placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
                         />
                       </div>
                     ))}

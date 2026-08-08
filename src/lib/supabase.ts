@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { isNativePlatform } from './platform'
 import type { Database } from './database.types'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
@@ -16,6 +17,9 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true,
+    // Off in the native shell: under HashRouter the fragment is '#/signin',
+    // which supabase-js would try to parse as an auth callback it does not own.
+    // Native sessions are established explicitly from a deep-link listener.
+    detectSessionInUrl: !isNativePlatform(),
   },
 })

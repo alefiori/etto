@@ -86,6 +86,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { needsConfirmation: Boolean(data.user?.new_email) }
       },
       async signOut() {
+        // Signing out leaves no session, which drops the user back into a fresh
+        // guest session — the app's default state. To reach an actual sign-in
+        // screen instead, they open it directly (it renders over the guest
+        // session now), no sign-out required.
         const { error } = await supabase.auth.signOut()
         if (error) throw error
       },

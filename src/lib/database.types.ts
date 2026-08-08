@@ -42,10 +42,75 @@ export type Food = {
   created_at: string
 }
 
+/** Biological sex, used only as a coefficient in the BMR equation. */
+export type Sex = 'female' | 'male'
+export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active'
+export type GoalDirection = 'lose' | 'maintain' | 'gain'
+/** Display units only — everything is stored metric and converted at the UI edge. */
+export type UnitSystem = 'metric' | 'imperial'
+
 export type Profile = {
   id: string
   /** Explicit language choice; null means "follow the device language". */
   off_language: string | null
+  /** Body metrics. Null means "not answered yet", never a guessed default. */
+  sex: Sex | null
+  birthdate: string | null // YYYY-MM-DD
+  height_cm: number | null
+  activity_level: ActivityLevel | null
+  goal_direction: GoalDirection | null
+  /** Unsigned magnitude; goal_direction carries the sign. 0 = maintain. */
+  goal_rate_kg_per_week: number | null
+  unit_system: UnitSystem
+  /** Explicit daily hydration goal in ml; null means derive it from bodyweight. */
+  water_goal_ml: number | null
+  /** When true, the adaptive engine owns macro_targets and the manual grid is read-only. */
+  adaptive_targets_enabled: boolean
+  created_at: string
+  updated_at: string
+}
+
+export type Store = 'app_store' | 'play_store' | 'stripe' | 'promotional' | 'unknown'
+export type PeriodType = 'normal' | 'trial' | 'intro'
+
+/**
+ * A user's Pro entitlement, written only by the revenuecat-webhook function.
+ *
+ * The client can read its own row and can never write one — public.subscriptions
+ * has a select policy and deliberately no others. Treat this as read-only here
+ * too; there is no Insert/Update path exposed on purpose.
+ */
+export type Subscription = {
+  user_id: string
+  entitlement: string
+  product_id: string | null
+  store: Store | null
+  period_type: PeriodType | null
+  original_transaction_id: string | null
+  /** null means the entitlement never expires — the lifetime unlock. */
+  expires_at: string | null
+  billing_issue: boolean
+  last_event_id: string | null
+  last_event_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+/** One drink. Append-only — a day's intake is the sum of its rows. */
+export type WaterLog = {
+  id: string
+  user_id: string
+  log_date: string // YYYY-MM-DD
+  amount_ml: number
+  created_at: string
+}
+
+/** One weigh-in. At most one row per user per day; always kilograms. */
+export type WeightLog = {
+  id: string
+  user_id: string
+  log_date: string // YYYY-MM-DD
+  weight_kg: number
   created_at: string
   updated_at: string
 }
@@ -113,9 +178,33 @@ export interface Database {
       }
       profiles: {
         Row: Profile
-        Insert: Omit<Profile, 'created_at' | 'updated_at'> &
-          Partial<Pick<Profile, 'off_language' | 'created_at' | 'updated_at'>>
+        // Every column except the primary key is either nullable or server-
+        // defaulted, so `id` is the only thing an insert must carry. Spelling
+        // that out beats an Omit/Pick pair listing all of the body columns.
+        Insert: Pick<Profile, 'id'> & Partial<Omit<Profile, 'id'>>
         Update: Partial<Profile>
+        Relationships: []
+      }
+      subscriptions: {
+        Row: Subscription
+        // Read-only by design: RLS grants select and nothing else, so an insert
+        // or update from the client is denied by the database. `never` makes
+        // that a compile error instead of a runtime surprise.
+        Insert: never
+        Update: never
+        Relationships: []
+      }
+      water_logs: {
+        Row: WaterLog
+        Insert: Omit<WaterLog, 'id' | 'created_at'> & Partial<Pick<WaterLog, 'id' | 'created_at'>>
+        Update: Partial<WaterLog>
+        Relationships: []
+      }
+      weight_logs: {
+        Row: WeightLog
+        Insert: Omit<WeightLog, 'id' | 'created_at' | 'updated_at'> &
+          Partial<Pick<WeightLog, 'id' | 'created_at' | 'updated_at'>>
+        Update: Partial<WeightLog>
         Relationships: []
       }
     }

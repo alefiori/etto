@@ -19,7 +19,11 @@ export default defineConfig({
     // normalization module (supabase/functions/food-search/normalize.ts) has no
     // Deno globals, so its tests run here too — index.ts (which does use Deno.*)
     // is never imported by them.
-    include: ['src/**/*.test.{ts,tsx}', 'supabase/functions/**/*.test.ts'],
+    include: [
+      'src/**/*.test.{ts,tsx}',
+      'supabase/functions/**/*.test.ts',
+      'scripts/**/*.test.mjs',
+    ],
     // supabase.ts throws at import when these are unset (see src/lib/supabase.ts);
     // foodApi.ts / foods.ts pull it in transitively, so give the tests dummy values.
     env: {

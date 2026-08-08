@@ -8,9 +8,14 @@ interface AppShellValue {
   setSelectedDate: (iso: string) => void
   /** Open the Add Food overlay, optionally pre-selecting a meal. */
   openAddFood: (opts?: { meal?: MealKey }) => void
+  /** Open the Pro paywall. Same arrangement as openAddFood. */
+  openPaywall: () => void
   /** Bumped whenever food logs change, so views can refetch. */
   foodLogVersion: number
   bumpFoodLogVersion: () => void
+  /** The same idea for hydration, kept separate so a drink doesn't refetch food. */
+  waterVersion: number
+  bumpWaterVersion: () => void
   /** A day's foods captured for pasting into another day, or null. */
   copiedDay: { date: string; count: number } | null
   copyDay: (date: string, count: number) => void
@@ -23,9 +28,11 @@ interface AppShellValue {
   copiedFood: { foodId: string; name: string; servings: number } | null
   copyFood: (foodId: string, name: string, servings: number) => void
   clearCopiedFood: () => void
-  /** internal — consumed by AppLayout to render the modal */
+  /** internal — consumed by AppLayout to render the modals */
   _addFood: { open: boolean; meal?: MealKey }
   _closeAddFood: () => void
+  _paywallOpen: boolean
+  _closePaywall: () => void
 }
 
 const AppShellContext = createContext<AppShellValue | undefined>(undefined)
@@ -33,7 +40,9 @@ const AppShellContext = createContext<AppShellValue | undefined>(undefined)
 export function AppShellProvider({ children }: { children: ReactNode }) {
   const [selectedDate, setSelectedDate] = useState<string>(todayISO())
   const [foodLogVersion, setFoodLogVersion] = useState(0)
+  const [waterVersion, setWaterVersion] = useState(0)
   const [addFood, setAddFood] = useState<{ open: boolean; meal?: MealKey }>({ open: false })
+  const [paywallOpen, setPaywallOpen] = useState(false)
   const [copiedDay, setCopiedDay] = useState<{ date: string; count: number } | null>(null)
   const [copiedMeal, setCopiedMeal] = useState<
     { date: string; meal: MealKey; count: number } | null
@@ -47,6 +56,8 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
     setSelectedDate,
     foodLogVersion,
     bumpFoodLogVersion: () => setFoodLogVersion((v) => v + 1),
+    waterVersion,
+    bumpWaterVersion: () => setWaterVersion((v) => v + 1),
     copiedDay,
     copyDay: (date, count) => setCopiedDay({ date, count }),
     clearCopiedDay: () => setCopiedDay(null),
@@ -57,8 +68,11 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
     copyFood: (foodId, name, servings) => setCopiedFood({ foodId, name, servings }),
     clearCopiedFood: () => setCopiedFood(null),
     openAddFood: (opts) => setAddFood({ open: true, meal: opts?.meal }),
+    openPaywall: () => setPaywallOpen(true),
     _addFood: addFood,
     _closeAddFood: () => setAddFood({ open: false }),
+    _paywallOpen: paywallOpen,
+    _closePaywall: () => setPaywallOpen(false),
   }
 
   return <AppShellContext.Provider value={value}>{children}</AppShellContext.Provider>

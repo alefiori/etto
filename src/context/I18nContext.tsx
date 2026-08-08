@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'r
 import { initialLocale, translate, type Locale, type TranslationKey } from '@/lib/i18n'
 import { useProfile } from '@/context/ProfileContext'
 
-type TFunction = (key: TranslationKey, params?: Record<string, string | number>) => string
+export type TFunction = (key: TranslationKey, params?: Record<string, string | number>) => string
 
 interface I18nValue {
   locale: Locale

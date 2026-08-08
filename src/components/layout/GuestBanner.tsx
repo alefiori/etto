@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useI18n } from '@/context/I18nContext'
 import { useScrollLock } from '@/hooks/useScrollLock'
@@ -16,6 +17,7 @@ const inputClass =
 export function GuestBanner() {
   const { isAnonymous, upgradeAccount } = useAuth()
   const { t } = useI18n()
+  const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -133,6 +135,18 @@ export function GuestBanner() {
                 {busy ? <Spinner className="h-4 w-4" /> : <span>{t('guest.createAccount')}</span>}
               </button>
             </form>
+
+            {/* For guests who already have an account and just want back in. */}
+            <p className="text-center font-body-md text-body-md text-on-surface-variant">
+              {t('guest.haveAccount')}{' '}
+              <button
+                type="button"
+                onClick={() => navigate('/signin')}
+                className="font-label-md text-label-md text-primary transition-colors hover:text-on-primary-fixed-variant"
+              >
+                {t('auth.signInAction')}
+              </button>
+            </p>
           </div>
         </div>
       )}

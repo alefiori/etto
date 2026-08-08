@@ -33,7 +33,7 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col antialiased">
+    <div className="relative flex min-h-[100dvh] flex-col antialiased">
       <div className="pointer-events-none fixed left-0 top-0 -z-10 h-[512px] w-full bg-gradient-to-b from-surface-container to-background" />
 
       <main className="relative z-10 flex w-full flex-grow items-center justify-center p-container-margin-mobile md:p-container-margin-desktop">

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useProfile } from '@/context/ProfileContext'
 import { useI18n } from '@/context/I18nContext'
@@ -6,9 +7,12 @@ import { LOCALES, type Locale } from '@/lib/i18n'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { MealSettings } from '@/components/profile/MealSettings'
+import { BodyMetrics } from '@/components/profile/BodyMetrics'
+import { WaterSettings } from '@/components/profile/WaterSettings'
 
 export default function Profile() {
-  const { user, signOut } = useAuth()
+  const { user, signOut, isAnonymous } = useAuth()
+  const navigate = useNavigate()
   const { locale, setLocale, isLocaleExplicit, loading: profileLoading } = useProfile()
   const { t } = useI18n()
   const [busy, setBusy] = useState(false)
@@ -19,6 +23,9 @@ export default function Profile() {
     setBusy(true)
     try {
       await signOut()
+      // No session means the guard hands back a guest — the default state — so
+      // land them on the dashboard rather than a login wall.
+      navigate('/', { replace: true })
     } finally {
       setBusy(false)
     }
@@ -49,7 +56,11 @@ export default function Profile() {
           </div>
           <div className="min-w-0">
             <p className="font-label-md text-label-md text-on-surface-variant">{t('profile.signedInAs')}</p>
-            <p className="truncate font-headline-md text-headline-md text-on-surface">{user?.email}</p>
+            {/* Guests are the default entry point now, and they have no email
+                — showing an empty line here would read as a bug. */}
+            <p className="truncate font-headline-md text-headline-md text-on-surface">
+              {isAnonymous || !user?.email ? t('profile.guestAccount') : user.email}
+            </p>
           </div>
         </div>
 
@@ -105,19 +116,42 @@ export default function Profile() {
 
         <hr className="border-surface-container-highest" />
 
+        {/* Body + goal: the inputs an energy estimate needs */}
+        <BodyMetrics />
+
+        <hr className="border-surface-container-highest" />
+
+        {/* Hydration goal (empty = derived from bodyweight) */}
+        <WaterSettings />
+
+        <hr className="border-surface-container-highest" />
+
         {/* Meals: names, how many there are, and their order */}
         <MealSettings />
 
         <hr className="border-surface-container-highest" />
 
-        <button
-          onClick={handleSignOut}
-          disabled={busy}
-          className="flex min-h-[48px] items-center justify-center gap-sm rounded-full bg-error-container font-label-md text-label-md text-on-error-container transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
-        >
-          {busy ? <Spinner className="h-4 w-4" /> : <Icon name="logout" className="text-[20px]" />}
-          {t('profile.signOut')}
-        </button>
+        {/* A guest has no account to sign out of — the useful action is signing
+            into an existing one (which opens over the guest session). Real
+            accounts keep the sign-out, which now returns to guest mode. */}
+        {isAnonymous ? (
+          <button
+            onClick={() => navigate('/signin')}
+            className="flex min-h-[48px] items-center justify-center gap-sm rounded-full bg-secondary-container font-label-md text-label-md text-on-secondary-container transition-all hover:opacity-90 active:scale-95"
+          >
+            <Icon name="login" className="text-[20px]" />
+            {t('auth.signInAction')}
+          </button>
+        ) : (
+          <button
+            onClick={handleSignOut}
+            disabled={busy}
+            className="flex min-h-[48px] items-center justify-center gap-sm rounded-full bg-error-container font-label-md text-label-md text-on-error-container transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
+          >
+            {busy ? <Spinner className="h-4 w-4" /> : <Icon name="logout" className="text-[20px]" />}
+            {t('profile.signOut')}
+          </button>
+        )}
       </div>
     </div>
   )

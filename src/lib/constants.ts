@@ -67,6 +67,12 @@ export const MACROS: MacroMeta[] = [
  * Order used in the weekly-targets grid (Mon → Sun), with day_of_week index.
  * Labels come from the i18n catalog under `weekday.short.*`, never from here.
  */
+/**
+ * Hydration accent. Deliberately cyan rather than the protein blue in MACROS —
+ * two rings side by side in the same blue would read as the same metric.
+ */
+export const WATER_COLOR = { color: '#06B6D4', textColor: '#0E7490', tint: '#CFFAFE' } as const
+
 export const TARGET_DAYS: { dow: number }[] = [
   { dow: 1 },
   { dow: 2 },
