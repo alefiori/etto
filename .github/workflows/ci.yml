@@ -140,6 +140,7 @@ jobs:
           npx cap add android
           npx cap sync android
           node scripts/patch-android-webview.mjs
+          node scripts/generate-native-icons.mjs
 
       - name: Assemble debug APK
         run: |
@@ -183,6 +184,7 @@ jobs:
         run: |
           npx cap add ios
           npx cap sync ios
+          node scripts/generate-native-icons.mjs
 
       # ios/ is regenerated every run, so there is no checked-in project file to
       # review. This asserts the iPad invariants Capacitor's template currently

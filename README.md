@@ -508,6 +508,14 @@ the projects from scratch. That is deliberate: it means CI validates
 `capacitor.config.ts` and the installed plugin set on every run, not just the
 platform build.
 
+Because the projects are regenerated each run, a few post-`cap sync` scripts
+re-apply what the Capacitor template doesn't carry: `generate-native-icons.mjs`
+renders the app icons from [`assets/`](assets/) with `@capacitor/assets` — the
+same rings/brand as the web [`public/icon.svg`](public/icon.svg), as a full-bleed
+`icon-only.svg` for iOS and `icon-foreground`/`icon-background.svg` for the
+Android adaptive icon; `patch-android-webview.mjs` pins the Android WebView text
+zoom; and `verify-ipad.mjs` asserts the iPad invariants.
+
 Neither job needs a secret. Android assembles a **debug APK** (uploaded as an
 artifact) and iOS does an **unsigned simulator build** plus the
 [iPad configuration check](#ipad) — enough to prove the projects compile and

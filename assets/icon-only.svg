@@ -1,0 +1,22 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Full-bleed native app icon: same rings/brand as public/icon.svg, but the
+       teal fills the whole square (no rounded corners) so iOS/Android apply
+       their own icon mask. Rings are the 512-space artwork scaled x2, centred. -->
+  <rect width="1024" height="1024" fill="#00685f"/>
+  <g transform="translate(512 512) scale(2) translate(-256 -256)">
+    <g fill="none" stroke-linecap="round" transform="rotate(-90 256 256)">
+      <!-- carbs ring (outer) -->
+      <circle cx="256" cy="256" r="150" stroke="#00504a" stroke-width="34"/>
+      <circle cx="256" cy="256" r="150" stroke="#F59E0B" stroke-width="34"
+        stroke-dasharray="942" stroke-dashoffset="236"/>
+      <!-- protein ring (middle) -->
+      <circle cx="256" cy="256" r="106" stroke="#00504a" stroke-width="34"/>
+      <circle cx="256" cy="256" r="106" stroke="#3B82F6" stroke-width="34"
+        stroke-dasharray="666" stroke-dashoffset="200"/>
+      <!-- fats ring (inner) -->
+      <circle cx="256" cy="256" r="62" stroke="#00504a" stroke-width="34"/>
+      <circle cx="256" cy="256" r="62" stroke="#8B5CF6" stroke-width="34"
+        stroke-dasharray="390" stroke-dashoffset="156"/>
+    </g>
+  </g>
+</svg>

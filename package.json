@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:native": "tsc -b && vite build --mode native",
-    "sync:native": "npm run build:native && cap sync && node scripts/patch-android-webview.mjs && node scripts/verify-ipad.mjs",
+    "sync:native": "npm run build:native && cap sync && node scripts/generate-native-icons.mjs && node scripts/patch-android-webview.mjs && node scripts/verify-ipad.mjs",
     "verify:ipad": "node scripts/verify-ipad.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",

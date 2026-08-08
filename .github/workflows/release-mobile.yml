@@ -84,6 +84,7 @@ jobs:
           npx cap add android
           npx cap sync android
           node scripts/patch-android-webview.mjs
+          node scripts/generate-native-icons.mjs
 
       - name: Decode the keystore
         if: steps.gate.outputs.ready == 'true'
@@ -179,6 +180,7 @@ jobs:
         run: |
           npx cap add ios
           npx cap sync ios
+          node scripts/generate-native-icons.mjs
 
       # Done with the `security` CLI rather than a third-party action, to keep
       # this workflow's dependencies to actions/* only. The keychain is
