@@ -139,6 +139,7 @@ jobs:
         run: |
           npx cap add android
           npx cap sync android
+          node scripts/patch-android-webview.mjs
 
       - name: Assemble debug APK
         run: |

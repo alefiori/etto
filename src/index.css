@@ -54,6 +54,15 @@
   #root {
     height: 100%;
   }
+  /* Don't let the OS font-size (accessibility) setting inflate text inside the
+     WebView: on Android it scales all text and overflows the app's fixed chrome
+     (top bar, bottom nav, rings, cards). iOS WKWebView ignores system scaling
+     already. Recent Android WebView no longer honours this opt-out, so the
+     native side pins it too — see scripts/patch-android-webview.mjs. */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
   body {
     @apply bg-background text-on-surface font-sans antialiased;
   }

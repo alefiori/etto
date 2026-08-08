@@ -83,6 +83,7 @@ jobs:
         run: |
           npx cap add android
           npx cap sync android
+          node scripts/patch-android-webview.mjs
 
       - name: Decode the keystore
         if: steps.gate.outputs.ready == 'true'
