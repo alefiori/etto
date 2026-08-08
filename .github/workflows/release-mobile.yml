@@ -27,7 +27,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       # Capacitor 6 ships AGP 8.2, which requires JDK 17.
@@ -134,7 +134,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Check for signing material
