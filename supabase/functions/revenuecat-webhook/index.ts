@@ -24,7 +24,11 @@
 // --no-verify-jwt is required: RevenueCat is not a Supabase client and sends no
 // Supabase JWT. The shared secret above is what authenticates it instead.
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+// npm: specifier rather than esm.sh: the latter periodically 522s at bundle
+// time (Cloudflare connection timeout), failing the deploy. Deno resolves npm
+// packages from the npm registry directly, which is the source Supabase's Edge
+// Function docs now recommend.
+import { createClient } from 'npm:@supabase/supabase-js@2'
 import {
   isHandled,
   shouldApply,
