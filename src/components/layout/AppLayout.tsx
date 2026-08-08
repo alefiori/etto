@@ -236,7 +236,7 @@ export default function AppLayout() {
   const { t } = useI18n()
 
   return (
-    <div className="flex min-h-[100dvh] bg-background text-on-surface antialiased">
+    <div className="flex h-[100dvh] overflow-hidden bg-background text-on-surface antialiased">
       <Sidebar />
       <NavRail />
       <TopAppBar />
