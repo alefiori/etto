@@ -513,8 +513,9 @@ re-apply what the Capacitor template doesn't carry: `generate-native-icons.mjs`
 renders the app icons from [`assets/`](assets/) with `@capacitor/assets` — the
 same rings/brand as the web [`public/icon.svg`](public/icon.svg), as a full-bleed
 `icon-only.svg` for iOS and `icon-foreground`/`icon-background.svg` for the
-Android adaptive icon; `patch-android-webview.mjs` pins the Android WebView text
-zoom; and `verify-ipad.mjs` asserts the iPad invariants.
+Android adaptive icon, plus `splash[-dark].svg` (the icon centred on the app
+background) for the launch screen; `patch-android-webview.mjs` pins the Android
+WebView text zoom; and `verify-ipad.mjs` asserts the iPad invariants.
 
 Neither job needs a secret. Android assembles a **debug APK** (uploaded as an
 artifact) and iOS does an **unsigned simulator build** plus the
