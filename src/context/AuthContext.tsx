@@ -28,6 +28,13 @@ interface AuthContextValue {
   upgradeAccount: (email: string, password: string) => Promise<{ needsConfirmation: boolean }>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<void>
+  /**
+   * Erase the account and everything in it, permanently. Runs server-side (the
+   * `delete-account` Edge Function) because removing an auth user needs the
+   * service role; the caller's own JWT is what identifies whose account goes,
+   * so there is nothing to pass here.
+   */
+  deleteAccount: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -98,6 +105,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           redirectTo: `${window.location.origin}/signin`,
         })
         if (error) throw error
+      },
+      async deleteAccount() {
+        const { error } = await supabase.functions.invoke('delete-account', {
+          method: 'POST',
+        })
+        if (error) throw error
+        // The auth user is gone, so the access token no longer resolves to
+        // anyone; sign out locally to clear the stored session rather than
+        // leaving the app holding a token for a deleted account. The failure is
+        // swallowed on purpose — the account is already deleted, and surfacing
+        // "sign out failed" would suggest, wrongly, that it wasn't.
+        await supabase.auth.signOut().catch(() => {})
       },
     }),
     [session, loading],

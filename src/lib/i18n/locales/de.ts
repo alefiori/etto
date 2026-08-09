@@ -282,6 +282,23 @@ export const de: Translation = {
     couldNotSaveAppearance: 'Erscheinungsbild konnte nicht gespeichert werden. Bitte versuche es erneut.',
     guestAccount: 'Gastkonto',
     signOut: 'Abmelden',
+    deleteAccount: 'Konto löschen',
+    deleteAccountDescription:
+      'Lösche dein Konto und alles darin dauerhaft — Einträge, Lebensmittel, Ziele und Messwerte.',
+    deleteAccountConfirmTitle: 'Dein Konto löschen?',
+    deleteAccountConfirmMessage:
+      'Damit werden dein Konto und alle darin enthaltenen Einträge gelöscht. Das lässt sich nicht rückgängig machen, und die Daten sind danach nicht wiederherstellbar.',
+    deleteAccountConfirmCta: 'Endgültig löschen',
+    deleteAccountStoreNote:
+      'Dies kündigt dein Abo nicht. Kündige es in den Kontoeinstellungen im App Store oder bei Google Play, sonst wird dir weiterhin etwas berechnet.',
+    deleteAccountFailed: 'Dein Konto konnte nicht gelöscht werden. Bitte versuche es erneut.',
+  },
+  about: {
+    title: 'Über die App & Rechtliches',
+    disclaimer:
+      'MacroTrack ist ein Tracking-Werkzeug und keine medizinische Beratung. Ziele und Schätzungen werden aus deinen Eingaben berechnet und können falsch sein. Sprich mit einer Ärztin oder einer Ernährungsberatung, bevor du deine Ernährung umstellst.',
+    support: 'Support kontaktieren',
+    version: 'Version {version}',
   },
   body: {
     title: 'Körper & Ziel',

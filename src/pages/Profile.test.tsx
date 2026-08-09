@@ -15,6 +15,7 @@ interface ProfileStub {
 
 const h = vi.hoisted(() => ({
   signOut: vi.fn(),
+  deleteAccount: vi.fn(),
   user: { email: 'sam@example.com' } as { email: string } | null,
   isAnonymous: false,
   setLocale: vi.fn(),
@@ -23,7 +24,12 @@ const h = vi.hoisted(() => ({
 }))
 
 vi.mock('@/context/AuthContext', () => ({
-  useAuth: () => ({ user: h.user, isAnonymous: h.isAnonymous, signOut: h.signOut }),
+  useAuth: () => ({
+    user: h.user,
+    isAnonymous: h.isAnonymous,
+    signOut: h.signOut,
+    deleteAccount: h.deleteAccount,
+  }),
 }))
 vi.mock('@/context/ProfileContext', () => ({
   useProfile: () => h.profile,
@@ -153,9 +159,48 @@ describe('Profile page', () => {
     const user = userEvent.setup()
     render(<Profile />)
 
-    // The sign-out control is the button in the error-container card.
-    const buttons = screen.getAllByRole('button')
-    await user.click(buttons[buttons.length - 1])
+    await user.click(screen.getByRole('button', { name: 'Sign out' }))
     expect(h.signOut).toHaveBeenCalledTimes(1)
+  })
+
+  /**
+   * Apple's guideline 5.1.1(v) makes this a submission requirement, so these
+   * cover that the control is reachable and that it asks first — a delete that
+   * fires straight off the button would be a worse bug than not having one.
+   */
+  describe('deleting the account', () => {
+    it('asks for confirmation before deleting anything', async () => {
+      const user = userEvent.setup()
+      render(<Profile />)
+
+      await user.click(screen.getByRole('button', { name: 'Delete account' }))
+
+      expect(await screen.findByText('Delete your account?')).toBeInTheDocument()
+      expect(h.deleteAccount).not.toHaveBeenCalled()
+    })
+
+    it('deletes once confirmed', async () => {
+      h.deleteAccount.mockResolvedValue(undefined)
+      const user = userEvent.setup()
+      render(<Profile />)
+
+      await user.click(screen.getByRole('button', { name: 'Delete account' }))
+      await user.click(await screen.findByRole('button', { name: 'Delete permanently' }))
+
+      expect(h.deleteAccount).toHaveBeenCalledTimes(1)
+    })
+
+    it('reports a failure rather than pretending the account is gone', async () => {
+      h.deleteAccount.mockRejectedValue(new Error('nope'))
+      const user = userEvent.setup()
+      render(<Profile />)
+
+      await user.click(screen.getByRole('button', { name: 'Delete account' }))
+      await user.click(await screen.findByRole('button', { name: 'Delete permanently' }))
+
+      expect(
+        await screen.findByText('Could not delete your account. Please try again.'),
+      ).toBeInTheDocument()
+    })
   })
 })

@@ -264,6 +264,11 @@ export default function AppLayout() {
         <button
           onClick={() => openAddFood()}
           aria-label={t('nav.addFood')}
+          // The store-screenshot run drives this control in all 7 languages,
+          // where the accessible name is a different string every time and
+          // three controls share it (drawer, rail, FAB) with one visible per
+          // window class. A stable hook is cheaper than the guesswork.
+          data-testid="add-food-fab"
           className="fixed bottom-fab right-container-margin-mobile z-40 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-on-primary shadow-lg transition-transform active:scale-95 md:hidden"
         >
           <Icon name="add" className="text-2xl" />

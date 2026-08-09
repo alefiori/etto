@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{{TITLE}} — MacroTrack</title>
+    <meta name="description" content="{{DESCRIPTION}}" />
+    <link rel="icon" href="/favicon.ico" />
+    <!--
+      Deliberately self-contained: no stylesheet link, no font request, no
+      script. These pages are what a store reviewer and a regulator load, often
+      on a bad connection, and they must render correctly with nothing else
+      available. The palette mirrors the app's (src/index.css) but is written
+      out literally rather than imported, so a token rename in the app can never
+      break the privacy policy.
+    -->
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f8f9ff;
+        --surface: #ffffff;
+        --text: #1a1c1e;
+        --muted: #43474e;
+        --accent: #00685f;
+        --rule: #dfe2eb;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #111318;
+          --surface: #1a1c20;
+          --text: #e2e2e6;
+          --muted: #c3c6cf;
+          --accent: #52dbcd;
+          --rule: #2e3035;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 2rem 1.25rem 4rem;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-text-size-adjust: 100%;
+      }
+      main {
+        max-width: 46rem;
+        margin: 0 auto;
+        background: var(--surface);
+        border-radius: 1rem;
+        padding: 2rem 1.5rem;
+      }
+      h1 {
+        font-size: 1.75rem;
+        line-height: 1.25;
+        margin: 0 0 0.25rem;
+      }
+      h2 {
+        font-size: 1.2rem;
+        margin: 2.25rem 0 0.5rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--rule);
+      }
+      h3 {
+        font-size: 1rem;
+        margin: 1.5rem 0 0.35rem;
+      }
+      .updated {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 0 0 1.5rem;
+      }
+      a {
+        color: var(--accent);
+      }
+      code {
+        font-size: 0.9em;
+        background: var(--bg);
+        padding: 0.1em 0.35em;
+        border-radius: 0.25rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        font-size: 0.95rem;
+        display: block;
+        overflow-x: auto;
+      }
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        padding: 0.5rem 0.75rem 0.5rem 0;
+        border-bottom: 1px solid var(--rule);
+      }
+      th {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      ul {
+        padding-left: 1.25rem;
+      }
+      li {
+        margin: 0.35rem 0;
+      }
+      footer {
+        max-width: 46rem;
+        margin: 1.5rem auto 0;
+        color: var(--muted);
+        font-size: 0.875rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      {{CONTENT}}
+    </main>
+    <footer>
+      <a href="/">MacroTrack</a> · <a href="/legal/terms.html">Terms of Use</a> ·
+      <a href="/legal/privacy.html">Privacy Policy</a>
+    </footer>
+  </body>
+</html>

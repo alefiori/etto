@@ -7,6 +7,7 @@ import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { LanguagePicker } from '@/components/ui/LanguagePicker'
 import { guestHasData } from '@/lib/guestData'
+import { PRIVACY_URL, TERMS_URL } from '@/lib/legal'
 
 type Tab = 'signin' | 'signup'
 
@@ -274,11 +275,33 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
               )}
             </button>
 
+            {/* Real links, not decoration: both stores reject a sign-up screen
+                that names Terms and a Privacy Policy without linking them, and
+                the GDPR consent these words claim to collect is meaningless if
+                the documents can't be read. `target="_blank"` is what sends
+                them to the system browser natively — Capacitor opens off-origin
+                http(s) URLs externally rather than inside the WebView. */}
             {tab === 'signup' && (
               <p className="mt-sm text-center font-body-md text-body-md text-on-surface-variant">
                 {t('auth.termsPrefix')}{' '}
-                <span className="text-primary">{t('auth.terms')}</span> {t('auth.and')}{' '}
-                <span className="text-primary">{t('auth.privacyPolicy')}</span>.
+                <a
+                  href={TERMS_URL}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-primary underline underline-offset-2 hover:text-primary-hover"
+                >
+                  {t('auth.terms')}
+                </a>{' '}
+                {t('auth.and')}{' '}
+                <a
+                  href={PRIVACY_URL}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-primary underline underline-offset-2 hover:text-primary-hover"
+                >
+                  {t('auth.privacyPolicy')}
+                </a>
+                .
               </p>
             )}
           </form>

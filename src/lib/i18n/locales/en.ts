@@ -287,6 +287,23 @@ export const en = {
     couldNotSaveAppearance: 'Could not save appearance. Please try again.',
     guestAccount: 'Guest account',
     signOut: 'Sign out',
+    deleteAccount: 'Delete account',
+    deleteAccountDescription:
+      'Permanently erase your account and everything in it — logs, foods, targets and measurements.',
+    deleteAccountConfirmTitle: 'Delete your account?',
+    deleteAccountConfirmMessage:
+      'This erases your account and every entry in it. It cannot be undone, and there is no way to recover the data afterwards.',
+    deleteAccountConfirmCta: 'Delete permanently',
+    deleteAccountStoreNote:
+      'This does not cancel your subscription. Cancel it in your App Store or Google Play account settings, or you will keep being charged.',
+    deleteAccountFailed: 'Could not delete your account. Please try again.',
+  },
+  about: {
+    title: 'About & legal',
+    disclaimer:
+      'MacroTrack is a tracking tool, not medical advice. Targets and estimates are calculated from what you enter and can be wrong. Talk to a doctor or dietitian before changing your diet.',
+    support: 'Contact support',
+    version: 'Version {version}',
   },
   body: {
     title: 'Body & goal',

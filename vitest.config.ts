@@ -5,6 +5,10 @@ import path from 'node:path'
 // Dedicated Vitest config — intentionally NOT reusing vite.config.ts so the PWA
 // / Workbox plugin doesn't run during tests. Mirrors only the `@` alias.
 export default defineConfig({
+  // Mirrors vite.config.ts — components read it, so it has to exist under test.
+  define: {
+    __APP_VERSION__: JSON.stringify('test'),
+  },
   plugins: [react()],
   resolve: {
     alias: {
@@ -23,6 +27,7 @@ export default defineConfig({
       'src/**/*.test.{ts,tsx}',
       'supabase/functions/**/*.test.ts',
       'scripts/**/*.test.mjs',
+      'store/**/*.test.mjs',
     ],
     // supabase.ts throws at import when these are unset (see src/lib/supabase.ts);
     // foodApi.ts / foods.ts pull it in transitively, so give the tests dummy values.

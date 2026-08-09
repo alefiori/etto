@@ -12,6 +12,8 @@ import { Spinner } from '@/components/ui/Spinner'
 import { MealSettings } from '@/components/profile/MealSettings'
 import { BodyMetrics } from '@/components/profile/BodyMetrics'
 import { WaterSettings } from '@/components/profile/WaterSettings'
+import { AboutSection } from '@/components/profile/AboutSection'
+import { DeleteAccount } from '@/components/profile/DeleteAccount'
 
 const APPEARANCE_ICON: Record<ThemePreference, string> = {
   system: 'smartphone',
@@ -202,6 +204,12 @@ export default function Profile() {
 
         <hr className="border-surface-container-highest" />
 
+        {/* Terms, Privacy Policy, support contact and the health disclaimer —
+            all four are store submission requirements, not garnish. */}
+        <AboutSection />
+
+        <hr className="border-surface-container-highest" />
+
         {/* A guest has no account to sign out of — the useful action is signing
             into an existing one (which opens over the guest session). Real
             accounts keep the sign-out, which now returns to guest mode. */}
@@ -223,6 +231,14 @@ export default function Profile() {
             {t('profile.signOut')}
           </button>
         )}
+
+        <hr className="border-surface-container-highest" />
+
+        {/* Apple 5.1.1(v): an app that creates accounts must delete them from
+            inside the app. Offered to guests too — a guest account holds the
+            same logs. Last on the page, behind a confirmation, as its
+            destructiveness deserves. */}
+        <DeleteAccount />
       </div>
     </div>
   )

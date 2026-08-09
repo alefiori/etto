@@ -282,6 +282,23 @@ export const nl: Translation = {
     couldNotSaveAppearance: 'Weergave kon niet worden opgeslagen. Probeer het opnieuw.',
     guestAccount: 'Gastaccount',
     signOut: 'Afmelden',
+    deleteAccount: 'Account verwijderen',
+    deleteAccountDescription:
+      'Wis je account en alles erin permanent — registraties, voeding, doelen en metingen.',
+    deleteAccountConfirmTitle: 'Je account verwijderen?',
+    deleteAccountConfirmMessage:
+      'Hiermee wis je je account en elke invoer erin. Dit kan niet ongedaan worden gemaakt en de gegevens zijn daarna niet meer terug te halen.',
+    deleteAccountConfirmCta: 'Permanent verwijderen',
+    deleteAccountStoreNote:
+      'Dit zegt je abonnement niet op. Zeg het op in de accountinstellingen van de App Store of Google Play, anders blijf je betalen.',
+    deleteAccountFailed: 'Je account kon niet worden verwijderd. Probeer het opnieuw.',
+  },
+  about: {
+    title: 'Over & juridisch',
+    disclaimer:
+      'MacroTrack is een registratiehulpmiddel, geen medisch advies. Doelen en schattingen worden berekend uit wat je invult en kunnen onjuist zijn. Overleg met een arts of diëtist voordat je je voeding verandert.',
+    support: 'Contact met support',
+    version: 'Versie {version}',
   },
   body: {
     title: 'Lichaam en doel',

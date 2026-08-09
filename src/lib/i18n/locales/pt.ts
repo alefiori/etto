@@ -282,6 +282,23 @@ export const pt: Translation = {
     couldNotSaveAppearance: 'Não foi possível guardar o aspeto. Tente novamente.',
     guestAccount: 'Conta de convidado',
     signOut: 'Terminar sessão',
+    deleteAccount: 'Eliminar conta',
+    deleteAccountDescription:
+      'Apaga permanentemente a sua conta e tudo o que contém — registos, alimentos, objetivos e medições.',
+    deleteAccountConfirmTitle: 'Eliminar a sua conta?',
+    deleteAccountConfirmMessage:
+      'Isto apaga a sua conta e todas as entradas nela. Não pode ser anulado e depois não há forma de recuperar os dados.',
+    deleteAccountConfirmCta: 'Eliminar permanentemente',
+    deleteAccountStoreNote:
+      'Isto não cancela a sua subscrição. Cancele-a nas definições da sua conta App Store ou Google Play, caso contrário continuará a ser cobrado.',
+    deleteAccountFailed: 'Não foi possível eliminar a sua conta. Tente novamente.',
+  },
+  about: {
+    title: 'Sobre e informação legal',
+    disclaimer:
+      'O MacroTrack é uma ferramenta de registo, não aconselhamento médico. Os objetivos e as estimativas são calculados a partir do que introduz e podem estar errados. Fale com um médico ou nutricionista antes de mudar a sua alimentação.',
+    support: 'Contactar o apoio',
+    version: 'Versão {version}',
   },
   body: {
     title: 'Corpo e objetivo',

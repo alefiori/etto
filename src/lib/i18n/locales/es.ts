@@ -282,6 +282,23 @@ export const es: Translation = {
     couldNotSaveAppearance: 'No se pudo guardar la apariencia. Inténtalo de nuevo.',
     guestAccount: 'Cuenta de invitado',
     signOut: 'Cerrar sesión',
+    deleteAccount: 'Eliminar cuenta',
+    deleteAccountDescription:
+      'Borra permanentemente tu cuenta y todo lo que contiene: registros, alimentos, objetivos y mediciones.',
+    deleteAccountConfirmTitle: '¿Eliminar tu cuenta?',
+    deleteAccountConfirmMessage:
+      'Esto borra tu cuenta y todas sus entradas. No se puede deshacer y después no habrá forma de recuperar los datos.',
+    deleteAccountConfirmCta: 'Eliminar permanentemente',
+    deleteAccountStoreNote:
+      'Esto no cancela tu suscripción. Cancélala en los ajustes de tu cuenta de App Store o Google Play, o se te seguirá cobrando.',
+    deleteAccountFailed: 'No se pudo eliminar tu cuenta. Inténtalo de nuevo.',
+  },
+  about: {
+    title: 'Información y aspectos legales',
+    disclaimer:
+      'MacroTrack es una herramienta de seguimiento, no un consejo médico. Los objetivos y las estimaciones se calculan a partir de lo que introduces y pueden ser incorrectos. Consulta a un médico o dietista antes de cambiar tu alimentación.',
+    support: 'Contactar con soporte',
+    version: 'Versión {version}',
   },
   body: {
     title: 'Cuerpo y objetivo',

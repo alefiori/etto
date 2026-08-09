@@ -2,6 +2,12 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'node:path'
+import { createRequire } from 'node:module'
+
+// The version shown on the Profile page, so a support email can say which build
+// it came from. Read from package.json rather than duplicated, and inlined at
+// build time — there is no package.json to read at runtime in a WebView.
+const { version } = createRequire(import.meta.url)('./package.json')
 
 // https://vitejs.dev/config/
 //
@@ -10,6 +16,9 @@ import path from 'node:path'
 // capacitor:// scheme, so registerSW.js would be dead weight that fails
 // silently, and the native shell already serves the app locally.
 export default defineConfig(({ mode }) => ({
+  define: {
+    __APP_VERSION__: JSON.stringify(version),
+  },
   plugins: [
     react(),
     ...(mode === 'native' ? [] : [VitePWA({
