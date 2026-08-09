@@ -287,6 +287,66 @@ input[type='number'] {
   -moz-appearance: textfield;
 }
 
+/* ---------------------------------------------------------------------------
+ * Overlay motion (food entry sheet, food row context menu, toast).
+ *
+ * A long-press menu has to read as attached to the row that was pressed, not as
+ * a dialog about it, which is why it pops from the corner nearest that row
+ * rather than fading in place. The sheet slides up from the edge it is anchored
+ * to on a phone; above `sm` it is a centered card, where sliding in from off
+ * screen would come from nowhere, so it just fades.
+ * ------------------------------------------------------------------------- */
+@keyframes overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes menu-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-overlay-fade-in {
+  animation: overlay-fade-in 160ms ease both;
+}
+.animate-sheet-up {
+  animation: sheet-up 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-menu-pop {
+  animation: menu-pop 140ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+@media (min-width: 640px) {
+  .animate-sheet-up {
+    animation: overlay-fade-in 160ms ease both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-overlay-fade-in,
+  .animate-sheet-up,
+  .animate-menu-pop {
+    animation: none;
+  }
+}
+
 /* Soft custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

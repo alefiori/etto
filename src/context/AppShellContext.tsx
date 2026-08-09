@@ -2,6 +2,23 @@ import { createContext, useContext, useState, type ReactNode } from 'react'
 import type { MealKey } from '@/lib/constants'
 import { todayISO } from '@/lib/date'
 
+/**
+ * What is waiting to be pasted, if anything.
+ *
+ * One slot rather than one per kind: a second copy replaces the first. Three
+ * independent clipboards meant a day, a meal and a food could all be pending at
+ * once — three banners stacked above the meals, and two competing paste buttons
+ * in every meal header, which is what squeezed a meal's own name out of its
+ * card. It also made "paste" ambiguous exactly when it mattered.
+ *
+ * A day pastes into a day and the other two paste into a meal, so `kind` is
+ * what tells a surface whether the clipboard is any of its business.
+ */
+export type Clipboard =
+  | { kind: 'day'; date: string; count: number }
+  | { kind: 'meal'; date: string; meal: MealKey; count: number }
+  | { kind: 'food'; foodId: string; name: string; servings: number }
+
 interface AppShellValue {
   /** The date the dashboard / add-food flow operates on (YYYY-MM-DD). */
   selectedDate: string
@@ -16,18 +33,15 @@ interface AppShellValue {
   /** The same idea for hydration, kept separate so a drink doesn't refetch food. */
   waterVersion: number
   bumpWaterVersion: () => void
-  /** A day's foods captured for pasting into another day, or null. */
-  copiedDay: { date: string; count: number } | null
+  /** What was copied and is waiting to be pasted, or null. */
+  clipboard: Clipboard | null
+  /** A day's foods, for pasting into another day. */
   copyDay: (date: string, count: number) => void
-  clearCopiedDay: () => void
-  /** A single meal's foods captured for pasting into any meal/day, or null. */
-  copiedMeal: { date: string; meal: MealKey; count: number } | null
+  /** One meal's foods, for pasting into any meal on any day. */
   copyMeal: (date: string, meal: MealKey, count: number) => void
-  clearCopiedMeal: () => void
-  /** A single logged food captured for pasting into any meal/day, or null. */
-  copiedFood: { foodId: string; name: string; servings: number } | null
+  /** One logged food, for pasting into any meal on any day. */
   copyFood: (foodId: string, name: string, servings: number) => void
-  clearCopiedFood: () => void
+  clearClipboard: () => void
   /** internal — consumed by AppLayout to render the modals */
   _addFood: { open: boolean; meal?: MealKey }
   _closeAddFood: () => void
@@ -43,13 +57,7 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
   const [waterVersion, setWaterVersion] = useState(0)
   const [addFood, setAddFood] = useState<{ open: boolean; meal?: MealKey }>({ open: false })
   const [paywallOpen, setPaywallOpen] = useState(false)
-  const [copiedDay, setCopiedDay] = useState<{ date: string; count: number } | null>(null)
-  const [copiedMeal, setCopiedMeal] = useState<
-    { date: string; meal: MealKey; count: number } | null
-  >(null)
-  const [copiedFood, setCopiedFood] = useState<
-    { foodId: string; name: string; servings: number } | null
-  >(null)
+  const [clipboard, setClipboard] = useState<Clipboard | null>(null)
 
   const value: AppShellValue = {
     selectedDate,
@@ -58,15 +66,11 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
     bumpFoodLogVersion: () => setFoodLogVersion((v) => v + 1),
     waterVersion,
     bumpWaterVersion: () => setWaterVersion((v) => v + 1),
-    copiedDay,
-    copyDay: (date, count) => setCopiedDay({ date, count }),
-    clearCopiedDay: () => setCopiedDay(null),
-    copiedMeal,
-    copyMeal: (date, meal, count) => setCopiedMeal({ date, meal, count }),
-    clearCopiedMeal: () => setCopiedMeal(null),
-    copiedFood,
-    copyFood: (foodId, name, servings) => setCopiedFood({ foodId, name, servings }),
-    clearCopiedFood: () => setCopiedFood(null),
+    clipboard,
+    copyDay: (date, count) => setClipboard({ kind: 'day', date, count }),
+    copyMeal: (date, meal, count) => setClipboard({ kind: 'meal', date, meal, count }),
+    copyFood: (foodId, name, servings) => setClipboard({ kind: 'food', foodId, name, servings }),
+    clearClipboard: () => setClipboard(null),
     openAddFood: (opts) => setAddFood({ open: true, meal: opts?.meal }),
     openPaywall: () => setPaywallOpen(true),
     _addFood: addFood,

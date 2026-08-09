@@ -9,7 +9,8 @@ import { useFoodLogs } from '@/hooks/useFoodLogs'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner, LoadingBlock } from '@/components/ui/Spinner'
 import { ProgressRing } from '@/components/ui/ProgressRing'
-import { FoodInfoModal } from '@/components/FoodInfoModal'
+import { Toast } from '@/components/ui/Toast'
+import { FoodLogRow } from '@/components/dashboard/FoodLogRow'
 import { MACROS, type MealKey } from '@/lib/constants'
 import {
   calories,
@@ -21,13 +22,20 @@ import {
   type MacroGrams,
 } from '@/lib/macros'
 import { addDays, dayOfWeek, formatLong, formatMonthDay, formatShort, formatWeekday, isToday, todayISO } from '@/lib/date'
-import { copyDayFoods, copyFoodLog, copyMealFoods, deleteFoodLog, updateLogServings } from '@/lib/foods'
+import { copyDayFoods, copyFoodLog, copyMealFoods } from '@/lib/foods'
 import { formatDayText, formatMealText, shareText } from '@/lib/exportText'
 import type { FoodLogWithFood } from '@/lib/database.types'
 import { WeightCard } from '@/components/dashboard/WeightCard'
 import { WaterCard } from '@/components/dashboard/WaterCard'
 
 const ZERO: MacroGrams = { carbs_g: 0, protein_g: 0, fats_g: 0 }
+
+/** Which "clear" label names what is currently on the clipboard. */
+const CLEAR_ARIA = {
+  day: 'dashboard.clearCopiedDay',
+  meal: 'dashboard.clearCopiedMeal',
+  food: 'dashboard.clearCopiedFood',
+} as const
 
 export default function Dashboard() {
   const {
@@ -36,15 +44,11 @@ export default function Dashboard() {
     openAddFood,
     foodLogVersion,
     bumpFoodLogVersion,
-    copiedDay,
+    clipboard,
     copyDay,
-    clearCopiedDay,
-    copiedMeal,
     copyMeal,
-    clearCopiedMeal,
-    copiedFood,
     copyFood,
-    clearCopiedFood,
+    clearClipboard,
   } = useAppShell()
   const { byDay, loading: targetsLoading } = useTargets()
   const { logs, loading: logsLoading, error } = useFoodLogs(selectedDate, foodLogVersion)
@@ -54,17 +58,16 @@ export default function Dashboard() {
 
   const [pasting, setPasting] = useState(false)
   const [pastingMeal, setPastingMeal] = useState<MealKey | null>(null)
-  const [pastingFood, setPastingFood] = useState<MealKey | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
-  const [shareNotice, setShareNotice] = useState<string | null>(null)
-  const shareNoticeTimer = useRef<ReturnType<typeof setTimeout>>()
+  const [notice, setNotice] = useState<string | null>(null)
+  const noticeTimer = useRef<ReturnType<typeof setTimeout>>()
 
-  useEffect(() => () => clearTimeout(shareNoticeTimer.current), [])
+  useEffect(() => () => clearTimeout(noticeTimer.current), [])
 
-  function flashShareNotice(message: string) {
-    setShareNotice(message)
-    clearTimeout(shareNoticeTimer.current)
-    shareNoticeTimer.current = setTimeout(() => setShareNotice(null), 3000)
+  function flashNotice(message: string) {
+    setNotice(message)
+    clearTimeout(noticeTimer.current)
+    noticeTimer.current = setTimeout(() => setNotice(null), 3000)
   }
 
   async function handleShare(text: string) {
@@ -72,21 +75,27 @@ export default function Dashboard() {
     setActionError(null)
     try {
       const outcome = await shareText(text)
-      if (outcome === 'copied') flashShareNotice(t('dashboard.shareCopied'))
+      if (outcome === 'copied') flashNotice(t('dashboard.shareCopied'))
     } catch {
       setActionError(t('dashboard.failedShare'))
     }
   }
 
-  const canPasteHere = copiedDay !== null && copiedDay.date !== selectedDate
+  const canPasteHere = clipboard?.kind === 'day' && clipboard.date !== selectedDate
+  /** A day pastes into a day; the other two are what a meal header can accept. */
+  const mealClipboard = clipboard !== null && clipboard.kind !== 'day'
 
-  async function handlePaste() {
-    if (!copiedDay) return
+  async function handlePasteDay() {
+    if (clipboard?.kind !== 'day') return
     setPasting(true)
     setActionError(null)
     try {
-      await copyDayFoods(copiedDay.date, selectedDate)
+      await copyDayFoods(clipboard.date, selectedDate)
+      // Pasting consumes the clipboard: with one slot, a banner that outlives
+      // the paste reads as "nothing happened" rather than "ready for more".
+      clearClipboard()
       bumpFoodLogVersion()
+      flashNotice(t('dashboard.pastedIntoDay'))
     } catch (e) {
       setActionError(e instanceof Error ? e.message : t('dashboard.failedPaste'))
     } finally {
@@ -94,31 +103,25 @@ export default function Dashboard() {
     }
   }
 
-  async function handlePasteMeal(targetMeal: MealKey) {
-    if (!copiedMeal) return
+  async function handlePasteInto(targetMeal: MealKey) {
+    if (clipboard === null || clipboard.kind === 'day') return
     setPastingMeal(targetMeal)
     setActionError(null)
     try {
-      await copyMealFoods(copiedMeal.date, copiedMeal.meal, selectedDate, targetMeal)
+      if (clipboard.kind === 'meal') {
+        await copyMealFoods(clipboard.date, clipboard.meal, selectedDate, targetMeal)
+      } else {
+        await copyFoodLog(clipboard.foodId, clipboard.servings, selectedDate, targetMeal)
+      }
+      clearClipboard()
       bumpFoodLogVersion()
+      flashNotice(t('dashboard.pastedInto', { meal: labelFor(targetMeal) }))
     } catch (e) {
-      setActionError(e instanceof Error ? e.message : t('dashboard.failedPasteMeal'))
+      const fallback =
+        clipboard.kind === 'meal' ? 'dashboard.failedPasteMeal' : 'dashboard.failedPasteFood'
+      setActionError(e instanceof Error ? e.message : t(fallback))
     } finally {
       setPastingMeal(null)
-    }
-  }
-
-  async function handlePasteFood(targetMeal: MealKey) {
-    if (!copiedFood) return
-    setPastingFood(targetMeal)
-    setActionError(null)
-    try {
-      await copyFoodLog(copiedFood.foodId, copiedFood.servings, selectedDate, targetMeal)
-      bumpFoodLogVersion()
-    } catch (e) {
-      setActionError(e instanceof Error ? e.message : t('dashboard.failedPasteFood'))
-    } finally {
-      setPastingFood(null)
     }
   }
 
@@ -195,85 +198,77 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {copiedDay && (
-        <div className="flex flex-col gap-sm rounded-2xl border border-primary/30 bg-primary-tint/10 p-md shadow-card sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-sm text-on-surface">
-            <Icon name="content_paste" className="text-primary" />
-            <p className="font-body-md text-body-md">
-              {t(copiedDay.count === 1 ? 'dashboard.itemCopiedOne' : 'dashboard.itemCopiedOther', {
-                count: copiedDay.count,
-              })}{' '}
-              <span className="font-label-md text-label-md">{formatShort(copiedDay.date, locale)}</span>
-            </p>
-          </div>
-          <div className="flex items-center gap-sm">
-            <button
-              onClick={handlePaste}
-              disabled={!canPasteHere || pasting}
-              className="flex items-center gap-xs rounded-full bg-primary px-4 py-2 font-label-md text-label-md text-on-primary transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-              title={canPasteHere ? t('dashboard.pasteIntoThisDay') : t('dashboard.navigateToPaste')}
-            >
-              {pasting ? <Spinner className="h-4 w-4" /> : <Icon name="content_paste" className="text-sm" />}
-              {t('dashboard.pasteHere')}
-            </button>
-            <button
-              onClick={clearCopiedDay}
-              className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high"
-              aria-label={t('dashboard.clearCopiedDay')}
-            >
-              <Icon name="close" className="text-sm" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {copiedMeal && (
-        <div className="flex items-center justify-between gap-sm rounded-2xl border border-primary/30 bg-primary-tint/10 p-md shadow-card">
+      {/* One clipboard, one banner. It trims its own padding to pay for a 40px
+          dismiss button, so growing the target doesn't grow the banner. */}
+      {clipboard && (
+        <div
+          className={`flex gap-sm rounded-2xl border border-primary/30 bg-primary-tint/10 py-3 pl-md pr-3 shadow-card ${
+            clipboard.kind === 'day'
+              ? 'flex-col sm:flex-row sm:items-center sm:justify-between'
+              : 'items-center justify-between'
+          }`}
+        >
           <div className="flex min-w-0 items-center gap-sm text-on-surface">
-            <Icon name="content_paste" className="shrink-0 text-primary" />
+            <Icon name="content_paste" className="shrink-0 text-[20px] text-primary" />
             <p className="truncate font-body-md text-body-md">
-              {t(copiedMeal.count === 1 ? 'dashboard.mealCopiedOne' : 'dashboard.mealCopiedOther', {
-                count: copiedMeal.count,
-                meal: labelFor(copiedMeal.meal),
-              })}{' '}
-              <span className="font-label-md text-label-md">{formatShort(copiedMeal.date, locale)}</span>
+              {clipboard.kind === 'day' && (
+                <>
+                  {t(clipboard.count === 1 ? 'dashboard.itemCopiedOne' : 'dashboard.itemCopiedOther', {
+                    count: clipboard.count,
+                  })}{' '}
+                  <span className="font-label-md text-label-md">
+                    {formatShort(clipboard.date, locale)}
+                  </span>
+                </>
+              )}
+              {clipboard.kind === 'meal' && (
+                <>
+                  {t(clipboard.count === 1 ? 'dashboard.mealCopiedOne' : 'dashboard.mealCopiedOther', {
+                    count: clipboard.count,
+                    meal: labelFor(clipboard.meal),
+                  })}{' '}
+                  <span className="font-label-md text-label-md">
+                    {formatShort(clipboard.date, locale)}
+                  </span>
+                </>
+              )}
+              {clipboard.kind === 'food' && (
+                <>
+                  {t('dashboard.foodCopied')}{' '}
+                  <span className="font-label-md text-label-md">{clipboard.name}</span>
+                </>
+              )}
             </p>
           </div>
-          <button
-            onClick={clearCopiedMeal}
-            className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high"
-            aria-label={t('dashboard.clearCopiedMeal')}
-          >
-            <Icon name="close" className="text-sm" />
-          </button>
+          <div className="flex shrink-0 items-center gap-sm">
+            {/* A day has nowhere else to be pasted, so it carries its own
+                target here; a meal or a food is pasted from a meal header. */}
+            {clipboard.kind === 'day' && (
+              <button
+                onClick={handlePasteDay}
+                disabled={!canPasteHere || pasting}
+                className="flex h-9 items-center gap-xs rounded-full bg-primary px-3.5 font-label-md text-label-md text-on-primary transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                title={canPasteHere ? t('dashboard.pasteIntoThisDay') : t('dashboard.navigateToPaste')}
+              >
+                {pasting ? <Spinner className="h-4 w-4" /> : <Icon name="content_paste" className="text-[16px]" />}
+                {t('dashboard.pasteHere')}
+              </button>
+            )}
+            <button
+              onClick={clearClipboard}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-high"
+              aria-label={t(CLEAR_ARIA[clipboard.kind])}
+            >
+              <Icon name="close" className="text-[18px]" />
+            </button>
+          </div>
         </div>
       )}
 
-      {copiedFood && (
-        <div className="flex items-center justify-between gap-sm rounded-2xl border border-primary/30 bg-primary-tint/10 p-md shadow-card">
-          <div className="flex min-w-0 items-center gap-sm text-on-surface">
-            <Icon name="content_paste" className="shrink-0 text-primary" />
-            <p className="truncate font-body-md text-body-md">
-              {t('dashboard.foodCopied')}{' '}
-              <span className="font-label-md text-label-md">{copiedFood.name}</span>
-            </p>
-          </div>
-          <button
-            onClick={clearCopiedFood}
-            className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high"
-            aria-label={t('dashboard.clearCopiedFood')}
-          >
-            <Icon name="close" className="text-sm" />
-          </button>
-        </div>
-      )}
-
-      {shareNotice && (
-        <p className="flex items-center gap-sm rounded-2xl border border-primary/30 bg-primary-tint/10 px-md py-sm font-label-md text-label-md text-on-surface">
-          <Icon name="check_circle" className="text-sm text-primary" />
-          {shareNotice}
-        </p>
-      )}
+      {/* Confirmations float rather than sit in the flow: these actions are
+          taken from anywhere down a long day, and a banner up here would both
+          go unread and shove the list under the user's thumb. */}
+      <Toast message={notice} />
 
       {actionError && (
         <p className="rounded-2xl bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
@@ -369,15 +364,13 @@ export default function Dashboard() {
                       onChanged={bumpFoodLogVersion}
                       onCopy={() => copyMeal(selectedDate, meal.key, mealLogs.length)}
                       onCopyFood={(log) => copyFood(log.food_id, log.food.name, log.servings)}
+                      onNotice={flashNotice}
                       onShare={() =>
                         handleShare(formatMealText(meal, mealLogs, selectedDate, locale, t))
                       }
-                      canPaste={copiedMeal !== null}
+                      canPaste={mealClipboard}
                       pasting={pastingMeal === meal.key}
-                      onPaste={() => handlePasteMeal(meal.key)}
-                      canPasteFood={copiedFood !== null}
-                      pastingFood={pastingFood === meal.key}
-                      onPasteFood={() => handlePasteFood(meal.key)}
+                      onPaste={() => handlePasteInto(meal.key)}
                     />
                   )
                 })
@@ -443,13 +436,11 @@ function MealCard({
   onChanged,
   onCopy,
   onCopyFood,
+  onNotice,
   onShare,
   canPaste,
   pasting,
   onPaste,
-  canPasteFood,
-  pastingFood,
-  onPasteFood,
 }: {
   label: string
   icon: string
@@ -458,13 +449,12 @@ function MealCard({
   onChanged: () => void
   onCopy: () => void
   onCopyFood: (log: FoodLogWithFood) => void
+  onNotice: (message: string) => void
   onShare: () => void
+  /** True when a meal or a food is on the clipboard — a day is pasted elsewhere. */
   canPaste: boolean
   pasting: boolean
   onPaste: () => void
-  canPasteFood: boolean
-  pastingFood: boolean
-  onPasteFood: () => void
 }) {
   const { t } = useI18n()
   const mealKcal = logs.reduce((sum, l) => sum + caloriesForServings(l.food, l.servings), 0)
@@ -492,43 +482,40 @@ function MealCard({
             <button
               onClick={onPaste}
               disabled={pasting}
-              className="flex items-center gap-xs rounded-full bg-primary px-3 py-1 font-label-md text-label-md text-on-primary transition-opacity hover:opacity-90 disabled:opacity-40"
+              className="flex h-9 items-center gap-xs rounded-full bg-primary px-3.5 font-label-md text-label-md text-on-primary transition-opacity hover:opacity-90 disabled:opacity-40"
               title={t('dashboard.pasteMealHere')}
             >
-              {pasting ? <Spinner className="h-4 w-4" /> : <Icon name="content_paste" className="text-sm" />}
-              <span className="hidden sm:inline">{t('dashboard.pasteMealHere')}</span>
+              {pasting ? <Spinner className="h-4 w-4" /> : <Icon name="content_paste" className="text-[16px]" />}
+              {t('dashboard.pasteMealHere')}
             </button>
           )}
-          {canPasteFood && (
-            <button
-              onClick={onPasteFood}
-              disabled={pastingFood}
-              className="flex items-center gap-xs rounded-full border border-primary px-3 py-1 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/10 disabled:opacity-40"
-              title={t('dashboard.pasteFoodHere')}
-            >
-              {pastingFood ? <Spinner className="h-4 w-4" /> : <Icon name="content_paste" className="text-sm" />}
-              <span className="hidden sm:inline">{t('dashboard.pasteFoodHere')}</span>
-            </button>
-          )}
-          {!empty && (
-            <button
-              onClick={onShare}
-              className="rounded-full p-1 text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-primary"
-              aria-label={t('dashboard.shareMealAria', { meal: label })}
-              title={t('dashboard.shareMealAria', { meal: label })}
-            >
-              <Icon name="ios_share" className="text-sm" />
-            </button>
-          )}
-          {!empty && (
-            <button
-              onClick={onCopy}
-              className="rounded-full p-1 text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-primary"
-              aria-label={t('dashboard.copyMealAria', { meal: label })}
-              title={t('dashboard.copyMealAria', { meal: label })}
-            >
-              <Icon name="content_copy" className="text-sm" />
-            </button>
+          {/* Paired tightly and sized to the 40px minimum: as 14px glyphs in a
+              4px box they were a smaller target than the row they sit above,
+              and the one you hit was largely down to luck.
+              They also stand down entirely while something is on the clipboard.
+              Three controls plus the calorie total left the meal's own name a
+              sliver, and with a paste pending this header has exactly one job —
+              which is also why the paste button can now afford its label at
+              phone width, where it used to be a bare unlabelled pill. */}
+          {!empty && !canPaste && (
+            <div className="flex items-center gap-0.5">
+              <button
+                onClick={onShare}
+                className="flex h-10 w-10 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-primary"
+                aria-label={t('dashboard.shareMealAria', { meal: label })}
+                title={t('dashboard.shareMealAria', { meal: label })}
+              >
+                <Icon name="ios_share" className="text-[20px]" />
+              </button>
+              <button
+                onClick={onCopy}
+                className="flex h-10 w-10 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-primary"
+                aria-label={t('dashboard.copyMealAria', { meal: label })}
+                title={t('dashboard.copyMealAria', { meal: label })}
+              >
+                <Icon name="content_copy" className="text-[20px]" />
+              </button>
+            </div>
           )}
           <span className="font-label-md text-label-md text-on-surface-variant">
             {t('dashboard.mealKcal', { kcal: Math.round(mealKcal) })}
@@ -552,7 +539,13 @@ function MealCard({
       ) : (
         <div className="flex flex-col gap-sm">
           {logs.map((log) => (
-            <FoodLogRow key={log.id} log={log} onChanged={onChanged} onCopy={() => onCopyFood(log)} />
+            <FoodLogRow
+              key={log.id}
+              log={log}
+              onChanged={onChanged}
+              onCopy={() => onCopyFood(log)}
+              onNotice={onNotice}
+            />
           ))}
           <button
             onClick={onAdd}
@@ -562,177 +555,6 @@ function MealCard({
           </button>
         </div>
       )}
-    </div>
-  )
-}
-
-/** Dominant-macro color for the leading dot; outline-variant when there is none. */
-function dominantColor(m: MacroGrams): string {
-  const entries = MACROS.map((meta) => ({ meta, val: m[meta.field] }))
-  entries.sort((a, b) => b.val - a.val)
-  return entries[0].val > 0 ? entries[0].meta.color : 'rgb(var(--outline-variant))'
-}
-
-function FoodLogRow({
-  log,
-  onChanged,
-  onCopy,
-}: {
-  log: FoodLogWithFood
-  onChanged: () => void
-  onCopy: () => void
-}) {
-  const { t } = useI18n()
-  const [editing, setEditing] = useState(false)
-  const [showInfo, setShowInfo] = useState(false)
-  // Edit the logged quantity as an amount in the food's serving unit (e.g.
-  // grams); servings is derived from it on save.
-  const loggedAmount = round(log.servings * log.food.serving_amount, 2)
-  const [amount, setAmount] = useState(loggedAmount)
-  const [busy, setBusy] = useState(false)
-
-  const scaled = scaleMacros(log.food, log.servings)
-  const kcal = caloriesForServings(log.food, log.servings)
-
-  async function save() {
-    setBusy(true)
-    try {
-      await updateLogServings(log.id, amount / log.food.serving_amount)
-      setEditing(false)
-      onChanged()
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  async function remove() {
-    setBusy(true)
-    try {
-      await deleteFoodLog(log.id)
-      onChanged()
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  return (
-    <div className="group flex items-center justify-between gap-md rounded-xl border border-transparent p-sm transition-colors hover:border-surface-variant hover:bg-surface-container-low">
-      <div className="flex min-w-0 items-center gap-md">
-        <div
-          className="h-2 w-2 shrink-0 rounded-full"
-          style={{ backgroundColor: dominantColor(scaled) }}
-        />
-        <div className="min-w-0">
-          <p className="truncate font-label-md text-label-md text-on-surface">{log.food.name}</p>
-          <p className="flex items-center gap-2 truncate text-sm text-on-surface-variant">
-            {loggedAmount} {log.food.serving_unit}
-          </p>
-          {/* Macros under the name on mobile, where the right column has no room. */}
-          {!editing && (
-            <div className="mt-0.5 flex items-center gap-sm text-xs text-on-surface-variant sm:hidden">
-              {MACROS.map((m) => (
-                <span key={m.key} className="flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: m.color }} />
-                  {round(scaled[m.field])}g
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="flex shrink-0 items-center gap-md">
-        {editing ? (
-          <div className="flex items-center gap-1">
-            <input
-              type="number"
-              inputMode="decimal"
-              min={0}
-              step="any"
-              value={amount}
-              onChange={(e) => setAmount(Math.max(0, parseFloat(e.target.value) || 0))}
-              onFocus={(e) => e.target.select()}
-              aria-label={t('dashboard.amountInUnit', { unit: log.food.serving_unit })}
-              className="h-9 w-20 rounded-lg border border-outline-variant bg-surface px-2 text-center font-body-md text-body-md outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-            />
-            <span className="font-body-md text-sm text-on-surface-variant">{log.food.serving_unit}</span>
-            <button
-              onClick={save}
-              disabled={busy || amount <= 0}
-              className="rounded-full p-1 text-primary hover:bg-primary-tint/10"
-              aria-label={t('dashboard.saveServingsAria')}
-            >
-              {busy ? <Spinner className="h-4 w-4" /> : <Icon name="check" className="text-sm" />}
-            </button>
-            <button
-              onClick={() => {
-                setAmount(loggedAmount)
-                setEditing(false)
-              }}
-              className="rounded-full p-1 text-on-surface-variant hover:bg-surface-container-high"
-              aria-label={t('dashboard.cancelEditAria')}
-            >
-              <Icon name="close" className="text-sm" />
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="hidden items-center gap-sm text-xs text-on-surface-variant sm:flex">
-              {MACROS.map((m) => (
-                <span key={m.key} className="flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: m.color }} />
-                  {round(scaled[m.field])}g
-                </span>
-              ))}
-            </div>
-            <span className="w-16 text-right font-label-md text-label-md text-on-surface">
-              {t('dashboard.mealKcal', { kcal: Math.round(kcal) })}
-            </span>
-            <div className="flex opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
-              <button
-                onClick={() => setShowInfo(true)}
-                className="p-1 text-on-surface-variant hover:text-primary"
-                aria-label={t('dashboard.infoAria')}
-              >
-                <Icon name="info" className="text-sm" />
-              </button>
-              <button
-                onClick={onCopy}
-                className="p-1 text-on-surface-variant hover:text-primary"
-                aria-label={t('dashboard.copyFoodAria')}
-              >
-                <Icon name="content_copy" className="text-sm" />
-              </button>
-              <button
-                onClick={() => setEditing(true)}
-                className="p-1 text-on-surface-variant hover:text-primary"
-                aria-label={t('dashboard.editAria')}
-              >
-                <Icon name="edit" className="text-sm" />
-              </button>
-              <button
-                onClick={remove}
-                disabled={busy}
-                className="p-1 text-on-surface-variant hover:text-error"
-                aria-label={t('dashboard.deleteAria')}
-              >
-                <Icon name="delete" className="text-sm" />
-              </button>
-            </div>
-          </>
-        )}
-      </div>
-
-      <FoodInfoModal
-        open={showInfo}
-        onClose={() => setShowInfo(false)}
-        food={log.food}
-        servings={log.servings}
-        onCopy={() => {
-          onCopy()
-          setShowInfo(false)
-        }}
-      />
     </div>
   )
 }
