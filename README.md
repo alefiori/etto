@@ -273,6 +273,24 @@ npm run sync:native       # rebuild + copy into the native projects
 npx cap open ios          # or: npx cap open android
 ```
 
+**Running on a physical iPhone or iPad** needs one more thing. Capacitor's
+template ships `DEVELOPMENT_TEAM = ""` with automatic signing, so Xcode stops
+with *"Signing for 'App' requires a development team"* — the simulator is
+unaffected, and so is CI, which builds unsigned. Setting the team in Xcode's
+Signing & Capabilities editor does not stick: `ios/` is gitignored and
+regenerated, so the next `npm run sync:native` hands the empty string back and
+the error returns looking new. Put it in `.env` instead:
+
+```bash
+APPLE_TEAM_ID=XXXXXXXXXX   # developer.apple.com/account → Membership details
+```
+
+[`scripts/patch-ios-project.mjs`](scripts/patch-ios-project.mjs) writes it into
+both build configurations after every sync. A real environment variable wins
+over `.env`, which is how the release workflow supplies the same value from a
+secret. Leave it unset and the script says so and carries on — the simulator
+still builds.
+
 **What differs natively, and why:**
 
 | Concern | Web | Native |
@@ -364,7 +382,7 @@ if a Capacitor upgrade reshapes what it patches:
 | Script | What and why |
 | --- | --- |
 | [`patch-android-webview.mjs`](scripts/patch-android-webview.mjs) | Pins WebView text zoom at 100%, so a large system font can't overflow the fixed chrome |
-| [`patch-ios-project.mjs`](scripts/patch-ios-project.mjs) | `NSCameraUsageDescription` (without it iOS **terminates** the app on the first barcode scan), `CFBundleLocalizations` (the app localizes itself in JS, so iOS would otherwise advertise it as English-only), and the app's `PrivacyInfo.xcprivacy` — written *and* registered in the pbxproj Resources phase, since an unregistered file is never copied into the bundle |
+| [`patch-ios-project.mjs`](scripts/patch-ios-project.mjs) | `NSCameraUsageDescription` (without it iOS **terminates** the app on the first barcode scan), `CFBundleLocalizations` (the app localizes itself in JS, so iOS would otherwise advertise it as English-only), and the app's `PrivacyInfo.xcprivacy` — written *and* registered in the pbxproj Resources phase, since an unregistered file is never copied into the bundle. Also sets `DEVELOPMENT_TEAM` from `$APPLE_TEAM_ID` when one is set, since the template's empty team blocks every device build and Xcode's own fix is undone by the next sync |
 | [`verify-ipad.mjs`](scripts/verify-ipad.mjs) | Asserts the iPad invariants Capacitor currently supplies for free |
 
 ### Still to do before shipping to the stores

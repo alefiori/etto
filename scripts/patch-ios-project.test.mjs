@@ -7,6 +7,7 @@ import {
   patchInfoPlist,
   privacyManifest,
   patchPbxproj,
+  patchSigning,
   checkAll,
 } from './patch-ios-project.mjs'
 import { LOCALES as I18N_LOCALES } from '../src/lib/i18n/index.ts'
@@ -55,6 +56,27 @@ const TEMPLATE_PBXPROJ = `// !$*UTF8*$!
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		504EC3181FED79650016851F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				PRODUCT_BUNDLE_IDENTIFIER = app.macrotrack;
+			};
+			name = Debug;
+		};
+		504EC3191FED79650016851F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				PRODUCT_BUNDLE_IDENTIFIER = app.macrotrack;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
 }
 `
 
@@ -186,6 +208,56 @@ describe('patchPbxproj', () => {
   })
 })
 
+describe('patchSigning', () => {
+  const TEAM = 'A1B2C3D4E5'
+
+  it('sets the team on every build configuration', () => {
+    const { pbxproj, count } = patchSigning(TEMPLATE_PBXPROJ, TEAM)
+    expect(count).toBe(2)
+    expect(pbxproj).not.toMatch(/DEVELOPMENT_TEAM = "";/)
+    expect([...pbxproj.matchAll(/DEVELOPMENT_TEAM = A1B2C3D4E5;/g)]).toHaveLength(2)
+  })
+
+  it('is idempotent — a second run over a patched project changes nothing', () => {
+    const once = patchSigning(TEMPLATE_PBXPROJ, TEAM).pbxproj
+    expect(patchSigning(once, TEAM).pbxproj).toBe(once)
+  })
+
+  it('replaces an id that has changed rather than ignoring the new one', () => {
+    // The whole point of matching on any value: someone switching from a
+    // personal team to an organisation must not have to delete ios/ first.
+    const once = patchSigning(TEMPLATE_PBXPROJ, TEAM).pbxproj
+    const { pbxproj } = patchSigning(once, 'Z9Y8X7W6V5')
+    expect(pbxproj).toMatch(/DEVELOPMENT_TEAM = Z9Y8X7W6V5;/)
+    expect(pbxproj).not.toMatch(/A1B2C3D4E5/)
+  })
+
+  it('leaves the rest of the build settings alone', () => {
+    const { pbxproj } = patchSigning(TEMPLATE_PBXPROJ, TEAM)
+    expect(pbxproj).toMatch(/CODE_SIGN_STYLE = Automatic;/)
+    expect(pbxproj).toMatch(/PRODUCT_BUNDLE_IDENTIFIER = app\.macrotrack;/)
+  })
+
+  it('reports zero when the template stops declaring the key', () => {
+    // Not a throw: checkAll is what turns this into a build failure, and it
+    // does so with a message naming the setting rather than a stack trace.
+    const stripped = TEMPLATE_PBXPROJ.replace(/\s*DEVELOPMENT_TEAM = "";/g, '')
+    expect(patchSigning(stripped, TEAM).count).toBe(0)
+  })
+
+  it.each([
+    ['too short', 'A1B2C3D4'],
+    ['lowercase', 'a1b2c3d4e5'],
+    ['quoted by a copy-paste', '"A1B2C3D4E5"'],
+    ['with a trailing newline', 'A1B2C3D4E5\n'],
+    ['empty', ''],
+  ])('refuses a team id that is %s', (_why, bad) => {
+    // A malformed value written into the pbxproj corrupts the project file,
+    // and Xcode's error for that names neither this script nor the variable.
+    expect(() => patchSigning(TEMPLATE_PBXPROJ, bad)).toThrow(/APPLE_TEAM_ID/)
+  })
+})
+
 describe('checkAll', () => {
   it('passes a fully patched project', () => {
     expect(checkAll(patchInfoPlist(TEMPLATE_PLIST), patchPbxproj(TEMPLATE_PBXPROJ), true)).toEqual([])
@@ -195,6 +267,32 @@ describe('checkAll', () => {
     const failures = checkAll(TEMPLATE_PLIST, TEMPLATE_PBXPROJ, false)
     expect(failures).toHaveLength(5)
     expect(failures.join(' ')).toMatch(/NSCameraUsageDescription/)
+  })
+
+  it('says nothing about signing when no team was asked for', () => {
+    // CI's simulator build is unsigned on purpose, and a contributor with no
+    // Apple account must still get a clean run.
+    expect(checkAll(patchInfoPlist(TEMPLATE_PLIST), patchPbxproj(TEMPLATE_PBXPROJ), true)).toEqual(
+      [],
+    )
+  })
+
+  it('catches a team that was asked for but did not land', () => {
+    expect(
+      checkAll(
+        patchInfoPlist(TEMPLATE_PLIST),
+        patchPbxproj(TEMPLATE_PBXPROJ),
+        true,
+        'A1B2C3D4E5',
+      ),
+    ).toEqual([
+      'DEVELOPMENT_TEAM was not set to A1B2C3D4E5 — Xcode will refuse to sign for a device.',
+    ])
+  })
+
+  it('passes a project that was signed as well as patched', () => {
+    const { pbxproj } = patchSigning(patchPbxproj(TEMPLATE_PBXPROJ), 'A1B2C3D4E5')
+    expect(checkAll(patchInfoPlist(TEMPLATE_PLIST), pbxproj, true, 'A1B2C3D4E5')).toEqual([])
   })
 
   it('catches a project where only the group insertion missed', () => {
