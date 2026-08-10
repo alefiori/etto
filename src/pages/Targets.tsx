@@ -322,7 +322,7 @@ export default function Targets() {
               return (
                 <div
                   key={dow}
-                  className="flex flex-col gap-md rounded-lens p-md transition-all hover:shadow-card-hover glass"
+                  className="settle flex flex-col gap-md rounded-lens p-md hover:-translate-y-0.5 hover:shadow-card-hover glass"
                 >
                   <div className="flex items-center justify-between gap-xs border-b border-outline-variant/10 pb-sm">
                     <h3

@@ -19,7 +19,6 @@ const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'))
 const Dashboard = lazy(() => import('@/pages/Dashboard'))
 const Targets = lazy(() => import('@/pages/Targets'))
 const MyFoods = lazy(() => import('@/pages/MyFoods'))
-const CreateCustomFood = lazy(() => import('@/pages/CreateCustomFood'))
 const Profile = lazy(() => import('@/pages/Profile'))
 
 function RouteFallback() {
@@ -72,8 +71,6 @@ export default function App() {
                       <Route path="/" element={<Dashboard />} />
                       <Route path="/targets" element={<Targets />} />
                       <Route path="/foods" element={<MyFoods />} />
-                      <Route path="/foods/new" element={<CreateCustomFood />} />
-                      <Route path="/foods/:id/edit" element={<CreateCustomFood />} />
                       <Route path="/profile" element={<Profile />} />
                     </Route>
 

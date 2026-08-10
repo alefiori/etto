@@ -1,4 +1,6 @@
+import { useEffect, useRef } from 'react'
 import { RING, ringOffset } from '@/lib/macros'
+import { MOTION, prefersReducedMotion } from '@/lib/motion'
 
 /**
  * SVG macro progress ring — viewBox 100×100, r=45, stroke-width 10,
@@ -10,6 +12,9 @@ import { RING, ringOffset } from '@/lib/macros'
  * var() substitution does not happen inside presentation attributes, which is
  * how the accents in lib/constants.ts are expressed so they can flip with the
  * theme.
+ *
+ * The arc draws itself once, from empty, the first time it has anything to
+ * draw. See the Draw token in src/lib/motion.ts.
  */
 export function ProgressRing({
   consumed,
@@ -17,6 +22,7 @@ export function ProgressRing({
   color,
   trackColor,
   size = 120,
+  drawDelay = 120,
   className,
   children,
 }: {
@@ -25,10 +31,53 @@ export function ProgressRing({
   color: string
   trackColor: string
   size?: number
+  /** Stagger, in ms, for a row of dials. See `drawDelay()` in lib/motion.ts. */
+  drawDelay?: number
   className?: string
   children?: React.ReactNode
 }) {
   const offset = ringOffset(consumed, target)
+  const arcRef = useRef<SVGCircleElement>(null)
+  const drawnRef = useRef(false)
+
+  /**
+   * Draw the arc from empty, once.
+   *
+   * Not a mount effect, because at mount there is usually nothing to draw: the
+   * dial renders as soon as the day's *targets* resolve, and the logs that fill
+   * it land a moment later. Firing on mount would spend the entrance sweeping
+   * zero to zero and leave the real numbers to appear by transition. So it
+   * waits for the first offset that describes an actual arc, and the ordinary
+   * `.macro-ring` transition carries every change after that.
+   *
+   * "An actual arc" is asked of the inputs rather than of `offset`, because
+   * `ringOffset` rounds to two decimals: an empty ring comes back as 282.74
+   * against a circumference of 282.7433…, so comparing the two would call every
+   * empty dial a drawable one and burn the entrance on it.
+   *
+   * A day with no target never produces an arc either, which is correct —
+   * there is no progress to report, and an empty ring drawing an empty ring is
+   * a waste of frame budget on a phone that is still fetching.
+   */
+  const hasArc = target > 0 && consumed > 0
+
+  useEffect(() => {
+    const arc = arcRef.current
+    if (drawnRef.current || !arc || !hasArc) return
+    drawnRef.current = true
+    // jsdom has no Web Animations, and a reduced-motion user gets the finished
+    // arc. Both leave `drawnRef` set: the entrance is spent either way, and a
+    // later data change must not be mistaken for a first paint.
+    if (prefersReducedMotion() || typeof arc.animate !== 'function') return
+    arc.animate([{ strokeDashoffset: RING.circumference }, { strokeDashoffset: offset }], {
+      duration: MOTION.draw.duration,
+      delay: drawDelay,
+      easing: MOTION.draw.easing,
+      // Holds the empty ring through the stagger, and hands the property back
+      // to the stylesheet the moment the sweep lands.
+      fill: 'backwards',
+    })
+  }, [hasArc, offset, drawDelay])
 
   return (
     <div
@@ -47,6 +96,7 @@ export function ProgressRing({
           strokeWidth={RING.strokeWidth}
         />
         <circle
+          ref={arcRef}
           className="macro-ring"
           cx="50"
           cy="50"

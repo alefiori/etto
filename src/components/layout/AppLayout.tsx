@@ -1,10 +1,11 @@
-import { NavLink, Outlet, useMatch, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useAppShell } from '@/context/AppShellContext'
 import { useI18n } from '@/context/I18nContext'
 import { Icon } from '@/components/ui/Icon'
 import type { TranslationKey } from '@/lib/i18n'
 import { AddFoodModal } from '@/components/addfood/AddFoodModal'
+import { CustomFoodModal } from '@/components/addfood/CustomFoodModal'
 import { PaywallModal } from '@/components/paywall/PaywallModal'
 import { GuestBanner } from '@/components/layout/GuestBanner'
 
@@ -59,7 +60,10 @@ function Sidebar() {
             to={item.to}
             end={item.to === '/'}
             className={({ isActive }) =>
-              `flex items-center gap-md rounded-2xl px-md py-3 font-label-md text-label-md transition-transform active:scale-98 ${
+              // Settle: a destination lifts a couple of pixels towards the
+              // pointer and rebounds under a press, on the one decelerating
+              // curve every control in the app answers on.
+              `settle flex items-center gap-md rounded-2xl px-md py-3 font-label-md text-label-md hover:translate-x-0.5 active:scale-98 ${
                 isActive
                   ? 'bg-primary-tint/[0.14] text-primary'
                   : 'text-on-surface-variant hover:bg-[color:var(--glass-chip)]'
@@ -119,7 +123,7 @@ function Sidebar() {
 
         <button
           onClick={() => openAddFood()}
-          className="flex w-full items-center justify-center gap-sm rounded-2xl px-4 py-3 font-label-md text-label-md transition-transform hover:brightness-105 active:scale-98 grad-primary"
+          className="settle flex w-full items-center justify-center gap-sm rounded-2xl px-4 py-3 font-label-md text-label-md hover:brightness-105 active:scale-98 grad-primary"
         >
           <Icon name="add" />
           {t('nav.addFood')}
@@ -157,7 +161,7 @@ function NavRail() {
       <button
         onClick={() => openAddFood()}
         aria-label={t('nav.addFood')}
-        className="mb-1 flex h-14 w-14 items-center justify-center rounded-[20px] transition-transform active:scale-95 grad-primary"
+        className="settle mb-1 flex h-14 w-14 items-center justify-center rounded-[20px] hover:scale-105 active:scale-95 grad-primary"
       >
         <Icon name="add" className="text-2xl" />
       </button>
@@ -169,7 +173,7 @@ function NavRail() {
             to={item.to}
             end={item.to === '/'}
             className={({ isActive }) =>
-              `flex w-[68px] flex-col items-center justify-center rounded-[20px] py-2 transition-all duration-200 active:scale-95 ${
+              `settle flex w-[68px] flex-col items-center justify-center rounded-[20px] py-2 hover:translate-x-0.5 hover:scale-[1.04] active:scale-95 ${
                 isActive
                   ? 'bg-primary-tint/[0.16] text-primary'
                   : 'text-on-surface-variant hover:bg-[color:var(--glass-chip)]'
@@ -223,7 +227,7 @@ function TopAppBar() {
         <NavLink
           to="/profile"
           aria-label={t('nav.profile')}
-          className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip)] active:scale-95"
+          className="settle rounded-full p-2 text-on-surface-variant hover:bg-[color:var(--glass-chip)] active:scale-95"
         >
           <Icon name="account_circle" />
         </NavLink>
@@ -248,7 +252,9 @@ function BottomNav() {
           to={item.to}
           end={item.to === '/'}
           className={({ isActive }) =>
-            `flex flex-1 flex-col items-center justify-center rounded-[22px] py-1.5 transition-all duration-200 active:scale-90 ${
+            // No hover lift here: this bar only exists at phone width, where a
+            // hover state is a state a finger can't leave.
+            `settle flex flex-1 flex-col items-center justify-center rounded-[22px] py-1.5 active:scale-90 ${
               isActive
                 ? 'bg-primary-tint/[0.16] text-primary'
                 : 'text-on-surface-variant hover:bg-[color:var(--glass-chip)]'
@@ -270,13 +276,17 @@ function BottomNav() {
 }
 
 export default function AppLayout() {
-  const { openAddFood, _addFood, _closeAddFood, _paywallOpen, _closePaywall } = useAppShell()
+  const {
+    openAddFood,
+    _addFood,
+    _closeAddFood,
+    _customFood,
+    _closeCustomFood,
+    bumpFoodsVersion,
+    _paywallOpen,
+    _closePaywall,
+  } = useAppShell()
   const { t } = useI18n()
-
-  // The custom-food form is itself an add-food flow, with its own save actions
-  // at the bottom of the page. A FAB that opens the add-food modal on top of it
-  // has nothing to add there and overlaps those buttons, so it stays hidden.
-  const onCustomFoodForm = Boolean(useMatch('/foods/new') || useMatch('/foods/:id/edit'))
 
   return (
     // No page colour of its own: the aurora is painted on <body> and the shell
@@ -295,23 +305,36 @@ export default function AppLayout() {
 
       <BottomNav />
 
-      {/* Floating action button (mobile) */}
-      {!onCustomFoodForm && (
-        <button
-          onClick={() => openAddFood()}
-          aria-label={t('nav.addFood')}
-          // The store-screenshot run drives this control in all 7 languages,
-          // where the accessible name is a different string every time and
-          // three controls share it (drawer, rail, FAB) with one visible per
-          // window class. A stable hook is cheaper than the guesswork.
-          data-testid="add-food-fab"
-          className="fixed bottom-fab right-container-margin-mobile z-40 flex h-14 w-14 items-center justify-center rounded-[20px] transition-transform active:scale-95 md:hidden grad-primary"
-        >
-          <Icon name="add" className="text-2xl" />
-        </button>
-      )}
+      {/* Floating action button (mobile). It no longer has to stand down for
+          the custom-food form: that was a route once, and a FAB opening the
+          add-food modal on top of it covered its save buttons. As a sheet it
+          simply draws over the FAB. */}
+      <button
+        onClick={() => openAddFood()}
+        aria-label={t('nav.addFood')}
+        // The store-screenshot run drives this control in all 7 languages,
+        // where the accessible name is a different string every time and
+        // three controls share it (drawer, rail, FAB) with one visible per
+        // window class. A stable hook is cheaper than the guesswork.
+        data-testid="add-food-fab"
+        className="settle fixed bottom-fab right-container-margin-mobile z-40 flex h-14 w-14 items-center justify-center rounded-[20px] active:scale-95 md:hidden grad-primary"
+      >
+        <Icon name="add" className="text-2xl" />
+      </button>
 
       <AddFoodModal open={_addFood.open} initialMeal={_addFood.meal} onClose={_closeAddFood} />
+
+      {/* Mounted only while open, so each visit starts from an empty draft —
+          see the note in CustomFoodModal. It sits above the Add Food overlay
+          (z-60) because that is one of the two places it is opened from. */}
+      {_customFood.open && (
+        <CustomFoodModal
+          foodId={_customFood.id}
+          prefill={_customFood.prefill}
+          onClose={_closeCustomFood}
+          onSaved={bumpFoodsVersion}
+        />
+      )}
 
       <PaywallModal open={_paywallOpen} onClose={_closePaywall} />
     </div>

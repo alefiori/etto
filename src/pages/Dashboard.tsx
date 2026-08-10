@@ -21,6 +21,7 @@ import {
   round,
   type MacroGrams,
 } from '@/lib/macros'
+import { drawDelay } from '@/lib/motion'
 import { addDays, dayOfWeek, formatLong, formatMonthDay, formatShort, formatWeekday, isToday, todayISO } from '@/lib/date'
 import { copyDayFoods, copyFoodLog, copyMealFoods } from '@/lib/foods'
 import { formatDayText, formatMealText, shareText } from '@/lib/exportText'
@@ -146,7 +147,10 @@ export default function Dashboard() {
           the day stepper do not fit on one 390px line, and squeezing them
           folded the date onto three lines and pushed the stepper off the
           card's right edge. */}
-      <header className="flex flex-col gap-sm rounded-lens p-md sm:flex-row sm:items-center sm:justify-between glass">
+      <header
+        className="flex animate-rise flex-col gap-sm rounded-lens p-md sm:flex-row sm:items-center sm:justify-between glass"
+        style={{ animationDelay: '0ms' }}
+      >
         <div>
           <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface md:font-headline-lg md:text-headline-lg">
             {isToday(selectedDate) ? t('dashboard.today') : formatWeekday(selectedDate, locale)}
@@ -306,8 +310,8 @@ export default function Dashboard() {
               independent readings. Each floats a blurred wash of its own accent
               behind the ring, which is what tells the three apart before any
               label is read — hence the overflow-hidden and the relative box. */}
-          <section className="grid grid-cols-3 gap-2 md:gap-lg">
-            {MACROS.map((m) => {
+          <section className="grid animate-rise grid-cols-3 gap-2 md:gap-lg">
+            {MACROS.map((m, i) => {
               const c = consumed[m.field]
               const tgt = targetMacros[m.field]
               return (
@@ -320,7 +324,7 @@ export default function Dashboard() {
                       solid block of the accent instead of a tint of it. */}
                   <div
                     aria-hidden
-                    className="pointer-events-none absolute -right-6 -top-8 h-[96px] w-[96px] rounded-full blur-[26px] md:-right-8 md:-top-10 md:h-[150px] md:w-[150px] md:blur-[36px]"
+                    className="pointer-events-none absolute -right-6 -top-8 h-[96px] w-[96px] animate-breathe rounded-full blur-[26px] md:-right-8 md:-top-10 md:h-[150px] md:w-[150px] md:blur-[36px]"
                     style={{ backgroundColor: `color-mix(in srgb, ${m.color} 24%, transparent)` }}
                   />
                   <div className="relative flex w-full items-center justify-center md:mb-4 md:justify-between">
@@ -339,6 +343,7 @@ export default function Dashboard() {
                     target={tgt}
                     color={m.color}
                     trackColor={RING_TRACK}
+                    drawDelay={drawDelay(i)}
                     className="relative mt-2 h-[84px] w-[84px] md:h-[124px] md:w-[124px]"
                   >
                     <span className="font-headline-md text-xl text-on-surface md:text-[30px] md:leading-8">
@@ -371,8 +376,17 @@ export default function Dashboard() {
           </section>
 
           {/* Food log + calorie summary */}
+          {/* The two columns arrive behind the macro row, a beat apart, so the
+              page assembles top-down rather than all at once. The meal list
+              fades where the others rise: its rows open sheets and dialogs at
+              `position: fixed`, and a transform on an ancestor — even one that
+              lasts 650ms — would lay those out inside a meal card. See the
+              entrance note in src/index.css. */}
           <div className="grid grid-cols-1 gap-lg lg:grid-cols-3">
-            <div className="flex flex-col gap-lg lg:col-span-2">
+            <div
+              className="flex animate-rise-in-place flex-col gap-lg lg:col-span-2"
+              style={{ animationDelay: '120ms' }}
+            >
               {error && (
                 <p className="rounded-lens bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
                   {error}
@@ -407,17 +421,26 @@ export default function Dashboard() {
             </div>
 
             {/* Calorie summary */}
-            <div className="flex flex-col gap-lg lg:col-span-1">
+            <div
+              className="flex animate-rise flex-col gap-lg lg:col-span-1"
+              style={{ animationDelay: '190ms' }}
+            >
               {/* The one solid surface on the page, and deliberately so: every
                   other card is a lens, and calories is the reading the day is
                   actually judged on. It is the violet gradient rather than a
                   flat fill for the same reason the CTAs are — and it carries a
                   real ring now, where it used to draw a static decorative
                   circle and put the progress nowhere. */}
-              <div className="relative overflow-hidden rounded-lens p-lg text-white shadow-accent grad-primary">
+              {/* `specular` is the sheen that travels across it every five
+                  seconds — the only looping decoration in the app, and it earns
+                  the exception by being on the one large tinted surface, where
+                  a static gradient otherwise reads as printed rather than lit.
+                  It needs the `relative overflow-hidden` this card already has,
+                  and paints under the contents, which all carry z-10. */}
+              <div className="relative overflow-hidden rounded-lens p-lg text-white shadow-accent grad-primary specular">
                 <div
                   aria-hidden
-                  className="absolute -right-10 -top-14 h-[200px] w-[200px] rounded-full bg-white/25 blur-[46px]"
+                  className="absolute -right-10 -top-14 h-[200px] w-[200px] animate-breathe-slow rounded-full bg-white/25 blur-[46px]"
                 />
                 <div className="relative z-10 mb-lg flex items-center justify-between">
                   <h3 className="font-headline-md text-headline-md">{t('dashboard.calories')}</h3>

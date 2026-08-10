@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import type { MealKey } from '@/lib/constants'
+import type { CustomFoodPrefill } from '@/lib/foods'
 import { todayISO } from '@/lib/date'
 
 /**
@@ -25,11 +26,28 @@ interface AppShellValue {
   setSelectedDate: (iso: string) => void
   /** Open the Add Food overlay, optionally pre-selecting a meal. */
   openAddFood: (opts?: { meal?: MealKey }) => void
+  /**
+   * Open the custom-food form.
+   *
+   * It lives up here rather than on the page that lists foods because two
+   * unrelated surfaces open it — My Foods, and the Add Food overlay's "edit as
+   * custom" — and one of those is itself a modal. Owning it at the shell means
+   * the caller closes itself and the form takes over, instead of a modal having
+   * to render another modal inside itself.
+   *
+   * `id` edits an existing custom food; `prefill` starts a new one seeded from
+   * an imported food. Neither is the same as the other, and passing both is a
+   * caller bug — `id` wins, since editing a real row is the safer reading.
+   */
+  openCustomFood: (opts?: { id?: string; prefill?: CustomFoodPrefill }) => void
   /** Open the Pro paywall. Same arrangement as openAddFood. */
   openPaywall: () => void
   /** Bumped whenever food logs change, so views can refetch. */
   foodLogVersion: number
   bumpFoodLogVersion: () => void
+  /** The same idea for the food *library* — a custom food saved or deleted. */
+  foodsVersion: number
+  bumpFoodsVersion: () => void
   /** The same idea for hydration, kept separate so a drink doesn't refetch food. */
   waterVersion: number
   bumpWaterVersion: () => void
@@ -45,6 +63,8 @@ interface AppShellValue {
   /** internal — consumed by AppLayout to render the modals */
   _addFood: { open: boolean; meal?: MealKey }
   _closeAddFood: () => void
+  _customFood: { open: boolean; id?: string; prefill?: CustomFoodPrefill }
+  _closeCustomFood: () => void
   _paywallOpen: boolean
   _closePaywall: () => void
 }
@@ -54,8 +74,14 @@ const AppShellContext = createContext<AppShellValue | undefined>(undefined)
 export function AppShellProvider({ children }: { children: ReactNode }) {
   const [selectedDate, setSelectedDate] = useState<string>(todayISO())
   const [foodLogVersion, setFoodLogVersion] = useState(0)
+  const [foodsVersion, setFoodsVersion] = useState(0)
   const [waterVersion, setWaterVersion] = useState(0)
   const [addFood, setAddFood] = useState<{ open: boolean; meal?: MealKey }>({ open: false })
+  const [customFood, setCustomFood] = useState<{
+    open: boolean
+    id?: string
+    prefill?: CustomFoodPrefill
+  }>({ open: false })
   const [paywallOpen, setPaywallOpen] = useState(false)
   const [clipboard, setClipboard] = useState<Clipboard | null>(null)
 
@@ -64,6 +90,8 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
     setSelectedDate,
     foodLogVersion,
     bumpFoodLogVersion: () => setFoodLogVersion((v) => v + 1),
+    foodsVersion,
+    bumpFoodsVersion: () => setFoodsVersion((v) => v + 1),
     waterVersion,
     bumpWaterVersion: () => setWaterVersion((v) => v + 1),
     clipboard,
@@ -72,9 +100,17 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
     copyFood: (foodId, name, servings) => setClipboard({ kind: 'food', foodId, name, servings }),
     clearClipboard: () => setClipboard(null),
     openAddFood: (opts) => setAddFood({ open: true, meal: opts?.meal }),
+    openCustomFood: (opts) =>
+      setCustomFood(
+        opts?.id
+          ? { open: true, id: opts.id }
+          : { open: true, prefill: opts?.prefill },
+      ),
     openPaywall: () => setPaywallOpen(true),
     _addFood: addFood,
     _closeAddFood: () => setAddFood({ open: false }),
+    _customFood: customFood,
+    _closeCustomFood: () => setCustomFood({ open: false }),
     _paywallOpen: paywallOpen,
     _closePaywall: () => setPaywallOpen(false),
   }

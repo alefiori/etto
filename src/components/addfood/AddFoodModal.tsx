@@ -1,5 +1,4 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Modal } from '@/components/ui/Modal'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
@@ -56,8 +55,7 @@ export function AddFoodModal({
   initialMeal?: MealKey
   onClose: () => void
 }) {
-  const navigate = useNavigate()
-  const { selectedDate, bumpFoodLogVersion } = useAppShell()
+  const { selectedDate, bumpFoodLogVersion, openCustomFood } = useAppShell()
   const { offLanguage, locale } = useProfile()
   const { user } = useAuth()
   const { t } = useI18n()
@@ -165,9 +163,13 @@ export function AddFoodModal({
     }
   }, [offLanguage, selectFood, t])
 
+  // Hand over to the custom-food sheet rather than navigating to it. Both are
+  // owned by the app shell, so this overlay closes and that one opens in its
+  // place — where it used to close *and* throw you onto a different page to
+  // create the very food you were searching for.
   function goCreateCustom(prefill?: CustomFoodPrefill) {
     onClose()
-    navigate('/foods/new', prefill ? { state: { prefill } } : undefined)
+    openCustomFood({ prefill })
   }
 
   // Copy the selected API food into the custom-food form (create mode). The

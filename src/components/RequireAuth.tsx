@@ -3,7 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useProfile } from '@/context/ProfileContext'
 import { useI18n } from '@/context/I18nContext'
-import { LoadingBlock } from '@/components/ui/Spinner'
+import { BootScreen } from '@/components/layout/BootScreen'
 
 /**
  * Gates app routes — but starts a guest session rather than showing a wall.
@@ -49,11 +49,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   }
 
   if (loading || !session) {
-    return (
-      <div className="flex min-h-[100dvh] items-center justify-center">
-        <LoadingBlock label={t('auth.loadingAccount')} />
-      </div>
-    )
+    return <BootScreen label={t('auth.loadingAccount')} />
   }
 
   return <>{children}</>

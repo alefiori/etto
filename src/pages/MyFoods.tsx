@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
+import { useAppShell } from '@/context/AppShellContext'
 import { useI18n } from '@/context/I18nContext'
 import { Icon } from '@/components/ui/Icon'
+import { FoodRow } from '@/components/ui/FoodRow'
 import { LoadingBlock } from '@/components/ui/Spinner'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
-import { MACROS } from '@/lib/constants'
-import { calories, round } from '@/lib/macros'
+import { calories } from '@/lib/macros'
 import { deleteFood, setFoodPublic, type CustomFoodPrefill } from '@/lib/foods'
 import type { Food } from '@/lib/database.types'
 
@@ -27,6 +27,7 @@ function toPrefill(food: Food): CustomFoodPrefill {
 export default function MyFoods() {
   const { t } = useI18n()
   const { user } = useAuth()
+  const { openCustomFood, foodsVersion } = useAppShell()
   const [foods, setFoods] = useState<Food[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -49,9 +50,12 @@ export default function MyFoods() {
     setLoading(false)
   }, [user])
 
+  // Refetch when the sheet saves. It used to be a route, so saving navigated
+  // back here and remounted the page; a sheet closes over a list that is still
+  // mounted and would otherwise show the food as it was before the edit.
   useEffect(() => {
     fetchFoods()
-  }, [fetchFoods])
+  }, [fetchFoods, foodsVersion])
 
   async function confirmDelete() {
     const food = pendingDelete
@@ -86,6 +90,19 @@ export default function MyFoods() {
     }
   }
 
+  /**
+   * What "edit" means depends on where the food came from.
+   *
+   * A custom food is edited in place. An imported one is not editable at all —
+   * it is a copy of somebody else's record — so editing it means starting a new
+   * custom food prefilled from it, which is what the row's badge is warning
+   * about before you ever open the menu.
+   */
+  function editFood(food: Food) {
+    if (food.is_custom) openCustomFood({ id: food.id })
+    else openCustomFood({ prefill: toPrefill(food) })
+  }
+
   const filtered = foods.filter((f) => f.name.toLowerCase().includes(query.trim().toLowerCase()))
 
   return (
@@ -99,13 +116,14 @@ export default function MyFoods() {
             {t('myFoods.subtitle')}
           </p>
         </div>
-        <Link
-          to="/foods/new"
-          className="flex h-[48px] items-center justify-center gap-sm rounded-full px-lg font-label-md text-label-md transition-all hover:brightness-105 active:scale-95 grad-primary"
+        <button
+          type="button"
+          onClick={() => openCustomFood()}
+          className="settle flex h-[48px] items-center justify-center gap-sm rounded-full px-lg font-label-md text-label-md hover:brightness-105 active:scale-95 grad-primary"
         >
           <Icon name="add" />
           {t('myFoods.createCustomFood')}
-        </Link>
+        </button>
       </div>
 
       <div className="relative rounded-lens p-2 glass">
@@ -139,120 +157,64 @@ export default function MyFoods() {
             {foods.length === 0 ? t('myFoods.noFoodsYet') : t('myFoods.noFoodsMatch')}
           </p>
           {foods.length === 0 && (
-            <Link
-              to="/foods/new"
+            <button
+              type="button"
+              onClick={() => openCustomFood()}
               className="mt-2 rounded-full bg-primary-tint/10 px-4 py-2 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/20"
             >
               {t('myFoods.createFirstFood')}
-            </Link>
+            </button>
           )}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lens glass">
-          <div className="flex flex-col gap-xs p-sm">
-            {filtered.map((food) => (
-              <div
-                key={food.id}
-                className="group flex items-center justify-between gap-sm rounded-xl border border-transparent p-md transition-colors hover:bg-[color:var(--glass-chip)]"
-              >
-                <div className="flex min-w-0 items-center gap-md">
-                  <div
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
-                      food.is_custom
-                        ? 'bg-primary-tint/[0.16] text-primary'
-                        : 'text-on-surface-variant glass-chip'
-                    }`}
-                  >
-                    <Icon name={food.is_custom ? 'restaurant' : 'public'} />
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="truncate font-label-md text-label-md text-on-surface">{food.name}</h3>
-                    <p className="flex items-center gap-2 truncate text-sm text-on-surface-variant">
-                      {food.brand ? `${food.brand} • ` : ''}
-                      {food.serving_amount} {food.serving_unit}
-                      {food.is_public && (
-                        <span className="flex shrink-0 items-center gap-0.5 text-secondary">
-                          <Icon name="public" className="text-[14px]" />
-                          {t('myFoods.shared')}
-                        </span>
-                      )}
-                    </p>
-                    {/* Macros under the name on mobile, where the right column has no room. */}
-                    <div className="mt-1 flex items-center gap-sm text-xs text-on-surface-variant sm:hidden">
-                      <span className="font-medium text-secondary">
-                        {Math.round(calories(food))} {t('common.kcal')}
-                      </span>
-                      {MACROS.map((m) => (
-                        <span key={m.key} className="flex items-center gap-1">
-                          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: m.color }} />
-                          {round(food[m.field])}g
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex shrink-0 items-center gap-2 font-label-md text-sm text-secondary sm:gap-3">
-                  <div className="hidden items-center gap-2 sm:flex sm:gap-3">
-                    <span className="flex flex-col items-center">
-                      <b>{Math.round(calories(food))}</b>
-                      <span className="text-xs font-normal text-on-surface-variant">{t('common.kcal')}</span>
-                    </span>
-                    {MACROS.map((m) => (
-                      <span key={m.key} className="flex flex-col items-center" style={{ color: m.color }}>
-                        <b>{round(food[m.field])}g</b>
-                        <span className="text-xs font-normal text-on-surface-variant">{t(`macro.${m.key}Abbr`)}</span>
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex items-center transition-all sm:opacity-0 sm:group-hover:opacity-100">
-                    {food.is_custom && (
-                      <button
-                        onClick={() => togglePublic(food)}
-                        className={`rounded-full p-1 transition-colors hover:text-primary ${
-                          food.is_public ? 'text-primary' : 'text-on-surface-variant'
-                        }`}
-                        aria-label={
-                          food.is_public
-                            ? t('myFoods.unshareAria', { name: food.name })
-                            : t('myFoods.shareAria', { name: food.name })
-                        }
-                        title={food.is_public ? t('myFoods.unshare') : t('myFoods.shareToCommunity')}
-                      >
-                        <Icon name={food.is_public ? 'public_off' : 'public'} className="text-[20px]" />
-                      </button>
-                    )}
-                    {food.is_custom ? (
-                      <Link
-                        to={`/foods/${food.id}/edit`}
-                        className="rounded-full p-1 text-on-surface-variant transition-colors hover:text-primary"
-                        aria-label={t('myFoods.editAria', { name: food.name })}
-                      >
-                        <Icon name="edit" className="text-[20px]" />
-                      </Link>
-                    ) : (
-                      // API foods are never edited in place — copy into a new custom food.
-                      <Link
-                        to="/foods/new"
-                        state={{ prefill: toPrefill(food) }}
-                        className="rounded-full p-1 text-on-surface-variant transition-colors hover:text-primary"
-                        aria-label={t('myFoods.editAsCustomAria', { name: food.name })}
-                        title={t('myFoods.editAsCustomTitle')}
-                      >
-                        <Icon name="edit" className="text-[20px]" />
-                      </Link>
-                    )}
-                    <button
-                      onClick={() => setPendingDelete(food)}
-                      className="rounded-full p-1 text-on-surface-variant transition-colors hover:text-error"
-                      aria-label={t('myFoods.deleteAria', { name: food.name })}
-                    >
-                      <Icon name="delete" className="text-[20px]" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+        /* The same card-of-rows the dashboard's meal cards are, down to the
+           gap and the padding — `overflow-hidden` is deliberately gone, since
+           it would clip the menu a row opens. */
+        <div className="flex flex-col gap-sm rounded-lens p-md md:p-lg glass">
+          {filtered.map((food) => (
+            <FoodRow
+              key={food.id}
+              name={food.name}
+              amount={`${food.serving_amount} ${food.serving_unit}`}
+              // A food stores its macros per serving, and the row shows one
+              // serving — so unlike a log, there is nothing to scale.
+              macros={food}
+              kcalLabel={t('dashboard.mealKcal', { kcal: Math.round(calories(food)) })}
+              // Which of the two lists a food came from decides what editing it
+              // even means, so it stays on the row rather than being something
+              // you discover by opening the menu.
+              badge={{
+                icon: food.is_custom ? 'restaurant' : 'public',
+                label: food.is_custom ? t('myFoods.custom') : t('myFoods.imported'),
+              }}
+              menuLabel={t('myFoods.foodOptions')}
+              onActivate={() => editFood(food)}
+              actions={[
+                ...(food.is_custom
+                  ? [
+                      {
+                        icon: food.is_public ? 'public_off' : 'public',
+                        label: food.is_public
+                          ? t('myFoods.unshare')
+                          : t('myFoods.shareToCommunity'),
+                        onSelect: () => togglePublic(food),
+                      },
+                    ]
+                  : []),
+                {
+                  icon: 'edit',
+                  label: food.is_custom ? t('common.edit') : t('myFoods.editAsCustomTitle'),
+                  onSelect: () => editFood(food),
+                },
+                {
+                  icon: 'delete',
+                  label: t('common.delete'),
+                  destructive: true,
+                  onSelect: () => setPendingDelete(food),
+                },
+              ]}
+            />
+          ))}
         </div>
       )}
 

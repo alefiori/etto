@@ -33,15 +33,16 @@ test.describe('phone width', () => {
     await expect(page.locator('button[aria-label="Add Food"]:visible')).toHaveCount(1)
   })
 
-  test('hides the floating action button on the custom food form', async ({ page }) => {
-    await page.goto('/foods/new')
-    await expect(page.getByRole('heading', { name: 'Create Custom Food' })).toBeVisible()
+  test('keeps the phone chrome behind the custom food sheet', async ({ page }) => {
+    await page.goto('/foods')
+    await page.getByRole('button', { name: 'Create custom food' }).click()
+    await expect(page.getByRole('dialog')).toBeVisible()
 
-    // The page is an add-food flow already, with its own save actions at the
-    // bottom — a FAB opening the add-food modal over it only covers them up.
-    await expect(page.locator('button[aria-label="Add Food"]:visible')).toHaveCount(0)
-    // The rest of the phone chrome stays put.
+    // The form was a route once, and the FAB had to stand down on it or it
+    // covered the save buttons. As a sheet it simply draws over the chrome,
+    // which stays where it is underneath.
     await expect(page.getByRole('link', { name: 'Targets', exact: true })).toBeVisible()
+    await expect(page.locator('button[aria-label="Add Food"]:visible')).toHaveCount(1)
   })
 })
 
