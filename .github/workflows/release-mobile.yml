@@ -270,7 +270,7 @@ jobs:
           # Info.plist reads both of these through $(...), so overriding the
           # build settings here is what actually versions the archive.
           xcodebuild \
-            -workspace ios/App/App.xcworkspace \
+            $(./scripts/xcode-target.sh) \
             -scheme App \
             -configuration Release \
             -sdk iphoneos \

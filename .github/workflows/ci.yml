@@ -168,8 +168,8 @@ jobs:
     # minutes of Linux ones, so this is the most expensive job here by a wide
     # margin — the workflow-level `concurrency` above cancels superseded runs to
     # keep that in check. It earns its cost by catching the breakage the Android
-    # job cannot see: CocoaPods resolution, Swift plugin compatibility, and the
-    # iPad invariants checked below.
+    # job cannot see: Swift Package Manager resolution of the Capacitor plugins,
+    # Swift compatibility, and the iPad invariants checked below.
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -210,7 +210,7 @@ jobs:
       - name: Build for the simulator (unsigned)
         run: |
           xcodebuild \
-            -workspace ios/App/App.xcworkspace \
+            $(./scripts/xcode-target.sh) \
             -scheme App \
             -configuration Debug \
             -sdk iphonesimulator \
