@@ -1,33 +1,83 @@
 <svg width="2732" height="2732" viewBox="0 0 2732 2732" fill="none" xmlns="http://www.w3.org/2000/svg">
-  
-  <rect width="2732" height="2732" fill="#0b1420"></rect>
+  <!-- Launch screen, dark. The light one's twin — see the note in splash.svg
+       for why this is composed here rather than pulled from the design project.
+       Ground and tile follow the dark scheme: the aurora's violet/red/blue
+       blobs from the dark scheme, and public/icon-dark.svg for the tile. -->
+  <defs>
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="2732" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0C0C14"></stop>
+      <stop offset="1" stop-color="#08080D"></stop>
+    </linearGradient>
+    <radialGradient id="auroraViolet">
+      <stop offset="0" stop-color="#5B3FE0" stop-opacity=".55"></stop>
+      <stop offset="1" stop-color="#5B3FE0" stop-opacity="0"></stop>
+    </radialGradient>
+    <radialGradient id="auroraRed">
+      <stop offset="0" stop-color="#FF375F" stop-opacity=".32"></stop>
+      <stop offset="1" stop-color="#FF375F" stop-opacity="0"></stop>
+    </radialGradient>
+    <radialGradient id="auroraBlue">
+      <stop offset="0" stop-color="#0A84FF" stop-opacity=".34"></stop>
+      <stop offset="1" stop-color="#0A84FF" stop-opacity="0"></stop>
+    </radialGradient>
+    <linearGradient id="tileDark" x1="96" y1="0" x2="416" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A794FF"></stop>
+      <stop offset="1" stop-color="#5B3FE0"></stop>
+    </linearGradient>
+    <radialGradient id="glow" cx="256" cy="180" r="300" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C9B8FF" stop-opacity=".5"></stop>
+      <stop offset="1" stop-color="#C9B8FF" stop-opacity="0"></stop>
+    </radialGradient>
+    <linearGradient id="specularDark" x1="256" y1="16" x2="256" y2="240" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".3"></stop>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"></stop>
+    </linearGradient>
+    <clipPath id="tileClip">
+      <rect width="512" height="512" rx="120"></rect>
+    </clipPath>
+  </defs>
+
+  <rect width="2732" height="2732" fill="url(#ground)"></rect>
+  <ellipse cx="270" cy="0" rx="1440" ry="1140" fill="url(#auroraViolet)"></ellipse>
+  <ellipse cx="2510" cy="220" rx="1330" ry="1060" fill="url(#auroraRed)"></ellipse>
+  <ellipse cx="1640" cy="2840" rx="1710" ry="1330" fill="url(#auroraBlue)"></ellipse>
 
   <g transform="translate(1980 640) scale(2.6) translate(-256 -256)" opacity="0.42">
     <g fill="none" stroke-linecap="round" transform="rotate(-90 256 256)">
-      <circle cx="256" cy="256" r="150" stroke="#16263a" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="150" stroke="#F59E0B" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
-      <circle cx="256" cy="256" r="106" stroke="#16263a" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="106" stroke="#3B82F6" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
-      <circle cx="256" cy="256" r="62" stroke="#16263a" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="62" stroke="#8B5CF6" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
+      <circle cx="256" cy="256" r="150" stroke="#2A2A3A" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="150" stroke="#FFB340" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
+      <circle cx="256" cy="256" r="106" stroke="#2A2A3A" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="106" stroke="#4DA2FF" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
+      <circle cx="256" cy="256" r="62" stroke="#2A2A3A" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="62" stroke="#FF6B8A" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
     </g>
   </g>
 
   <g transform="translate(830 1120) scale(0.469)">
-    <rect width="512" height="512" rx="112" fill="#00685f"></rect>
-    <g fill="none" stroke-linecap="round" transform="rotate(-90 256 256)">
-      <circle cx="256" cy="256" r="150" stroke="#00504a" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="150" stroke="#F59E0B" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
-      <circle cx="256" cy="256" r="106" stroke="#00504a" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="106" stroke="#3B82F6" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
-      <circle cx="256" cy="256" r="62" stroke="#00504a" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="62" stroke="#8B5CF6" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
+    <rect width="512" height="512" rx="120" fill="#12121C"></rect>
+    <g clip-path="url(#tileClip)">
+      <rect width="512" height="512" fill="url(#tileDark)" opacity=".9"></rect>
+      <rect width="512" height="512" fill="url(#glow)"></rect>
+    </g>
+    <g clip-path="url(#tileClip)" transform="rotate(-90 256 256)">
+      <g fill="none" stroke-linecap="round">
+        <circle cx="256" cy="256" r="150" stroke="#0C0C14" stroke-opacity=".32" stroke-width="34"></circle>
+        <circle cx="256" cy="256" r="150" stroke="#FFB340" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
+        <circle cx="256" cy="256" r="106" stroke="#0C0C14" stroke-opacity=".32" stroke-width="34"></circle>
+        <circle cx="256" cy="256" r="106" stroke="#4DA2FF" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
+        <circle cx="256" cy="256" r="62" stroke="#0C0C14" stroke-opacity=".32" stroke-width="34"></circle>
+        <circle cx="256" cy="256" r="62" stroke="#FF6B8A" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
+      </g>
+    </g>
+    <g clip-path="url(#tileClip)">
+      <path d="M0 0h512v150c-90 52-180 78-256 78S90 202 0 150Z" fill="url(#specularDark)"></path>
+      <rect x="1.5" y="1.5" width="509" height="509" rx="118.5" fill="none" stroke="#ffffff" stroke-opacity=".28" stroke-width="3"></rect>
     </g>
   </g>
 
-  <text x="830" y="1560" font-family="Manrope, -apple-system, Roboto, &#39;Helvetica Neue&#39;, sans-serif" font-size="140" font-weight="800" letter-spacing="-4" fill="#eaf1ff">MacroTrack</text>
-  <text x="830" y="1650" font-family="Manrope, -apple-system, Roboto, &#39;Helvetica Neue&#39;, sans-serif" font-size="56" font-weight="400" fill="#9fb0c2">Track your macros, every day.</text>
+  <text x="830" y="1560" font-family="Manrope, -apple-system, Roboto, &#39;Helvetica Neue&#39;, sans-serif" font-size="140" font-weight="800" letter-spacing="-4" fill="#F2F2F7">MacroTrack</text>
+  <text x="830" y="1650" font-family="Manrope, -apple-system, Roboto, &#39;Helvetica Neue&#39;, sans-serif" font-size="56" font-weight="400" fill="#9A9AAC">Track your macros, every day.</text>
 
-  <rect x="830" y="1730" width="330" height="10" rx="5" fill="#1b2c3f"></rect>
-  <rect x="830" y="1730" width="140" height="10" rx="5" fill="#6bd8cb"></rect>
+  <rect x="830" y="1730" width="330" height="10" rx="5" fill="#2A2A3A"></rect>
+  <rect x="830" y="1730" width="140" height="10" rx="5" fill="#A794FF"></rect>
 </svg>

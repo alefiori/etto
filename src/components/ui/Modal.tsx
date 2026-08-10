@@ -47,7 +47,7 @@ export function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-stretch justify-center bg-black/30 backdrop-blur-[4px] dark:bg-black/60 sm:items-center sm:p-lg"
+      className="fixed inset-0 z-[60] flex items-stretch justify-center glass-scrim sm:items-center sm:p-lg"
       role="dialog"
       aria-modal="true"
       aria-labelledby={labelledBy}
@@ -55,7 +55,7 @@ export function Modal({
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <div className="flex h-full w-full flex-col overflow-hidden bg-surface-container-lowest pb-safe-bottom pl-safe-left pr-safe-right pt-safe-top shadow-card sm:h-[90vh] sm:max-w-5xl sm:rounded-2xl">
+      <div className="flex h-full w-full flex-col overflow-hidden pb-safe-bottom pl-safe-left pr-safe-right pt-safe-top sm:h-[90vh] sm:max-w-5xl sm:rounded-[36px] glass-sheet">
         {children}
       </div>
     </div>

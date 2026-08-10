@@ -16,10 +16,12 @@ The app is a **PWA** (installable, works offline via a precached shell), is full
 **localized into 7 languages**, and lets you **try it instantly as a guest**
 before creating an account.
 
-The UI is a faithful port of the Google Stitch design export in
+The UI is **Liquid Glass**: a violet system tint, floating chrome, and content
+that scrolls underneath translucent, specular-edged lenses. Its information
+architecture and layout still come from the Google Stitch export in
 [`design/stitch_macrotrack_health_dashboard/`](design/stitch_macrotrack_health_dashboard/) —
-colors, typography, spacing, radii, and components are taken from `DESIGN.md`
-and the per-screen `code.html` files.
+typography, spacing and the four destinations are unchanged — but the material
+and the palette are not; see [Theming](#theming).
 
 ## Features
 
@@ -564,12 +566,30 @@ Three things can't ride on a Tailwind class and are handled explicitly:
   attributes* don't substitute `var()`, which is why `ProgressRing`/`TrendChart`
   set `style={{ stroke }}` instead of `stroke=`.
 - **Elevation.** A 4%-black card shadow is invisible on a dark page, so
-  `shadow-card` is a variable too — dark deepens it *and* prepends a 1px ring,
-  giving cards a hairline border where the light build gives them lift.
-- **The calorie card** is the one surface where primary doesn't flip. A
-  full-bleed panel of the dark scheme's near-white primary is blinding at night,
-  so it drops to `primary-container`, which is M3's own rule for large filled
-  surfaces.
+  `shadow-card` is a variable too — dark deepens it and drops the bottom
+  highlight, because a bright lower edge at night reads as a seam between two
+  panels rather than as the underside of one.
+- **The glass itself.** A lens is a translucent fill, a specular rim and a blur
+  of whatever is behind it, so it can't be a Tailwind color: `bg-x/50` would
+  multiply the baked-in alpha rather than replace it, and the rim is an inset
+  shadow, not a border. Five classes in `src/index.css` cover every surface —
+  `.glass` (cards), `.glass-chrome` (the floating bars), `.glass-sheet` (modals
+  and bottom sheets), `.glass-row` (a lens inside a lens) and `.glass-field`
+  (inputs) — composed with the usual utilities for radius, padding and layout.
+- **`.grad-primary`, not `bg-primary`,** for large filled actions. `--primary`
+  names the *accent* in both schemes, and in dark it is a light violet that
+  cannot carry white type; the CTAs run on a gradient that can. Compact filled
+  controls (a selected pill, a toggle) still use `bg-primary text-on-primary`,
+  which is why `--on-primary` is white in light and near-black in dark.
+
+⚠️ **`backdrop-filter` makes an element a containing block for `position: fixed`
+descendants**, not just a stacking context. A meal card holds food rows, and a
+food row holds a `fixed inset-0` entry sheet — put the filter on the card and
+that sheet is laid out *inside the card* and painted at the card's depth, which
+made its Save button unclickable. So the fill, rim and blur all live on a
+`::before` layer at `z-index: -1`, leaving the card an ordinary
+`position: relative` box. Anything added to those classes must stay on the
+pseudo-element.
 
 **The default is the device scheme**, exactly like the language:
 `profiles.theme` is NULL until someone picks one, and NULL resolves against
@@ -649,9 +669,40 @@ re-apply what the Capacitor template doesn't carry: `generate-native-icons.mjs`
 renders the app icons from [`assets/`](assets/) with `@capacitor/assets` — the
 same rings/brand as the web [`public/icon.svg`](public/icon.svg), as a full-bleed
 `icon-only.svg` for iOS and `icon-foreground`/`icon-background.svg` for the
-Android adaptive icon, plus `splash[-dark].svg` (the icon centred on the app
-background) for the launch screen; `patch-android-webview.mjs` pins the Android
+Android adaptive icon, plus `splash[-dark].svg` (the icon on the app's aurora
+ground) for the launch screen; `patch-android-webview.mjs` pins the Android
 WebView text zoom; and `verify-ipad.mjs` asserts the iPad invariants.
+
+The **web** icon set is generated instead of committed by hand: everything in
+`public/` except the SVGs is rendered from
+[`public/icon.svg`](public/icon.svg) by `npx pwa-assets-generator` (see
+[`pwa-assets.config.ts`](pwa-assets.config.ts)), so re-run that after editing
+the artwork or the PNGs silently keep the old brand. Three SVGs are hand-authored
+and each has a different job:
+
+| File | Used by | Note |
+| --- | --- | --- |
+| `public/icon.svg` | PWA + apple-touch PNGs, and the `assets/` native variants | The full 512 artwork |
+| `public/favicon.svg` | the `<link rel="icon">` the generator emits | Three concentric rings turn to mush in a 16px tab, so this drops to one ring and a solid centre |
+| `public/icon-dark.svg` | `assets/splash-dark.svg` | Neither vite-pwa nor `@capacitor/assets` has a dark-icon slot, so nothing generates from it yet — keep it in step with `icon.svg` anyway |
+
+### The icon font
+
+`Icon.tsx` renders Material Symbols as a **ligature** — the text `dashboard` is
+substituted for the glyph — and
+[`public/fonts/material-symbols-outlined.woff2`](public/fonts/) is a subset
+carrying only the icons this app uses (64KB against ~3.6MB for the full set). So
+adding an `<Icon name="…">` whose glyph was never subsetted ships the literal
+word to users: `MAIL`, `GAVEL`, `OPEN_IN_NEW`. Regenerate with
+`python3 scripts/subset-icon-font.py` (needs `pip install fonttools brotli`),
+then `npm run sync:native` to copy it into `ios/`.
+
+"Remember to re-run it" is not a guarantee and has already been missed once, so
+each build records what it produced in `scripts/icon-font-manifest.json` and
+CI runs `python3 scripts/subset-icon-font.py --check` on every push, which fails
+on any icon name in src that the shipped font can't render. That mode is
+stdlib-only and offline — it diffs against the manifest rather than reading the
+woff2 or downloading the full font.
 
 Neither job needs a secret. Android assembles a **debug APK** (uploaded as an
 artifact) and iOS does an **unsigned simulator build** plus the

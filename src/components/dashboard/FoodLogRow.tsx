@@ -168,7 +168,7 @@ export function FoodLogRow({
         <div
           aria-hidden="true"
           onClick={closeMenu}
-          className="animate-overlay-fade-in fixed inset-0 touch-none bg-black/20 backdrop-blur-[6px] dark:bg-black/50"
+          className="animate-overlay-fade-in fixed inset-0 touch-none glass-scrim"
         />
       )}
 
@@ -188,15 +188,21 @@ export function FoodLogRow({
         }}
         onClick={handleClick}
         aria-haspopup="dialog"
-        className={`relative flex min-h-[56px] w-full select-none items-center gap-3 rounded-xl border border-transparent p-sm text-left transition-all [-webkit-touch-callout:none] ${
+        className={`relative flex min-h-[58px] w-full select-none items-center gap-3 rounded-row p-sm px-3 text-left transition-all [-webkit-touch-callout:none] glass-row ${
           menuOpen
-            ? 'scale-[1.03] bg-surface-container-lowest shadow-card-hover'
-            : 'hover:border-surface-variant hover:bg-surface-container-low'
+            ? 'scale-[1.03] shadow-card-hover'
+            : 'hover:brightness-[1.04]'
         }`}
       >
+        {/* The dot is the dominant macro. It carries a halo of its own colour
+            so it stays legible against the row's translucent fill, which can
+            sit over any part of the aurora. */}
         <span
-          className="h-2 w-2 shrink-0 rounded-full"
-          style={{ backgroundColor: dominantColor(scaled) }}
+          className="h-2.5 w-2.5 shrink-0 rounded-full"
+          style={{
+            backgroundColor: dominantColor(scaled),
+            boxShadow: `0 0 0 3px color-mix(in srgb, ${dominantColor(scaled)} 22%, transparent)`,
+          }}
         />
         <span className="min-w-0 flex-1">
           <span className="block truncate font-body-md text-body-md font-semibold text-on-surface">
@@ -226,7 +232,7 @@ export function FoodLogRow({
           ref={menuRef}
           role="menu"
           aria-label={t('dashboard.entryOptions')}
-          className={`animate-menu-pop absolute left-2 w-[232px] divide-y divide-outline-variant/40 overflow-hidden rounded-2xl bg-surface-container-lowest/90 shadow-card-hover backdrop-blur-xl ${
+          className={`animate-menu-pop absolute left-2 z-20 w-[232px] divide-y divide-[color:var(--glass-row-border)] overflow-hidden rounded-lens shadow-card-hover glass ${
             menuAbove ? 'bottom-full mb-sm origin-bottom-left' : 'top-full mt-sm origin-top-left'
           }`}
         >
@@ -314,7 +320,7 @@ function MenuItem({
       className={`flex w-full items-center justify-between gap-sm px-md py-3 text-left font-body-md text-body-md transition-colors ${
         destructive
           ? 'text-error hover:bg-error-container/60'
-          : 'text-on-surface hover:bg-surface-container-high'
+          : 'text-on-surface hover:bg-[color:var(--glass-chip-hover)]'
       }`}
     >
       {label}

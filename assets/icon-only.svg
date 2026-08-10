@@ -1,22 +1,36 @@
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Full-bleed native app icon: same rings/brand as public/icon.svg, but the
-       teal fills the whole square (no rounded corners) so iOS/Android apply
-       their own icon mask. Rings are the 512-space artwork scaled x2, centred. -->
-  <rect width="1024" height="1024" fill="#00685f"/>
-  <g transform="translate(512 512) scale(2) translate(-256 -256)">
+  <!-- Full-bleed native app icon: the same artwork as public/icon.svg, but the
+       gradient fills the whole square (no rounded corners, no specular rim) so
+       iOS/Android apply their own mask. A rim baked in here would be clipped
+       into a broken arc by whatever shape the launcher chooses.
+
+       Rings are the 512-space artwork scaled x2 rather than re-derived, so the
+       stroke-dasharray/offset pairs stay comparable with public/icon.svg. -->
+  <defs>
+    <linearGradient id="tile" x1="192" y1="0" x2="832" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8B72FF"></stop>
+      <stop offset="1" stop-color="#5B3FE0"></stop>
+    </linearGradient>
+    <linearGradient id="specular" x1="512" y1="32" x2="512" y2="480" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".42"></stop>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"></stop>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" fill="url(#tile)"></rect>
+
+  <g transform="scale(2)">
     <g fill="none" stroke-linecap="round" transform="rotate(-90 256 256)">
-      <!-- carbs ring (outer) -->
-      <circle cx="256" cy="256" r="150" stroke="#00504a" stroke-width="34"/>
-      <circle cx="256" cy="256" r="150" stroke="#F59E0B" stroke-width="34"
-        stroke-dasharray="942" stroke-dashoffset="236"/>
-      <!-- protein ring (middle) -->
-      <circle cx="256" cy="256" r="106" stroke="#00504a" stroke-width="34"/>
-      <circle cx="256" cy="256" r="106" stroke="#3B82F6" stroke-width="34"
-        stroke-dasharray="666" stroke-dashoffset="200"/>
-      <!-- fats ring (inner) -->
-      <circle cx="256" cy="256" r="62" stroke="#00504a" stroke-width="34"/>
-      <circle cx="256" cy="256" r="62" stroke="#8B5CF6" stroke-width="34"
-        stroke-dasharray="390" stroke-dashoffset="156"/>
+      <circle cx="256" cy="256" r="150" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="150" stroke="#FF9F0A" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
+
+      <circle cx="256" cy="256" r="106" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="106" stroke="#0A84FF" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
+
+      <circle cx="256" cy="256" r="62" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="62" stroke="#FF375F" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
     </g>
   </g>
+
+  <path d="M0 0h1024v300c-180 104-360 156-512 156S180 404 0 300Z" fill="url(#specular)"></path>
 </svg>

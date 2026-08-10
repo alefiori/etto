@@ -34,7 +34,7 @@ function fireDeviceChange(matches: boolean) {
 
 beforeEach(() => {
   document.documentElement.className = ''
-  document.head.innerHTML = '<meta id="app-theme-color" name="theme-color" content="#f8f9ff">'
+  document.head.innerHTML = '<meta id="app-theme-color" name="theme-color" content="#f7f7fb">'
   stubMatchMedia(false)
 })
 

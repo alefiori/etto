@@ -7,9 +7,9 @@ import { cmToFeetInches, feetInchesToCm, weightUnit } from '@/lib/units'
 import type { ActivityLevel, GoalDirection, Sex, UnitSystem } from '@/lib/database.types'
 
 const selectClass =
-  'h-[48px] w-full appearance-none rounded-lg border border-outline-variant bg-surface px-4 pr-10 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60'
+  'h-[48px] w-full appearance-none rounded-[16px] glass-field px-4 pr-10 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60'
 const inputClass =
-  'h-[48px] w-full rounded-lg border border-outline-variant bg-surface px-4 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60'
+  'h-[48px] w-full rounded-[16px] glass-field px-4 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60'
 
 const ACTIVITY_LEVELS: ActivityLevel[] = [
   'sedentary',

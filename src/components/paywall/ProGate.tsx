@@ -28,7 +28,7 @@ export function ProGate({
   if (isPro) return <>{children}</>
 
   return (
-    <div className="flex flex-col gap-sm rounded-2xl border border-primary/30 bg-primary-tint/10 p-md shadow-card">
+    <div className="flex flex-col gap-sm rounded-lens border border-primary/30 bg-primary-tint/[0.12] p-md shadow-card backdrop-blur-xl">
       <div className="flex items-start justify-between gap-md">
         <div className="min-w-0">
           <span className="flex items-center gap-1 font-label-md text-label-md text-primary">
@@ -40,7 +40,7 @@ export function ProGate({
         <button
           type="button"
           onClick={onUpgrade}
-          className="h-10 shrink-0 rounded-full bg-primary px-4 font-label-md text-label-md text-on-primary transition-all hover:bg-primary-hover active:scale-95"
+          className="h-10 shrink-0 rounded-full px-4 font-label-md text-label-md transition-all hover:brightness-105 active:scale-95 grad-primary"
         >
           {t('paywall.upgradeCta')}
         </button>

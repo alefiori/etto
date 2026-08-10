@@ -12,7 +12,7 @@ import { PRIVACY_URL, TERMS_URL } from '@/lib/legal'
 type Tab = 'signin' | 'signup'
 
 const inputClass =
-  'w-full min-h-[48px] rounded-lg border border-outline-variant bg-surface px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/70 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors'
+  'w-full min-h-[48px] rounded-[16px] glass-field px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/70 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors'
 
 export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }) {
   const { session, user, isAnonymous, signIn, signUp, signInAnonymously, upgradeAccount } = useAuth()
@@ -129,7 +129,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
       <div className="pointer-events-none fixed left-0 top-0 -z-10 h-[512px] w-full bg-gradient-to-b from-surface-container to-background" />
 
       <main className="relative z-10 flex min-h-full w-full items-center justify-center p-container-margin-mobile md:p-container-margin-desktop">
-        <div className="flex w-full max-w-[480px] flex-col gap-lg rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-lg shadow-card md:p-xl">
+        <div className="flex w-full max-w-[480px] flex-col gap-lg rounded-lens p-lg glass md:p-xl">
           {/* Language — pickable before signing in, and kept for the account */}
           <div className="flex justify-end">
             <LanguagePicker />
@@ -137,7 +137,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
 
           {/* Branding */}
           <div className="flex flex-col items-center gap-sm text-center">
-            <div className="mb-xs flex h-16 w-16 items-center justify-center rounded-full bg-surface-container">
+            <div className="mb-xs flex h-16 w-16 items-center justify-center rounded-full bg-primary-tint/[0.14] text-primary">
               <Icon name="donut_small" fill className="text-[32px] text-primary" />
             </div>
             <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-primary md:font-headline-lg md:text-headline-lg">
@@ -261,7 +261,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
             <button
               type="submit"
               disabled={busy}
-              className="mt-sm flex min-h-[48px] w-full items-center justify-center gap-sm rounded-lg bg-primary font-label-md text-label-md text-on-primary shadow-sm transition-all hover:bg-primary-hover hover:shadow-md active:scale-[0.98] disabled:opacity-60"
+              className="mt-sm flex min-h-[48px] w-full items-center justify-center gap-sm rounded-full font-label-md text-label-md transition-all hover:brightness-105 active:scale-[0.98] disabled:opacity-60 grad-primary"
             >
               {busy ? (
                 <Spinner className="h-4 w-4" />
@@ -308,17 +308,17 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
 
           {/* Guest access */}
           <div className="flex items-center gap-sm">
-            <div className="h-px flex-1 bg-surface-container-high" />
+            <div className="h-px flex-1 bg-outline-variant" />
             <span className="font-label-md text-label-md text-on-surface-variant">
               {t('auth.or')}
             </span>
-            <div className="h-px flex-1 bg-surface-container-high" />
+            <div className="h-px flex-1 bg-outline-variant" />
           </div>
           <button
             type="button"
             onClick={handleGuest}
             disabled={busy}
-            className="flex min-h-[48px] w-full items-center justify-center gap-sm rounded-lg border border-outline-variant bg-surface font-label-md text-label-md text-on-surface transition-colors hover:bg-surface-container-high disabled:opacity-60"
+            className="flex min-h-[48px] w-full items-center justify-center gap-sm rounded-[16px] glass-field font-label-md text-label-md text-on-surface transition-colors hover:glass-chip disabled:opacity-60"
           >
             <Icon name="person_outline" className="text-[18px]" />
             <span>{t('auth.continueAsGuest')}</span>

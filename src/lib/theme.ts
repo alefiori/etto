@@ -88,13 +88,14 @@ export function watchDeviceTheme(onChange: (theme: ResolvedTheme) => void): () =
  * The browser-chrome color for each scheme — the address bar on Android, the
  * status bar in the installed PWA and the native shell.
  *
- * These are the *chrome* surfaces rather than the page: light keeps the top bar
- * on `surface`, dark lifts it to `surface-container-low`, one step above the
- * page, the same way the sidebar sits above the page in both.
+ * These now track the *page*, not the chrome. The bars float over the content
+ * on a translucent lens, so there is no opaque colour at the top of the window
+ * for the status bar to continue — what shows through behind them is the top
+ * of the aurora, and that is what these match.
  */
 export const CHROME_COLOR: Record<ResolvedTheme, string> = {
-  light: '#f8f9ff',
-  dark: '#17223a',
+  light: '#f7f7fb',
+  dark: '#0c0c14',
 }
 
 /** The theme currently on the document, whoever put it there. */

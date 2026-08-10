@@ -35,7 +35,9 @@ export function ProgressRing({
       className={`relative ${className ?? ''}`}
       style={className ? undefined : { width: size, height: size }}
     >
-      <svg className="h-full w-full" viewBox="0 0 100 100">
+      {/* overflow-visible so the arc's halo isn't clipped: at r=45 with a 10
+          stroke the ring already reaches the edge of the 100×100 viewBox. */}
+      <svg className="h-full w-full overflow-visible" viewBox="0 0 100 100">
         <circle
           cx="50"
           cy="50"
@@ -50,7 +52,13 @@ export function ProgressRing({
           cy="50"
           r={RING.radius}
           fill="none"
-          style={{ stroke: color }}
+          // The arc glows in its own colour. On glass a flat stroke sits *in*
+          // the card rather than on it; the halo is what puts it in front of
+          // the blur, and it has to be inline because the colour is a prop.
+          style={{
+            stroke: color,
+            filter: `drop-shadow(0 1px 4px color-mix(in srgb, ${color} 42%, transparent))`,
+          }}
           strokeWidth={RING.strokeWidth}
           strokeLinecap="round"
           strokeDasharray={RING.circumference}

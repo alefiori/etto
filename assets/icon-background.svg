@@ -1,4 +1,19 @@
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
-  <!-- Android adaptive-icon background layer: the brand teal, full square. -->
-  <rect width="1024" height="1024" fill="#00685f"/>
+  <!-- Android adaptive-icon background layer: the brand gradient plus its
+       specular sheen, full square. The sheen belongs here rather than on the
+       foreground because the launcher parallaxes the two layers against each
+       other — a highlight that slides independently of the surface it is
+       lighting reads as a bug. -->
+  <defs>
+    <linearGradient id="tile" x1="192" y1="0" x2="832" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8B72FF"></stop>
+      <stop offset="1" stop-color="#5B3FE0"></stop>
+    </linearGradient>
+    <linearGradient id="specular" x1="512" y1="32" x2="512" y2="480" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".42"></stop>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#tile)"></rect>
+  <path d="M0 0h1024v300c-180 104-360 156-512 156S180 404 0 300Z" fill="url(#specular)"></path>
 </svg>

@@ -65,6 +65,16 @@ export interface MacroMeta {
  * class cannot reach. Resolving through the variable means the swap is pure
  * CSS: no theme hook to thread through, and no React re-render on the flip.
  */
+/**
+ * The unfilled part of every progress ring, macro or hydration.
+ *
+ * Neutral rather than a wash of the ring's own accent: a tinted track reads as
+ * a second, dimmer arc of the same colour, and at a low fill the ring then
+ * looked further along than it was. One shared track also keeps three rings
+ * side by side comparable at a glance, which is the whole point of the row.
+ */
+export const RING_TRACK = 'rgb(var(--ring-track))'
+
 export const MACROS: MacroMeta[] = [
   {
     key: 'carbs',

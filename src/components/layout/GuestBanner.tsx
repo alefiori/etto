@@ -7,7 +7,7 @@ import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 
 const inputClass =
-  'w-full min-h-[48px] rounded-lg border border-outline-variant bg-surface px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/70 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors'
+  'w-full min-h-[48px] rounded-[16px] glass-field px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/70 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors'
 
 /**
  * Persistent prompt shown to guest (anonymous) users, offering to turn their
@@ -56,7 +56,7 @@ export function GuestBanner() {
           <p className="font-body-md text-body-md">{t('guest.message')}</p>
           <button
             onClick={() => setOpen(true)}
-            className="ml-auto shrink-0 rounded-full bg-primary px-4 py-2 font-label-md text-label-md text-on-primary transition-opacity hover:opacity-90"
+            className="ml-auto shrink-0 rounded-full px-4 py-2 font-label-md text-label-md transition-opacity hover:opacity-90 grad-primary"
           >
             {t('guest.upgrade')}
           </button>
@@ -65,19 +65,19 @@ export function GuestBanner() {
 
       {open && (
         <div
-          className="fixed inset-0 z-[80] flex items-end justify-center bg-black/30 backdrop-blur-[4px] dark:bg-black/60 sm:items-center sm:p-lg"
+          className="fixed inset-0 z-[80] flex items-end justify-center glass-scrim sm:items-center sm:p-lg"
           role="dialog"
           aria-modal="true"
           onMouseDown={(e) => {
             if (e.target === e.currentTarget && !busy) setOpen(false)
           }}
         >
-          <div className="flex w-full flex-col gap-md rounded-t-2xl bg-surface-container-lowest p-lg pb-[calc(theme(spacing.lg)+theme(spacing.safe-bottom))] shadow-card sm:max-w-md sm:rounded-2xl sm:pb-lg">
+          <div className="flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(theme(spacing.lg)+theme(spacing.safe-bottom))] shadow-sheet sm:max-w-md sm:rounded-lens sm:pb-lg glass-sheet">
             <div className="flex items-center justify-between">
               <h2 className="font-headline-md text-headline-md text-on-surface">{t('guest.title')}</h2>
               <button
                 onClick={() => setOpen(false)}
-                className="rounded-full p-1 text-on-surface-variant transition-colors hover:bg-surface-container-high"
+                className="rounded-full p-1 text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip-hover)]"
                 aria-label={t('common.close')}
               >
                 <Icon name="close" />
@@ -130,7 +130,7 @@ export function GuestBanner() {
               <button
                 type="submit"
                 disabled={busy}
-                className="mt-sm flex min-h-[48px] w-full items-center justify-center gap-sm rounded-lg bg-primary font-label-md text-label-md text-on-primary shadow-sm transition-all hover:bg-primary-hover disabled:opacity-60"
+                className="mt-sm flex min-h-[48px] w-full items-center justify-center gap-sm rounded-full font-label-md text-label-md transition-all hover:brightness-105 disabled:opacity-60 grad-primary"
               >
                 {busy ? <Spinner className="h-4 w-4" /> : <span>{t('guest.createAccount')}</span>}
               </button>

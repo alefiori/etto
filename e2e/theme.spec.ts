@@ -13,7 +13,7 @@ test.describe('appearance', () => {
 
       await expect(page.locator(html)).toHaveClass(/dark/)
       // The browser-chrome color follows the app's chrome, not the page.
-      await expect(page.locator('#app-theme-color')).toHaveAttribute('content', '#17223a')
+      await expect(page.locator('#app-theme-color')).toHaveAttribute('content', '#0c0c14')
     })
 
     test('is already dark on the very first paint, before React mounts', async ({ page }) => {
@@ -32,7 +32,7 @@ test.describe('appearance', () => {
       await page.getByRole('radio', { name: 'Light' }).click()
 
       await expect(page.locator(html)).not.toHaveClass(/dark/)
-      await expect(page.locator('#app-theme-color')).toHaveAttribute('content', '#f8f9ff')
+      await expect(page.locator('#app-theme-color')).toHaveAttribute('content', '#f7f7fb')
       expect(store.profiles.find((p) => p['id'] === USER_ID)).toMatchObject({ theme: 'light' })
 
       // And it sticks across a reload, even though the device still says dark.
@@ -58,8 +58,12 @@ test.describe('appearance', () => {
       // The page ground and the cards on it are both repainted, and stay
       // distinguishable — the dark scheme steps the card up from the page
       // rather than relying on a shadow that would be invisible there.
-      const page_bg = await background(page, 'main')
-      const card_bg = await background(page, 'main .rounded-2xl')
+      //
+      // The card's fill is on its `::before` (see the glass note in
+      // index.css), so read that layer rather than the element: the card
+      // itself is transparent by design in both schemes.
+      const page_bg = await background(page, 'body')
+      const card_bg = await backgroundOfLens(page, 'main .glass')
       expect(page_bg).not.toBe(card_bg)
     })
 
@@ -99,4 +103,12 @@ function background(page: import('@playwright/test').Page, selector: string) {
     .locator(selector)
     .first()
     .evaluate((el) => getComputedStyle(el).backgroundColor)
+}
+
+/** The fill of a glass surface, which lives on its `::before` layer. */
+function backgroundOfLens(page: import('@playwright/test').Page, selector: string) {
+  return page
+    .locator(selector)
+    .first()
+    .evaluate((el) => getComputedStyle(el, '::before').backgroundColor)
 }

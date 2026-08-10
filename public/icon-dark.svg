@@ -1,0 +1,48 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app icon, dark. Not a second favicon: neither vite-pwa nor
+       @capacitor/assets has a dark-icon slot, so nothing generates from this
+       directly. It is the brand artwork for dark grounds — assets/splash-dark.svg
+       composes it — and the source to hand a toolchain that grows an iOS 18
+       dark-icon slot. Keep it in step with icon.svg. -->
+  <defs>
+    <linearGradient id="tileDark" x1="96" y1="0" x2="416" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A794FF"></stop>
+      <stop offset="1" stop-color="#5B3FE0"></stop>
+    </linearGradient>
+    <radialGradient id="glow" cx="256" cy="180" r="300" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C9B8FF" stop-opacity=".5"></stop>
+      <stop offset="1" stop-color="#C9B8FF" stop-opacity="0"></stop>
+    </radialGradient>
+    <linearGradient id="specularDark" x1="256" y1="16" x2="256" y2="240" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".3"></stop>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"></stop>
+    </linearGradient>
+    <clipPath id="clipDark">
+      <rect width="512" height="512" rx="120"></rect>
+    </clipPath>
+  </defs>
+
+  <rect width="512" height="512" rx="120" fill="#12121C"></rect>
+  <g clip-path="url(#clipDark)">
+    <rect width="512" height="512" fill="url(#tileDark)" opacity=".9"></rect>
+    <rect width="512" height="512" fill="url(#glow)"></rect>
+  </g>
+
+  <g clip-path="url(#clipDark)" transform="rotate(-90 256 256)">
+    <g fill="none" stroke-linecap="round">
+      <circle cx="256" cy="256" r="150" stroke="#0C0C14" stroke-opacity=".32" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="150" stroke="#FFB340" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
+
+      <circle cx="256" cy="256" r="106" stroke="#0C0C14" stroke-opacity=".32" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="106" stroke="#4DA2FF" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
+
+      <circle cx="256" cy="256" r="62" stroke="#0C0C14" stroke-opacity=".32" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="62" stroke="#FF6B8A" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
+    </g>
+  </g>
+
+  <g clip-path="url(#clipDark)">
+    <path d="M0 0h512v150c-90 52-180 78-256 78S90 202 0 150Z" fill="url(#specularDark)"></path>
+    <rect x="1.5" y="1.5" width="509" height="509" rx="118.5" fill="none" stroke="#ffffff" stroke-opacity=".28" stroke-width="3"></rect>
+  </g>
+</svg>

@@ -20,7 +20,7 @@ export function AboutSection() {
   const { t } = useI18n()
 
   const linkClass =
-    'flex min-h-[48px] items-center justify-between gap-sm rounded-lg px-2 font-body-md text-body-md text-on-surface transition-colors hover:bg-surface-container-high'
+    'flex min-h-[48px] items-center justify-between gap-sm rounded-lg px-2 font-body-md text-body-md text-on-surface transition-colors hover:bg-[color:var(--glass-chip-hover)]'
 
   return (
     <div className="flex flex-col gap-sm">
@@ -29,7 +29,7 @@ export function AboutSection() {
         <h3 className="font-label-md text-label-md text-on-surface">{t('about.title')}</h3>
       </div>
 
-      <p className="rounded-lg bg-surface-container-low px-md py-sm font-body-md text-sm text-on-surface-variant">
+      <p className="rounded-lg glass-chip px-md py-sm font-body-md text-sm text-on-surface-variant">
         {t('about.disclaimer')}
       </p>
 

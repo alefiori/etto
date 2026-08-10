@@ -16,7 +16,7 @@ import {
 } from '@/lib/foods'
 
 const fieldClass =
-  'w-full min-h-[48px] rounded-lg border border-outline-variant bg-surface px-4 py-3 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors'
+  'w-full min-h-[48px] rounded-[16px] glass-field px-4 py-3 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors'
 
 export default function CreateCustomFood() {
   const navigate = useNavigate()
@@ -138,7 +138,7 @@ export default function CreateCustomFood() {
         <button
           onClick={() => navigate(-1)}
           aria-label={t('createFood.goBack')}
-          className="rounded-full p-2 transition-colors hover:bg-surface-container-low"
+          className="rounded-full p-2 transition-colors hover:bg-[color:var(--glass-chip)]"
         >
           <Icon name="arrow_back" className="text-on-surface-variant" />
         </button>
@@ -150,7 +150,7 @@ export default function CreateCustomFood() {
       {loading ? (
         <LoadingBlock label={t('createFood.loadingFood')} />
       ) : loadError ? (
-        <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-md rounded-2xl bg-surface-container-lowest p-lg text-center shadow-card">
+        <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-md rounded-lens p-lg text-center glass">
           <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
             {loadError}
           </p>
@@ -162,7 +162,7 @@ export default function CreateCustomFood() {
           </button>
         </div>
       ) : (
-      <div className="mx-auto w-full max-w-2xl rounded-2xl bg-surface-container-lowest p-5 shadow-card md:p-[20px]">
+      <div className="mx-auto w-full max-w-2xl rounded-lens p-5 glass md:p-[20px]">
         <form className="flex flex-col gap-lg" onSubmit={(e) => e.preventDefault()}>
           {error && (
             <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
@@ -275,7 +275,7 @@ export default function CreateCustomFood() {
                     value={valueOf[m.field]}
                     onChange={(e) => setters[m.field](e.target.value)}
                     onFocus={(e) => e.target.value === '0' && e.target.select()}
-                    className="min-h-[48px] w-full rounded-lg border border-outline-variant bg-surface px-4 py-3 font-body-md text-body-md text-on-surface outline-none transition-colors"
+                    className="min-h-[48px] w-full rounded-[16px] glass-field px-4 py-3 font-body-md text-body-md text-on-surface outline-none transition-colors"
                     style={{ caretColor: m.color }}
                   />
                 </div>
@@ -298,7 +298,7 @@ export default function CreateCustomFood() {
                   className={`truncate rounded-lg border py-2 font-label-md text-label-md transition-colors ${
                     selectedMeal === mm.key
                       ? 'border-primary bg-primary text-on-primary'
-                      : 'border-outline-variant bg-surface-container-low text-on-surface hover:bg-surface-container-high'
+                      : 'text-on-surface hover:brightness-[1.06] glass-field'
                   }`}
                 >
                   {mm.label}
@@ -313,7 +313,7 @@ export default function CreateCustomFood() {
               type="button"
               onClick={() => save(false)}
               disabled={busy}
-              className="flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-full bg-primary font-label-md text-label-md font-semibold text-on-primary shadow-sm transition-all hover:bg-primary-hover hover:shadow-md active:scale-95 disabled:opacity-60"
+              className="flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-full font-label-md text-label-md font-semibold transition-all hover:brightness-105 active:scale-95 disabled:opacity-60 grad-primary"
             >
               {busy ? <Spinner className="h-4 w-4" /> : <Icon name="save" className="text-[20px]" />}
               {isEdit ? t('createFood.saveChanges') : t('createFood.saveFood')}

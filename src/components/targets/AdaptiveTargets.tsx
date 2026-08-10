@@ -78,7 +78,7 @@ export function AdaptiveTargets({
   }
 
   return (
-    <section className="flex flex-col gap-sm rounded-2xl border border-primary/30 bg-primary-tint/10 p-md shadow-card">
+    <section className="flex flex-col gap-sm rounded-lens border border-primary/30 bg-primary-tint/[0.12] p-md shadow-card backdrop-blur-xl">
       <div className="flex items-start justify-between gap-md">
         <div className="min-w-0">
           <h3 className="flex items-center gap-2 font-headline-md text-headline-md text-on-surface">
@@ -184,7 +184,7 @@ function AdaptiveBody({
             {t(`macro.${m.key}`)} {Math.round(macros[m.field])}g
           </span>
         ))}
-        <span className="flex items-center rounded-full bg-surface-container-high px-3 py-1 font-label-md text-label-md text-on-surface-variant">
+        <span className="flex items-center rounded-full glass-chip px-3 py-1 font-label-md text-label-md text-on-surface-variant">
           {Math.round(calories(macros))} {t('common.kcal')}
         </span>
       </div>
@@ -217,7 +217,7 @@ function AdaptiveBody({
         type="button"
         onClick={onApply}
         disabled={applying}
-        className="mt-xs flex h-[44px] w-full items-center justify-center gap-2 rounded-full bg-primary font-label-md text-label-md text-on-primary transition-all hover:bg-primary-hover active:scale-95 disabled:opacity-40 sm:w-auto sm:px-lg"
+        className="mt-xs flex h-[44px] w-full items-center justify-center gap-2 rounded-full font-label-md text-label-md transition-all hover:brightness-105 active:scale-95 disabled:opacity-40 grad-primary sm:w-auto sm:px-lg"
       >
         {applying && <Spinner className="h-4 w-4" />}
         {applied ? t('adaptive.applied') : t('adaptive.apply')}
@@ -228,7 +228,7 @@ function AdaptiveBody({
 
 function Guidance({ text }: { text: string }) {
   return (
-    <p className="flex items-start gap-2 rounded-lg bg-surface-container-low px-md py-sm font-body-md text-sm text-on-surface-variant">
+    <p className="flex items-start gap-2 rounded-lg glass-chip px-md py-sm font-body-md text-sm text-on-surface-variant">
       <Icon name="lightbulb" className="mt-0.5 text-[16px] shrink-0" />
       {text}
     </p>

@@ -57,6 +57,32 @@ test.describe('weight tracking', () => {
     expect(store.weight_logs[0]).toMatchObject({ weight_kg: 81.9 })
   })
 
+  test('withholds the chart until there are enough readings to draw a line', async ({
+    page,
+    store,
+  }) => {
+    // One reading is a dot, not a trend. A chart frame around it reads as a
+    // chart that failed to load, and the range switch under it offers to
+    // re-scale nothing.
+    store.weight_logs.push({
+      id: 'w-1',
+      user_id: USER_ID,
+      log_date: todayISO(),
+      weight_kg: 80,
+      created_at: '2024-01-01T00:00:00.000Z',
+      updated_at: '2024-01-01T00:00:00.000Z',
+    })
+
+    await seedSession(page)
+    await page.goto('/')
+
+    await expect(page.getByText('One reading so far')).toBeVisible()
+    await expect(page.getByRole('img', { name: /Weight trend over the last/ })).toHaveCount(0)
+    // Still shown, so the card doesn't grow a row the moment a third reading
+    // lands — but inert, because there is nothing to re-scale.
+    await expect(page.getByRole('button', { name: '30 days' })).toBeDisabled()
+  })
+
   test('draws a trend and reports the weekly rate once there is history', async ({
     page,
     store,

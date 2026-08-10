@@ -1,22 +1,18 @@
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Android adaptive-icon foreground layer: the rings only (the teal comes
-       from icon-background.svg). Full-bleed like icon-only.svg — capacitor-assets
-       adds the 16.7% adaptive safe-zone inset itself, so the launcher's shape
-       mask and parallax never clip the outer ring. -->
-  <g transform="translate(512 512) scale(2) translate(-256 -256)">
+  <!-- Android adaptive-icon foreground layer: the rings only (the gradient and
+       its sheen come from icon-background.svg). Full-bleed like icon-only.svg —
+       capacitor-assets adds the 16.7% adaptive safe-zone inset itself, so the
+       launcher's shape mask and parallax never clip the outer ring. -->
+  <g transform="scale(2)">
     <g fill="none" stroke-linecap="round" transform="rotate(-90 256 256)">
-      <!-- carbs ring (outer) -->
-      <circle cx="256" cy="256" r="150" stroke="#00504a" stroke-width="34"/>
-      <circle cx="256" cy="256" r="150" stroke="#F59E0B" stroke-width="34"
-        stroke-dasharray="942" stroke-dashoffset="236"/>
-      <!-- protein ring (middle) -->
-      <circle cx="256" cy="256" r="106" stroke="#00504a" stroke-width="34"/>
-      <circle cx="256" cy="256" r="106" stroke="#3B82F6" stroke-width="34"
-        stroke-dasharray="666" stroke-dashoffset="200"/>
-      <!-- fats ring (inner) -->
-      <circle cx="256" cy="256" r="62" stroke="#00504a" stroke-width="34"/>
-      <circle cx="256" cy="256" r="62" stroke="#8B5CF6" stroke-width="34"
-        stroke-dasharray="390" stroke-dashoffset="156"/>
+      <circle cx="256" cy="256" r="150" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="150" stroke="#FF9F0A" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
+
+      <circle cx="256" cy="256" r="106" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="106" stroke="#0A84FF" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
+
+      <circle cx="256" cy="256" r="62" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
+      <circle cx="256" cy="256" r="62" stroke="#FF375F" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
     </g>
   </g>
 </svg>

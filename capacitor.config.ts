@@ -20,7 +20,7 @@ const config: CapacitorConfig = {
   // template already ships all four orientations under
   // UISupportedInterfaceOrientations~ipad and TARGETED_DEVICE_FAMILY = "1,2";
   // scripts/verify-ipad.mjs asserts both, since ios/ is regenerated each build.
-  backgroundColor: '#f8f9ff',
+  backgroundColor: '#f7f7fb',
   ios: {
     // Keeps the WebView from bouncing past the fixed header and bottom nav;
     // <main> scrolls internally instead.
@@ -37,7 +37,7 @@ const config: CapacitorConfig = {
   plugins: {
     SplashScreen: {
       launchAutoHide: false, // hidden from main.tsx once React has painted
-      backgroundColor: '#f8f9ff',
+      backgroundColor: '#f7f7fb',
     },
     Keyboard: {
       // Resize the WebView rather than the body, which is what the

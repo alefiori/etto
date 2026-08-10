@@ -95,7 +95,7 @@ export function TrendChart({
         cx={geo.points[geo.points.length - 1].x}
         cy={geo.points[geo.points.length - 1].y}
         r={4}
-        className="stroke-surface-container-lowest"
+        className="stroke-[color:rgb(var(--trend-dot))]"
         style={{ fill: color }}
         strokeWidth={2}
       />

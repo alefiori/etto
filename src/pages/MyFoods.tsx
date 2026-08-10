@@ -101,14 +101,14 @@ export default function MyFoods() {
         </div>
         <Link
           to="/foods/new"
-          className="flex h-[48px] items-center justify-center gap-sm rounded-full bg-primary px-lg font-label-md text-label-md text-on-primary shadow-sm transition-all hover:bg-primary-hover hover:shadow-md active:scale-95"
+          className="flex h-[48px] items-center justify-center gap-sm rounded-full px-lg font-label-md text-label-md transition-all hover:brightness-105 active:scale-95 grad-primary"
         >
           <Icon name="add" />
           {t('myFoods.createCustomFood')}
         </Link>
       </div>
 
-      <div className="relative rounded-xl bg-surface-container-lowest p-2 shadow-card">
+      <div className="relative rounded-lens p-2 glass">
         <Icon
           name="search"
           className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-outline"
@@ -131,8 +131,8 @@ export default function MyFoods() {
       {loading ? (
         <LoadingBlock label={t('myFoods.loadingFoods')} />
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center gap-sm rounded-2xl bg-surface-container-lowest py-2xl text-center shadow-card">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-surface-variant text-on-surface-variant">
+        <div className="flex flex-col items-center gap-sm rounded-lens py-2xl text-center glass">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full glass-chip text-on-surface-variant">
             <Icon name="restaurant_menu" />
           </div>
           <p className="font-body-md text-body-md text-on-surface-variant">
@@ -148,19 +148,19 @@ export default function MyFoods() {
           )}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl bg-surface-container-lowest shadow-card">
+        <div className="overflow-hidden rounded-lens glass">
           <div className="flex flex-col gap-xs p-sm">
             {filtered.map((food) => (
               <div
                 key={food.id}
-                className="group flex items-center justify-between gap-sm rounded-xl border border-transparent p-md transition-colors hover:bg-surface-container-low"
+                className="group flex items-center justify-between gap-sm rounded-xl border border-transparent p-md transition-colors hover:bg-[color:var(--glass-chip)]"
               >
                 <div className="flex min-w-0 items-center gap-md">
                   <div
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
                       food.is_custom
-                        ? 'bg-primary-container text-on-primary-container'
-                        : 'bg-surface-container-high text-secondary'
+                        ? 'bg-primary-tint/[0.16] text-primary'
+                        : 'text-on-surface-variant glass-chip'
                     }`}
                   >
                     <Icon name={food.is_custom ? 'restaurant' : 'public'} />

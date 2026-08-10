@@ -89,7 +89,7 @@ export function FoodEntrySheet({
 
   return (
     <div
-      className="animate-overlay-fade-in fixed inset-0 z-[80] flex items-end justify-center bg-black/30 p-0 backdrop-blur-[4px] dark:bg-black/60 sm:items-center sm:p-lg"
+      className="animate-overlay-fade-in fixed inset-0 z-[80] flex items-end justify-center p-0 glass-scrim sm:items-center sm:p-lg"
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -97,7 +97,7 @@ export function FoodEntrySheet({
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <div className="animate-sheet-up flex w-full flex-col gap-md rounded-t-2xl bg-surface-container-lowest p-lg pb-[calc(theme(spacing.lg)+theme(spacing.safe-bottom))] shadow-card sm:max-w-md sm:rounded-2xl sm:pb-lg">
+      <div className="animate-sheet-up flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(theme(spacing.lg)+theme(spacing.safe-bottom))] shadow-sheet sm:max-w-md sm:rounded-lens sm:pb-lg glass-sheet">
         {/* Grab handle — the phone-only affordance for a sheet you can dismiss. */}
         <div className="mx-auto -mt-2 h-1 w-9 shrink-0 rounded-full bg-outline-variant sm:hidden" />
 
@@ -112,7 +112,7 @@ export function FoodEntrySheet({
           </div>
           <button
             onClick={onClose}
-            className="shrink-0 rounded-full bg-surface-container-high p-2 text-on-surface transition-colors hover:bg-surface-variant"
+            className="shrink-0 rounded-full glass-chip p-2 text-on-surface transition-colors hover:glass-chip"
             aria-label={t('common.close')}
           >
             <Icon name="close" className="text-sm" />
@@ -126,7 +126,7 @@ export function FoodEntrySheet({
         )}
 
         {/* Quantity editor */}
-        <div className="flex flex-col gap-sm rounded-2xl bg-surface-container-low p-md">
+        <div className="flex flex-col gap-sm rounded-2xl glass-chip p-md">
           <span className="font-label-md text-label-md text-on-surface-variant">
             {t('foodInfo.quantity')}
           </span>
@@ -135,11 +135,11 @@ export function FoodEntrySheet({
               onClick={() => setAmount((a) => Math.max(0, round(a - step, 2)))}
               disabled={amount <= 0}
               aria-label={t('foodInfo.decrease')}
-              className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-xl bg-surface-container-lowest text-primary shadow-sm transition-transform active:scale-95 disabled:opacity-40"
+              className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[18px] text-primary transition-transform active:scale-95 disabled:opacity-40 glass-field"
             >
               <Icon name="remove" className="text-2xl" />
             </button>
-            <div className="flex h-[52px] flex-1 items-center justify-center gap-1 rounded-xl bg-surface-container-lowest shadow-sm">
+            <div className="flex h-[52px] flex-1 items-center justify-center gap-1 rounded-[18px] glass-field">
               <input
                 type="number"
                 inputMode="decimal"
@@ -156,7 +156,7 @@ export function FoodEntrySheet({
             <button
               onClick={() => setAmount((a) => round(a + step, 2))}
               aria-label={t('foodInfo.increase')}
-              className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-xl bg-surface-container-lowest text-primary shadow-sm transition-transform active:scale-95"
+              className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[18px] text-primary transition-transform active:scale-95 glass-field"
             >
               <Icon name="add" className="text-2xl" />
             </button>
@@ -175,7 +175,7 @@ export function FoodEntrySheet({
                   className={`h-10 flex-1 rounded-xl text-sm font-semibold transition-colors ${
                     active
                       ? 'bg-primary text-on-primary'
-                      : 'bg-surface-container-lowest text-on-surface-variant shadow-sm hover:bg-surface-container-high'
+                      : 'text-on-surface-variant hover:brightness-[1.06] glass-field'
                   }`}
                 >
                   {preset} {unit}
@@ -186,7 +186,7 @@ export function FoodEntrySheet({
         </div>
 
         {/* Totals for the amount currently in the editor */}
-        <div className="rounded-2xl bg-surface-container-low p-md">
+        <div className="rounded-2xl glass-chip p-md">
           <div className="flex items-baseline justify-between">
             <span className="font-label-md text-label-md text-on-surface-variant">
               {amount} {unit}
@@ -227,7 +227,7 @@ export function FoodEntrySheet({
         <div className="flex gap-sm">
           <button
             onClick={onCopy}
-            className="flex h-12 flex-1 items-center justify-center gap-xs rounded-xl bg-surface-container-high font-label-md text-label-md text-on-surface transition-colors hover:bg-surface-variant"
+            className="flex h-12 flex-1 items-center justify-center gap-xs rounded-xl glass-chip font-label-md text-label-md text-on-surface transition-colors hover:glass-chip"
           >
             <Icon name="content_copy" className="text-sm" />
             {t('foodInfo.copyFood')}
@@ -247,7 +247,7 @@ export function FoodEntrySheet({
           onClick={() => (changed ? onSave(draftServings) : onClose())}
           disabled={saving || amount <= 0}
           className={`flex h-[52px] w-full items-center justify-center gap-sm rounded-xl font-label-md text-label-md transition-opacity hover:opacity-90 disabled:opacity-40 ${
-            changed ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant'
+            changed ? 'bg-primary text-on-primary' : 'glass-chip text-on-surface-variant'
           }`}
         >
           {saving && <Spinner className="h-4 w-4" />}

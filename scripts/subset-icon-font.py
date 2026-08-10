@@ -15,19 +15,27 @@ ligature buildable from the retained letters (the full alphabet pulls in
 thousands of icons, ~3.5MB). So we first prune GSUB to only the wanted
 ligatures, then subset — which yields ~65KB.
 
-Requires: pip install fonttools brotli
+"Re-run this when you add an icon" is not a guarantee, and it has already been
+missed once: `mail`, `gavel`, `shield`, `open_in_new` and `delete_forever`
+shipped to the profile screen as the literal words. So a build also records what
+it produced in MANIFEST, and `--check` re-derives the icon names from src and
+fails if any of them is in neither list. That mode is stdlib-only and offline —
+no fonttools, no 3.5MB download — so CI can run it on every push.
+
+Requires: pip install fonttools brotli   (build only; --check needs neither)
 Usage:    python3 scripts/subset-icon-font.py
+          python3 scripts/subset-icon-font.py --check
 """
+import json
 import re
 import sys
-import urllib.request
 from pathlib import Path
-
-from fontTools.ttLib import TTFont
-from fontTools.subset import main as subset_main
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "src"
+# A record of the last build, not a runtime asset — hence scripts/ and not
+# public/, which would ship it to every client for nothing.
+MANIFEST = ROOT / "scripts" / "icon-font-manifest.json"
 OUT = ROOT / "public" / "fonts" / "material-symbols-outlined.woff2"
 FULL_URL = (
     "https://github.com/google/material-design-icons/raw/master/variablefont/"
@@ -69,7 +77,43 @@ def decomp(first: str, components: list[str]) -> str:
     return out
 
 
+def check() -> int:
+    """Fail if src uses an icon the shipped subset can't render.
+
+    Deliberately compares against the manifest rather than the woff2 or the
+    full font: reading either would mean a brotli decoder or a download, and
+    the question here is only "has anyone added an icon name since the last
+    build", which the manifest answers exactly.
+    """
+    if not MANIFEST.exists():
+        print(f"{MANIFEST.relative_to(ROOT)} is missing — run this script without --check.",
+              file=sys.stderr)
+        return 1
+
+    manifest = json.loads(MANIFEST.read_text())
+    known = set(manifest["ligatures"]) | set(manifest["notIcons"])
+    unknown = sorted(used_icon_names() - known)
+
+    if unknown:
+        print(
+            "These names are used in src but are not in the shipped icon font:\n"
+            + "".join(f"  - {n}\n" for n in unknown)
+            + "They would render as their literal text. Run:\n"
+            "  python3 scripts/subset-icon-font.py",
+            file=sys.stderr,
+        )
+        return 1
+
+    print(f"icon font covers all {len(manifest['ligatures'])} icons used in src")
+    return 0
+
+
 def main() -> int:
+    # Imported here, not at module scope, so --check stays dependency-free.
+    import urllib.request
+    from fontTools.ttLib import TTFont
+    from fontTools.subset import main as subset_main
+
     names = used_icon_names()
     print(f"{len(names)} icon names found in src")
 
@@ -84,7 +128,7 @@ def main() -> int:
 
     # Prune ligatures to only the icons we use; every other subtable form is
     # left untouched.
-    kept = 0
+    kept_names = set()
     wanted_glyphs = set()
     for lookup in gsub.LookupList.Lookup:
         for st in lookup.SubTable:
@@ -96,27 +140,24 @@ def main() -> int:
                 keep = [l for l in ligs[first] if decomp(first, l.Component) in names]
                 for l in keep:
                     wanted_glyphs.add(l.LigGlyph)
-                    kept += 1
+                    kept_names.add(decomp(first, l.Component))
                 if keep:
                     ligs[first] = keep
                 else:
                     del ligs[first]
 
-    missing = names - {
-        decomp(f, l.Component)
-        for lk in gsub.LookupList.Lookup
-        for st in lk.SubTable
-        for ext in [getattr(st, "ExtSubTable", None) or st]
-        if getattr(ext, "ligatures", None)
-        for f, ls in ext.ligatures.items()
-        for l in ls
-    }
-    if missing:
-        print(f"WARNING: no ligature in full font for: {sorted(missing)}", file=sys.stderr)
+    # Whatever is left over has no ligature anywhere in the full font, so it is
+    # not an icon at all — the meal keys, macro fields, serving units and locale
+    # codes that ICON_CONSTANT_MODULES sweeps up along with the real names. Not
+    # a problem, but it has to be recorded: --check needs to tell "harmless
+    # non-icon" apart from "icon nobody generated a glyph for".
+    not_icons = names - kept_names
+    if not_icons:
+        print(f"note: not icons, ignored: {sorted(not_icons)}", file=sys.stderr)
 
     pruned = ROOT / "node_modules" / ".cache" / "material-symbols-pruned.ttf"
     font.save(pruned)
-    print(f"kept {kept} ligatures")
+    print(f"kept {len(kept_names)} ligatures")
 
     # Subset the pruned font by the icon-name text: closure keeps the letters,
     # the icon output glyphs and the (now small) GSUB.
@@ -127,10 +168,28 @@ def main() -> int:
         "--flavor=woff2",
         f"--output-file={OUT}",
     ])
+    MANIFEST.write_text(
+        json.dumps(
+            {
+                "comment": (
+                    "Written by scripts/subset-icon-font.py. `ligatures` are the icons "
+                    "the shipped woff2 can render; `notIcons` are names the scraper "
+                    "picked up that no icon exists for. --check fails on anything in "
+                    "neither list. Do not edit by hand."
+                ),
+                "ligatures": sorted(kept_names),
+                "notIcons": sorted(not_icons),
+            },
+            indent=2,
+        )
+        + "\n"
+    )
+
     print(f"wrote {OUT} ({OUT.stat().st_size // 1024} KB)")
+    print(f"wrote {MANIFEST.relative_to(ROOT)}")
     print("Now run `npm run sync:native` (or `cap sync`) to copy it into ios/.")
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(check() if "--check" in sys.argv[1:] else main())

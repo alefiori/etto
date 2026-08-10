@@ -73,7 +73,7 @@ export function PaywallModal({ open, onClose }: { open: boolean; onClose: () => 
           type="button"
           onClick={onClose}
           aria-label={t('common.close')}
-          className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high"
+          className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip-hover)]"
         >
           <Icon name="close" />
         </button>
@@ -91,7 +91,7 @@ export function PaywallModal({ open, onClose }: { open: boolean; onClose: () => 
           ))}
         </ul>
 
-        <p className="rounded-lg bg-surface-container-low px-md py-sm font-label-md text-label-md text-on-surface-variant">
+        <p className="rounded-lg glass-chip px-md py-sm font-label-md text-label-md text-on-surface-variant">
           {t('paywall.freeNote')}
         </p>
 
@@ -106,7 +106,7 @@ export function PaywallModal({ open, onClose }: { open: boolean; onClose: () => 
         {notice && (
           <p
             role="status"
-            className="rounded-lg bg-surface-container-high px-md py-sm font-label-md text-label-md text-on-surface"
+            className="rounded-lg glass-chip px-md py-sm font-label-md text-label-md text-on-surface"
           >
             {notice}
           </p>
@@ -122,11 +122,11 @@ export function PaywallModal({ open, onClose }: { open: boolean; onClose: () => 
               className={`relative flex min-h-[96px] flex-col items-center justify-center gap-1 rounded-2xl border p-md transition-all active:scale-98 disabled:opacity-50 ${
                 plan.id === 'yearly'
                   ? 'border-primary bg-primary text-on-primary'
-                  : 'border-outline-variant bg-surface text-on-surface hover:border-primary'
+                  : 'text-on-surface hover:border-primary glass-field'
               }`}
             >
               {plan.id === 'yearly' && (
-                <span className="absolute -top-2 rounded-full bg-tertiary px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-on-primary">
+                <span className="absolute -top-2 rounded-full bg-tertiary px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-on-tertiary">
                   {t('paywall.bestValue')}
                 </span>
               )}

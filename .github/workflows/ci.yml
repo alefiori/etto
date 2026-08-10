@@ -48,6 +48,14 @@ jobs:
       - name: Run unit tests with coverage
         run: npm run test:coverage
 
+      # An <Icon name="..."> whose glyph was never subsetted into
+      # public/fonts/material-symbols-outlined.woff2 renders as the literal word
+      # to users, and nothing else in the suite would notice. Stdlib-only and
+      # offline — it diffs src against scripts/icon-font-manifest.json, so no
+      # pip install and no font download.
+      - name: Check the icon font covers every icon used
+        run: python3 scripts/subset-icon-font.py --check
+
       # Coverage is reported, not gated — upload it for inspection.
       - name: Upload coverage report
         if: always()

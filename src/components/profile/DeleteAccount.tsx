@@ -93,7 +93,7 @@ export function DeleteAccount() {
           <span className="flex flex-col gap-sm">
             <span>{t('profile.deleteAccountConfirmMessage')}</span>
             {isPro && (
-              <span className="rounded-lg bg-surface-container-high px-md py-sm text-sm">
+              <span className="rounded-lg glass-chip px-md py-sm text-sm">
                 {t('profile.deleteAccountStoreNote')}
               </span>
             )}

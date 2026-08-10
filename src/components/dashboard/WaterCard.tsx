@@ -15,7 +15,7 @@ import {
   isGoalDerived,
   QUICK_ADD_ML,
 } from '@/lib/water'
-import { WATER_COLOR } from '@/lib/constants'
+import { RING_TRACK, WATER_COLOR } from '@/lib/constants'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { ProgressRing } from '@/components/ui/ProgressRing'
@@ -84,7 +84,7 @@ export function WaterCard() {
   const reached = consumedMl >= goalMl
 
   return (
-    <div className="flex flex-col gap-md rounded-2xl bg-surface-container-lowest p-lg shadow-card">
+    <div className="flex flex-col gap-md rounded-lens p-lg glass">
       <div className="flex items-center justify-between gap-md">
         <h3 className="flex items-center gap-2 font-headline-md text-headline-md text-on-surface">
           <Icon name="water_drop" className="text-[22px]" style={{ color: WATER_COLOR.color }} />
@@ -103,7 +103,7 @@ export function WaterCard() {
             consumed={consumedMl}
             target={goalMl}
             color={WATER_COLOR.color}
-            trackColor={WATER_COLOR.tint}
+            trackColor={RING_TRACK}
             className="h-[96px] w-[96px] shrink-0"
           >
             <span
@@ -170,7 +170,7 @@ export function WaterCard() {
             disabled={busy}
             onClick={handleUndo}
             aria-label={t('water.undoAria')}
-            className="flex h-10 items-center gap-1 rounded-full px-3 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-surface-container-high disabled:opacity-40"
+            className="flex h-10 items-center gap-1 rounded-full px-3 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip-hover)] disabled:opacity-40"
           >
             <Icon name="undo" className="text-[16px]" />
             {t('water.undo')}
@@ -185,7 +185,7 @@ export function WaterCard() {
           min={0}
           aria-label={t('water.customAria', { unit })}
           placeholder={unit}
-          className="h-[44px] w-full rounded-lg border border-outline-variant bg-surface px-4 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
+          className="h-[44px] w-full rounded-[16px] glass-field px-4 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
           value={custom}
           disabled={busy}
           onChange={(e) => setCustom(e.target.value)}
@@ -200,7 +200,7 @@ export function WaterCard() {
           type="button"
           onClick={handleCustom}
           disabled={busy || custom.trim() === ''}
-          className="h-[44px] shrink-0 rounded-full bg-primary px-lg font-label-md text-label-md text-on-primary transition-all hover:bg-primary-hover active:scale-95 disabled:opacity-40"
+          className="h-[44px] shrink-0 rounded-full px-lg font-label-md text-label-md transition-all hover:brightness-105 active:scale-95 disabled:opacity-40 grad-primary"
         >
           {t('water.add')}
         </button>

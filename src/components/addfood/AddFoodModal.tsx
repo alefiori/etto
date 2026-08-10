@@ -213,7 +213,7 @@ export function AddFoodModal({
             </h2>
             <button
               onClick={onClose}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-container-high text-on-surface transition-colors hover:bg-surface-variant"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full glass-chip text-on-surface transition-colors hover:glass-chip"
               aria-label={t('addFood.close')}
             >
               <Icon name="close" />
@@ -233,7 +233,7 @@ export function AddFoodModal({
                 onChange={(e) => setQuery(e.target.value)}
                 aria-label={t('addFood.searchAria')}
                 placeholder={t('addFood.searchPlaceholder')}
-                className="h-[48px] w-full rounded-lg border border-outline-variant bg-surface pl-[40px] pr-4 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
+                className="h-[48px] w-full rounded-[16px] glass-field pl-[40px] pr-4 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
               />
               {loading && <Spinner className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />}
             </div>
@@ -243,7 +243,7 @@ export function AddFoodModal({
                 setLookupMsg(null)
                 setScanning(true)
               }}
-              className="mt-sm flex w-full items-center justify-center gap-2 rounded-lg border border-outline-variant bg-surface-container-low py-3 font-label-md text-label-md text-on-surface transition-colors hover:bg-surface-container-high"
+              className="mt-sm flex w-full items-center justify-center gap-2 rounded-[16px] glass-field py-3 font-label-md text-label-md text-on-surface transition-colors hover:bg-[color:var(--glass-chip-hover)]"
             >
               <Icon name="barcode_scanner" />
               {t('addFood.scanBarcode')}
@@ -265,7 +265,7 @@ export function AddFoodModal({
             )}
 
             {lookupMsg && (
-              <div className="mb-md flex flex-col items-start gap-sm rounded-lg bg-surface-container-low px-md py-sm">
+              <div className="mb-md flex flex-col items-start gap-sm rounded-lg glass-chip px-md py-sm">
                 <p className="flex items-center gap-2 font-label-md text-label-md text-on-surface">
                   <Icon name="info" className="text-secondary" />
                   {lookupMsg}
@@ -296,7 +296,7 @@ export function AddFoodModal({
             )}
 
             {results.length > 0 && (
-              <div className="sticky top-0 z-10 mb-xs flex items-center justify-between bg-surface-container-lowest py-sm">
+              <div className="sticky top-0 z-10 mb-xs flex items-center justify-between bg-[color:var(--glass-chrome-bg)] py-sm backdrop-blur-xl">
                 <h3 className="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">
                   {t('addFood.results')}
                 </h3>
@@ -323,7 +323,7 @@ export function AddFoodModal({
                     className={`flex items-center justify-between gap-sm rounded-xl border p-md text-left transition-colors ${
                       isSelected
                         ? 'border-primary/20 bg-primary-tint/10'
-                        : 'border-transparent hover:bg-surface-container-low'
+                        : 'border-transparent hover:bg-[color:var(--glass-chip)]'
                     }`}
                   >
                     <div className="flex min-w-0 items-center gap-md">
@@ -331,7 +331,7 @@ export function AddFoodModal({
                         className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
                           n.source === 'custom'
                             ? 'bg-primary-container text-on-primary-container'
-                            : 'bg-surface-container-high text-secondary'
+                            : 'text-on-surface-variant glass-chip'
                         }`}
                       >
                         <Icon
@@ -378,7 +378,7 @@ export function AddFoodModal({
           <div className="border-t border-surface-variant p-md">
             <button
               onClick={() => goCreateCustom()}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#F0FDFA] py-3 font-label-md text-label-md text-primary transition-colors hover:bg-surface-container-high dark:bg-primary/10"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-tint/[0.12] py-3 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/20"
             >
               <Icon name="add_circle" />
               {t('addFood.createCustomFood')}
@@ -388,7 +388,7 @@ export function AddFoodModal({
 
         {/* Detail / log panel — takes over the sheet on mobile when selected */}
         <section
-          className={`min-h-0 w-full flex-1 flex-col bg-surface-container-lowest lg:flex lg:w-[400px] lg:flex-none ${
+          className={`min-h-0 w-full flex-1 flex-col border-[color:var(--glass-row-border)] lg:flex lg:w-[400px] lg:flex-none lg:border-l ${
             selected ? 'flex' : 'hidden lg:flex'
           }`}
         >
@@ -454,7 +454,7 @@ export function AddFoodModal({
                         className={`truncate rounded-lg border py-2 font-label-md text-label-md transition-colors ${
                           meal === m.key
                             ? 'border-primary bg-primary text-on-primary'
-                            : 'border-outline-variant bg-surface-container-low text-on-surface hover:bg-surface-container-high'
+                            : 'text-on-surface hover:brightness-[1.06] glass-field'
                         }`}
                       >
                         {m.label}
@@ -481,14 +481,14 @@ export function AddFoodModal({
                       value={amount}
                       onChange={(e) => setAmount(Math.max(0, parseFloat(e.target.value) || 0))}
                       onFocus={(e) => e.target.select()}
-                      className="h-[48px] flex-1 rounded-lg border border-outline-variant bg-surface-container-low px-4 text-center font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                      className="h-[48px] flex-1 rounded-[16px] glass-field px-4 text-center font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary"
                     />
                     <select
                       aria-label={t('addFood.unit')}
                       value={amountUnit}
                       onChange={(e) => setAmountUnit(e.target.value)}
                       disabled={unitOptions.length <= 1}
-                      className="h-[48px] rounded-lg border border-outline-variant bg-surface-container-low px-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-70"
+                      className="h-[48px] rounded-[16px] glass-field px-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-70"
                     >
                       {unitOptions.map((u) => (
                         <option key={u} value={u}>
@@ -516,7 +516,7 @@ export function AddFoodModal({
                 <button
                   onClick={handleAdd}
                   disabled={saving || servings <= 0}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 font-headline-md text-headline-md text-on-primary shadow-md transition-all hover:bg-primary-hover active:scale-[0.98] disabled:opacity-60"
+                  className="flex w-full items-center justify-center gap-2 rounded-full py-4 font-headline-md text-headline-md transition-all hover:brightness-105 active:scale-[0.98] disabled:opacity-60 grad-primary"
                 >
                   {saving ? (
                     <Spinner className="h-5 w-5" />
@@ -532,7 +532,7 @@ export function AddFoodModal({
                   <button
                     onClick={goEditAsCustom}
                     disabled={saving}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-outline-variant py-3 font-label-md text-label-md text-on-surface transition-colors hover:bg-surface-container-high disabled:opacity-60"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-outline-variant py-3 font-label-md text-label-md text-on-surface transition-colors hover:glass-chip disabled:opacity-60"
                   >
                     <Icon name="edit" />
                     {t('addFood.editAsCustom')}

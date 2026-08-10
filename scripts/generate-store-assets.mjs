@@ -29,12 +29,14 @@ const ICON_SRC = 'assets/icon-only.svg'
 
 /** Brand colours, matching assets/icon-only.svg and the app's primary. */
 export const BRAND = {
-  teal: '#00685f',
-  tealDark: '#00504a',
-  carbs: '#F59E0B',
-  protein: '#3B82F6',
-  fats: '#8B5CF6',
-  onTeal: '#ffffff',
+  violet: '#8B72FF',
+  violetDeep: '#5B3FE0',
+  carbs: '#FF9F0A',
+  protein: '#0A84FF',
+  fats: '#FF375F',
+  onViolet: '#ffffff',
+  /** The ring track on the violet ground — white at the icon's own opacity. */
+  track: '#ffffff',
 }
 
 /**
@@ -51,8 +53,8 @@ export function featureGraphicSvg({ tagline = 'Track your macros, every day' } =
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="${BRAND.teal}"/>
-      <stop offset="100%" stop-color="${BRAND.tealDark}"/>
+      <stop offset="0%" stop-color="${BRAND.violet}"/>
+      <stop offset="100%" stop-color="${BRAND.violetDeep}"/>
     </linearGradient>
   </defs>
   <rect width="1024" height="500" fill="url(#bg)"/>
@@ -60,13 +62,13 @@ export function featureGraphicSvg({ tagline = 'Track your macros, every day' } =
   <!-- The three macro rings, same geometry and colours as the app icon. -->
   <g transform="translate(210 250) scale(0.62) translate(-256 -256)">
     <g fill="none" stroke-linecap="round" transform="rotate(-90 256 256)">
-      <circle cx="256" cy="256" r="150" stroke="${BRAND.tealDark}" stroke-width="34" opacity="0.55"/>
+      <circle cx="256" cy="256" r="150" stroke="${BRAND.track}" stroke-width="34" opacity="0.22"/>
       <circle cx="256" cy="256" r="150" stroke="${BRAND.carbs}" stroke-width="34"
         stroke-dasharray="942" stroke-dashoffset="236"/>
-      <circle cx="256" cy="256" r="106" stroke="${BRAND.tealDark}" stroke-width="34" opacity="0.55"/>
+      <circle cx="256" cy="256" r="106" stroke="${BRAND.track}" stroke-width="34" opacity="0.22"/>
       <circle cx="256" cy="256" r="106" stroke="${BRAND.protein}" stroke-width="34"
         stroke-dasharray="666" stroke-dashoffset="200"/>
-      <circle cx="256" cy="256" r="62" stroke="${BRAND.tealDark}" stroke-width="34" opacity="0.55"/>
+      <circle cx="256" cy="256" r="62" stroke="${BRAND.track}" stroke-width="34" opacity="0.22"/>
       <circle cx="256" cy="256" r="62" stroke="${BRAND.fats}" stroke-width="34"
         stroke-dasharray="390" stroke-dashoffset="156"/>
     </g>
@@ -79,11 +81,11 @@ export function featureGraphicSvg({ tagline = 'Track your macros, every day' } =
     edge. Pinning trades a little glyph distortion for an asset that is the same
     everywhere and always fits inside Play's crop margins.
   -->
-  <text x="400" y="242" fill="${BRAND.onTeal}"
+  <text x="400" y="242" fill="${BRAND.onViolet}"
     font-family="Manrope, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
     font-size="86" font-weight="800" letter-spacing="-2"
     textLength="500" lengthAdjust="spacingAndGlyphs">MacroTrack</text>
-  <text x="404" y="308" fill="${BRAND.onTeal}" opacity="0.82"
+  <text x="404" y="308" fill="${BRAND.onViolet}" opacity="0.82"
     font-family="Manrope, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
     font-size="38" font-weight="500"
     textLength="470" lengthAdjust="spacingAndGlyphs">${tagline}</text>

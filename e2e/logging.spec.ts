@@ -11,7 +11,7 @@ function todayISO(): string {
 /** The meal card that owns a given heading. */
 function mealCard(page: Page, meal: string) {
   return page
-    .locator('div.bg-surface-container-lowest')
+    .locator('div.glass')
     .filter({ has: page.getByRole('heading', { name: meal, exact: true }) })
 }
 

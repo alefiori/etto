@@ -7,7 +7,7 @@ import { Spinner, LoadingBlock } from '@/components/ui/Spinner'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 
 const inputClass =
-  'min-h-[44px] w-full rounded-lg border border-outline-variant bg-surface px-3 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60'
+  'min-h-[44px] w-full rounded-[16px] glass-field px-3 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60'
 
 /**
  * Meal management: rename meals, add or remove them, and reorder them. Meals
@@ -82,7 +82,7 @@ export function MealSettings() {
                   onClick={() => move(meal.id, -1)}
                   disabled={index === 0}
                   aria-label={t('meals.moveUp', { meal: meal.label })}
-                  className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high disabled:opacity-30"
+                  className="rounded-full p-2 text-on-surface-variant transition-colors hover:glass-chip disabled:opacity-30"
                 >
                   <Icon name="arrow_upward" className="text-[18px]" />
                 </button>
@@ -91,7 +91,7 @@ export function MealSettings() {
                   onClick={() => move(meal.id, 1)}
                   disabled={index === meals.length - 1}
                   aria-label={t('meals.moveDown', { meal: meal.label })}
-                  className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high disabled:opacity-30"
+                  className="rounded-full p-2 text-on-surface-variant transition-colors hover:glass-chip disabled:opacity-30"
                 >
                   <Icon name="arrow_downward" className="text-[18px]" />
                 </button>

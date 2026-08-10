@@ -229,7 +229,7 @@ export default function Targets() {
       {/* Page header */}
       {/* `top-0` is relative to <main>, which already offsets the fixed mobile
           top bar — an extra 72px here would pin the header over the first card. */}
-      <div className="sticky top-0 z-20 flex flex-col justify-between gap-xs border-b border-outline-variant/10 bg-surface-bright/80 px-container-margin-mobile py-lg backdrop-blur-sm md:flex-row md:items-end md:gap-md lg:px-container-margin-desktop lg:py-xl">
+      <div className="sticky top-0 z-20 flex flex-col justify-between gap-xs bg-[color:var(--glass-chrome-bg)] px-container-margin-mobile py-lg backdrop-blur-[24px] backdrop-saturate-[1.8] md:flex-row md:items-end md:gap-md lg:px-container-margin-desktop lg:py-xl">
         <div>
           <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface lg:font-headline-lg lg:text-headline-lg">
             {t('targets.title')}
@@ -264,7 +264,7 @@ export default function Targets() {
               <span className="text-error">{saveError ?? t('targets.couldNotSave')}</span>
               <button
                 onClick={flushNow}
-                className="rounded-full px-sm py-1 font-label-md text-label-md text-primary underline transition-colors hover:bg-surface-container-high"
+                className="rounded-full px-sm py-1 font-label-md text-label-md text-primary underline transition-colors hover:bg-[color:var(--glass-chip-hover)]"
               >
                 {t('targets.retry')}
               </button>
@@ -287,7 +287,7 @@ export default function Targets() {
         )}
 
         {copied !== null && (
-          <div className="mb-md flex items-center justify-between gap-sm rounded-2xl border border-primary/30 bg-primary-tint/10 p-md shadow-card">
+          <div className="mb-md flex items-center justify-between gap-sm rounded-lens border border-primary/30 bg-primary-tint/[0.12] p-md shadow-card backdrop-blur-xl">
             <div className="flex min-w-0 items-center gap-sm text-on-surface">
               <Icon name="content_paste" className="shrink-0 text-primary" />
               <p className="truncate font-body-md text-body-md">
@@ -297,7 +297,7 @@ export default function Targets() {
             <button
               onClick={() => setCopied(null)}
               aria-label={t('targets.clearCopiedDay')}
-              className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-container-high"
+              className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip-hover)]"
             >
               <Icon name="close" className="text-sm" />
             </button>
@@ -322,7 +322,7 @@ export default function Targets() {
               return (
                 <div
                   key={dow}
-                  className="flex flex-col gap-md rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-md shadow-card transition-all hover:shadow-card-hover"
+                  className="flex flex-col gap-md rounded-lens p-md transition-all hover:shadow-card-hover glass"
                 >
                   <div className="flex items-center justify-between gap-xs border-b border-outline-variant/10 pb-sm">
                     <h3
@@ -347,9 +347,9 @@ export default function Targets() {
                         onClick={() => setCopied(dow)}
                         aria-label={t('targets.copyDayAria', { day: dayLabel })}
                         title={t('targets.copyDayAria', { day: dayLabel })}
-                        className={`rounded-full p-1 transition-colors hover:bg-surface-container-high hover:text-primary ${
+                        className={`rounded-full p-1 transition-colors hover:glass-chip hover:text-primary ${
                           copied === dow
-                            ? 'bg-surface-container-high text-primary'
+                            ? 'bg-primary-tint/[0.14] text-primary'
                             : 'text-outline-variant'
                         }`}
                       >
@@ -386,7 +386,7 @@ export default function Targets() {
                     ))}
                   </div>
 
-                  <div className="mt-auto flex flex-col items-center justify-center rounded-lg bg-surface-container-low p-sm pt-sm">
+                  <div className="mt-auto flex flex-col items-center justify-center rounded-lg glass-chip p-sm pt-sm">
                     <span className="text-[12px] font-semibold uppercase tracking-wider text-on-surface-variant">
                       {t('targets.totalCalories')}
                     </span>

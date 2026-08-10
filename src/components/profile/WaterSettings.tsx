@@ -6,7 +6,7 @@ import { Spinner } from '@/components/ui/Spinner'
 import { volumeForDisplay, volumeToMl, volumeUnit } from '@/lib/water'
 
 const inputClass =
-  'h-[48px] w-full rounded-lg border border-outline-variant bg-surface px-4 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60'
+  'h-[48px] w-full rounded-[16px] glass-field px-4 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60'
 
 /**
  * The daily hydration goal.

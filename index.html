@@ -36,12 +36,12 @@
 
       It carries an id because vite-plugin-pwa appends a second theme-color meta
       at the end of <head>, built from the manifest's `theme_color` (the brand
-      teal, which is the *install* color: the PWA title bar and task switcher).
+      violet, which is the *install* color: the PWA title bar and task switcher).
       A user agent uses the first matching tag, so this one governs the running
       document — but everything that writes it must target the id, or it would
       be a coin flip which of the two it found.
     -->
-    <meta id="app-theme-color" name="theme-color" content="#f8f9ff" />
+    <meta id="app-theme-color" name="theme-color" content="#f7f7fb" />
     <!--
       Theme, before the first paint.
 
@@ -64,7 +64,7 @@
           document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
           document
             .getElementById('app-theme-color')
-            .setAttribute('content', dark ? '#17223a' : '#f8f9ff')
+            .setAttribute('content', dark ? '#0c0c14' : '#f7f7fb')
         } catch (e) {
           /* No storage or no matchMedia: light, which is the markup default. */
         }

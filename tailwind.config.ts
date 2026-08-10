@@ -1,8 +1,12 @@
 import type { Config } from 'tailwindcss'
 
 /**
- * Theme ported verbatim from the Google Stitch export
- * (design/stitch_macrotrack_health_dashboard) + DESIGN.md.
+ * Theme for the Liquid Glass build.
+ *
+ * The scale — typography, spacing, the Material 3 role names — still comes from
+ * the Google Stitch export (design/stitch_macrotrack_health_dashboard) +
+ * DESIGN.md. The palette does not: the system tint is violet rather than teal,
+ * and the macro accents are the iOS set. Those values live in src/index.css.
  *
  * The macro accent colors (carbs/protein/fats) are hardcoded as literals
  * throughout the export; we promote them to named tokens so they're used
@@ -78,6 +82,8 @@ export default {
         'inverse-surface': token('inverse-surface'),
         'inverse-on-surface': token('inverse-on-surface'),
         'inverse-primary': token('inverse-primary'),
+        /** On-track green for the weight trend — see --success in index.css. */
+        success: token('success'),
 
         // Macro + hydration accents (data visualization only)
         carbs: { DEFAULT: token('carbs'), text: token('carbs-text'), tint: token('carbs-tint') },
@@ -93,6 +99,14 @@ export default {
         // Tailwind defaults already match the export (DEFAULT .25 / lg .5 / xl .75).
         // Cards in DESIGN.md use 1.5rem (24px).
         '2xl': '1.5rem',
+        // Glass radii. A lens is rounder than a Material card — the highlight
+        // has to travel around the corner for the edge to read as thick, and a
+        // tight radius clips it into a hard miter. `row` is the lens-in-a-lens,
+        // `lens` a card, `chrome` the floating bars (a true pill at their
+        // height, so the rail and tab bar cap out rather than superellipse).
+        row: '18px',
+        lens: '28px',
+        chrome: '33px',
       },
       spacing: {
         base: '4px',
@@ -116,9 +130,15 @@ export default {
         'safe-left': 'var(--safe-left, 0px)',
         'safe-right': 'var(--safe-right, 0px)',
         // The fixed chrome heights plus their inset, for the <main> offsets.
+        // The bars float now — the tab bar is a 66px pill sitting 16px off the
+        // bottom, and the FAB stacks directly above it rather than sitting
+        // beside a full-width bar. `bottomnav` clears the taller of the two:
+        // the FAB's top edge at 154px, not the pill's at 82px, which is what
+        // used to leave the last row of a list sitting under the button.
         'topbar': 'calc(72px + var(--safe-top, 0px))',
-        'bottomnav': 'calc(80px + var(--safe-bottom, 0px))',
-        'fab': 'calc(88px + var(--safe-bottom, 0px))',
+        'bottomnav': 'calc(160px + var(--safe-bottom, 0px))',
+        'chrome-inset': 'calc(16px + var(--safe-bottom, 0px))',
+        'fab': 'calc(98px + var(--safe-bottom, 0px))',
         'container-margin-desktop': '40px',
       },
       fontFamily: {
@@ -149,6 +169,9 @@ export default {
         'card-hover': 'var(--shadow-card-hover)',
         sidebar: 'var(--shadow-sidebar)',
         bottomnav: 'var(--shadow-bottomnav)',
+        sheet: 'var(--shadow-sheet)',
+        /** The violet CTA's own-colour lift. See --shadow-accent. */
+        accent: 'var(--shadow-accent)',
       },
       scale: {
         '98': '0.98',

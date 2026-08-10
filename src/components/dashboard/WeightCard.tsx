@@ -6,6 +6,7 @@ import { saveWeight } from '@/lib/weights'
 import { ewma, robustTrendPerDay, type SeriesPoint } from '@/lib/trend'
 import { weightForDisplay, weightToKg, weightUnit } from '@/lib/units'
 import { todayISO } from '@/lib/date'
+import type { GoalDirection } from '@/lib/database.types'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { TrendChart } from '@/components/ui/TrendChart'
@@ -38,6 +39,23 @@ const TREND_TINT = 'rgb(var(--trend-dot))'
 const FLAT_BAND_KG_PER_WEEK = 0.1
 
 /**
+ * Readings needed before the chart is drawn at all.
+ *
+ * Below this there is no line to draw — one point plots as a dot floating in an
+ * empty frame, and a range switch under it offers to re-scale nothing. The card
+ * shows a placeholder that says so instead, and the same threshold gates the
+ * rate text, so the chart and the number appear together or not at all.
+ */
+const MIN_READINGS_FOR_CHART = 3
+
+/** Which way the scale has to move for each stated goal to be on track. */
+const GOAL_MOVES: Record<GoalDirection, 'up' | 'down' | 'flat'> = {
+  lose: 'down',
+  gain: 'up',
+  maintain: 'flat',
+}
+
+/**
  * Today's weigh-in plus the trend it feeds.
  *
  * The raw scale reading is shown as dots and the EWMA as the line, because the
@@ -47,7 +65,7 @@ const FLAT_BAND_KG_PER_WEEK = 0.1
  */
 export function WeightCard() {
   const { t } = useI18n()
-  const { unitSystem } = useProfile()
+  const { profile, unitSystem } = useProfile()
   const [rangeDays, setRangeDays] = useState<number>(90)
   const [version, setVersion] = useState(0)
   const { logs, loading, error } = useWeightLogs(rangeDays, version)
@@ -98,23 +116,41 @@ export function WeightCard() {
 
   // Under about a week of readings the slope is noise dressed up as a trend,
   // so say so rather than showing a confident number that will flip tomorrow.
-  const trendReady = perWeek != null && raw.length >= 3
+  const chartReady = raw.length >= MIN_READINGS_FOR_CHART
+  const trendReady = perWeek != null && chartReady
+  const rangeLabelKey = RANGES.find((r) => r.days === rangeDays)!.labelKey
+  // perWeek is in display units, so the band has to be converted too —
+  // comparing pounds against a kilogram constant would make the band twice as
+  // tight for imperial users.
+  const flat =
+    trendReady && Math.abs(perWeek) < weightForDisplay(FLAT_BAND_KG_PER_WEEK, unitSystem)
+  const direction = !trendReady || flat ? 'flat' : perWeek > 0 ? 'up' : 'down'
   const trendText = !trendReady
     ? t('weight.trendPending')
-    : // perWeek is in display units, so the band has to be converted too —
-      // comparing pounds against a kilogram constant would make the band
-      // twice as tight for imperial users.
-      Math.abs(perWeek) < weightForDisplay(FLAT_BAND_KG_PER_WEEK, unitSystem)
+    : flat
       ? t('weight.trendFlat')
       : perWeek > 0
         ? t('weight.trendUp', { value: formatRate(perWeek), unit })
         : t('weight.trendDown', { value: formatRate(Math.abs(perWeek)), unit })
 
+  // Green means "going the way you asked for", not "going down". The design
+  // colours a loss green, which is right for the common case and wrong for
+  // anyone bulking — and the profile already records which they are, so there
+  // is no need to guess. No goal set means no opinion: neutral, and the arrow
+  // still carries the direction.
+  const goal = profile?.goal_direction ?? null
+  const onTrack = goal != null && GOAL_MOVES[goal] === direction
+  const rateTone = onTrack ? 'text-success' : 'text-on-surface-variant'
+  const rateIcon =
+    direction === 'flat' ? 'trending_flat' : direction === 'down' ? 'arrow_downward' : 'arrow_upward'
+
   return (
-    <div className="flex flex-col gap-md rounded-2xl bg-surface-container-lowest p-lg shadow-card">
-      <div className="flex items-center justify-between gap-md">
+    <div className="flex flex-col gap-md rounded-lens p-lg glass">
+      <div className="flex items-start justify-between gap-md">
         <h3 className="flex items-center gap-2 font-headline-md text-headline-md text-on-surface">
-          <Icon name="monitor_weight" className="text-[22px] text-on-surface-variant" />
+          <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-primary-tint/[0.14] text-primary">
+            <Icon name="monitor_weight" className="text-[18px]" />
+          </span>
           {t('weight.title')}
         </h3>
         {latest && (
@@ -122,38 +158,53 @@ export function WeightCard() {
             <span className="block font-label-md text-label-md text-on-surface-variant">
               {t('weight.latest')}
             </span>
-            <span className="font-headline-md text-headline-md text-on-surface">
+            {/* nowrap: "220.5 lb" folds after the number in the narrow right
+                column, which reads as two separate figures. */}
+            <span className="whitespace-nowrap font-headline-md text-headline-md text-on-surface">
               {formatWeight(latest.value)} {unit}
             </span>
           </div>
         )}
       </div>
 
-      {/* Today's entry */}
+      {/* Today's entry. The unit rides inside the field rather than labelling
+          it from outside: it is the one thing you need to know before typing,
+          and at this width an external label costs a whole row. */}
       <div className="flex items-center gap-sm">
-        <input
-          type="number"
-          inputMode="decimal"
-          min={0}
-          step={0.1}
-          aria-label={t('weight.inputAria', { unit })}
-          placeholder={t('weight.todayLabel')}
-          className="h-[48px] w-full rounded-lg border border-outline-variant bg-surface px-4 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
-          value={draft}
-          disabled={saving}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault()
-              handleSave()
-            }
-          }}
-        />
+        <div className="relative flex-1">
+          <input
+            type="number"
+            inputMode="decimal"
+            min={0}
+            step={0.1}
+            aria-label={t('weight.inputAria', { unit })}
+            placeholder={t('weight.todayLabel')}
+            className="h-[48px] w-full rounded-full glass-field pl-4 pr-12 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
+            value={draft}
+            disabled={saving}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                handleSave()
+              }
+            }}
+          />
+          {/* aria-hidden and click-through: the accessible name already carries
+              the unit, and a label that swallowed taps aimed at the field's
+              right edge would be worse than no label. */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 font-label-md text-label-md text-on-surface-variant"
+          >
+            {unit}
+          </span>
+        </div>
         <button
           type="button"
           onClick={handleSave}
           disabled={saving || draft.trim() === ''}
-          className="flex h-[48px] shrink-0 items-center gap-2 rounded-full bg-primary px-lg font-label-md text-label-md text-on-primary transition-all hover:bg-primary-hover active:scale-95 disabled:opacity-40"
+          className="flex h-[48px] shrink-0 items-center gap-2 rounded-full px-lg font-label-md text-label-md transition-all hover:brightness-105 active:scale-95 disabled:opacity-40 grad-primary"
         >
           {saving ? <Spinner className="h-4 w-4" /> : null}
           {justSaved ? t('weight.saved') : t('weight.save')}
@@ -175,48 +226,94 @@ export function WeightCard() {
         <div className="flex justify-center py-lg">
           <Spinner className="h-5 w-5 text-primary" />
         </div>
-      ) : raw.length === 0 ? (
-        <div className="flex flex-col items-center gap-xs py-lg text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-surface-variant">
-            <Icon name="monitor_weight" className="text-[24px] text-on-surface-variant" />
-          </div>
-          <p className="font-body-md text-body-md text-on-surface-variant">{t('weight.empty')}</p>
-          <p className="font-label-md text-label-md text-outline">{t('weight.emptyHint')}</p>
-        </div>
       ) : (
         <>
-          <TrendChart
-            trend={trend}
-            raw={raw}
-            color={TREND_COLOR}
-            tint={TREND_TINT}
-            label={t('weight.chartAria', { days: rangeDays })}
-            height={120}
-          />
+          {/* The rate reads as a status line of its own now that the range
+              switch has moved below the chart, so it carries the direction as
+              an arrow and names the window it was measured over — otherwise
+              "down 0.3 a week" says nothing about 30 days versus a year. */}
+          {trendReady && (
+            <p className={`flex items-center gap-1.5 font-label-md text-label-md ${rateTone}`}>
+              <Icon name={rateIcon} className="shrink-0 text-[16px]" />
+              <span>{trendText}</span>
+              <span className="text-on-surface-variant">· {t(rangeLabelKey)}</span>
+            </p>
+          )}
 
-          <div className="flex items-center justify-between gap-md">
-            <p className="font-label-md text-label-md text-on-surface-variant">{trendText}</p>
-            <div
-              role="group"
-              aria-label={t('weight.rangeAria')}
-              className="flex shrink-0 gap-1 rounded-full bg-surface-container-low p-1"
-            >
-              {RANGES.map((r) => (
-                <button
-                  key={r.days}
-                  type="button"
-                  aria-pressed={rangeDays === r.days}
-                  onClick={() => setRangeDays(r.days)}
-                  className={`rounded-full px-3 py-1 font-label-md text-label-md transition-colors ${
-                    rangeDays === r.days
-                      ? 'bg-primary text-on-primary'
-                      : 'text-on-surface-variant hover:bg-surface-container-high'
-                  }`}
-                >
-                  {t(r.labelKey)}
-                </button>
-              ))}
+          {chartReady ? (
+            <TrendChart
+              trend={trend}
+              raw={raw}
+              color={TREND_COLOR}
+              tint={TREND_TINT}
+              label={t('weight.chartAria', { days: rangeDays })}
+              height={120}
+            />
+          ) : (
+            /* Too few readings to draw a line. A chart frame holding one dot
+               looks like a chart that failed to load, so the placeholder says
+               plainly what is missing — and mimics the line it is standing in
+               for: a dashed baseline with the readings so far sitting on it. */
+            <div className="flex items-center gap-md rounded-[22px] border border-dashed border-outline-variant p-md">
+              <div aria-hidden className="relative h-[38px] w-[76px] shrink-0">
+                <div
+                  className="absolute inset-x-0 top-1/2 h-px"
+                  style={{
+                    background:
+                      'repeating-linear-gradient(90deg, rgb(var(--outline)) 0 5px, transparent 5px 10px)',
+                  }}
+                />
+                {raw.length === 0 ? (
+                  <div className="absolute left-2 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-outline-variant" />
+                ) : (
+                  raw.slice(-2).map((p, i) => (
+                    <div
+                      key={p.date}
+                      className="absolute top-1/2 h-[9px] w-[9px] -translate-y-1/2 rounded-full bg-primary ring-4 ring-primary/20"
+                      style={{ left: 8 + i * 28 }}
+                    />
+                  ))
+                )}
+              </div>
+              <div className="min-w-0">
+                <p className="font-label-md text-label-md text-on-surface">
+                  {raw.length === 0
+                    ? t('weight.empty')
+                    : t(raw.length === 1 ? 'weight.readingsSoFarOne' : 'weight.readingsSoFarOther', {
+                        count: raw.length,
+                      })}
+                </p>
+                <p className="mt-0.5 font-body-md text-sm text-on-surface-variant">
+                  {raw.length === 0 ? t('weight.emptyHint') : t('weight.trendPending')}
+                </p>
+              </div>
             </div>
+          )}
+
+          {/* Present but inert below the threshold: hiding it would make the
+              card jump a row the moment a third reading lands, and it is the
+              clearest signal that a chart belongs here once there is one. */}
+          <div
+            role="group"
+            aria-label={t('weight.rangeAria')}
+            className={`flex gap-1 rounded-full glass-chip p-1 ${chartReady ? '' : 'opacity-45'}`}
+          >
+            {RANGES.map((r) => (
+              <button
+                key={r.days}
+                type="button"
+                aria-pressed={rangeDays === r.days}
+                disabled={!chartReady}
+                onClick={() => setRangeDays(r.days)}
+                className={`flex-1 rounded-full px-3 py-1.5 font-label-md text-label-md transition-colors disabled:cursor-not-allowed ${
+                  rangeDays === r.days
+                    ? 'bg-primary text-on-primary'
+                    : 'text-on-surface-variant enabled:hover:bg-[color:var(--glass-chip-hover)]'
+                }`}
+              >
+                {t(r.labelKey)}
+              </button>
+            ))}
           </div>
         </>
       )}

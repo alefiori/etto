@@ -77,7 +77,7 @@ export default function Profile() {
         {t('profile.title')}
       </h2>
 
-      <div className="flex flex-col gap-lg rounded-2xl bg-surface-container-lowest p-lg shadow-card">
+      <div className="flex flex-col gap-lg rounded-lens p-lg glass">
         <div className="flex items-center gap-md">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-container text-on-primary-container">
             <Icon name="person" className="text-3xl" />
@@ -111,7 +111,7 @@ export default function Profile() {
           <div
             role="radiogroup"
             aria-label={t('profile.appearanceLabel')}
-            className="flex gap-1 rounded-full bg-surface-container-low p-1"
+            className="flex gap-1 rounded-full glass-chip p-1"
           >
             {THEME_PREFERENCES.map((option) => {
               const active = themePreference === option
@@ -125,7 +125,7 @@ export default function Profile() {
                   className={`flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 font-label-md text-label-md transition-colors ${
                     active
                       ? 'bg-primary text-on-primary'
-                      : 'text-on-surface-variant hover:bg-surface-container-high'
+                      : 'text-on-surface-variant hover:bg-[color:var(--glass-chip-hover)]'
                   }`}
                 >
                   <Icon name={APPEARANCE_ICON[option]} className="text-[18px]" />
@@ -165,7 +165,7 @@ export default function Profile() {
               value={locale}
               disabled={profileLoading || savingLang}
               onChange={(e) => handleLanguageChange(e.target.value as Locale)}
-              className="h-[48px] w-full appearance-none rounded-lg border border-outline-variant bg-surface px-4 pr-10 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
+              className="h-[48px] w-full appearance-none rounded-[16px] glass-field px-4 pr-10 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
             >
               {LOCALES.map((l) => (
                 <option key={l.code} value={l.code}>
@@ -216,7 +216,7 @@ export default function Profile() {
         {isAnonymous ? (
           <button
             onClick={() => navigate('/signin')}
-            className="flex min-h-[48px] items-center justify-center gap-sm rounded-full bg-secondary-container font-label-md text-label-md text-on-secondary-container transition-all hover:opacity-90 active:scale-95"
+            className="flex min-h-[48px] items-center justify-center gap-sm rounded-full font-label-md text-label-md text-on-surface transition-all hover:brightness-[1.06] glass-field active:scale-95"
           >
             <Icon name="login" className="text-[20px]" />
             {t('auth.signInAction')}

@@ -53,7 +53,7 @@ export function ConfirmDialog({
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-end justify-center bg-black/30 p-0 backdrop-blur-[4px] dark:bg-black/60 sm:items-center sm:p-lg"
+      className="fixed inset-0 z-[80] flex items-end justify-center p-0 glass-scrim sm:items-center sm:p-lg"
       role="alertdialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -63,7 +63,7 @@ export function ConfirmDialog({
     >
       {/* The sheet stays flush with the bottom edge and clears the home
           indicator with padding, so its actions are not half under it. */}
-      <div className="flex w-full flex-col gap-md rounded-t-2xl bg-surface-container-lowest p-lg pb-[calc(theme(spacing.lg)+theme(spacing.safe-bottom))] shadow-card sm:max-w-md sm:rounded-2xl sm:pb-lg">
+      <div className="flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(theme(spacing.lg)+theme(spacing.safe-bottom))] shadow-sheet sm:max-w-md sm:rounded-lens sm:pb-lg glass-sheet">
         <h2 id={titleId} className="font-headline-md text-headline-md text-on-surface">
           {title}
         </h2>
@@ -72,7 +72,7 @@ export function ConfirmDialog({
           <button
             onClick={onCancel}
             disabled={busy}
-            className="rounded-full px-4 py-2 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-surface-container-high disabled:opacity-40"
+            className="rounded-full px-4 py-2 font-label-md text-label-md text-on-surface-variant transition-colors hover:glass-chip disabled:opacity-40"
           >
             {cancelLabel ?? t('common.cancel')}
           </button>
