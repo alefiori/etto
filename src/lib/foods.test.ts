@@ -14,6 +14,13 @@ const h = vi.hoisted(() => {
 
 vi.mock('@/lib/supabase', () => ({
   supabase: { auth: h.auth, from: h.from },
+  // currentUserId lives beside the client now, and reads through the same
+  // mocked auth, so the tests' getUser fixtures still drive it.
+  currentUserId: async () => {
+    const { data, error } = await h.auth.getUser()
+    if (error || !data.user) throw new Error('Not authenticated.')
+    return data.user.id
+  },
 }))
 
 import {

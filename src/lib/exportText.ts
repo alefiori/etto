@@ -6,6 +6,7 @@
 import { MACROS, isBuiltInMealKey, type BuiltInMealKey, type MealKey } from '@/lib/constants'
 import { caloriesForServings, round, scaleMacros, sumMacros } from '@/lib/macros'
 import { formatLong } from '@/lib/date'
+import { isNativePlatform } from './platform'
 import type { TranslationKey } from '@/lib/i18n'
 import type { FoodLogWithFood } from '@/lib/database.types'
 
@@ -105,8 +106,6 @@ export function formatDayText(
     totalNames,
   ].join('\n')
 }
-
-import { isNativePlatform } from './platform'
 
 export type ShareOutcome = 'shared' | 'copied' | 'dismissed'
 

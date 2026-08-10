@@ -58,7 +58,10 @@ export default defineConfig(({ mode }) => ({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      // import.meta.dirname, not __dirname: Vite 8's native config loader has
+      // no CommonJS wrapper to provide the latter, and warns that it is going
+      // to become the default.
+      '@': path.resolve(import.meta.dirname, './src'),
     },
   },
 }))

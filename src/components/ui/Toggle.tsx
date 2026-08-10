@@ -29,13 +29,13 @@ export function Toggle({
       aria-describedby={describedBy}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-[28px] w-[48px] shrink-0 items-center rounded-full transition-colors disabled:opacity-40 ${
+      className={`relative inline-flex h-[28px] w-2xl shrink-0 items-center rounded-full transition-colors disabled:opacity-40 ${
         checked ? 'bg-primary' : 'bg-outline-variant'
       }`}
     >
       <span
-        className={`inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-sm transition-transform dark:bg-on-surface ${
-          checked ? 'translate-x-[24px]' : 'translate-x-[4px]'
+        className={`inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-xs transition-transform dark:bg-on-surface ${
+          checked ? 'translate-x-lg' : 'translate-x-[4px]'
         }`}
       />
     </button>

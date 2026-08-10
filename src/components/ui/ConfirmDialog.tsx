@@ -53,7 +53,7 @@ export function ConfirmDialog({
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-end justify-center p-0 glass-scrim sm:items-center sm:p-lg"
+      className="fixed inset-0 z-80 flex items-end justify-center p-0 glass-scrim sm:items-center sm:p-lg"
       role="alertdialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -63,7 +63,7 @@ export function ConfirmDialog({
     >
       {/* The sheet stays flush with the bottom edge and clears the home
           indicator with padding, so its actions are not half under it. */}
-      <div className="flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(theme(spacing.lg)+theme(spacing.safe-bottom))] shadow-sheet sm:max-w-md sm:rounded-lens sm:pb-lg glass-sheet">
+      <div className="flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(var(--spacing-lg)+(var(--spacing-safe-bottom)))] shadow-sheet sm:max-w-[28rem] sm:rounded-lens sm:pb-lg glass-sheet">
         <h2 id={titleId} className="font-headline-md text-headline-md text-on-surface">
           {title}
         </h2>

@@ -61,7 +61,7 @@ export function sumMacros(items: MacroGrams[]): MacroGrams {
 
 /** Remaining grams toward a target; never negative. */
 export function remaining(target: number, consumed: number): number {
-  return Math.max(0, round(target - consumed));
+  return Math.max(0, round(target - consumed))
 }
 
 /** Convert per-100g macro values to a given serving size in grams. */

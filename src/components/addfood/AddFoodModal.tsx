@@ -3,12 +3,6 @@ import { Modal } from '@/components/ui/Modal'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { SourceTag } from '@/components/ui/SourceTag'
-
-// Lazy-loaded so the barcode-scanning library (ZXing) stays out of the initial
-// bundle and is only fetched when the user actually opens the scanner.
-const BarcodeScanner = lazy(() =>
-  import('@/components/addfood/BarcodeScanner').then((m) => ({ default: m.BarcodeScanner })),
-)
 import { useFoodSearch, type SearchResult } from '@/hooks/useFoodSearch'
 import { useAppShell } from '@/context/AppShellContext'
 import { useAuth } from '@/context/AuthContext'
@@ -23,6 +17,12 @@ import { lookupBarcode } from '@/lib/foodApi'
 import { formatWeekday } from '@/lib/date'
 import { SOURCE_ICONS } from '@/lib/foodSources'
 import type { FoodSource } from '@/lib/database.types'
+
+// Lazy-loaded so the barcode-scanning library (ZXing) stays out of the initial
+// bundle and is only fetched when the user actually opens the scanner.
+const BarcodeScanner = lazy(() =>
+  import('@/components/addfood/BarcodeScanner').then((m) => ({ default: m.BarcodeScanner })),
+)
 
 interface NormalizedFood extends MacroGrams {
   name: string
@@ -89,6 +89,11 @@ export function AddFoodModal({
       setLookingUp(false)
       setLookupMsg(null)
     }
+    // `meals` is read but deliberately not a dependency: it is only the seed for
+    // the initial meal, and re-running this when the list changes would wipe a
+    // query the user is part-way through typing. The effect below covers the
+    // case this leaves open — meals arriving after the modal is already up.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, initialMeal])
 
   // The meals may still be loading when the modal opens — pick the first one as
@@ -195,7 +200,7 @@ export function AddFoodModal({
         {scanning && (
           <Suspense
             fallback={
-              <div className="absolute inset-0 z-[70] flex items-center justify-center bg-black text-white">
+              <div className="absolute inset-0 z-70 flex items-center justify-center bg-black text-white">
                 <Spinner className="h-6 w-6" />
               </div>
             }
@@ -235,7 +240,7 @@ export function AddFoodModal({
                 onChange={(e) => setQuery(e.target.value)}
                 aria-label={t('addFood.searchAria')}
                 placeholder={t('addFood.searchPlaceholder')}
-                className="h-[48px] w-full rounded-[16px] glass-field pl-[40px] pr-4 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
+                className="h-2xl w-full rounded-[16px] glass-field pl-container-margin-desktop pr-4 font-body-md text-body-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
               />
               {loading && <Spinner className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />}
             </div>
@@ -245,7 +250,7 @@ export function AddFoodModal({
                 setLookupMsg(null)
                 setScanning(true)
               }}
-              className="mt-sm flex w-full items-center justify-center gap-2 rounded-[16px] glass-field py-3 font-label-md text-label-md text-on-surface transition-colors hover:bg-[color:var(--glass-chip-hover)]"
+              className="mt-sm flex w-full items-center justify-center gap-2 rounded-[16px] glass-field py-3 font-label-md text-label-md text-on-surface transition-colors hover:bg-(--glass-chip-hover)"
             >
               <Icon name="barcode_scanner" />
               {t('addFood.scanBarcode')}
@@ -298,7 +303,7 @@ export function AddFoodModal({
             )}
 
             {results.length > 0 && (
-              <div className="sticky top-0 z-10 mb-xs flex items-center justify-between bg-[color:var(--glass-chrome-bg)] py-sm backdrop-blur-xl">
+              <div className="sticky top-0 z-10 mb-xs flex items-center justify-between bg-(--glass-chrome-bg) py-sm backdrop-blur-xl">
                 <h3 className="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">
                   {t('addFood.results')}
                 </h3>
@@ -325,7 +330,7 @@ export function AddFoodModal({
                     className={`flex items-center justify-between gap-sm rounded-xl border p-md text-left transition-colors ${
                       isSelected
                         ? 'border-primary/20 bg-primary-tint/10'
-                        : 'border-transparent hover:bg-[color:var(--glass-chip)]'
+                        : 'border-transparent hover:bg-(--glass-chip)'
                     }`}
                   >
                     <div className="flex min-w-0 items-center gap-md">
@@ -380,7 +385,7 @@ export function AddFoodModal({
           <div className="border-t border-surface-variant p-md">
             <button
               onClick={() => goCreateCustom()}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-tint/[0.12] py-3 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/20"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-tint/12 py-3 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/20"
             >
               <Icon name="add_circle" />
               {t('addFood.createCustomFood')}
@@ -390,7 +395,7 @@ export function AddFoodModal({
 
         {/* Detail / log panel — takes over the sheet on mobile when selected */}
         <section
-          className={`min-h-0 w-full flex-1 flex-col border-[color:var(--glass-row-border)] lg:flex lg:w-[400px] lg:flex-none lg:border-l ${
+          className={`min-h-0 w-full flex-1 flex-col border-(--glass-row-border) lg:flex lg:w-[400px] lg:flex-none lg:border-l ${
             selected ? 'flex' : 'hidden lg:flex'
           }`}
         >
@@ -483,14 +488,14 @@ export function AddFoodModal({
                       value={amount}
                       onChange={(e) => setAmount(Math.max(0, parseFloat(e.target.value) || 0))}
                       onFocus={(e) => e.target.select()}
-                      className="h-[48px] flex-1 rounded-[16px] glass-field px-4 text-center font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                      className="h-2xl flex-1 rounded-[16px] glass-field px-4 text-center font-body-md text-body-md text-on-surface outline-hidden focus:border-primary focus:ring-1 focus:ring-primary"
                     />
                     <select
                       aria-label={t('addFood.unit')}
                       value={amountUnit}
                       onChange={(e) => setAmountUnit(e.target.value)}
                       disabled={unitOptions.length <= 1}
-                      className="h-[48px] rounded-[16px] glass-field px-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-70"
+                      className="h-2xl rounded-[16px] glass-field px-3 font-body-md text-body-md text-on-surface outline-hidden focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-70"
                     >
                       {unitOptions.map((u) => (
                         <option key={u} value={u}>

@@ -64,7 +64,6 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     return () => {
       signal.cancelled = true
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading])
 
   return (

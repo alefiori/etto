@@ -89,7 +89,7 @@ export function FoodEntrySheet({
 
   return (
     <div
-      className="animate-overlay-fade-in fixed inset-0 z-[80] flex items-end justify-center p-0 glass-scrim sm:items-center sm:p-lg"
+      className="animate-overlay-fade-in fixed inset-0 z-80 flex items-end justify-center p-0 glass-scrim sm:items-center sm:p-lg"
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -97,7 +97,7 @@ export function FoodEntrySheet({
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <div className="animate-sheet-up flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(theme(spacing.lg)+theme(spacing.safe-bottom))] shadow-sheet sm:max-w-md sm:rounded-lens sm:pb-lg glass-sheet">
+      <div className="animate-sheet-up flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(var(--spacing-lg)+(var(--spacing-safe-bottom)))] shadow-sheet sm:max-w-[28rem] sm:rounded-lens sm:pb-lg glass-sheet">
         {/* Grab handle — the phone-only affordance for a sheet you can dismiss. */}
         <div className="mx-auto -mt-2 h-1 w-9 shrink-0 rounded-full bg-outline-variant sm:hidden" />
 
@@ -135,11 +135,11 @@ export function FoodEntrySheet({
               onClick={() => setAmount((a) => Math.max(0, round(a - step, 2)))}
               disabled={amount <= 0}
               aria-label={t('foodInfo.decrease')}
-              className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[18px] text-primary transition-transform active:scale-95 disabled:opacity-40 glass-field"
+              className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-row text-primary transition-transform active:scale-95 disabled:opacity-40 glass-field"
             >
               <Icon name="remove" className="text-2xl" />
             </button>
-            <div className="flex h-[52px] flex-1 items-center justify-center gap-1 rounded-[18px] glass-field">
+            <div className="flex h-[52px] flex-1 items-center justify-center gap-1 rounded-row glass-field">
               <input
                 type="number"
                 inputMode="decimal"
@@ -149,14 +149,14 @@ export function FoodEntrySheet({
                 onChange={(e) => setAmount(Math.max(0, parseFloat(e.target.value) || 0))}
                 onFocus={(e) => e.target.select()}
                 aria-label={t('dashboard.amountInUnit', { unit })}
-                className="w-20 border-0 bg-transparent text-right text-[26px] font-bold text-on-surface outline-none"
+                className="w-20 border-0 bg-transparent text-right text-[26px] font-bold text-on-surface outline-hidden"
               />
               <span className="font-label-md text-body-md text-on-surface-variant">{unit}</span>
             </div>
             <button
               onClick={() => setAmount((a) => round(a + step, 2))}
               aria-label={t('foodInfo.increase')}
-              className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[18px] text-primary transition-transform active:scale-95 glass-field"
+              className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-row text-primary transition-transform active:scale-95 glass-field"
             >
               <Icon name="add" className="text-2xl" />
             </button>

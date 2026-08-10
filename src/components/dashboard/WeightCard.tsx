@@ -179,7 +179,7 @@ export function WeightCard() {
             step={0.1}
             aria-label={t('weight.inputAria', { unit })}
             placeholder={t('weight.todayLabel')}
-            className="h-[48px] w-full rounded-full glass-field pl-4 pr-12 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
+            className="h-2xl w-full rounded-full glass-field pl-4 pr-12 font-body-md text-body-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
             value={draft}
             disabled={saving}
             onChange={(e) => setDraft(e.target.value)}
@@ -204,7 +204,7 @@ export function WeightCard() {
           type="button"
           onClick={handleSave}
           disabled={saving || draft.trim() === ''}
-          className="flex h-[48px] shrink-0 items-center gap-2 rounded-full px-lg font-label-md text-label-md transition-all hover:brightness-105 active:scale-95 disabled:opacity-40 grad-primary"
+          className="flex h-2xl shrink-0 items-center gap-2 rounded-full px-lg font-label-md text-label-md transition-all hover:brightness-105 active:scale-95 disabled:opacity-40 grad-primary"
         >
           {saving ? <Spinner className="h-4 w-4" /> : null}
           {justSaved ? t('weight.saved') : t('weight.save')}
@@ -308,7 +308,7 @@ export function WeightCard() {
                 className={`flex-1 rounded-full px-3 py-1.5 font-label-md text-label-md transition-colors disabled:cursor-not-allowed ${
                   rangeDays === r.days
                     ? 'bg-primary text-on-primary'
-                    : 'text-on-surface-variant enabled:hover:bg-[color:var(--glass-chip-hover)]'
+                    : 'text-on-surface-variant enabled:hover:bg-(--glass-chip-hover)'
                 }`}
               >
                 {t(r.labelKey)}

@@ -75,7 +75,7 @@ export function DeleteAccount() {
       <button
         type="button"
         onClick={() => setConfirming(true)}
-        className="flex min-h-[48px] items-center justify-center gap-sm self-start rounded-full border border-error px-4 font-label-md text-label-md text-error transition-colors hover:bg-error-container/40"
+        className="flex min-h-2xl items-center justify-center gap-sm self-start rounded-full border border-error px-4 font-label-md text-label-md text-error transition-colors hover:bg-error-container/40"
       >
         <Icon name="delete_forever" className="text-[20px]" />
         {t('profile.deleteAccount')}

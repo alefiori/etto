@@ -7,7 +7,7 @@ import { Spinner } from '@/components/ui/Spinner'
 import { LanguagePicker } from '@/components/ui/LanguagePicker'
 
 const inputClass =
-  'w-full min-h-[48px] rounded-[16px] glass-field px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/70 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors'
+  'w-full min-h-2xl rounded-[16px] glass-field px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/70 focus:border-primary focus:ring-1 focus:ring-primary outline-hidden transition-colors'
 
 export default function ForgotPassword() {
   const { resetPassword } = useAuth()
@@ -35,8 +35,8 @@ export default function ForgotPassword() {
   return (
     // Insets and self-scrolling as in AuthPage — this route has no chrome of
     // its own either.
-    <div className="relative h-[100dvh] overflow-y-auto pb-safe-bottom pl-safe-left pr-safe-right pt-safe-top antialiased">
-      <div className="pointer-events-none fixed left-0 top-0 -z-10 h-[512px] w-full bg-gradient-to-b from-surface-container to-background" />
+    <div className="relative h-dvh overflow-y-auto pb-safe-bottom pl-safe-left pr-safe-right pt-safe-top antialiased">
+      <div className="pointer-events-none fixed left-0 top-0 -z-10 h-[512px] w-full bg-linear-to-b from-surface-container to-background" />
 
       <main className="relative z-10 flex min-h-full w-full items-center justify-center p-container-margin-mobile md:p-container-margin-desktop">
         <div className="flex w-full max-w-[480px] flex-col gap-lg rounded-lens p-lg glass md:p-xl">
@@ -64,7 +64,7 @@ export default function ForgotPassword() {
               <button
                 type="button"
                 onClick={() => navigate('/signin')}
-                className="flex min-h-[48px] w-full items-center justify-center rounded-full font-label-md text-label-md transition-all hover:brightness-105 active:scale-[0.98] grad-primary"
+                className="flex min-h-2xl w-full items-center justify-center rounded-full font-label-md text-label-md transition-all hover:brightness-105 active:scale-[0.98] grad-primary"
               >
                 {t('forgotPassword.backToSignIn')}
               </button>
@@ -94,7 +94,7 @@ export default function ForgotPassword() {
               <button
                 type="submit"
                 disabled={busy}
-                className="mt-sm flex min-h-[48px] w-full items-center justify-center gap-sm rounded-full font-label-md text-label-md transition-all hover:brightness-105 active:scale-[0.98] disabled:opacity-60 grad-primary"
+                className="mt-sm flex min-h-2xl w-full items-center justify-center gap-sm rounded-full font-label-md text-label-md transition-all hover:brightness-105 active:scale-[0.98] disabled:opacity-60 grad-primary"
               >
                 {busy ? <Spinner className="h-4 w-4" /> : t('forgotPassword.sendResetLink')}
               </button>

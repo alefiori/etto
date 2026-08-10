@@ -78,7 +78,7 @@ export function FoodRow({
 
   const rowRef = useRef<HTMLButtonElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
-  const pressTimer = useRef<ReturnType<typeof setTimeout>>()
+  const pressTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const pressOrigin = useRef({ x: 0, y: 0 })
   const longPressFired = useRef(false)
 
@@ -150,7 +150,7 @@ export function FoodRow({
   return (
     // Lifting the whole row above the page while its menu is open is what puts
     // it in front of the scrim; the scrim is a plain sibling underneath it.
-    <div className={`relative ${menuOpen ? 'z-[60]' : ''}`}>
+    <div className={`relative ${menuOpen ? 'z-60' : ''}`}>
       {menuOpen && (
         <div
           aria-hidden="true"
@@ -227,7 +227,7 @@ export function FoodRow({
           ref={menuRef}
           role="menu"
           aria-label={menuLabel}
-          className={`animate-menu-pop absolute left-2 z-20 w-[232px] divide-y divide-[color:var(--glass-row-border)] overflow-hidden rounded-lens shadow-card-hover glass ${
+          className={`animate-menu-pop absolute left-2 z-20 w-[232px] divide-y divide-(--glass-row-border) overflow-hidden rounded-lens shadow-card-hover glass ${
             menuAbove ? 'bottom-full mb-sm origin-bottom-left' : 'top-full mt-sm origin-top-left'
           }`}
         >
@@ -271,7 +271,7 @@ function MenuItem({
       className={`flex w-full items-center justify-between gap-sm px-md py-3 text-left font-body-md text-body-md transition-colors ${
         destructive
           ? 'text-error hover:bg-error-container/60'
-          : 'text-on-surface hover:bg-[color:var(--glass-chip-hover)]'
+          : 'text-on-surface hover:bg-(--glass-chip-hover)'
       }`}
     >
       {label}
@@ -281,7 +281,7 @@ function MenuItem({
 }
 
 /** Dominant-macro color for the leading dot; outline-variant when there is none. */
-export function dominantColor(m: MacroGrams): string {
+function dominantColor(m: MacroGrams): string {
   const entries = MACROS.map((meta) => ({ meta, val: m[meta.field] }))
   entries.sort((a, b) => b.val - a.val)
   return entries[0].val > 0 ? entries[0].meta.color : 'rgb(var(--outline-variant))'

@@ -229,7 +229,7 @@ export default function Targets() {
       {/* Page header */}
       {/* `top-0` is relative to <main>, which already offsets the fixed mobile
           top bar — an extra 72px here would pin the header over the first card. */}
-      <div className="sticky top-0 z-20 flex flex-col justify-between gap-xs bg-[color:var(--glass-chrome-bg)] px-container-margin-mobile py-lg backdrop-blur-[24px] backdrop-saturate-[1.8] md:flex-row md:items-end md:gap-md lg:px-container-margin-desktop lg:py-xl">
+      <div className="sticky top-0 z-20 flex flex-col justify-between gap-xs bg-(--glass-chrome-bg) px-container-margin-mobile py-lg backdrop-blur-xl backdrop-saturate-[1.8] md:flex-row md:items-end md:gap-md lg:px-container-margin-desktop lg:py-xl">
         <div>
           <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface lg:font-headline-lg lg:text-headline-lg">
             {t('targets.title')}
@@ -241,7 +241,7 @@ export default function Targets() {
         <div
           role="status"
           aria-live="polite"
-          className="flex min-h-[24px] shrink-0 items-center gap-xs font-label-md text-label-md text-on-surface-variant md:pb-1"
+          className="flex min-h-lg shrink-0 items-center gap-xs font-label-md text-label-md text-on-surface-variant md:pb-1"
         >
           {status === 'saving' && (
             <>
@@ -264,7 +264,7 @@ export default function Targets() {
               <span className="text-error">{saveError ?? t('targets.couldNotSave')}</span>
               <button
                 onClick={flushNow}
-                className="rounded-full px-sm py-1 font-label-md text-label-md text-primary underline transition-colors hover:bg-[color:var(--glass-chip-hover)]"
+                className="rounded-full px-sm py-1 font-label-md text-label-md text-primary underline transition-colors hover:bg-(--glass-chip-hover)"
               >
                 {t('targets.retry')}
               </button>
@@ -287,7 +287,7 @@ export default function Targets() {
         )}
 
         {copied !== null && (
-          <div className="mb-md flex items-center justify-between gap-sm rounded-lens border border-primary/30 bg-primary-tint/[0.12] p-md shadow-card backdrop-blur-xl">
+          <div className="mb-md flex items-center justify-between gap-sm rounded-lens border border-primary/30 bg-primary-tint/12 p-md shadow-card backdrop-blur-xl">
             <div className="flex min-w-0 items-center gap-sm text-on-surface">
               <Icon name="content_paste" className="shrink-0 text-primary" />
               <p className="truncate font-body-md text-body-md">
@@ -297,7 +297,7 @@ export default function Targets() {
             <button
               onClick={() => setCopied(null)}
               aria-label={t('targets.clearCopiedDay')}
-              className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip-hover)]"
+              className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
             >
               <Icon name="close" className="text-sm" />
             </button>
@@ -380,7 +380,7 @@ export default function Targets() {
                           value={v[m.field] || ''}
                           disabled={adaptive}
                           onChange={(e) => setField(dow, m.field, e.target.value)}
-                          className="h-[48px] w-full rounded-lg border border-outline-variant/50 bg-surface px-md text-right font-body-md text-body-md text-on-surface outline-none transition-all placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+                          className="h-2xl w-full rounded-lg border border-outline-variant/50 bg-surface px-md text-right font-body-md text-body-md text-on-surface outline-hidden transition-all placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
                         />
                       </div>
                     ))}

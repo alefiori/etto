@@ -61,7 +61,7 @@ export default function Dashboard() {
   const [pastingMeal, setPastingMeal] = useState<MealKey | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
-  const noticeTimer = useRef<ReturnType<typeof setTimeout>>()
+  const noticeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   useEffect(() => () => clearTimeout(noticeTimer.current), [])
 
@@ -163,7 +163,7 @@ export default function Dashboard() {
           <button
             onClick={() => handleShare(formatDayText(logs, selectedDate, locale, t, meals))}
             disabled={logsLoading || logs.length === 0}
-            className="flex items-center gap-xs rounded-full px-3 py-2 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip-hover)] disabled:cursor-not-allowed disabled:opacity-40 glass-chip"
+            className="flex items-center gap-xs rounded-full px-3 py-2 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) disabled:cursor-not-allowed disabled:opacity-40 glass-chip"
             aria-label={t('dashboard.shareDayAria')}
             title={t('dashboard.shareDayAria')}
           >
@@ -173,7 +173,7 @@ export default function Dashboard() {
           <button
             onClick={() => copyDay(selectedDate, logs.length)}
             disabled={logsLoading || logs.length === 0}
-            className="flex items-center gap-xs rounded-full px-3 py-2 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip-hover)] disabled:cursor-not-allowed disabled:opacity-40 glass-chip"
+            className="flex items-center gap-xs rounded-full px-3 py-2 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) disabled:cursor-not-allowed disabled:opacity-40 glass-chip"
             aria-label={t('dashboard.copyDayAria')}
             title={t('dashboard.copyDayAria')}
           >
@@ -183,7 +183,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-sm rounded-full p-1 glass-chip">
             <button
               onClick={() => setSelectedDate(addDays(selectedDate, -1))}
-              className="flex items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip-hover)]"
+              className="flex items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
               aria-label={t('dashboard.previousDay')}
             >
               <Icon name="chevron_left" />
@@ -196,7 +196,7 @@ export default function Dashboard() {
             </button>
             <button
               onClick={() => setSelectedDate(addDays(selectedDate, 1))}
-              className="flex items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip-hover)]"
+              className="flex items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
               aria-label={t('dashboard.nextDay')}
             >
               <Icon name="chevron_right" />
@@ -209,7 +209,7 @@ export default function Dashboard() {
           dismiss button, so growing the target doesn't grow the banner. */}
       {clipboard && (
         <div
-          className={`flex gap-sm rounded-lens border border-primary/30 bg-primary-tint/[0.12] py-3 pl-md pr-3 shadow-card backdrop-blur-xl ${
+          className={`flex gap-sm rounded-lens border border-primary/30 bg-primary-tint/12 py-3 pl-md pr-3 shadow-card backdrop-blur-xl ${
             clipboard.kind === 'day'
               ? 'flex-col sm:flex-row sm:items-center sm:justify-between'
               : 'items-center justify-between'
@@ -263,7 +263,7 @@ export default function Dashboard() {
             )}
             <button
               onClick={clearClipboard}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip-hover)]"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
               aria-label={t(CLEAR_ARIA[clipboard.kind])}
             >
               <Icon name="close" className="text-[18px]" />
@@ -468,7 +468,7 @@ export default function Dashboard() {
                     </span>
                   </ProgressRing>
                 </div>
-                <div className="relative z-10 flex items-center justify-between rounded-[20px] border border-white/25 bg-white/[0.16] p-md backdrop-blur-sm">
+                <div className="relative z-10 flex items-center justify-between rounded-[20px] border border-white/25 bg-white/16 p-md backdrop-blur-xs">
                   <div className="text-center">
                     <span className="block text-sm opacity-85">{t('dashboard.goal')}</span>
                     <span className="font-label-md text-label-md">
@@ -530,7 +530,7 @@ function MealCard({
 
   return (
     <div className={`rounded-lens p-md md:p-lg glass ${empty ? 'border-dashed border-outline' : ''}`}>
-      <div className="mb-md flex items-center justify-between gap-sm border-b border-[color:var(--glass-row-border)] pb-sm">
+      <div className="mb-md flex items-center justify-between gap-sm border-b border-(--glass-row-border) pb-sm">
         <div className="flex min-w-0 items-center gap-sm">
           <span
             className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
@@ -571,7 +571,7 @@ function MealCard({
             <div className="flex items-center gap-0.5">
               <button
                 onClick={onShare}
-                className="flex h-10 w-10 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip-hover)] hover:text-primary"
+                className="flex h-10 w-10 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) hover:text-primary"
                 aria-label={t('dashboard.shareMealAria', { meal: label })}
                 title={t('dashboard.shareMealAria', { meal: label })}
               >
@@ -579,7 +579,7 @@ function MealCard({
               </button>
               <button
                 onClick={onCopy}
-                className="flex h-10 w-10 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip-hover)] hover:text-primary"
+                className="flex h-10 w-10 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) hover:text-primary"
                 aria-label={t('dashboard.copyMealAria', { meal: label })}
                 title={t('dashboard.copyMealAria', { meal: label })}
               >
@@ -619,7 +619,7 @@ function MealCard({
           ))}
           <button
             onClick={onAdd}
-            className="mt-sm flex w-full items-center justify-center gap-xs rounded-row py-2.5 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/[0.12]"
+            className="mt-sm flex w-full items-center justify-center gap-xs rounded-row py-2.5 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/12"
           >
             <Icon name="add_circle" className="text-sm" /> {t('dashboard.addMealItem', { meal: label })}
           </button>

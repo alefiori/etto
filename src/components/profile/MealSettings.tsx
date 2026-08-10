@@ -7,7 +7,7 @@ import { Spinner, LoadingBlock } from '@/components/ui/Spinner'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 
 const inputClass =
-  'min-h-[44px] w-full rounded-[16px] glass-field px-3 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60'
+  'min-h-[44px] w-full rounded-[16px] glass-field px-3 font-body-md text-body-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60'
 
 /**
  * Meal management: rename meals, add or remove them, and reorder them. Meals

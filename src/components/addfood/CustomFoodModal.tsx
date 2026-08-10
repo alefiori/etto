@@ -18,7 +18,7 @@ import {
 } from '@/lib/foods'
 
 const fieldClass =
-  'w-full min-h-[48px] rounded-[16px] glass-field px-4 py-3 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors'
+  'w-full min-h-2xl rounded-[16px] glass-field px-4 py-3 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-hidden transition-colors'
 
 /**
  * Create or edit a custom food, as a sheet over whatever you were doing.
@@ -123,6 +123,10 @@ export function CustomFoodModal({
     return () => {
       cancelled = true
     }
+    // Keyed on foodId alone. `t` is used only for the error fallback, and its
+    // identity changes with the locale — including it would re-fetch the food
+    // every time the user switches language.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [foodId])
 
   const macros = useMemo(
@@ -185,7 +189,7 @@ export function CustomFoodModal({
 
   return (
     <div
-      className="animate-overlay-fade-in fixed inset-0 z-[70] flex items-end justify-center p-0 glass-scrim sm:items-center sm:p-lg"
+      className="animate-overlay-fade-in fixed inset-0 z-70 flex items-end justify-center p-0 glass-scrim sm:items-center sm:p-lg"
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -193,7 +197,7 @@ export function CustomFoodModal({
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <div className="animate-sheet-up flex max-h-[92dvh] w-full flex-col rounded-t-[36px] shadow-sheet sm:max-h-[88vh] sm:max-w-lg sm:rounded-lens glass-sheet">
+      <div className="animate-sheet-up flex max-h-[92dvh] w-full flex-col rounded-t-[36px] shadow-sheet sm:max-h-[88vh] sm:max-w-[32rem] sm:rounded-lens glass-sheet">
         {/* Header — pinned, so the sheet always says what it is. */}
         <div className="flex shrink-0 flex-col gap-md p-lg pb-md">
           {/* Grab handle — the phone-only affordance for a sheet you can dismiss. */}
@@ -321,7 +325,7 @@ export function CustomFoodModal({
                 </div>
               </div>
 
-              <hr className="border-[color:var(--glass-row-border)]" />
+              <hr className="border-(--glass-row-border)" />
 
               <div className="flex flex-col gap-md">
                 <div className="flex items-end justify-between gap-sm">
@@ -361,7 +365,7 @@ export function CustomFoodModal({
                         value={valueOf[m.field]}
                         onChange={(e) => setters[m.field](e.target.value)}
                         onFocus={(e) => e.target.value === '0' && e.target.select()}
-                        className="min-h-[48px] w-full rounded-[16px] glass-field px-4 py-3 font-body-md text-body-md text-on-surface outline-none transition-colors"
+                        className="min-h-2xl w-full rounded-[16px] glass-field px-4 py-3 font-body-md text-body-md text-on-surface outline-hidden transition-colors"
                         style={{ caretColor: m.color }}
                       />
                     </div>
@@ -394,12 +398,12 @@ export function CustomFoodModal({
             </form>
 
             {/* Actions — pinned, so they never scroll away under a thumb. */}
-            <div className="flex shrink-0 flex-col gap-sm border-t border-[color:var(--glass-row-border)] p-lg pb-[calc(theme(spacing.lg)+theme(spacing.safe-bottom))] sm:flex-row sm:pb-lg">
+            <div className="flex shrink-0 flex-col gap-sm border-t border-(--glass-row-border) p-lg pb-[calc(var(--spacing-lg)+(var(--spacing-safe-bottom)))] sm:flex-row sm:pb-lg">
               <button
                 type="button"
                 onClick={() => save(false)}
                 disabled={busy}
-                className="flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-full font-label-md text-label-md font-semibold transition-all hover:brightness-105 active:scale-95 disabled:opacity-60 grad-primary"
+                className="flex min-h-2xl flex-1 items-center justify-center gap-2 rounded-full font-label-md text-label-md font-semibold transition-all hover:brightness-105 active:scale-95 disabled:opacity-60 grad-primary"
               >
                 {busy ? <Spinner className="h-4 w-4" /> : <Icon name="save" className="text-[20px]" />}
                 {isEdit ? t('createFood.saveChanges') : t('createFood.saveFood')}
@@ -408,7 +412,7 @@ export function CustomFoodModal({
                 type="button"
                 onClick={() => save(true)}
                 disabled={busy}
-                className="flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-full bg-primary-tint/20 font-label-md text-label-md font-semibold text-primary transition-all hover:bg-primary-tint/30 active:scale-95 disabled:opacity-60"
+                className="flex min-h-2xl flex-1 items-center justify-center gap-2 rounded-full bg-primary-tint/20 font-label-md text-label-md font-semibold text-primary transition-all hover:bg-primary-tint/30 active:scale-95 disabled:opacity-60"
               >
                 <Icon name="add_task" className="text-[20px]" />
                 {t('createFood.saveAddToday')}

@@ -10,14 +10,8 @@
  * than appending a second reading.
  */
 
-import { supabase } from './supabase'
+import { currentUserId, supabase } from './supabase'
 import type { WeightLog } from './database.types'
-
-async function currentUserId(): Promise<string> {
-  const { data, error } = await supabase.auth.getUser()
-  if (error || !data.user) throw new Error('Not authenticated.')
-  return data.user.id
-}
 
 /**
  * Weigh-ins from `fromISO` to `toISO` inclusive, oldest first.
@@ -37,19 +31,6 @@ export async function fetchWeightLogs(fromISO: string, toISO: string): Promise<W
   return data ?? []
 }
 
-/** The most recent weigh-in, or null if the user has never logged one. */
-export async function fetchLatestWeight(): Promise<WeightLog | null> {
-  const { data, error } = await supabase
-    .from('weight_logs')
-    .select('*')
-    .order('log_date', { ascending: false })
-    .limit(1)
-    .maybeSingle()
-
-  if (error) throw new Error(error.message)
-  return data ?? null
-}
-
 /** Record (or correct) the weigh-in for a day. */
 export async function saveWeight(logDate: string, weightKg: number): Promise<WeightLog> {
   if (!(weightKg > 0)) throw new Error('Weight must be greater than zero.')
@@ -63,9 +44,4 @@ export async function saveWeight(logDate: string, weightKg: number): Promise<Wei
 
   if (error) throw new Error(error.message)
   return data
-}
-
-export async function deleteWeight(id: string): Promise<void> {
-  const { error } = await supabase.from('weight_logs').delete().eq('id', id)
-  if (error) throw new Error(error.message)
 }

@@ -23,3 +23,17 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: !isNativePlatform(),
   },
 })
+
+/**
+ * The signed-in user's id, for the `user_id` column on an insert.
+ *
+ * Reads and deletes never need this — RLS scopes them to the caller — but a row
+ * being written has to carry an owner, and the policies reject one that doesn't
+ * match the JWT. Throwing rather than returning null keeps every caller a
+ * straight `await`, since none of them can do anything useful without a user.
+ */
+export async function currentUserId(): Promise<string> {
+  const { data, error } = await supabase.auth.getUser()
+  if (error || !data.user) throw new Error('Not authenticated.')
+  return data.user.id
+}

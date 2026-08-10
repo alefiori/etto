@@ -33,6 +33,12 @@ const devices = {
 
 export default defineConfig({
   testDir: './store',
+  // Only the screenshot spec. Playwright's default testMatch also claims
+  // `*.test.mjs`, which in this directory means store/listings.test.mjs — a
+  // Vitest file. Playwright loads it, `describe` resolves to Vitest's, and the
+  // whole run dies at collection with "Cannot read properties of undefined
+  // (reading 'config')" before a single screenshot is taken.
+  testMatch: '**/*.spec.ts',
   // Sequential: the projects share one preview server, and parallel workers
   // racing on it produce the occasional half-rendered capture.
   workers: 1,

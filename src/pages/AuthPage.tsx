@@ -12,7 +12,7 @@ import { PRIVACY_URL, TERMS_URL } from '@/lib/legal'
 type Tab = 'signin' | 'signup'
 
 const inputClass =
-  'w-full min-h-[48px] rounded-[16px] glass-field px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/70 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors'
+  'w-full min-h-2xl rounded-[16px] glass-field px-md py-sm font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/70 focus:border-primary focus:ring-1 focus:ring-primary outline-hidden transition-colors'
 
 export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }) {
   const { session, user, isAnonymous, signIn, signUp, signInAnonymously, upgradeAccount } = useAuth()
@@ -124,9 +124,9 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
     // notch, and the page scrolls itself — the native iOS shell disables the
     // WebView's own scrolling, so a form taller than the screen would
     // otherwise have no way to reach its submit button.
-    <div className="relative h-[100dvh] overflow-y-auto pb-safe-bottom pl-safe-left pr-safe-right pt-safe-top antialiased">
+    <div className="relative h-dvh overflow-y-auto pb-safe-bottom pl-safe-left pr-safe-right pt-safe-top antialiased">
       {/* Ambient decorative background */}
-      <div className="pointer-events-none fixed left-0 top-0 -z-10 h-[512px] w-full bg-gradient-to-b from-surface-container to-background" />
+      <div className="pointer-events-none fixed left-0 top-0 -z-10 h-[512px] w-full bg-linear-to-b from-surface-container to-background" />
 
       <main className="relative z-10 flex min-h-full w-full items-center justify-center p-container-margin-mobile md:p-container-margin-desktop">
         <div className="flex w-full max-w-[480px] flex-col gap-lg rounded-lens p-lg glass md:p-xl">
@@ -213,14 +213,14 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
                   required
                   autoComplete={tab === 'signin' ? 'current-password' : 'new-password'}
                   placeholder={tab === 'signin' ? '••••••••' : t('auth.createPasswordPlaceholder')}
-                  className={`${inputClass} pr-[48px]`}
+                  className={`${inputClass} pr-2xl`}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-0 top-0 flex h-[48px] w-[48px] items-center justify-center text-on-surface-variant transition-colors hover:text-on-surface"
+                  className="absolute right-0 top-0 flex h-2xl w-2xl items-center justify-center text-on-surface-variant transition-colors hover:text-on-surface"
                   aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
                 >
                   <Icon name={showPassword ? 'visibility' : 'visibility_off'} />
@@ -247,7 +247,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
             )}
 
             {tab === 'signin' && (
-              <div className="mt-[-8px] flex justify-end">
+              <div className="-mt-sm flex justify-end">
                 <button
                   type="button"
                   onClick={() => navigate('/forgot-password')}
@@ -261,7 +261,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
             <button
               type="submit"
               disabled={busy}
-              className="mt-sm flex min-h-[48px] w-full items-center justify-center gap-sm rounded-full font-label-md text-label-md transition-all hover:brightness-105 active:scale-[0.98] disabled:opacity-60 grad-primary"
+              className="mt-sm flex min-h-2xl w-full items-center justify-center gap-sm rounded-full font-label-md text-label-md transition-all hover:brightness-105 active:scale-[0.98] disabled:opacity-60 grad-primary"
             >
               {busy ? (
                 <Spinner className="h-4 w-4" />
@@ -318,7 +318,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
             type="button"
             onClick={handleGuest}
             disabled={busy}
-            className="flex min-h-[48px] w-full items-center justify-center gap-sm rounded-[16px] glass-field font-label-md text-label-md text-on-surface transition-colors hover:glass-chip disabled:opacity-60"
+            className="flex min-h-2xl w-full items-center justify-center gap-sm rounded-[16px] glass-field font-label-md text-label-md text-on-surface transition-colors hover:glass-chip disabled:opacity-60"
           >
             <Icon name="person_outline" className="text-[18px]" />
             <span>{t('auth.continueAsGuest')}</span>

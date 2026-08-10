@@ -22,6 +22,8 @@
  * there is no account to attach the entitlement to.
  */
 
+import { isNativePlatform } from './platform'
+
 export type PlanId = 'monthly' | 'yearly' | 'lifetime'
 
 export interface Plan {
@@ -46,11 +48,14 @@ export const PLANS: Plan[] = [
 export type PurchaseOutcome = 'purchased' | 'cancelled' | 'unavailable'
 export type RestoreOutcome = 'restored' | 'nothing-to-restore' | 'unavailable'
 
-/** Whether this build can transact at all. False on the web. */
+/**
+ * Whether this build can transact at all. False on the web.
+ *
+ * Keyed on the platform rather than on a bundled SDK, which is what keeps the
+ * web build free of native imports.
+ */
 export function purchasesAvailable(): boolean {
-  // Capacitor injects this global in a native shell. Checking for it rather
-  // than for a bundled SDK keeps the web build free of native imports.
-  return typeof window !== 'undefined' && Boolean((window as { Capacitor?: unknown }).Capacitor)
+  return isNativePlatform()
 }
 
 export async function purchasePlan(_plan: Plan): Promise<PurchaseOutcome> {

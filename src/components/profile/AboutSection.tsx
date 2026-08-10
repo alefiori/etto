@@ -20,7 +20,7 @@ export function AboutSection() {
   const { t } = useI18n()
 
   const linkClass =
-    'flex min-h-[48px] items-center justify-between gap-sm rounded-lg px-2 font-body-md text-body-md text-on-surface transition-colors hover:bg-[color:var(--glass-chip-hover)]'
+    'flex min-h-2xl items-center justify-between gap-sm rounded-lg px-2 font-body-md text-body-md text-on-surface transition-colors hover:bg-(--glass-chip-hover)'
 
   return (
     <div className="flex flex-col gap-sm">

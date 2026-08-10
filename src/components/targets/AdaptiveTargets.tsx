@@ -78,7 +78,7 @@ export function AdaptiveTargets({
   }
 
   return (
-    <section className="flex flex-col gap-sm rounded-lens border border-primary/30 bg-primary-tint/[0.12] p-md shadow-card backdrop-blur-xl">
+    <section className="flex flex-col gap-sm rounded-lens border border-primary/30 bg-primary-tint/12 p-md shadow-card backdrop-blur-xl">
       <div className="flex items-start justify-between gap-md">
         <div className="min-w-0">
           <h3 className="flex items-center gap-2 font-headline-md text-headline-md text-on-surface">

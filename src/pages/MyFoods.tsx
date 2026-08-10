@@ -119,7 +119,7 @@ export default function MyFoods() {
         <button
           type="button"
           onClick={() => openCustomFood()}
-          className="settle flex h-[48px] items-center justify-center gap-sm rounded-full px-lg font-label-md text-label-md hover:brightness-105 active:scale-95 grad-primary"
+          className="settle flex h-2xl items-center justify-center gap-sm rounded-full px-lg font-label-md text-label-md hover:brightness-105 active:scale-95 grad-primary"
         >
           <Icon name="add" />
           {t('myFoods.createCustomFood')}
@@ -136,7 +136,7 @@ export default function MyFoods() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t('myFoods.filterPlaceholder')}
-          className="h-[48px] w-full rounded-lg border-none bg-transparent pl-[40px] pr-4 font-body-md text-body-md text-on-surface outline-none focus:ring-2 focus:ring-primary"
+          className="h-2xl w-full rounded-lg border-none bg-transparent pl-container-margin-desktop pr-4 font-body-md text-body-md text-on-surface outline-hidden focus:ring-2 focus:ring-primary"
         />
       </div>
 

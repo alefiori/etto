@@ -21,7 +21,7 @@ export function Toast({ message, icon = 'check_circle' }: { message: string | nu
     <div
       role="status"
       aria-live="polite"
-      className="animate-overlay-fade-in fixed bottom-[calc(theme(spacing.fab)-16px)] left-container-margin-mobile right-container-margin-mobile z-[70] flex items-center gap-sm rounded-2xl bg-inverse-surface px-md py-sm font-label-md text-label-md text-inverse-on-surface shadow-card md:bottom-lg md:left-auto md:right-lg md:max-w-sm"
+      className="animate-overlay-fade-in fixed bottom-[calc(var(--spacing-fab)-16px)] left-container-margin-mobile right-container-margin-mobile z-70 flex items-center gap-sm rounded-2xl bg-inverse-surface px-md py-sm font-label-md text-label-md text-inverse-on-surface shadow-card md:bottom-lg md:left-auto md:right-lg md:max-w-[24rem]"
     >
       <Icon name={icon} className="shrink-0 text-sm" />
       {message}

@@ -57,15 +57,6 @@ export interface MacroMeta {
 }
 
 /**
- * Macro accent colors, used consistently everywhere (rings, dots, inputs).
- *
- * These are `rgb(var(--…))` references rather than literals because the accents
- * are brightened for the dark scheme (see src/index.css) and every consumer
- * feeds them to an inline `style` or an SVG paint, where a Tailwind `dark:`
- * class cannot reach. Resolving through the variable means the swap is pure
- * CSS: no theme hook to thread through, and no React re-render on the flip.
- */
-/**
  * The unfilled part of every progress ring, macro or hydration.
  *
  * Neutral rather than a wash of the ring's own accent: a tinted track reads as
@@ -75,6 +66,15 @@ export interface MacroMeta {
  */
 export const RING_TRACK = 'rgb(var(--ring-track))'
 
+/**
+ * Macro accent colors, used consistently everywhere (rings, dots, inputs).
+ *
+ * These are `rgb(var(--…))` references rather than literals because the accents
+ * are brightened for the dark scheme (see src/index.css) and every consumer
+ * feeds them to an inline `style` or an SVG paint, where a Tailwind `dark:`
+ * class cannot reach. Resolving through the variable means the swap is pure
+ * CSS: no theme hook to thread through, and no React re-render on the flip.
+ */
 export const MACROS: MacroMeta[] = [
   {
     key: 'carbs',
@@ -103,10 +103,6 @@ export const MACROS: MacroMeta[] = [
 ]
 
 /**
- * Order used in the weekly-targets grid (Mon → Sun), with day_of_week index.
- * Labels come from the i18n catalog under `weekday.short.*`, never from here.
- */
-/**
  * Hydration accent. Deliberately cyan rather than the protein blue in MACROS —
  * two rings side by side in the same blue would read as the same metric.
  */
@@ -116,6 +112,10 @@ export const WATER_COLOR = {
   tint: 'rgb(var(--water-tint))',
 } as const
 
+/**
+ * Order used in the weekly-targets grid (Mon → Sun), with day_of_week index.
+ * Labels come from the i18n catalog under `weekday.short.*`, never from here.
+ */
 export const TARGET_DAYS: { dow: number }[] = [
   { dow: 1 },
   { dow: 2 },

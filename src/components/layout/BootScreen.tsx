@@ -28,7 +28,7 @@ export function BootScreen({ label }: { label: string }) {
       // The aurora is painted on <body> and shows through: the icon's violet
       // glow needs something to fall on, and a flat page under it would make
       // the shadow read as a smudge.
-      className="flex min-h-[100dvh] flex-col items-center justify-center gap-lg px-lg py-2xl"
+      className="flex min-h-dvh flex-col items-center justify-center gap-lg px-lg py-2xl"
     >
       {/* Two files rather than one recoloured icon: the dark variant darkens
           the ring tracks and lightens the accents, which no filter can do. Both
@@ -74,7 +74,7 @@ export function BootScreen({ label }: { label: string }) {
         <div
           role="status"
           aria-label={label}
-          className="h-1 w-[120px] overflow-hidden rounded-full bg-[color:var(--glass-chip)]"
+          className="h-1 w-[120px] overflow-hidden rounded-full bg-(--glass-chip)"
         >
           <div
             aria-hidden
@@ -84,7 +84,7 @@ export function BootScreen({ label }: { label: string }) {
         </div>
         <span
           aria-hidden
-          className="font-label-md text-xs uppercase tracking-[0.1em] text-on-surface-variant"
+          className="font-label-md text-xs uppercase tracking-widest text-on-surface-variant"
         >
           {label}
         </span>

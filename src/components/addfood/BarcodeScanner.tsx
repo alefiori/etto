@@ -91,7 +91,7 @@ export function BarcodeScanner({
   }, [onDetected])
 
   return (
-    <div className="absolute inset-0 z-[70] flex flex-col bg-black">
+    <div className="absolute inset-0 z-70 flex flex-col bg-black">
       <header className="flex items-center justify-between gap-md p-md text-white">
         <h2 className="font-headline-md text-headline-md">{t('scanner.title')}</h2>
         <button
@@ -110,7 +110,7 @@ export function BarcodeScanner({
           <>
             {/* Reticle to guide aiming */}
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-              <div className="h-[28%] w-[78%] max-w-sm rounded-2xl border-2 border-white/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.45)]" />
+              <div className="h-[28%] w-[78%] max-w-[24rem] rounded-2xl border-2 border-white/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.45)]" />
             </div>
             <p className="absolute inset-x-0 bottom-6 text-center font-body-md text-body-md text-white/90">
               {t('scanner.pointCamera')}
@@ -128,7 +128,7 @@ export function BarcodeScanner({
         {status === 'error' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-md p-xl text-center text-white">
             <Icon name="videocam_off" className="text-4xl text-white/70" />
-            <p className="max-w-sm font-body-md text-body-md text-white/90">{errorKey && t(errorKey)}</p>
+            <p className="max-w-[24rem] font-body-md text-body-md text-white/90">{errorKey && t(errorKey)}</p>
             <button
               onClick={onClose}
               className="rounded-full bg-white px-5 py-2 font-label-md text-label-md font-semibold text-on-surface transition-colors hover:bg-white/90"

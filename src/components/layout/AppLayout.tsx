@@ -38,7 +38,7 @@ function Sidebar() {
     // wall beside it. Its width is unchanged at 280px: the inset comes from
     // `left`/`top`/`bottom`, not from the box, so the layout contract the
     // window-size tests assert on still holds.
-    <aside className="z-30 hidden h-[calc(100dvh-32px)] w-[280px] shrink-0 flex-col gap-md rounded-[36px] p-lg lg:fixed lg:bottom-4 lg:left-[calc(theme(spacing.4)+theme(spacing.safe-left))] lg:top-4 lg:flex glass-chrome">
+    <aside className="z-30 hidden h-[calc(100dvh-32px)] w-[280px] shrink-0 flex-col gap-md rounded-[36px] p-lg lg:fixed lg:bottom-4 lg:left-[calc(--spacing(4)+(var(--spacing-safe-left)))] lg:top-4 lg:flex glass-chrome">
       {/* Brand */}
       <div className="mb-xl flex items-center gap-md px-sm">
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl text-white grad-primary">
@@ -66,7 +66,7 @@ function Sidebar() {
               `settle flex items-center gap-md rounded-2xl px-md py-3 font-label-md text-label-md hover:translate-x-0.5 active:scale-98 ${
                 isActive
                   ? 'bg-primary-tint/[0.14] text-primary'
-                  : 'text-on-surface-variant hover:bg-[color:var(--glass-chip)]'
+                  : 'text-on-surface-variant hover:bg-(--glass-chip)'
               }`
             }
           >
@@ -101,7 +101,7 @@ function Sidebar() {
               onClick={() => navigate('/signin')}
               aria-label={t('auth.signInAction')}
               title={t('auth.signInAction')}
-              className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip-hover)] hover:text-on-surface"
+              className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) hover:text-on-surface"
             >
               <Icon name="login" className="text-[20px]" />
             </button>
@@ -150,7 +150,7 @@ function NavRail() {
 
   return (
     // Same 80px lane as before, floated off every edge and capped into a pill.
-    <aside className="fixed left-[calc(theme(spacing.3)+theme(spacing.safe-left))] top-[calc(theme(spacing.3)+theme(spacing.safe-top))] bottom-[calc(theme(spacing.3)+theme(spacing.safe-bottom))] z-30 hidden w-[80px] shrink-0 flex-col items-center gap-1 rounded-[40px] py-3 md:flex lg:hidden glass-chrome">
+    <aside className="fixed left-[calc(--spacing(3)+(var(--spacing-safe-left)))] top-[calc(--spacing(3)+(var(--spacing-safe-top)))] bottom-[calc(--spacing(3)+(var(--spacing-safe-bottom)))] z-30 hidden w-[80px] shrink-0 flex-col items-center gap-1 rounded-[40px] py-3 md:flex lg:hidden glass-chrome">
       <NavLink to="/" aria-label="MacroTrack" className="mb-1">
         <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-primary-tint/[0.14] text-primary">
           <Icon name="track_changes" fill className="text-[20px]" />
@@ -175,8 +175,8 @@ function NavRail() {
             className={({ isActive }) =>
               `settle flex w-[68px] flex-col items-center justify-center rounded-[20px] py-2 hover:translate-x-0.5 hover:scale-[1.04] active:scale-95 ${
                 isActive
-                  ? 'bg-primary-tint/[0.16] text-primary'
-                  : 'text-on-surface-variant hover:bg-[color:var(--glass-chip)]'
+                  ? 'bg-primary-tint/16 text-primary'
+                  : 'text-on-surface-variant hover:bg-(--glass-chip)'
               }`
             }
           >
@@ -216,18 +216,18 @@ function TopAppBar() {
     <nav className="fixed top-0 z-40 w-full md:hidden">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 backdrop-blur-[18px] backdrop-saturate-[1.7] [mask-image:linear-gradient(180deg,#000_58%,transparent)] [-webkit-mask-image:linear-gradient(180deg,#000_58%,transparent)]"
+        className="pointer-events-none absolute inset-0 backdrop-blur-[18px] backdrop-saturate-[1.7] mask-[linear-gradient(180deg,#000_58%,transparent)] [-webkit-mask-image:linear-gradient(180deg,#000_58%,transparent)]"
         style={{
           background:
             'linear-gradient(180deg, rgb(var(--surface) / 0.86), rgb(var(--surface) / 0))',
         }}
       />
-      <div className="relative flex items-center justify-between px-container-margin-mobile py-md pt-[calc(theme(spacing.md)+theme(spacing.safe-top))]">
+      <div className="relative flex items-center justify-between px-container-margin-mobile py-md pt-[calc(var(--spacing-md)+(var(--spacing-safe-top)))]">
         <h1 className="font-headline-md text-headline-md font-bold text-primary">MacroTrack</h1>
         <NavLink
           to="/profile"
           aria-label={t('nav.profile')}
-          className="settle rounded-full p-2 text-on-surface-variant hover:bg-[color:var(--glass-chip)] active:scale-95"
+          className="settle rounded-full p-2 text-on-surface-variant hover:bg-(--glass-chip) active:scale-95"
         >
           <Icon name="account_circle" />
         </NavLink>
@@ -256,8 +256,8 @@ function BottomNav() {
             // hover state is a state a finger can't leave.
             `settle flex flex-1 flex-col items-center justify-center rounded-[22px] py-1.5 active:scale-90 ${
               isActive
-                ? 'bg-primary-tint/[0.16] text-primary'
-                : 'text-on-surface-variant hover:bg-[color:var(--glass-chip)]'
+                ? 'bg-primary-tint/16 text-primary'
+                : 'text-on-surface-variant hover:bg-(--glass-chip)'
             }`
           }
         >
@@ -291,7 +291,7 @@ export default function AppLayout() {
   return (
     // No page colour of its own: the aurora is painted on <body> and the shell
     // has to let it through, or the lenses would be refracting a flat slab.
-    <div className="flex h-[100dvh] overflow-hidden text-on-surface antialiased">
+    <div className="flex h-dvh overflow-hidden text-on-surface antialiased">
       <Sidebar />
       <NavRail />
       <TopAppBar />

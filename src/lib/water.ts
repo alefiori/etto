@@ -9,7 +9,7 @@
  * there would silently change what people can log foods in.
  */
 
-import { supabase } from './supabase'
+import { currentUserId, supabase } from './supabase'
 import type { UnitSystem, WaterLog } from './database.types'
 
 /** US fluid ounce. The UK one is 28.4131 ml — this app follows US convention. */
@@ -70,12 +70,6 @@ export function totalMl(logs: WaterLog[]): number {
 // ---------------------------------------------------------------------------
 // Persistence
 // ---------------------------------------------------------------------------
-
-async function currentUserId(): Promise<string> {
-  const { data, error } = await supabase.auth.getUser()
-  if (error || !data.user) throw new Error('Not authenticated.')
-  return data.user.id
-}
 
 /** A day's drinks, oldest first. RLS scopes this to the caller. */
 export async function fetchWaterLogs(logDate: string): Promise<WaterLog[]> {

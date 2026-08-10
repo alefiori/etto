@@ -132,7 +132,7 @@ export function TrendChart({
           reads as lifted off the surface in the dark scheme. It pops last, as
           the line reaches it. */}
       <circle
-        className="animate-pop stroke-[color:rgb(var(--trend-dot))]"
+        className="animate-pop stroke-[rgb(var(--trend-dot))]"
         cx={geo.points[geo.points.length - 1].x}
         cy={geo.points[geo.points.length - 1].y}
         r={4}

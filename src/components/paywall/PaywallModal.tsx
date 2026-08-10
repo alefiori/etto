@@ -73,7 +73,7 @@ export function PaywallModal({ open, onClose }: { open: boolean; onClose: () => 
           type="button"
           onClick={onClose}
           aria-label={t('common.close')}
-          className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip-hover)]"
+          className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
         >
           <Icon name="close" />
         </button>

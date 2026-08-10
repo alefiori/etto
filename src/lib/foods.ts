@@ -1,12 +1,6 @@
-import { supabase } from './supabase'
+import { currentUserId, supabase } from './supabase'
 import type { Food, MealKey } from './database.types'
 import type { ExternalFood } from './foodSources'
-
-async function currentUserId(): Promise<string> {
-  const { data, error } = await supabase.auth.getUser()
-  if (error || !data.user) throw new Error('Not authenticated.')
-  return data.user.id
-}
 
 /**
  * Ensure an external food (Open Food Facts / USDA / Edamam) exists as a local

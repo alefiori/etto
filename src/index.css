@@ -1,8 +1,311 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-secondary-fixed-dim: #c4c7c9;
+  --color-on-tertiary-fixed: #141b2b;
+  --color-tertiary-fixed: #dce2f7;
+  --color-primary-fixed-dim: #6bd8cb;
+  --color-on-primary-fixed: #00201d;
+  --color-tertiary-fixed-dim: #c0c6db;
+  --color-secondary-fixed: #e0e3e5;
+  --color-on-secondary-fixed: #191c1e;
+  --color-on-tertiary-fixed-variant: #404758;
+  --color-on-secondary-fixed-variant: #444749;
+  --color-on-primary-fixed-variant: #005049;
+  --color-background: rgb(var(--background));
+  --color-surface: rgb(var(--surface));
+  --color-surface-bright: rgb(var(--surface-bright));
+  --color-surface-dim: rgb(var(--surface-dim));
+  --color-surface-container-lowest: rgb(var(--surface-container-lowest));
+  --color-surface-container-low: rgb(var(--surface-container-low));
+  --color-surface-container: rgb(var(--surface-container));
+  --color-surface-container-high: rgb(var(--surface-container-high));
+  --color-surface-container-highest: rgb(var(--surface-container-highest));
+  --color-surface-variant: rgb(var(--surface-variant));
+  --color-surface-tint: rgb(var(--surface-tint));
+  --color-on-background: rgb(var(--on-background));
+  --color-on-surface: rgb(var(--on-surface));
+  --color-on-surface-variant: rgb(var(--on-surface-variant));
+  --color-outline: rgb(var(--outline));
+  --color-outline-variant: rgb(var(--outline-variant));
+  --color-primary: rgb(var(--primary));
+  --color-on-primary: rgb(var(--on-primary));
+  --color-primary-container: rgb(var(--primary-container));
+  --color-on-primary-container: rgb(var(--on-primary-container));
+  --color-primary-hover: rgb(var(--primary-hover));
+  --color-primary-tint: rgb(var(--primary-tint));
+  --color-secondary: rgb(var(--secondary));
+  --color-on-secondary: rgb(var(--on-secondary));
+  --color-secondary-container: rgb(var(--secondary-container));
+  --color-on-secondary-container: rgb(var(--on-secondary-container));
+  --color-tertiary: rgb(var(--tertiary));
+  --color-on-tertiary: rgb(var(--on-tertiary));
+  --color-tertiary-container: rgb(var(--tertiary-container));
+  --color-on-tertiary-container: rgb(var(--on-tertiary-container));
+  --color-error: rgb(var(--error));
+  --color-on-error: rgb(var(--on-error));
+  --color-error-container: rgb(var(--error-container));
+  --color-on-error-container: rgb(var(--on-error-container));
+  --color-inverse-surface: rgb(var(--inverse-surface));
+  --color-inverse-on-surface: rgb(var(--inverse-on-surface));
+  --color-inverse-primary: rgb(var(--inverse-primary));
+  --color-success: rgb(var(--success));
+
+  --color-carbs: rgb(var(--carbs));
+  --color-carbs-text: rgb(var(--carbs-text));
+  --color-carbs-tint: rgb(var(--carbs-tint));
+
+  --color-protein: rgb(var(--protein));
+  --color-protein-text: rgb(var(--protein-text));
+  --color-protein-tint: rgb(var(--protein-tint));
+
+  --color-fats: rgb(var(--fats));
+  --color-fats-text: rgb(var(--fats-text));
+  --color-fats-tint: rgb(var(--fats-tint));
+
+  --color-water: rgb(var(--water));
+  --color-water-text: rgb(var(--water-text));
+  --color-water-tint: rgb(var(--water-tint));
+
+  --radius-2xl: 1.5rem;
+  --radius-row: 18px;
+  --radius-lens: 28px;
+  --radius-chrome: 33px;
+
+  /* The spacing scale.
+   *
+   * CAUTION: these t-shirt names collide with Tailwind's own container scale,
+   * and spacing wins. `max-w-md` resolves to `--spacing-md` (16px), not to the
+   * 28rem it means in a stock Tailwind project — declaring `--container-md`
+   * here does not change that, because the spacing namespace is consulted
+   * first. The same goes for `max-w-sm` and `max-w-lg`.
+   *
+   * So a container width is written out in full: `max-w-[28rem]`, not
+   * `max-w-md`. There are seven such sites (the bottom sheets, the toast, the
+   * scanner reticle). `max-w-5xl` is safe only because no `--spacing-5xl`
+   * exists to shadow it.
+   *
+   * Under Tailwind 3 this was not a conflict: `spacing` and `maxWidth` were
+   * separate scales, so `p-md` and `max-w-md` could not see each other. */
+  --spacing-base: 4px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-gutter: 16px;
+  --spacing-container-margin-mobile: 16px;
+  --spacing-safe-top: var(--safe-top, 0px);
+  --spacing-safe-bottom: var(--safe-bottom, 0px);
+  --spacing-safe-left: var(--safe-left, 0px);
+  --spacing-safe-right: var(--safe-right, 0px);
+  --spacing-topbar: calc(72px + var(--safe-top, 0px));
+  --spacing-bottomnav: calc(160px + var(--safe-bottom, 0px));
+  --spacing-chrome-inset: calc(16px + var(--safe-bottom, 0px));
+  --spacing-fab: calc(98px + var(--safe-bottom, 0px));
+  --spacing-container-margin-desktop: 40px;
+
+  --font-sans: Manrope, system-ui, sans-serif;
+  --font-body-lg: Manrope;
+  --font-body-md: Manrope;
+  --font-headline-lg: Manrope;
+  --font-headline-lg-mobile: Manrope;
+  --font-headline-md: Manrope;
+  --font-label-md: Manrope;
+  --font-data-display: Manrope;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-body-lg--font-weight: 400;
+  --text-body-md: 16px;
+  --text-body-md--line-height: 24px;
+  --text-body-md--font-weight: 400;
+  --text-label-md: 14px;
+  --text-label-md--line-height: 20px;
+  --text-label-md--letter-spacing: 0.05em;
+  --text-label-md--font-weight: 600;
+  --text-headline-md: 20px;
+  --text-headline-md--line-height: 28px;
+  --text-headline-md--font-weight: 600;
+  --text-headline-lg-mobile: 24px;
+  --text-headline-lg-mobile--line-height: 32px;
+  --text-headline-lg-mobile--letter-spacing: -0.01em;
+  --text-headline-lg-mobile--font-weight: 700;
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 40px;
+  --text-headline-lg--letter-spacing: -0.02em;
+  --text-headline-lg--font-weight: 700;
+  --text-data-display: 40px;
+  --text-data-display--line-height: 48px;
+  --text-data-display--letter-spacing: -0.03em;
+  --text-data-display--font-weight: 800;
+
+  --shadow-card: var(--shadow-card);
+  --shadow-card-hover: var(--shadow-card-hover);
+  --shadow-sidebar: var(--shadow-sidebar);
+  --shadow-bottomnav: var(--shadow-bottomnav);
+  --shadow-sheet: var(--shadow-sheet);
+  --shadow-accent: var(--shadow-accent);
+
+  --scale-98: 0.98;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 /* ---------------------------------------------------------------------------
+ * The glass lenses.
+ *
+ * Five classes cover every surface in the app, and they compose with the
+ * existing Tailwind utilities rather than replacing them: a card is
+ * `glass rounded-[28px] p-lg`, so radius, padding and layout stay where they
+ * were and only the *material* moves here. Each is a single class because the
+ * fill, the rim, the blur and the two inset highlights are one physical thing —
+ * split across four utilities they drift apart the first time one is edited.
+ *
+ * `position: relative` on the three blurred classes is load-bearing twice over:
+ * several cards float a blurred colour blob inside themselves, and it anchors
+ * the `::before` described next.
+ *
+ * WHY THE BLUR IS ON A PSEUDO-ELEMENT AND NOT ON THE CARD
+ *
+ * `backdrop-filter` does two things beyond blurring. It makes the element a
+ * stacking context, and — the expensive one — a *containing block for fixed
+ * descendants*. A meal card holds food rows, and a food row holds the entry
+ * sheet and the delete dialog, each of them `position: fixed; inset: 0`. Put
+ * the filter on the card and those overlays stop being page-level: they get
+ * laid out inside the card's box and painted at the card's depth, so a sheet
+ * lands inside its own meal and the meal below it draws on top of the Save
+ * button. That is not a styling nit — the dialog becomes unclickable.
+ *
+ * Moving the fill, the rim and the filter onto a `::before` fixes it at the
+ * root: the pseudo-element has no descendants to capture, and the card itself
+ * goes back to being an ordinary `position: relative` box with no stacking
+ * context. `z-index: -1` puts the layer behind the card's content but still in
+ * front of the page, and `border-radius: inherit` keeps it in the same shape.
+ *
+ * The consequence to remember: `--shadow-*` now carries only the cast shadow.
+ * The specular rim is `--glass-rim` and lives on the pseudo-element, because an
+ * inset shadow on the card would paint *under* the fill layer and vanish.
+ * ------------------------------------------------------------------------- */
+
+@utility glass {
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    box-shadow: var(--glass-rim);
+  }
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-card);
+  &::before {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+  }
+}
+
+@utility glass-chrome {
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    box-shadow: var(--glass-rim);
+  }
+
+  /* Floating chrome: the rail, the toolbars, the tab bar. Blurs harder and
+     casts further than a card because content passes *under* it. */
+  border: 1px solid var(--glass-chrome-border);
+  box-shadow: var(--shadow-bottomnav);
+  &::before {
+    background: var(--glass-chrome-bg);
+    backdrop-filter: var(--glass-chrome-blur);
+    -webkit-backdrop-filter: var(--glass-chrome-blur);
+  }
+}
+
+@utility glass-sheet {
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    box-shadow: var(--glass-rim);
+  }
+  border: 1px solid var(--glass-sheet-border);
+  box-shadow: var(--shadow-sheet);
+  &::before {
+    background: var(--glass-sheet-bg);
+    backdrop-filter: blur(36px) saturate(190%);
+    -webkit-backdrop-filter: blur(36px) saturate(190%);
+  }
+}
+
+@utility glass-row {
+  /* A lens inside a lens — a food row in a meal card, a result in the sheet.
+     No blur: see the note on --glass-row-bg. */
+  background: var(--glass-row-bg);
+  border: 1px solid var(--glass-row-border);
+}
+
+@utility glass-field {
+  /* Text inputs, selects and the read-only boxes that mimic them. */
+  background: var(--glass-field-bg);
+  border: 1px solid var(--glass-field-border);
+}
+
+@utility glass-chip {
+  /* The neutral pill: secondary toolbar buttons and segmented-control tracks. */
+  background: var(--glass-chip);
+}
+
+@utility grad-primary {
+  /* The filled primary action. A gradient rather than a flat `bg-primary`
+     because `--primary` is the accent *text* colour in both schemes, and in
+     dark it is far too light to carry white type. */
+  background-image: var(--grad-primary);
+  color: #fff;
+  box-shadow: var(--shadow-accent);
+  &:disabled {
+    box-shadow: none;
+  }
+}
+
+@utility glass-scrim {
+  /* The scrim behind a sheet or dialog. */
+  background: var(--glass-scrim);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+@layer utilities {
+  /* ---------------------------------------------------------------------------
  * Self-hosted fonts.
  *
  * These were on the Google Fonts CDN. They are local now because Icon.tsx
@@ -19,33 +322,37 @@
  * font-display: block on the icon font is deliberate: swap would show the
  * ligature text for the fallback period, which is the very failure being fixed.
  * ------------------------------------------------------------------------- */
-@font-face {
-  font-family: 'Manrope';
-  font-style: normal;
-  font-weight: 200 800;
-  font-display: swap;
-  src: url('/fonts/manrope-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
-    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
-    U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
+  @font-face {
+    font-family: 'Manrope';
+    font-style: normal;
+    font-weight: 200 800;
+    font-display: swap;
+    src: url('/fonts/manrope-latin-ext.woff2') format('woff2');
+    unicode-range:
+      U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+      U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+      U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  }
 
-@font-face {
-  font-family: 'Manrope';
-  font-style: normal;
-  font-weight: 200 800;
-  font-display: swap;
-  src: url('/fonts/manrope-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
-    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
+  @font-face {
+    font-family: 'Manrope';
+    font-style: normal;
+    font-weight: 200 800;
+    font-display: swap;
+    src: url('/fonts/manrope-latin.woff2') format('woff2');
+    unicode-range:
+      U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+      U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+      U+2212, U+2215, U+FEFF, U+FFFD;
+  }
 
-@font-face {
-  font-family: 'Material Symbols Outlined';
-  font-style: normal;
-  font-weight: 100 700;
-  font-display: block;
-  src: url('/fonts/material-symbols-outlined.woff2') format('woff2');
+  @font-face {
+    font-family: 'Material Symbols Outlined';
+    font-style: normal;
+    font-weight: 100 700;
+    font-display: block;
+    src: url('/fonts/material-symbols-outlined.woff2') format('woff2');
+  }
 }
 
 @layer base {
@@ -390,128 +697,6 @@
   select,
   textarea {
     font-size: 16px;
-  }
-}
-
-/* ---------------------------------------------------------------------------
- * The glass lenses.
- *
- * Five classes cover every surface in the app, and they compose with the
- * existing Tailwind utilities rather than replacing them: a card is
- * `glass rounded-[28px] p-lg`, so radius, padding and layout stay where they
- * were and only the *material* moves here. Each is a single class because the
- * fill, the rim, the blur and the two inset highlights are one physical thing —
- * split across four utilities they drift apart the first time one is edited.
- *
- * `position: relative` on the three blurred classes is load-bearing twice over:
- * several cards float a blurred colour blob inside themselves, and it anchors
- * the `::before` described next.
- *
- * WHY THE BLUR IS ON A PSEUDO-ELEMENT AND NOT ON THE CARD
- *
- * `backdrop-filter` does two things beyond blurring. It makes the element a
- * stacking context, and — the expensive one — a *containing block for fixed
- * descendants*. A meal card holds food rows, and a food row holds the entry
- * sheet and the delete dialog, each of them `position: fixed; inset: 0`. Put
- * the filter on the card and those overlays stop being page-level: they get
- * laid out inside the card's box and painted at the card's depth, so a sheet
- * lands inside its own meal and the meal below it draws on top of the Save
- * button. That is not a styling nit — the dialog becomes unclickable.
- *
- * Moving the fill, the rim and the filter onto a `::before` fixes it at the
- * root: the pseudo-element has no descendants to capture, and the card itself
- * goes back to being an ordinary `position: relative` box with no stacking
- * context. `z-index: -1` puts the layer behind the card's content but still in
- * front of the page, and `border-radius: inherit` keeps it in the same shape.
- *
- * The consequence to remember: `--shadow-*` now carries only the cast shadow.
- * The specular rim is `--glass-rim` and lives on the pseudo-element, because an
- * inset shadow on the card would paint *under* the fill layer and vanish.
- * ------------------------------------------------------------------------- */
-@layer components {
-  .glass,
-  .glass-chrome,
-  .glass-sheet {
-    position: relative;
-  }
-  .glass::before,
-  .glass-chrome::before,
-  .glass-sheet::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    box-shadow: var(--glass-rim);
-  }
-
-  .glass {
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-card);
-  }
-  .glass::before {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-  }
-
-  /* Floating chrome: the rail, the toolbars, the tab bar. Blurs harder and
-     casts further than a card because content passes *under* it. */
-  .glass-chrome {
-    border: 1px solid var(--glass-chrome-border);
-    box-shadow: var(--shadow-bottomnav);
-  }
-  .glass-chrome::before {
-    background: var(--glass-chrome-bg);
-    backdrop-filter: var(--glass-chrome-blur);
-    -webkit-backdrop-filter: var(--glass-chrome-blur);
-  }
-
-  .glass-sheet {
-    border: 1px solid var(--glass-sheet-border);
-    box-shadow: var(--shadow-sheet);
-  }
-  .glass-sheet::before {
-    background: var(--glass-sheet-bg);
-    backdrop-filter: blur(36px) saturate(190%);
-    -webkit-backdrop-filter: blur(36px) saturate(190%);
-  }
-
-  /* A lens inside a lens — a food row in a meal card, a result in the sheet.
-     No blur: see the note on --glass-row-bg. */
-  .glass-row {
-    background: var(--glass-row-bg);
-    border: 1px solid var(--glass-row-border);
-  }
-
-  /* Text inputs, selects and the read-only boxes that mimic them. */
-  .glass-field {
-    background: var(--glass-field-bg);
-    border: 1px solid var(--glass-field-border);
-  }
-
-  /* The neutral pill: secondary toolbar buttons and segmented-control tracks. */
-  .glass-chip {
-    background: var(--glass-chip);
-  }
-
-  /* The filled primary action. A gradient rather than a flat `bg-primary`
-     because `--primary` is the accent *text* colour in both schemes, and in
-     dark it is far too light to carry white type. */
-  .grad-primary {
-    background-image: var(--grad-primary);
-    color: #fff;
-    box-shadow: var(--shadow-accent);
-  }
-  .grad-primary:disabled {
-    box-shadow: none;
-  }
-
-  /* The scrim behind a sheet or dialog. */
-  .glass-scrim {
-    background: var(--glass-scrim);
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
   }
 }
 

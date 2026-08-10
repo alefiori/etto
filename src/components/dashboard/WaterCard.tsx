@@ -170,7 +170,7 @@ export function WaterCard() {
             disabled={busy}
             onClick={handleUndo}
             aria-label={t('water.undoAria')}
-            className="flex h-10 items-center gap-1 rounded-full px-3 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-[color:var(--glass-chip-hover)] disabled:opacity-40"
+            className="flex h-10 items-center gap-1 rounded-full px-3 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) disabled:opacity-40"
           >
             <Icon name="undo" className="text-[16px]" />
             {t('water.undo')}
@@ -185,7 +185,7 @@ export function WaterCard() {
           min={0}
           aria-label={t('water.customAria', { unit })}
           placeholder={unit}
-          className="h-[44px] w-full rounded-[16px] glass-field px-4 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
+          className="h-[44px] w-full rounded-[16px] glass-field px-4 font-body-md text-body-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
           value={custom}
           disabled={busy}
           onChange={(e) => setCustom(e.target.value)}

@@ -14,6 +14,30 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Errors fail the job; warnings do not. The React Compiler-era hook rules
+      # are deliberately warnings — see the reasoning in eslint.config.js.
+      - name: Run ESLint
+        run: npm run lint
+
+      # The compiler is the other half of the static checks, and the build job
+      # below only reaches it after bundling. Running it here fails faster.
+      - name: Typecheck
+        run: npm run typecheck
+
   build:
     name: Build
     runs-on: ubuntu-latest

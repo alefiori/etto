@@ -9,16 +9,6 @@
 import { supabase } from './supabase'
 import type { Subscription } from './database.types'
 
-/** Features gated behind Pro. Free keeps everything the app shipped with. */
-export type ProFeature = 'adaptive-targets' | 'weight-trends' | 'hydration-reminders' | 'export'
-
-export const PRO_FEATURES: ProFeature[] = [
-  'adaptive-targets',
-  'weight-trends',
-  'hydration-reminders',
-  'export',
-]
-
 /**
  * A null expiry means the entitlement never expires — that is how the lifetime
  * unlock is stored, so it must read as active rather than as long-expired.

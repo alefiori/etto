@@ -125,7 +125,7 @@ export default function Profile() {
                   className={`flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 font-label-md text-label-md transition-colors ${
                     active
                       ? 'bg-primary text-on-primary'
-                      : 'text-on-surface-variant hover:bg-[color:var(--glass-chip-hover)]'
+                      : 'text-on-surface-variant hover:bg-(--glass-chip-hover)'
                   }`}
                 >
                   <Icon name={APPEARANCE_ICON[option]} className="text-[18px]" />
@@ -165,7 +165,7 @@ export default function Profile() {
               value={locale}
               disabled={profileLoading || savingLang}
               onChange={(e) => handleLanguageChange(e.target.value as Locale)}
-              className="h-[48px] w-full appearance-none rounded-[16px] glass-field px-4 pr-10 font-body-md text-body-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
+              className="h-2xl w-full appearance-none rounded-[16px] glass-field px-4 pr-10 font-body-md text-body-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
             >
               {LOCALES.map((l) => (
                 <option key={l.code} value={l.code}>
@@ -216,7 +216,7 @@ export default function Profile() {
         {isAnonymous ? (
           <button
             onClick={() => navigate('/signin')}
-            className="flex min-h-[48px] items-center justify-center gap-sm rounded-full font-label-md text-label-md text-on-surface transition-all hover:brightness-[1.06] glass-field active:scale-95"
+            className="flex min-h-2xl items-center justify-center gap-sm rounded-full font-label-md text-label-md text-on-surface transition-all hover:brightness-[1.06] glass-field active:scale-95"
           >
             <Icon name="login" className="text-[20px]" />
             {t('auth.signInAction')}
@@ -225,7 +225,7 @@ export default function Profile() {
           <button
             onClick={handleSignOut}
             disabled={busy}
-            className="flex min-h-[48px] items-center justify-center gap-sm rounded-full bg-error-container font-label-md text-label-md text-on-error-container transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
+            className="flex min-h-2xl items-center justify-center gap-sm rounded-full bg-error-container font-label-md text-label-md text-on-error-container transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
           >
             {busy ? <Spinner className="h-4 w-4" /> : <Icon name="logout" className="text-[20px]" />}
             {t('profile.signOut')}

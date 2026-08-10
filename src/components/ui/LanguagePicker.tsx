@@ -38,7 +38,7 @@ export function LanguagePicker({ className = '' }: { className?: string }) {
         value={locale}
         disabled={saving}
         onChange={(e) => handleChange(e.target.value as Locale)}
-        className="h-9 appearance-none rounded-full glass-field pl-8 pr-7 font-label-md text-label-md text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
+        className="h-9 appearance-none rounded-full glass-field pl-8 pr-7 font-label-md text-label-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
       >
         {LOCALES.map((l) => (
           <option key={l.code} value={l.code}>
