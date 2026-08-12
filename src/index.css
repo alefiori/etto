@@ -103,9 +103,15 @@
   --spacing-safe-left: var(--safe-left, 0px);
   --spacing-safe-right: var(--safe-right, 0px);
   --spacing-topbar: calc(72px + var(--safe-top, 0px));
-  --spacing-bottomnav: calc(160px + var(--safe-bottom, 0px));
+  /* The phone's bottom chrome is one object now — a 68px pill holding the four
+     destinations *and* the add button, inset from the bottom edge by
+     `chrome-inset`. So it occupies 16→84px, and these two are measured off
+     that: content stops clear of it, and a toast lands in the gap just above
+     it rather than over the control it is reporting on. They were 160px and
+     98px when the add button floated separately above the bar. */
+  --spacing-bottomnav: calc(112px + var(--safe-bottom, 0px));
   --spacing-chrome-inset: calc(16px + var(--safe-bottom, 0px));
-  --spacing-fab: calc(98px + var(--safe-bottom, 0px));
+  --spacing-above-chrome: calc(96px + var(--safe-bottom, 0px));
   --spacing-container-margin-desktop: 40px;
 
   --font-sans: Manrope, system-ui, sans-serif;

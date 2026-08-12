@@ -380,7 +380,12 @@ export default function Targets() {
                           value={v[m.field] || ''}
                           disabled={adaptive}
                           onChange={(e) => setField(dow, m.field, e.target.value)}
-                          className="h-2xl w-full rounded-lg border border-outline-variant/50 bg-surface px-md text-right font-body-md text-body-md text-on-surface outline-hidden transition-all placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+                          // The one field in the app that was still an opaque
+                          // slab: `bg-surface` inside a lens paints the page
+                          // colour back over the glass, so seven of these read
+                          // as holes punched through the card. Same field as
+                          // everywhere else now.
+                          className="h-2xl w-full rounded-[16px] glass-field px-md text-right font-body-md text-body-md text-on-surface outline-hidden transition-all placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
                         />
                       </div>
                     ))}

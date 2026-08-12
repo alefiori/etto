@@ -28,8 +28,9 @@ test.describe('phone width', () => {
     expect(await visibleChromeWidth(page)).toBeNull()
     // The bottom nav uses the short labels; the drawer and rail use the long ones.
     await expect(page.getByRole('link', { name: 'Targets', exact: true })).toBeVisible()
-    // The floating action button belongs to the phone layout only — the rail
-    // and drawer put the same action inside themselves.
+    // Exactly one add button is reachable at any window class. On a phone it
+    // is the tile at the right-hand end of the tab bar; the rail and the drawer
+    // carry their own.
     await expect(page.locator('button[aria-label="Add Food"]:visible')).toHaveCount(1)
 
     // The tab bar is chrome content scrolls *under*, so its blur is the whole
@@ -45,8 +46,8 @@ test.describe('phone width', () => {
     await page.getByRole('button', { name: 'Create custom food' }).click()
     await expect(page.getByRole('dialog')).toBeVisible()
 
-    // The form was a route once, and the FAB had to stand down on it or it
-    // covered the save buttons. As a sheet it simply draws over the chrome,
+    // The form was a route once, and the add button had to stand down on it or
+    // it covered the save buttons. As a sheet it simply draws over the chrome,
     // which stays where it is underneath.
     await expect(page.getByRole('link', { name: 'Targets', exact: true })).toBeVisible()
     await expect(page.locator('button[aria-label="Add Food"]:visible')).toHaveCount(1)

@@ -10,6 +10,15 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { calories } from '@/lib/macros'
 import { deleteFood, setFoodPublic, type CustomFoodPrefill } from '@/lib/foods'
 import type { Food } from '@/lib/database.types'
+import type { TranslationKey } from '@/lib/i18n'
+
+type SourceFilter = 'all' | 'custom' | 'imported'
+
+const SOURCE_FILTERS: { value: SourceFilter; labelKey: TranslationKey }[] = [
+  { value: 'all', labelKey: 'myFoods.filterAll' },
+  { value: 'custom', labelKey: 'myFoods.custom' },
+  { value: 'imported', labelKey: 'myFoods.imported' },
+]
 
 /** Map an imported API food into prefill values for a brand-new custom copy. */
 function toPrefill(food: Food): CustomFoodPrefill {
@@ -32,6 +41,20 @@ export default function MyFoods() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [query, setQuery] = useState('')
+  /**
+   * Which of the two lists to show.
+   *
+   * The distinction is already on every row as a badge, because it decides what
+   * editing a food even means — a custom one is edited in place, an imported one
+   * can only be copied into a new custom food. Promoting it to a filter is the
+   * same fact used the other way round: "show me only the things I can edit" is
+   * the question a long list of imports makes you want to ask.
+   *
+   * The chips carry the same two words as the badges. The design mock says "My
+   * recipes" where the badge says "Custom"; two names for one thing, twenty
+   * pixels apart, is worse than either name on its own.
+   */
+  const [source, setSource] = useState<SourceFilter>('all')
   const [pendingDelete, setPendingDelete] = useState<Food | null>(null)
 
   const fetchFoods = useCallback(async () => {
@@ -103,7 +126,11 @@ export default function MyFoods() {
     else openCustomFood({ prefill: toPrefill(food) })
   }
 
-  const filtered = foods.filter((f) => f.name.toLowerCase().includes(query.trim().toLowerCase()))
+  const filtered = foods.filter(
+    (f) =>
+      f.name.toLowerCase().includes(query.trim().toLowerCase()) &&
+      (source === 'all' || (source === 'custom') === f.is_custom),
+  )
 
   return (
     <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-lg px-container-margin-mobile py-lg md:px-container-margin-desktop md:py-xl">
@@ -138,6 +165,34 @@ export default function MyFoods() {
           placeholder={t('myFoods.filterPlaceholder')}
           className="h-2xl w-full rounded-lg border-none bg-transparent pl-container-margin-desktop pr-4 font-body-md text-body-md text-on-surface outline-hidden focus:ring-2 focus:ring-primary"
         />
+      </div>
+
+      {/* Not a segmented control: the three are a filter on one list, so the
+          selected chip is a tinted accent pill and the rest are the neutral
+          lens, the same pair the nav uses for selected and unselected. They sit
+          outside the search lens rather than inside it — the field filters by
+          name, these filter by where a food came from, and stacking them in one
+          box reads as one compound control. */}
+      <div
+        role="group"
+        aria-label={t('myFoods.sourceFilterAria')}
+        className="-mt-sm flex flex-wrap gap-2"
+      >
+        {SOURCE_FILTERS.map((f) => (
+          <button
+            key={f.value}
+            type="button"
+            aria-pressed={source === f.value}
+            onClick={() => setSource(f.value)}
+            className={`settle rounded-full border px-4 py-1.5 font-label-md text-label-md active:scale-95 ${
+              source === f.value
+                ? 'border-primary/25 bg-primary-tint/[0.14] text-primary'
+                : 'border-(--glass-row-border) text-on-surface-variant hover:text-on-surface glass-row'
+            }`}
+          >
+            {t(f.labelKey)}
+          </button>
+        ))}
       </div>
 
       {error && (

@@ -84,10 +84,11 @@ and the palette are not; see [Theming](#theming).
 - **Installable PWA** — add to home screen / install as an app; the app shell is
   precached so it launches offline.
 - **Native iOS, iPadOS and Android** via Capacitor, from the same bundle. The
-  layout has three window classes rather than two: bottom nav on a phone, a
-  Material 3 **navigation rail** at tablet widths, and the full drawer on a
-  desktop — so an iPad in portrait, in Split View or in Stage Manager gets a
-  layout built for its size instead of stretched phone chrome.
+  layout has three window classes rather than two: a floating tab bar on a
+  phone — four destinations and the add button in one pill — a Material 3
+  **navigation rail** at tablet widths, and the full drawer on a desktop, so an
+  iPad in portrait, in Split View or in Stage Manager gets a layout built for
+  its size instead of stretched phone chrome.
 
 ## Tech stack
 
@@ -310,8 +311,8 @@ The iPad build is the same target as iPhone — Capacitor's template already set
 `TARGETED_DEVICE_FAMILY = "1,2"` and ships all four `~ipad` orientations, so
 nothing native needed patching. What did need doing was the layout: between
 768px and the drawer's 1024px breakpoint the app used to render phone chrome,
-which on an iPad in portrait meant a bottom bar stretched across 820pt and a
-floating button marooned in the corner. That range now gets a
+which on an iPad in portrait meant the tab bar stretched across 820pt with its
+four destinations swimming in it. That range now gets a
 [navigation rail](src/components/layout/AppLayout.tsx) — 80px, icons over short
 labels, primary action at the top — which is what Material 3 specifies for its
 "medium" window class.
@@ -346,7 +347,8 @@ as its literal word — the very failure the ligature note above describes.
 
 **Safe-area insets** come from spacing tokens in the `@theme` block of
 [`src/index.css`](src/index.css) (`safe-top`, `safe-bottom`,
-`safe-left`, `safe-right`, and the `topbar`/`bottomnav`/`fab` composites) that
+`safe-left`, `safe-right`, and the `topbar`/`bottomnav`/`chrome-inset`/`above-chrome`
+composites) that
 read the `--safe-*` custom properties defined in [`src/index.css`](src/index.css).
 Those resolve to `env(safe-area-inset-*)` — the notch and home-indicator insets
 natively, `0` on the web — so the tokens can be applied unconditionally.
@@ -592,10 +594,11 @@ Three things can't ride on a Tailwind class and are handled explicitly:
 - **The glass itself.** A lens is a translucent fill, a specular rim and a blur
   of whatever is behind it, so it can't be a Tailwind color: `bg-x/50` would
   multiply the baked-in alpha rather than replace it, and the rim is an inset
-  shadow, not a border. Five classes in `src/index.css` cover every surface —
-  `.glass` (cards), `.glass-chrome` (the floating bars), `.glass-sheet` (modals
-  and bottom sheets), `.glass-row` (a lens inside a lens) and `.glass-field`
-  (inputs) — composed with the usual utilities for radius, padding and layout.
+  shadow, not a border. A handful of classes in `src/index.css` cover every
+  surface — `.glass` (cards), `.glass-chrome` (the floating bars), `.glass-sheet`
+  (modals and bottom sheets), `.glass-menu` (the long-press menu), `.glass-row`
+  (a lens inside a lens) and `.glass-field` (inputs) — composed with the usual
+  utilities for radius, padding and layout.
 - **`.grad-primary`, not `bg-primary`,** for large filled actions. `--primary`
   names the *accent* in both schemes, and in dark it is a light violet that
   cannot carry white type; the CTAs run on a gradient that can. Compact filled
@@ -606,10 +609,26 @@ Three things can't ride on a Tailwind class and are handled explicitly:
 descendants**, not just a stacking context. A meal card holds food rows, and a
 food row holds a `fixed inset-0` entry sheet — put the filter on the card and
 that sheet is laid out *inside the card* and painted at the card's depth, which
-made its Save button unclickable. So the fill, rim and blur all live on a
-`::before` layer at `z-index: -1`, leaving the card an ordinary
-`position: relative` box. Anything added to those classes must stay on the
+made its Save button unclickable. `.glass` therefore keeps its fill, rim and blur
+on a `::before` layer at `z-index: -1`, leaving the card an ordinary
+`position: relative` box, and anything added to it must stay on the
 pseudo-element.
+
+That dodge has a price: **Chromium does not render `backdrop-filter` on a
+`z-index: -1` pseudo-element at all** — it samples an empty backdrop and
+composites as if no filter were asked for, so such a surface is glass on iOS
+(WebKit) and a flat tinted panel in every Android WebView. It goes unnoticed over
+the aurora, since a blurred gradient is the same gradient, and shows immediately
+over the app's own content. So the surfaces that sit over content —
+`.glass-chrome`, `.glass-sheet`, `.glass-menu` — carry the filter on the element
+itself and blur on both platforms. That is only safe because none of them
+contains a `fixed inset-0` overlay: the bars *are* the fixed elements, and every
+sheet and dialog is the sole child of its own scrim. **Adding a fixed overlay
+inside one of those three means portalling it out**, not nesting it.
+
+Also, on those three the cast shadow and the specular rim are one `box-shadow` in
+the class, so don't add a `shadow-*` utility alongside them — it replaces the rim
+rather than joining it.
 
 **The default is the device scheme**, exactly like the language:
 `profiles.theme` is NULL until someone picks one, and NULL resolves against

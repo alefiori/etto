@@ -210,11 +210,11 @@ export function AddFoodModal({
         )}
         {/* Search + results column — hidden on mobile once a food is selected */}
         <section
-          className={`min-h-0 flex-1 flex-col border-surface-variant lg:flex lg:border-r ${
+          className={`min-h-0 flex-1 flex-col border-(--glass-row-border) lg:flex lg:border-r ${
             selected ? 'hidden' : 'flex'
           }`}
         >
-          <header className="flex items-center justify-between gap-md border-b border-surface-variant p-md">
+          <header className="flex items-center justify-between gap-md border-b border-(--glass-row-border) p-md">
             <h2 id="add-food-title" className="font-headline-md text-headline-md text-on-surface">
               {t('addFood.title')}
             </h2>
@@ -227,8 +227,14 @@ export function AddFoodModal({
             </button>
           </header>
 
-          <div className="p-md">
-            <div className="relative">
+          {/* Search and scan on one line: they are two ways of naming the same
+              thing, and stacking the scanner as a full-width button below made
+              it the loudest control in a panel whose job is the field above it.
+              As a square it keeps the 44px minimum target while giving the row
+              back to the query — the label moves to the accessible name and the
+              tooltip, since a barcode glyph needs no gloss. */}
+          <div className="flex items-center gap-sm p-md">
+            <div className="relative flex-1">
               <Icon
                 name="search"
                 className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-outline"
@@ -240,7 +246,7 @@ export function AddFoodModal({
                 onChange={(e) => setQuery(e.target.value)}
                 aria-label={t('addFood.searchAria')}
                 placeholder={t('addFood.searchPlaceholder')}
-                className="h-2xl w-full rounded-[16px] glass-field pl-container-margin-desktop pr-4 font-body-md text-body-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
+                className="h-2xl w-full rounded-full glass-field pl-container-margin-desktop pr-4 font-body-md text-body-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
               />
               {loading && <Spinner className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />}
             </div>
@@ -250,10 +256,11 @@ export function AddFoodModal({
                 setLookupMsg(null)
                 setScanning(true)
               }}
-              className="mt-sm flex w-full items-center justify-center gap-2 rounded-[16px] glass-field py-3 font-label-md text-label-md text-on-surface transition-colors hover:bg-(--glass-chip-hover)"
+              aria-label={t('addFood.scanBarcode')}
+              title={t('addFood.scanBarcode')}
+              className="settle flex h-2xl w-2xl shrink-0 items-center justify-center rounded-full bg-primary-tint/[0.14] text-primary hover:bg-primary-tint/25 active:scale-95"
             >
               <Icon name="barcode_scanner" />
-              {t('addFood.scanBarcode')}
             </button>
           </div>
 
@@ -327,17 +334,26 @@ export function AddFoodModal({
                   <button
                     key={r.id}
                     onClick={() => selectFood(r)}
-                    className={`flex items-center justify-between gap-sm rounded-xl border p-md text-left transition-colors ${
+                    // A result is the same lens as a food row on the dashboard —
+                    // a row inside a card — rather than a borderless strip that
+                    // only takes a shape once it is selected. The selected one
+                    // swaps the neutral rim for the accent, so selection reads
+                    // as the same object tinted, not as a different one.
+                    className={`settle flex items-center justify-between gap-sm rounded-[20px] border p-md text-left ${
                       isSelected
-                        ? 'border-primary/20 bg-primary-tint/10'
-                        : 'border-transparent hover:bg-(--glass-chip)'
+                        ? 'border-primary/25 bg-primary-tint/12'
+                        : 'hover:brightness-[1.04] glass-row'
                     }`}
                   >
                     <div className="flex min-w-0 items-center gap-md">
                       <div
                         className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
+                          // A wash of the accent, not a slab of it: at 40px,
+                          // repeated down a list, the solid container fill read
+                          // as a series of buttons rather than as a badge saying
+                          // where the food came from.
                           n.source === 'custom'
-                            ? 'bg-primary-container text-on-primary-container'
+                            ? 'bg-primary-tint/[0.14] text-primary'
                             : 'text-on-surface-variant glass-chip'
                         }`}
                       >
@@ -382,10 +398,13 @@ export function AddFoodModal({
             </div>
           </div>
 
-          <div className="border-t border-surface-variant p-md">
+          {/* The way out of an empty search, so it is the filled action rather
+              than a tinted one: by the time you are reading this row, the three
+              databases above have already failed to have what you ate. */}
+          <div className="border-t border-(--glass-row-border) p-md">
             <button
               onClick={() => goCreateCustom()}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-tint/12 py-3 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/20"
+              className="settle flex h-[52px] w-full items-center justify-center gap-2 rounded-full font-label-md text-label-md hover:brightness-105 active:scale-[0.98] grad-primary"
             >
               <Icon name="add_circle" />
               {t('addFood.createCustomFood')}
@@ -406,7 +425,7 @@ export function AddFoodModal({
             </div>
           ) : (
             <>
-              <div className="border-b border-surface-variant p-xl">
+              <div className="border-b border-(--glass-row-border) p-xl">
                 <button
                   onClick={() => setSelected(null)}
                   className="mb-md flex items-center gap-1 font-label-md text-label-md text-on-surface-variant transition-colors hover:text-on-surface lg:hidden"
@@ -447,7 +466,7 @@ export function AddFoodModal({
                   <span className="ml-1 text-lg font-bold text-on-surface">{Math.round(totalKcal)} {t('common.kcal')}</span>
                 </div>
 
-                <hr className="border-surface-variant" />
+                <hr className="border-(--glass-row-border)" />
 
                 {/* Meal picker */}
                 <div>

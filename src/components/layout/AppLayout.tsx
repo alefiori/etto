@@ -241,8 +241,18 @@ function TopAppBar() {
  * `justify-around` gave every destination a different-width hit area depending
  * on how long its label translated to; the pill divides itself evenly instead,
  * which matters more now that it no longer spans the full width.
+ *
+ * The primary action rides *inside* the pill, at its right-hand end. It used to
+ * be a free-floating button above the bar, which is what a bar welded to the
+ * bottom edge needs — there is nowhere else for it to go. Once the bar became a
+ * pill floating in the same layer, two floating objects a few pixels apart read
+ * as chrome that failed to line up rather than as one control cluster, and the
+ * button covered the top-right corner of whatever card sat under it. Inside, it
+ * is the same lens as the rail's, which puts the action in the same place at
+ * every window class: at the near end of the navigation, not beside it.
  */
 function BottomNav() {
+  const { openAddFood } = useAppShell()
   const { t } = useI18n()
   return (
     <nav className="fixed bottom-chrome-inset left-4 right-4 z-50 flex items-center gap-1 rounded-chrome px-2 py-2 md:hidden glass-chrome">
@@ -254,7 +264,11 @@ function BottomNav() {
           className={({ isActive }) =>
             // No hover lift here: this bar only exists at phone width, where a
             // hover state is a state a finger can't leave.
-            `settle flex flex-1 flex-col items-center justify-center rounded-[22px] py-1.5 active:scale-90 ${
+            // `min-w-0` so the labels may truncate rather than force the row
+            // wider than the pill: at 320px (iPad Slide Over) the four tabs
+            // share ~214px once the action has taken its 52px, and the longest
+            // short label in German does not fit that unaided.
+            `settle flex min-w-0 flex-1 flex-col items-center justify-center rounded-[22px] py-1.5 active:scale-90 ${
               isActive
                 ? 'bg-primary-tint/16 text-primary'
                 : 'text-on-surface-variant hover:bg-(--glass-chip)'
@@ -264,20 +278,35 @@ function BottomNav() {
           {({ isActive }) => (
             <>
               <Icon name={item.icon} fill={isActive} />
-              <span className="mt-0.5 font-label-md text-[10px]">
+              <span className="mt-0.5 w-full truncate px-0.5 text-center font-label-md text-[10px] tracking-normal">
                 {t(item.shortKey)}
               </span>
             </>
           )}
         </NavLink>
       ))}
+
+      {/* `shrink-0` against the four `flex-1` tabs: the destinations divide
+          what is left, and the action keeps its 52px however long the labels
+          translate to. */}
+      <button
+        onClick={() => openAddFood()}
+        aria-label={t('nav.addFood')}
+        // The store-screenshot run drives this control in all 7 languages,
+        // where the accessible name is a different string every time and three
+        // controls share it (drawer, rail, tab bar) with one visible per window
+        // class. A stable hook is cheaper than the guesswork.
+        data-testid="add-food-fab"
+        className="settle ml-1.5 flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[19px] active:scale-95 grad-primary"
+      >
+        <Icon name="add" className="text-2xl" />
+      </button>
     </nav>
   )
 }
 
 export default function AppLayout() {
   const {
-    openAddFood,
     _addFood,
     _closeAddFood,
     _customFood,
@@ -286,7 +315,6 @@ export default function AppLayout() {
     _paywallOpen,
     _closePaywall,
   } = useAppShell()
-  const { t } = useI18n()
 
   return (
     // No page colour of its own: the aurora is painted on <body> and the shell
@@ -303,24 +331,8 @@ export default function AppLayout() {
         <Outlet />
       </main>
 
+      {/* Carries the primary action itself — see the note on BottomNav. */}
       <BottomNav />
-
-      {/* Floating action button (mobile). It no longer has to stand down for
-          the custom-food form: that was a route once, and a FAB opening the
-          add-food modal on top of it covered its save buttons. As a sheet it
-          simply draws over the FAB. */}
-      <button
-        onClick={() => openAddFood()}
-        aria-label={t('nav.addFood')}
-        // The store-screenshot run drives this control in all 7 languages,
-        // where the accessible name is a different string every time and
-        // three controls share it (drawer, rail, FAB) with one visible per
-        // window class. A stable hook is cheaper than the guesswork.
-        data-testid="add-food-fab"
-        className="settle fixed bottom-fab right-container-margin-mobile z-40 flex h-14 w-14 items-center justify-center rounded-[20px] active:scale-95 md:hidden grad-primary"
-      >
-        <Icon name="add" className="text-2xl" />
-      </button>
 
       <AddFoodModal open={_addFood.open} initialMeal={_addFood.meal} onClose={_closeAddFood} />
 
