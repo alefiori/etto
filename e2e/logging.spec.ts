@@ -107,6 +107,14 @@ test.describe('a logged food row', () => {
     await page.mouse.up()
 
     await expect(page.getByRole('menu')).toBeVisible()
+    // The menu is the one lens that covers the app's own content, so its blur
+    // is what keeps the rows underneath from reading straight through it — and
+    // it is the standard property that has to arrive, since Chromium (every
+    // Android WebView) does not implement the -webkit- one. Asserted here
+    // rather than in a unit test because it takes a real browser and the built
+    // bundle: this ran against the source until the minifier dropped the
+    // standard declaration, and only Android showed it.
+    await expect(page.getByRole('menu')).toHaveCSS('backdrop-filter', /blur/)
     await page.getByRole('menuitem', { name: 'Delete' }).click()
 
     await expect(page.getByRole('alertdialog')).toBeVisible()

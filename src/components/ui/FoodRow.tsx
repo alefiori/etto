@@ -223,11 +223,14 @@ export function FoodRow({
       </button>
 
       {menuOpen && (
+        // `glass-menu`, not `glass`: this is the one lens that covers the app's
+        // own content rather than the page ground, and `glass` cannot blur what
+        // is behind it in a Chromium WebView. See the note in index.css.
         <div
           ref={menuRef}
           role="menu"
           aria-label={menuLabel}
-          className={`animate-menu-pop absolute left-2 z-20 w-[232px] divide-y divide-(--glass-row-border) overflow-hidden rounded-lens shadow-card-hover glass ${
+          className={`animate-menu-pop absolute left-2 z-20 w-[232px] divide-y divide-(--glass-row-border) overflow-hidden rounded-lens glass-menu ${
             menuAbove ? 'bottom-full mb-sm origin-bottom-left' : 'top-full mt-sm origin-top-left'
           }`}
         >

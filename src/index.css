@@ -174,7 +174,7 @@
 /* ---------------------------------------------------------------------------
  * The glass lenses.
  *
- * Five classes cover every surface in the app, and they compose with the
+ * A handful of classes cover every surface in the app, and they compose with the
  * existing Tailwind utilities rather than replacing them: a card is
  * `glass rounded-[28px] p-lg`, so radius, padding and layout stay where they
  * were and only the *material* moves here. Each is a single class because the
@@ -205,6 +205,33 @@
  * The consequence to remember: `--shadow-*` now carries only the cast shadow.
  * The specular rim is `--glass-rim` and lives on the pseudo-element, because an
  * inset shadow on the card would paint *under* the fill layer and vanish.
+ *
+ * WHAT THE PSEUDO-ELEMENT COSTS: NO BLUR IN CHROMIUM
+ *
+ * A `backdrop-filter` on a `z-index: -1` pseudo-element blurs nothing in
+ * Chromium — it samples an empty backdrop and composites as if the filter were
+ * not there. WebKit renders it, which is why these surfaces look like glass on
+ * iOS and like plain tinted panels on Android, where every WebView is Chromium.
+ * A real `z-index: -1` child element behaves the same way; what the filter needs
+ * is to be on the element that paints it, or on a layer that is not stacked
+ * behind its own parent.
+ *
+ * For the surfaces below this is invisible, because they sit over the aurora and
+ * blurring a smooth gradient returns the same gradient. It shows the moment a
+ * lens sits over the app's own content — the menu a long press opens lands on
+ * the list it was opened from — which is what `glass-menu` is for.
+ *
+ * `-WEBKIT-BACKDROP-FILTER` GOES FIRST, ALWAYS
+ *
+ * Chromium does not implement the prefixed property at all — `CSS.supports` on
+ * `-webkit-backdrop-filter` is false there, and a rule carrying only that one
+ * composites as if no filter had been asked for. WebKit needs it. So both have
+ * to survive to the bundle, and the order is what decides whether they do: the
+ * build targets Safari 14, where the standard property does not exist, so the
+ * minifier treats the pair as one property and keeps whichever comes last.
+ * Written standard-first, the standard one is dropped and the CSS blurs on iOS
+ * and nowhere else — which is exactly what shipped. Prefixed first, standard
+ * last, everywhere below.
  * ------------------------------------------------------------------------- */
 
 @utility glass {
@@ -221,8 +248,8 @@
   box-shadow: var(--shadow-card);
   &::before {
     background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
   }
 }
 
@@ -243,8 +270,8 @@
   box-shadow: var(--shadow-bottomnav);
   &::before {
     background: var(--glass-chrome-bg);
-    backdrop-filter: var(--glass-chrome-blur);
     -webkit-backdrop-filter: var(--glass-chrome-blur);
+    backdrop-filter: var(--glass-chrome-blur);
   }
 }
 
@@ -262,9 +289,34 @@
   box-shadow: var(--shadow-sheet);
   &::before {
     background: var(--glass-sheet-bg);
-    backdrop-filter: blur(36px) saturate(190%);
     -webkit-backdrop-filter: blur(36px) saturate(190%);
+    backdrop-filter: blur(36px) saturate(190%);
   }
+}
+
+@utility glass-menu {
+  /* The lens for a floating menu — today the one a long press opens on a food
+     row. Same material as `glass`, but the fill, the blur and the rim are on the
+     element itself rather than on a `::before`, because this is the one lens
+     that covers the app's own content: what is behind it is the list of rows the
+     menu was opened from, and unblurred at `--glass-bg` those rows read straight
+     through the menu (see the Chromium note above — that is what Android showed
+     and iOS did not).
+
+     Safe here for the reason it is not safe on a card: a menu is a leaf. It
+     holds nothing but its own items, so becoming a containing block for fixed
+     descendants captures nothing, and it is already `position: absolute` with a
+     `z-index`, so it is already a stacking context.
+
+     The cast shadow is part of the class for the same reason the rim is: both
+     are now on the element, and a `shadow-*` utility alongside would replace the
+     rim rather than sit beside it. */
+  position: relative;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-card-hover), var(--glass-rim);
 }
 
 @utility glass-row {
@@ -300,8 +352,8 @@
 @utility glass-scrim {
   /* The scrim behind a sheet or dialog. */
   background: var(--glass-scrim);
-  backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
 }
 
 @layer utilities {
