@@ -72,7 +72,7 @@ export function GuestBanner() {
             if (e.target === e.currentTarget && !busy) setOpen(false)
           }}
         >
-          <div className="flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(var(--spacing-lg)+(var(--spacing-safe-bottom)))] shadow-sheet sm:max-w-[28rem] sm:rounded-lens sm:pb-lg glass-sheet">
+          <div className="flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(var(--spacing-lg)+(var(--spacing-safe-bottom)))] sm:max-w-[28rem] sm:rounded-lens sm:pb-lg glass-sheet">
             <div className="flex items-center justify-between">
               <h2 className="font-headline-md text-headline-md text-on-surface">{t('guest.title')}</h2>
               <button

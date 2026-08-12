@@ -181,11 +181,11 @@
  * fill, the rim, the blur and the two inset highlights are one physical thing —
  * split across four utilities they drift apart the first time one is edited.
  *
- * `position: relative` on the three blurred classes is load-bearing twice over:
- * several cards float a blurred colour blob inside themselves, and it anchors
+ * `position: relative` on the blurred classes is load-bearing: several cards
+ * float a blurred colour blob inside themselves, and on `glass` it also anchors
  * the `::before` described next.
  *
- * WHY THE BLUR IS ON A PSEUDO-ELEMENT AND NOT ON THE CARD
+ * WHY THE CARD — AND ONLY THE CARD — BLURS ON A PSEUDO-ELEMENT
  *
  * `backdrop-filter` does two things beyond blurring. It makes the element a
  * stacking context, and — the expensive one — a *containing block for fixed
@@ -194,32 +194,40 @@
  * the filter on the card and those overlays stop being page-level: they get
  * laid out inside the card's box and painted at the card's depth, so a sheet
  * lands inside its own meal and the meal below it draws on top of the Save
- * button. That is not a styling nit — the dialog becomes unclickable.
+ * button. That is not a styling nit — the dialog becomes unclickable. The same
+ * card is also what a long press lifts a row out of, to `z-60` above a
+ * full-screen scrim: give the card a stacking context and the row can no longer
+ * climb past the tab bar, whatever z-index it asks for.
  *
- * Moving the fill, the rim and the filter onto a `::before` fixes it at the
+ * Moving the fill, the rim and the filter onto a `::before` fixes both at the
  * root: the pseudo-element has no descendants to capture, and the card itself
  * goes back to being an ordinary `position: relative` box with no stacking
  * context. `z-index: -1` puts the layer behind the card's content but still in
  * front of the page, and `border-radius: inherit` keeps it in the same shape.
  *
- * The consequence to remember: `--shadow-*` now carries only the cast shadow.
- * The specular rim is `--glass-rim` and lives on the pseudo-element, because an
- * inset shadow on the card would paint *under* the fill layer and vanish.
+ * The consequence to remember on `glass`: `--shadow-*` carries only the cast
+ * shadow there. The specular rim is `--glass-rim` and lives on the
+ * pseudo-element, because an inset shadow on the card would paint *under* the
+ * fill layer and vanish. The other lenses carry both in one `box-shadow`, so a
+ * `shadow-*` utility on the same element would replace the rim rather than sit
+ * beside it — none of them is written with one.
  *
  * WHAT THE PSEUDO-ELEMENT COSTS: NO BLUR IN CHROMIUM
  *
  * A `backdrop-filter` on a `z-index: -1` pseudo-element blurs nothing in
  * Chromium — it samples an empty backdrop and composites as if the filter were
- * not there. WebKit renders it, which is why these surfaces look like glass on
- * iOS and like plain tinted panels on Android, where every WebView is Chromium.
- * A real `z-index: -1` child element behaves the same way; what the filter needs
- * is to be on the element that paints it, or on a layer that is not stacked
- * behind its own parent.
+ * not there. WebKit renders it, which is why a card looks like glass on iOS and
+ * like a plain tinted panel on Android, where every WebView is Chromium. A real
+ * `z-index: -1` child element behaves the same way; what the filter needs is to
+ * be on the element that paints it, or on a layer that is not stacked behind its
+ * own parent.
  *
- * For the surfaces below this is invisible, because they sit over the aurora and
- * blurring a smooth gradient returns the same gradient. It shows the moment a
- * lens sits over the app's own content — the menu a long press opens lands on
- * the list it was opened from — which is what `glass-menu` is for.
+ * On a card this is invisible: a card sits over the aurora, and blurring a
+ * smooth gradient returns the same gradient. It shows the moment a lens covers
+ * the app's own content — a menu over the list it was opened from, a tab bar
+ * with that list scrolling under it — so every lens that does carries its filter
+ * on the element instead, which each of them can afford for a reason the card
+ * cannot: nothing `position: fixed` lives inside any of them.
  *
  * `-WEBKIT-BACKDROP-FILTER` GOES FIRST, ALWAYS
  *
@@ -254,63 +262,53 @@
 }
 
 @utility glass-chrome {
-  position: relative;
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    box-shadow: var(--glass-rim);
-  }
+  /* Floating chrome: the rail, the drawer, the tab bar. Blurs harder and casts
+     further than a card because content passes *under* it — which also makes it
+     the surface where the pseudo-element's missing blur showed most, since a
+     list scrolling beneath the tab bar stayed sharp and legible through it.
 
-  /* Floating chrome: the rail, the toolbars, the tab bar. Blurs harder and
-     casts further than a card because content passes *under* it. */
+     On the element, like `glass-menu` and for the same reason: all three bars
+     hold nothing but their own links and buttons, so there is no fixed
+     descendant to capture, and each is already `position: fixed` with a
+     `z-index`, so none of them gains a stacking context it did not have. */
+  position: relative;
+  background: var(--glass-chrome-bg);
+  -webkit-backdrop-filter: var(--glass-chrome-blur);
+  backdrop-filter: var(--glass-chrome-blur);
   border: 1px solid var(--glass-chrome-border);
-  box-shadow: var(--shadow-bottomnav);
-  &::before {
-    background: var(--glass-chrome-bg);
-    -webkit-backdrop-filter: var(--glass-chrome-blur);
-    backdrop-filter: var(--glass-chrome-blur);
-  }
+  box-shadow: var(--shadow-bottomnav), var(--glass-rim);
 }
 
 @utility glass-sheet {
+  /* Sheets and full-screen modals. On the element for the same reason as the
+     two above: a sheet's panel holds only its own content — the overlays that
+     could have been a problem (the confirm dialog, the custom-food sheet, the
+     entry sheet) are all opened from rows and pages, never from inside a panel,
+     and the one full-bleed thing that is (the barcode scanner) is `absolute`
+     against a panel that was already `position: relative`.
+
+     Nearly opaque, so the blur here is worth little on its own; it is the
+     saturation travelling with it that keeps the panel from going grey. */
   position: relative;
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    box-shadow: var(--glass-rim);
-  }
+  background: var(--glass-sheet-bg);
+  -webkit-backdrop-filter: blur(36px) saturate(190%);
+  backdrop-filter: blur(36px) saturate(190%);
   border: 1px solid var(--glass-sheet-border);
-  box-shadow: var(--shadow-sheet);
-  &::before {
-    background: var(--glass-sheet-bg);
-    -webkit-backdrop-filter: blur(36px) saturate(190%);
-    backdrop-filter: blur(36px) saturate(190%);
-  }
+  box-shadow: var(--shadow-sheet), var(--glass-rim);
 }
 
 @utility glass-menu {
   /* The lens for a floating menu — today the one a long press opens on a food
-     row. Same material as `glass`, but the fill, the blur and the rim are on the
-     element itself rather than on a `::before`, because this is the one lens
-     that covers the app's own content: what is behind it is the list of rows the
-     menu was opened from, and unblurred at `--glass-bg` those rows read straight
-     through the menu (see the Chromium note above — that is what Android showed
-     and iOS did not).
+     row. The same material as `glass`, on the element rather than on a
+     `::before`, because it is the lens with the least forgiving backdrop of any
+     here: what sits behind it is the list of rows it was opened from, and
+     unblurred at `--glass-bg` those rows read straight through the menu (see the
+     Chromium note above — that is what Android showed and iOS did not).
 
      Safe here for the reason it is not safe on a card: a menu is a leaf. It
      holds nothing but its own items, so becoming a containing block for fixed
      descendants captures nothing, and it is already `position: absolute` with a
-     `z-index`, so it is already a stacking context.
-
-     The cast shadow is part of the class for the same reason the rim is: both
-     are now on the element, and a `shadow-*` utility alongside would replace the
-     rim rather than sit beside it. */
+     `z-index`, so it is already a stacking context. */
   position: relative;
   background: var(--glass-bg);
   -webkit-backdrop-filter: var(--glass-blur);

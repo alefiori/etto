@@ -197,7 +197,7 @@ export function CustomFoodModal({
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <div className="animate-sheet-up flex max-h-[92dvh] w-full flex-col rounded-t-[36px] shadow-sheet sm:max-h-[88vh] sm:max-w-[32rem] sm:rounded-lens glass-sheet">
+      <div className="animate-sheet-up flex max-h-[92dvh] w-full flex-col rounded-t-[36px] sm:max-h-[88vh] sm:max-w-[32rem] sm:rounded-lens glass-sheet">
         {/* Header — pinned, so the sheet always says what it is. */}
         <div className="flex shrink-0 flex-col gap-md p-lg pb-md">
           {/* Grab handle — the phone-only affordance for a sheet you can dismiss. */}

@@ -97,7 +97,7 @@ export function FoodEntrySheet({
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <div className="animate-sheet-up flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(var(--spacing-lg)+(var(--spacing-safe-bottom)))] shadow-sheet sm:max-w-[28rem] sm:rounded-lens sm:pb-lg glass-sheet">
+      <div className="animate-sheet-up flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(var(--spacing-lg)+(var(--spacing-safe-bottom)))] sm:max-w-[28rem] sm:rounded-lens sm:pb-lg glass-sheet">
         {/* Grab handle — the phone-only affordance for a sheet you can dismiss. */}
         <div className="mx-auto -mt-2 h-1 w-9 shrink-0 rounded-full bg-outline-variant sm:hidden" />
 

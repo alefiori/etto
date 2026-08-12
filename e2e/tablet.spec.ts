@@ -31,6 +31,13 @@ test.describe('phone width', () => {
     // The floating action button belongs to the phone layout only — the rail
     // and drawer put the same action inside themselves.
     await expect(page.locator('button[aria-label="Add Food"]:visible')).toHaveCount(1)
+
+    // The tab bar is chrome content scrolls *under*, so its blur is the whole
+    // reason the list stays readable against it, and the standard property is
+    // the one that has to arrive: Chromium — every Android WebView — does not
+    // implement `-webkit-backdrop-filter`, and the minifier will drop the
+    // standard declaration if a rule writes it before the prefixed one.
+    await expect(page.locator('nav.glass-chrome')).toHaveCSS('backdrop-filter', /blur/)
   })
 
   test('keeps the phone chrome behind the custom food sheet', async ({ page }) => {

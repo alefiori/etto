@@ -63,7 +63,7 @@ export function ConfirmDialog({
     >
       {/* The sheet stays flush with the bottom edge and clears the home
           indicator with padding, so its actions are not half under it. */}
-      <div className="flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(var(--spacing-lg)+(var(--spacing-safe-bottom)))] shadow-sheet sm:max-w-[28rem] sm:rounded-lens sm:pb-lg glass-sheet">
+      <div className="flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(var(--spacing-lg)+(var(--spacing-safe-bottom)))] sm:max-w-[28rem] sm:rounded-lens sm:pb-lg glass-sheet">
         <h2 id={titleId} className="font-headline-md text-headline-md text-on-surface">
           {title}
         </h2>
