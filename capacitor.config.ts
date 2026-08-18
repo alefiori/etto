@@ -44,6 +44,15 @@ const config: CapacitorConfig = {
       // position:fixed scroll lock in useScrollLock expects.
       resize: KeyboardResize.Native,
     },
+    LocalNotifications: {
+      // Android draws the small icon as a *silhouette* — alpha only, colours
+      // discarded — so the full-colour launcher icon it falls back to arrives in
+      // the status bar as a solid grey blob. `ic_stat_water_drop` is a flat-white
+      // vector drawable written into the regenerated android/ project by
+      // scripts/patch-android-notification-icon.mjs. iOS ignores both keys.
+      smallIcon: 'ic_stat_water_drop',
+      iconColor: '#6750A4',
+    },
   },
 }
 

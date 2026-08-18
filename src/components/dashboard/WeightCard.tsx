@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useI18n } from '@/context/I18nContext'
 import { useProfile } from '@/context/ProfileContext'
+import { useEntitlement } from '@/context/EntitlementContext'
+import { useAppShell } from '@/context/AppShellContext'
+import { ProGate } from '@/components/paywall/ProGate'
 import { useWeightLogs } from '@/hooks/useWeightLogs'
 import { saveWeight } from '@/lib/weights'
 import { ewma, robustTrendPerDay, type SeriesPoint } from '@/lib/trend'
@@ -66,9 +69,14 @@ const GOAL_MOVES: Record<GoalDirection, 'up' | 'down' | 'flat'> = {
 export function WeightCard() {
   const { t } = useI18n()
   const { profile, unitSystem } = useProfile()
+  const { isPro } = useEntitlement()
+  const { openPaywall } = useAppShell()
   const [rangeDays, setRangeDays] = useState<number>(90)
   const [version, setVersion] = useState(0)
-  const { logs, loading, error } = useWeightLogs(rangeDays, version)
+  // Logging a weight is free; reading the trend out of it is what Pro buys. A
+  // locked card has no business pulling a year of rows, so the window collapses
+  // to the shortest one that can still name the latest reading.
+  const { logs, loading, error } = useWeightLogs(isPro ? rangeDays : 30, version)
 
   const [draft, setDraft] = useState('')
   const [saving, setSaving] = useState(false)
@@ -227,7 +235,13 @@ export function WeightCard() {
           <Spinner className="h-5 w-5 text-primary" />
         </div>
       ) : (
-        <>
+        /* The weigh-in above is free; everything below it — the smoothed trend,
+           the weekly rate, and the 90/365-day windows — is what "weight trends
+           and full history" means on the paywall. The card is deliberately split
+           here rather than gating the whole thing: a free user must still be
+           able to record a weight, or the data the trend is made of never
+           exists, and neither does a reason to subscribe. */
+        <ProGate title={t('weight.trendsLocked')} onUpgrade={openPaywall}>
           {/* The rate reads as a status line of its own now that the range
               switch has moved below the chart, so it carries the direction as
               an arrow and names the window it was measured over — otherwise
@@ -315,7 +329,7 @@ export function WeightCard() {
               </button>
             ))}
           </div>
-        </>
+        </ProGate>
       )}
     </div>
   )

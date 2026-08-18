@@ -20,6 +20,8 @@ const h = vi.hoisted(() => ({
   isAnonymous: false,
   setLocale: vi.fn(),
   updateProfile: vi.fn(),
+  openPaywall: vi.fn(),
+  isPro: false,
   profile: null as unknown as ProfileStub,
 }))
 
@@ -33,6 +35,25 @@ vi.mock('@/context/AuthContext', () => ({
 }))
 vi.mock('@/context/ProfileContext', () => ({
   useProfile: () => h.profile,
+}))
+// The page now carries three Pro-gated sections (reminders, export, and the
+// subscription card). Each reads the shell for `openPaywall`, which throws
+// outside a provider by design, and the entitlement for the gate — so both are
+// stubbed here, defaulting to a free account. The gated behaviour itself is
+// covered by e2e/pro.spec.ts against a real entitlement row.
+vi.mock('@/context/AppShellContext', () => ({
+  useAppShell: () => ({ openPaywall: h.openPaywall }),
+}))
+vi.mock('@/context/EntitlementContext', () => ({
+  useEntitlement: () => ({
+    isPro: h.isPro,
+    subscription: null,
+    hasBillingIssue: false,
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+    syncAfterPurchase: vi.fn(),
+  }),
 }))
 // The meals section has its own test — stub it out to a stable, empty list.
 vi.mock('@/context/MealsContext', () => ({
@@ -85,6 +106,7 @@ beforeEach(() => {
   h.profile = stubProfile()
   h.user = { email: 'sam@example.com' }
   h.isAnonymous = false
+  h.isPro = false
 })
 
 describe('Profile page', () => {

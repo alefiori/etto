@@ -171,6 +171,14 @@ describe('privacyManifest', () => {
     expect(manifest).toContain('NSPrivacyAccessedAPICategoryUserDefaults')
     expect(manifest).toContain('<string>CA92.1</string>')
   })
+
+  it('gives a reason for file timestamps, which the Pro data export needs', () => {
+    // @capacitor/filesystem writes the export into the app's own cache
+    // directory before handing it to the share sheet. Apple checks the binary
+    // rather than the call path, so linking the plugin is what needs declaring.
+    expect(manifest).toContain('NSPrivacyAccessedAPICategoryFileTimestamp')
+    expect(manifest).toContain('<string>C617.1</string>')
+  })
 })
 
 describe('patchPbxproj', () => {

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { useAuth } from '@/context/AuthContext'
-import { fetchSubscription, isSubscriptionActive } from '@/lib/entitlement'
+import { fetchSubscription, isSubscriptionActive, waitForProEntitlement } from '@/lib/entitlement'
+import { forgetPurchaser, identifyPurchaser } from '@/lib/purchases'
 import type { Subscription } from '@/lib/database.types'
 
 interface EntitlementValue {
@@ -13,6 +14,12 @@ interface EntitlementValue {
   loading: boolean
   error: string | null
   refetch: () => Promise<void>
+  /**
+   * Re-read the entitlement after a purchase or restore, waiting for the
+   * webhook to land. Resolves to whether Pro is active, so the paywall can tell
+   * "bought and unlocked" from "bought, still syncing".
+   */
+  syncAfterPurchase: () => Promise<boolean>
 }
 
 const EntitlementContext = createContext<EntitlementValue | undefined>(undefined)
@@ -52,15 +59,38 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  /**
+   * Wait for the webhook, then adopt whatever it wrote.
+   *
+   * This is the only path that may *grant* access from a client action, so it
+   * still ends at a server read — the store's word that a purchase succeeded
+   * never becomes the app's word that Pro is on.
+   */
+  async function syncAfterPurchase(): Promise<boolean> {
+    const sub = await waitForProEntitlement()
+    if (sub) {
+      setSubscription(sub)
+      setError(null)
+    }
+    return isSubscriptionActive(sub)
+  }
+
   useEffect(() => {
     if (!user) {
       // Signed out: no entitlement, and nothing to keep from the last session.
       setSubscription(null)
       if (!authLoading) setLoading(false)
+      // Detach the store SDK too, so a purchase made by the next person to sign
+      // in on this device can't land on the previous user's RevenueCat id.
+      void forgetPurchaser()
       return
     }
     const signal = { cancelled: false }
     load(signal)
+    // Point RevenueCat at the Supabase user id — the one thing the webhook can
+    // resolve back to a row. Guests included: an anonymous account's id survives
+    // being upgraded, so a purchase stays attached across it.
+    void identifyPurchaser(user.id)
     return () => {
       signal.cancelled = true
     }
@@ -75,6 +105,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         loading,
         error,
         refetch: () => load(),
+        syncAfterPurchase,
       }}
     >
       {children}
@@ -98,5 +129,6 @@ export function useEntitlement(): EntitlementValue {
     loading: false,
     error: null,
     refetch: async () => {},
+    syncAfterPurchase: async () => false,
   }
 }

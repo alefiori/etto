@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { MealKey } from '@/lib/constants'
 import type { CustomFoodPrefill } from '@/lib/foods'
 import { todayISO } from '@/lib/date'
@@ -82,8 +82,30 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
     id?: string
     prefill?: CustomFoodPrefill
   }>({ open: false })
-  const [paywallOpen, setPaywallOpen] = useState(false)
   const [clipboard, setClipboard] = useState<Clipboard | null>(null)
+
+  /**
+   * `?checkout=pro` opens the paywall on arrival.
+   *
+   * This is where the native apps' external-purchase link lands (see
+   * lib/purchases/externalPurchase.ts) — a link that dropped someone on the
+   * dashboard and left them to go hunting for the paywall would waste the one
+   * click the stores allow. Useful for a plain marketing link too.
+   *
+   * The parameter is stripped afterwards so a refresh, or a shared URL, doesn't
+   * reopen a modal the user has already dismissed. `replaceState` rather than a
+   * router navigation: this must not add a history entry that Back would land on.
+   */
+  const [paywallOpen, setPaywallOpen] = useState(
+    () => new URL(window.location.href).searchParams.get('checkout') === 'pro',
+  )
+
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    if (url.searchParams.get('checkout') !== 'pro') return
+    url.searchParams.delete('checkout')
+    window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash)
+  }, [])
 
   const value: AppShellValue = {
     selectedDate,

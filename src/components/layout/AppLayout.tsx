@@ -8,6 +8,7 @@ import { AddFoodModal } from '@/components/addfood/AddFoodModal'
 import { CustomFoodModal } from '@/components/addfood/CustomFoodModal'
 import { PaywallModal } from '@/components/paywall/PaywallModal'
 import { GuestBanner } from '@/components/layout/GuestBanner'
+import { useReminderSync } from '@/hooks/useReminderSync'
 
 interface NavItem {
   to: string
@@ -315,6 +316,12 @@ export default function AppLayout() {
     _paywallOpen,
     _closePaywall,
   } = useAppShell()
+
+  // Keeps the queued hydration reminders honest — see useReminderSync. It lives
+  // in the shell rather than on the Profile page because the queue has to be
+  // re-armed when the app is resumed or a drink is logged, neither of which
+  // happens anywhere near the settings that describe it. A no-op on the web.
+  useReminderSync()
 
   return (
     // No page colour of its own: the aurora is painted on <body> and the shell

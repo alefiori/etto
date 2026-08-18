@@ -60,6 +60,22 @@ const PRIVACY_MANIFEST = 'ios/App/App/PrivacyInfo.xcprivacy'
 export const LOCALES = ['en', 'it', 'fr', 'es', 'de', 'pt', 'nl']
 
 /**
+ * Storefronts the external-purchase link is declared for.
+ *
+ * Kept in sync with EXTERNAL_PURCHASE_COUNTRIES in
+ * src/lib/purchases/externalPurchase.ts — that list decides where the app *shows*
+ * the link and this one declares it to Apple, so a disagreement means either a
+ * link with no declaration (a rejection) or a declaration for a region the app
+ * never uses (harmless but misleading). A test asserts the two match.
+ */
+export const EXTERNAL_PURCHASE_REGIONS = [
+  'US',
+  'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GR', 'HR',
+  'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI',
+  'SK',
+]
+
+/**
  * Why the app wants the camera, in the words the system alert will show.
  *
  * Apple rejects vague usage strings ("this app needs camera access"). This
@@ -110,7 +126,32 @@ export function insertPlistEntries(plist, entries) {
   return plist.slice(0, marker) + entries.join('') + plist.slice(marker)
 }
 
-export function patchInfoPlist(plist, { locales = LOCALES, cameraUsage = CAMERA_USAGE } = {}) {
+/**
+ * `SKExternalPurchaseLink` — the external-purchase link's declaration.
+ *
+ * Only written when the build opts in via `VITE_EXTERNAL_PURCHASE_LINK`, because
+ * the key is inert (and the link illegal) without Apple having granted
+ * `com.apple.developer.storekit.external-purchase-link` for the same regions
+ * first. Keys are lowercase storefront region codes, one URL each; the app shows
+ * the link only on storefronts in `EXTERNAL_PURCHASE_COUNTRIES`
+ * (src/lib/purchases/externalPurchase.ts), so the two lists have to agree.
+ *
+ * **Check both key names against Apple's current documentation before enabling
+ * this.** The external-purchase rules are the most-changed corner of the review
+ * guidelines, and a declaration that no longer matches what Apple expects fails
+ * at signing or, worse, at review.
+ */
+export function externalPurchaseLinkEntries(url, regions) {
+  const items = regions
+    .map((r) => `\t\t<key>${r.toLowerCase()}</key>\n\t\t<string>${url}</string>\n`)
+    .join('')
+  return `\t<key>SKExternalPurchaseLink</key>\n\t<dict>\n${items}\t</dict>\n`
+}
+
+export function patchInfoPlist(
+  plist,
+  { locales = LOCALES, cameraUsage = CAMERA_USAGE, externalPurchase = null } = {},
+) {
   const entries = []
 
   if (!hasPlistKey(plist, 'NSCameraUsageDescription')) {
@@ -120,6 +161,10 @@ export function patchInfoPlist(plist, { locales = LOCALES, cameraUsage = CAMERA_
   if (!hasPlistKey(plist, 'CFBundleLocalizations')) {
     const items = locales.map((l) => `\t\t<string>${l}</string>\n`).join('')
     entries.push(`\t<key>CFBundleLocalizations</key>\n\t<array>\n${items}\t</array>\n`)
+  }
+
+  if (externalPurchase && !hasPlistKey(plist, 'SKExternalPurchaseLink')) {
+    entries.push(externalPurchaseLinkEntries(externalPurchase.url, externalPurchase.regions))
   }
 
   return insertPlistEntries(plist, entries)
@@ -142,10 +187,22 @@ export function patchInfoPlist(plist, { locales = LOCALES, cameraUsage = CAMERA_
  * water diary. Apple's taxonomy has no "nutrition" type and puts dietary
  * logging under fitness, so both are declared rather than guessing at one.
  *
- * The one required-reason API is UserDefaults, reached through
- * @capacitor/preferences. Reason CA92.1 is "access information from the app
- * itself" — the plugin stores this app's own preferences and reads nothing
- * written by anyone else.
+ * Two required-reason APIs are declared:
+ *
+ *   - **UserDefaults**, reached through @capacitor/preferences. Reason CA92.1 is
+ *     "access information from the app itself" — the plugin stores this app's own
+ *     preferences and reads nothing written by anyone else.
+ *   - **File timestamps**, reached through @capacitor/filesystem, which the Pro
+ *     data export uses to write the file it hands to the share sheet. Reason
+ *     C617.1 is "timestamps of files inside the app container" — the export is
+ *     written to this app's own cache directory and nowhere else. Apple's check
+ *     is on the binary rather than the call path, so the reason is declared for
+ *     the plugin being linked at all, not only for the call the app makes.
+ *
+ * PurchaseHistory is in the collected list above because Pro exists: RevenueCat
+ * is told the Supabase user id so the entitlement can be attached to an account,
+ * which makes the purchase linked-to-identity — but never used for tracking,
+ * since nothing in the app profiles anyone across apps or hands data to a broker.
  */
 export function privacyManifest() {
   const collected = [
@@ -197,6 +254,14 @@ ${entries}	</array>
 			<key>NSPrivacyAccessedAPITypeReasons</key>
 			<array>
 				<string>CA92.1</string>
+			</array>
+		</dict>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>C617.1</string>
 			</array>
 		</dict>
 	</array>
@@ -344,7 +409,21 @@ if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop()
   if (existsSync(ENV_FILE)) process.loadEnvFile(ENV_FILE)
   const teamId = process.env.APPLE_TEAM_ID?.trim() || null
 
-  writeFileSync(INFO_PLIST, patchInfoPlist(readFileSync(INFO_PLIST, 'utf8')))
+  // The external-purchase link is opt-in and off by default, so an ordinary
+  // build cannot declare a key for an entitlement Apple has not granted. Same
+  // flag the app reads (src/lib/purchases/externalPurchase.ts), and the same URL,
+  // built from VITE_SITE_URL here rather than imported — this script is plain
+  // Node and cannot load the app's modules.
+  const linkFlag = (process.env.VITE_EXTERNAL_PURCHASE_LINK ?? '').trim().toLowerCase()
+  const externalPurchase =
+    linkFlag === '1' || linkFlag === 'true'
+      ? {
+          url: `${(process.env.VITE_SITE_URL ?? 'https://macros-track.netlify.app').replace(/\/+$/, '')}/?checkout=pro`,
+          regions: EXTERNAL_PURCHASE_REGIONS,
+        }
+      : null
+
+  writeFileSync(INFO_PLIST, patchInfoPlist(readFileSync(INFO_PLIST, 'utf8'), { externalPurchase }))
   writeFileSync(PRIVACY_MANIFEST, privacyManifest())
 
   let pbxproj = patchPbxproj(readFileSync(PBXPROJ, 'utf8'))

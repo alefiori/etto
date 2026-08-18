@@ -91,7 +91,20 @@ Families" programme.
 > purchases is reachable immediately.
 >
 > To review the paywall, open Weekly Targets and tap "See Pro" on the Adaptive
-> targets card.
+> targets card, or Profile → MacroTrack Pro. Pro unlocks four things: adaptive
+> targets (Weekly Targets), the weight trend chart and its 30/90/365-day history
+> (Dashboard → Weight), hydration reminders (Profile → Hydration reminders,
+> which asks for notification permission when switched on), and data export
+> (Profile → Export your data). Everything else — logging, barcode scanning,
+> custom and community foods, water and weight logging, all 7 languages — is
+> free and needs no purchase.
+>
+> Restore purchases is available without a subscription, at Profile →
+> MacroTrack Pro and on the paywall itself.
+>
+> The same subscription can also be bought on our website, and the app honours a
+> subscription bought there (Guideline 3.1.3(b)). Purchases made *inside* the app
+> go through In-App Purchase only.
 >
 > The barcode scanner needs camera permission; any food product barcode works.
 >
@@ -111,9 +124,34 @@ Guideline 2.1 rejection.
 - [ ] Anonymous sign-ins enabled on the production Supabase project
 - [ ] `delete-account` deployed (CI does this on `main`)
 - [ ] Listing copy matches what the build actually contains — in particular,
-      **the paywall must not advertise features the binary does not have.** As
-      of this writing the in-app paywall lists four Pro features and only
-      adaptive targets exists; that is an App Store 2.3.1 rejection waiting to
-      happen and it is not fixed by anything in this folder.
-- [ ] Purchases actually work. `src/lib/purchases.ts` is still a stub that
-      reports every purchase as unavailable, so there is nothing to buy yet.
+      **the paywall must not advertise features the binary does not have** (an
+      App Store 2.3.1 rejection). All four of the features it lists now exist:
+      adaptive targets, weight trends, hydration reminders and data export. If
+      one is ever pulled, its line comes out of `FEATURE_KEYS` in
+      `src/components/paywall/PaywallModal.tsx` first.
+- [ ] The three products exist and are **approved** in App Store Connect and the
+      Play Console: `macrotrack_pro_monthly`, `macrotrack_pro_yearly`,
+      `macrotrack_pro_lifetime`. Apple will not review a build whose IAPs are
+      still in "Missing Metadata".
+- [ ] In RevenueCat: all three attached to an entitlement named exactly `pro`,
+      offered through the **current** offering, and the webhook pointed at the
+      deployed `revenuecat-webhook` with the shared secret set both sides
+- [ ] `VITE_REVENUECAT_IOS_KEY`, `VITE_REVENUECAT_ANDROID_KEY` and
+      `VITE_REVENUECAT_WEB_KEY` set as repository secrets. Unset, the paywall
+      reports purchases as unavailable — honest, but nothing can be bought.
+- [ ] Web Billing enabled in RevenueCat and connected to Stripe, with the same
+      three products, and **Stripe Tax enabled** (or web sales moved to a
+      merchant-of-record vendor). Apple and Google are the merchant of record on
+      their own sales; on web sales you are, and EU consumer VAT comes with it.
+- [ ] `VITE_EXTERNAL_PURCHASE_LINK` left **unset** unless Apple has granted
+      `com.apple.developer.storekit.external-purchase-link` for the regions in
+      `EXTERNAL_PURCHASE_COUNTRIES`. A link out with no entitlement is a
+      rejection, and can be a removal. Re-check the permitted regions and both
+      declaration key names against Apple's current documentation each time —
+      this is the fastest-moving corner of the guidelines.
+- [ ] A sandbox purchase, a **restore** on a second install, and an expiry
+      tested on real devices. Restore is at Profile → MacroTrack Pro as well as
+      on the paywall; Apple rejects builds where it is missing or buried.
+- [ ] Play Console → App content → **Notifications**: the app posts local
+      hydration reminders only (no push, no FCM). Android 13+ asks for
+      POST_NOTIFICATIONS at the moment the toggle is turned on, never at launch.

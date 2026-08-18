@@ -55,6 +55,13 @@ jobs:
       - name: Build
         run: npm run build
 
+      # The billing SDK must not end up in the precached app shell — see
+      # scripts/verify-precache.mjs. Deliberately its own step rather than tacked
+      # onto `build`: playwright.config.ts runs `npm run build -- --mode test`,
+      # and npm appends that flag to the end of the script.
+      - name: Verify the precached shell
+        run: npm run verify:precache
+
   unit:
     name: Unit tests
     runs-on: ubuntu-latest
@@ -172,6 +179,7 @@ jobs:
           npx cap add android
           npx cap sync android
           node scripts/patch-android-webview.mjs
+          node scripts/patch-android-notification-icon.mjs
           node scripts/generate-native-icons.mjs
 
       - name: Assemble debug APK

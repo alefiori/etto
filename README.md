@@ -71,16 +71,23 @@ and the palette are not; see [Theming](#theming).
   than the page. Like the language, it **follows the device by default**; the
   Appearance control on the Profile page (System / Light / Dark) pins a choice
   to the account, and the native status bar and splash screen follow along.
-- **Weight tracking** — one weigh-in a day with a trend chart that separates the
-  signal from the noise: raw readings are dots, the smoothed EWMA is the line,
-  and the reported weekly rate uses a Theil–Sen fit so an overnight water swing
-  doesn't read as a gain.
+- **Weight tracking** — one weigh-in a day, free. The **trends** *(Pro)*
+  separate the signal from the noise: raw readings are dots, the smoothed EWMA is
+  the line, and the reported weekly rate uses a Theil–Sen fit so an overnight
+  water swing doesn't read as a gain, over 30, 90 or 365 days.
 - **Water tracking** — quick-add glasses and bottles against a daily goal that
   derives itself from your bodyweight until you set one.
+- **Hydration reminders** *(Pro)* — local notifications through the waking hours
+  you pick, at the interval you pick, that **stop for the day once the goal is
+  met**. Scheduled on the device, in its own local time, so nothing about your
+  drinking is pushed from a server.
 - **Adaptive targets** *(Pro)* — estimates what you actually burn from logged
   intake versus measured weight change, rather than multiplying a BMR formula by
   an activity guess, and explains every adjustment. Refuses to answer, by name,
   when the data can't support one.
+- **Data export** *(Pro)* — the food log as a CSV with the macros already scaled
+  to what you logged, or the whole account as JSON with its units named in the
+  file. Downloads in a browser; goes to the share sheet as a real file natively.
 - **Installable PWA** — add to home screen / install as an app; the app shell is
   precached so it launches offline.
 - **Native iOS, iPadOS and Android** via Capacitor, from the same bundle. The
@@ -103,7 +110,8 @@ and the palette are not; see [Theming](#theming).
 | i18n       | Zero-dependency in-house catalog (7 locales)                    |
 | PWA        | `vite-plugin-pwa` (Workbox) + `@vite-pwa/assets-generator`      |
 | Native     | Capacitor 8 (iOS + Android) from the same Vite bundle           |
-| Payments   | RevenueCat → webhook → Supabase (entitlement decided server-side) |
+| Payments   | RevenueCat → webhook → Supabase (entitlement decided server-side). Store billing natively, Web Billing (Stripe rails) in the browser |
+| Reminders  | `@capacitor/local-notifications`, scheduled on-device (no push) |
 
 ## Getting started
 
@@ -129,7 +137,7 @@ supabase db push
 ```
 
 **Option B — Supabase SQL Editor:** open the SQL Editor in the dashboard and run
-each migration file **in order** (`0001_init.sql` → `0013_theme.sql`).
+each migration file **in order** (`0001_init.sql` → `0015_hydration_reminders.sql`).
 
 Together the migrations create `macro_targets`, `foods`, `food_logs`,
 `profiles`, and `meals`; enable RLS with owner-only policies (global foods with a
@@ -303,7 +311,9 @@ still builds.
 | `detectSessionInUrl` | `true` | `false` — under hash routing the fragment is `#/signin`, which supabase-js would try to parse as an auth callback it doesn't own |
 | Share / clipboard | Web Share API → clipboard | `@capacitor/share` → `@capacitor/clipboard`; both Web APIs are unavailable on the custom scheme |
 | Hardware back | — | Closes the topmost overlay, else goes back, else exits ([`nativeBootstrap.ts`](src/lib/nativeBootstrap.ts)) |
-| Purchases | Reported unavailable | RevenueCat (see below) |
+| Purchases | RevenueCat Web Billing (Stripe rails), in-browser checkout | RevenueCat over App Store / Play billing, as 3.1.1 requires. May additionally *link* to web checkout where the stores permit it |
+| Hydration reminders | Settings save, nothing fires — a closed tab wakes for nobody, and the card says so | `@capacitor/local-notifications`, scheduled on the device in its local time |
+| Data export | `Blob` download | Written to the cache directory with `@capacitor/filesystem`, then handed to the share sheet as a file — a year of logs is not a chat message |
 
 ### iPad
 
@@ -386,6 +396,7 @@ if a Capacitor upgrade reshapes what it patches:
 | Script | What and why |
 | --- | --- |
 | [`patch-android-webview.mjs`](scripts/patch-android-webview.mjs) | Pins WebView text zoom at 100%, so a large system font can't overflow the fixed chrome |
+| [`patch-android-notification-icon.mjs`](scripts/patch-android-notification-icon.mjs) | Writes `ic_stat_water_drop`, the hydration reminders' small icon. Android draws a small icon as a silhouette — alpha only — so the full-colour launcher icon Capacitor falls back to arrives in the status bar as a solid grey blob |
 | [`patch-ios-project.mjs`](scripts/patch-ios-project.mjs) | `NSCameraUsageDescription` (without it iOS **terminates** the app on the first barcode scan), `CFBundleLocalizations` (the app localizes itself in JS, so iOS would otherwise advertise it as English-only), and the app's `PrivacyInfo.xcprivacy` — written *and* registered in the pbxproj Resources phase, since an unregistered file is never copied into the bundle. Also sets `DEVELOPMENT_TEAM` from `$APPLE_TEAM_ID` when one is set, since the template's empty team blocks every device build and Xcode's own fix is undone by the next sync |
 | [`verify-ipad.mjs`](scripts/verify-ipad.mjs) | Asserts the iPad invariants Capacitor currently supplies for free |
 
@@ -393,15 +404,23 @@ if a Capacitor upgrade reshapes what it patches:
 
 - `npx cap add ios` / `android` need macOS + Xcode and the Android SDK
   respectively; the generated projects are gitignored.
-- **Purchases don't work yet.** [`src/lib/purchases.ts`](src/lib/purchases.ts)
-  is a stub that reports every purchase as unavailable, even on a device. Wire
-  the RevenueCat SDK; `appUserID` **must** be the Supabase user id — that is
-  what the webhook reads from `event.app_user_id` — and the prices shown must
-  come from the store's offering rather than the hardcoded `PLANS` strings.
-- **The paywall advertises four Pro features and only one exists.** Adaptive
-  targets is built and gated; weight trends are built but ungated; hydration
-  reminders and export don't exist. Listing features the binary doesn't contain
-  is an App Store 2.3.1 rejection. Either cut the list or build them.
+- **Pro needs its store-side accounts filled in.** The code is done — see
+  [Pro subscription](#pro-subscription) — but three products
+  (`macrotrack_pro_monthly` / `_yearly` / `_lifetime`) have to exist in App Store
+  Connect, the Play Console and RevenueCat Web Billing, be attached to a `pro`
+  entitlement in RevenueCat and offered through its **current** offering, and the
+  three publishable SDK keys have to be set. Unset, the paywall reports purchases
+  as unavailable rather than failing on the first tap, which is what CI does.
+  Sandbox-test a purchase, a restore and an expiry on a real device, and a live
+  purchase on the deployed web app: nothing below the `purchasesAvailable()` line
+  can be exercised by the test suites.
+- **Web sales make you the merchant of record.** Apple and Google handle consumer
+  VAT on their own sales; on Web Billing you (through Stripe) do not get that for
+  free. Enable Stripe Tax, or move web sales to a merchant-of-record vendor,
+  before taking money in the EU.
+- **The external-purchase link stays off until Apple grants the entitlement.**
+  `VITE_EXTERNAL_PURCHASE_LINK` is unset by default and every gate around it
+  fails closed; see [Linking out of the native apps](#linking-out-of-the-native-apps).
 - Swap [`BarcodeScanner.tsx`](src/components/addfood/BarcodeScanner.tsx) to
   `@capacitor-mlkit/barcode-scanning`. Keep its `{ onDetected, onClose }` props
   and `AddFoodModal` needs no change; the existing `scanner.denied|notFound|inUse`
@@ -459,8 +478,17 @@ deliberately **no** insert, update or delete policy, so the database denies any
 client write. The only writer is the
 [`revenuecat-webhook`](supabase/functions/revenuecat-webhook) Edge Function,
 running with the service role. RevenueCat is the source of truth because it is
-the only party that has verified the receipt with Apple or Google; the on-device
-SDK cache is a UI fast path, never authority.
+the only party that has verified the receipt with Apple, Google or Stripe; an
+SDK's local cache is a UI fast path, never authority.
+
+**Three storefronts, one table.** Pro can be bought in the iOS app, in the
+Android app, or on the web, and all three arrive through that one webhook — which
+is why `subscriptions.store` has allowed `'stripe'` alongside the two app stores
+since 0012, and why `normalize.ts` has always mapped RevenueCat's `STRIPE`. The
+consequence worth stating plainly: **a web purchase unlocks Pro in the native
+apps, and vice versa, with no extra code.** `isPro` is read from the server row,
+never from a store SDK, so honouring a subscription bought elsewhere — which
+Apple's guideline 3.1.3(b) explicitly permits — costs nothing.
 
 ```bash
 supabase functions deploy revenuecat-webhook --no-verify-jwt
@@ -475,6 +503,144 @@ Supabase JWT — the shared secret authenticates it instead.
 is stored. Webhook retries can arrive out of order, so an event stamped earlier
 than the state already stored is ignored — otherwise a redelivered `EXPIRATION`
 could revoke a customer whose `RENEWAL` had already landed.
+
+### The client half
+
+[`src/lib/purchases/`](src/lib/purchases) is the only place a RevenueCat SDK is
+touched. It is one interface over two backends, chosen at runtime:
+
+| | Backend | SDK | Why it has to be this one |
+| --- | --- | --- | --- |
+| iOS / Android | [`native.ts`](src/lib/purchases/native.ts) | `@revenuecat/purchases-capacitor` | Apple 3.1.1 and Google Play Billing require store billing for purchases made inside an app |
+| Browser | [`web.ts`](src/lib/purchases/web.ts) | `@revenuecat/purchases-js` (Web Billing, on Stripe rails) | There is no store in a browser |
+
+[`types.ts`](src/lib/purchases/types.ts) holds the seam the two implement and the
+vocabulary the UI speaks; [`index.ts`](src/lib/purchases/index.ts) picks between
+them. Both SDKs load through dynamic imports, so neither reaches a bundle that
+cannot use it, and a session that never opens the paywall downloads neither.
+
+**Why Web Billing rather than talking to Stripe directly.** Purchases land
+through the *existing* webhook as `store: 'STRIPE'`. That means one webhook to
+secure, one place with replay guards and signature verification to get right, and
+one answer to "is this person Pro?" — against a second billing integration with
+its own copy of all three. The trade is a fee on top of Stripe's, and one
+operational fact worth knowing before launch: on App Store and Play sales Apple
+and Google are the merchant of record and handle consumer VAT; on web sales
+**you** are, so enable Stripe Tax or use a merchant-of-record vendor.
+
+Three things about the backends are load-bearing:
+
+- **`appUserID` is the Supabase user id, always.** That is the only value
+  `event.app_user_id` can be resolved back to a row, and the webhook rejects
+  anything else — RevenueCat's own `$RCAnonymousID:` included, which both SDKs
+  will happily mint if left to themselves. Either SDK is therefore *only* ever
+  configured through `identifyPurchaser(userId)`, called
+  from `EntitlementProvider` whenever the signed-in user changes, and
+  `forgetPurchaser()` on sign-out so the next person to sign in on a shared
+  device cannot buy Pro for the last one. Guests are identified too: an anonymous
+  Supabase account's id survives being upgraded, so a purchase stays attached
+  across it.
+- **Prices come from the store's offering**, matched onto the three plans by
+  RevenueCat's package types first and by product identifier second, so a
+  dashboard assembled from custom packages still resolves. Any plan the store
+  doesn't answer for falls back to the `PLANS` strings and reports itself as
+  unbuyable on tap, rather than leaving a hole in the paywall. Introductory
+  offers and free trials are disclosed on the plan they belong to, which is where
+  both stores require them.
+- **A purchase does not unlock anything by itself.** `purchasePackage` returns
+  the moment payment clears, seconds before the webhook writes the row the app
+  actually gates on, so the paywall calls `syncAfterPurchase()` →
+  `waitForProEntitlement()`, which re-reads `public.subscriptions` with backoff
+  for about ten seconds. If it hasn't landed by then the paywall stays open and
+  says the purchase is still syncing — never "something went wrong", which is
+  what a paying customer would otherwise be told.
+
+Set the three publishable keys — `VITE_REVENUECAT_IOS_KEY`,
+`VITE_REVENUECAT_ANDROID_KEY` and `VITE_REVENUECAT_WEB_KEY` (see
+[`.env.example`](.env.example)). Unset, `purchasesAvailable()` is false for that
+platform and the paywall says so in the platform's own words — deliberately not a
+crash on the first tap. That is the state CI and the e2e suite build in.
+
+### Linking out of the native apps
+
+Store billing is the only purchase path *inside* the native shell, but both
+stores have been compelled to permit an external *link* in some regions — the US
+after the *Epic* injunctions, the EU under the DMA. That link is built
+([`externalPurchase.ts`](src/lib/purchases/externalPurchase.ts)) and lands on
+`?checkout=pro`, which AppShellProvider reads to open the paywall on arrival
+rather than dropping the user on a dashboard to go hunting.
+
+It is shown only when **all** of these hold, and the default is off:
+
+1. `VITE_EXTERNAL_PURCHASE_LINK=1`. This stands in for a fact the app cannot
+   detect: that Apple has granted
+   `com.apple.developer.storekit.external-purchase-link` for the same regions. A
+   link without the entitlement is a rejection, so no build made before that
+   paperwork exists can carry one.
+2. The **storefront** country is in `EXTERNAL_PURCHASE_COUNTRIES` — read from the
+   store, not from the device language, because the storefront is what decides
+   which regional rules apply to an install.
+3. The user has a real account. A guest's anonymous session cannot be signed into
+   on the web, so linking one out would strand them at a checkout they cannot
+   authenticate against.
+
+That country list is **legal policy, not a constant.** It has changed repeatedly
+and will again; re-check it before every submission. Turning the flag on also
+makes [`patch-ios-project.mjs`](scripts/patch-ios-project.mjs) write the matching
+`SKExternalPurchaseLink` into Info.plist, from its own copy of the region list —
+a test compares the two, since a link with no matching declaration is refused.
+
+### The four features, and where each one's gate is
+
+| Feature | Free | Pro | Gate |
+| --- | --- | --- | --- |
+| Adaptive targets | Upgrade prompt in place of the panel | The panel, and the queries behind it | [`AdaptiveTargets`](src/components/targets/AdaptiveTargets.tsx) — `enabled` folds `isPro` in, so a non-subscriber issues no adaptive queries at all |
+| Weight trends | Logging a weigh-in, and the latest reading | The EWMA line, the weekly rate, and the 30/90/365 windows | [`WeightCard`](src/components/dashboard/WeightCard.tsx) — the card is split rather than gated whole: without free logging there is no data for a trend to be made of, and no reason to subscribe |
+| Hydration reminders | Upgrade prompt | The toggle, window and interval — and a device that actually fires them | [`HydrationReminders`](src/components/profile/HydrationReminders.tsx) for the UI, and `syncReminders({ isPro })` again at the scheduler, so a lapsed subscription silences the phone rather than leaving a week of queued notifications behind |
+| Data export | Upgrade prompt | CSV and JSON | [`DataExport`](src/components/profile/DataExport.tsx) |
+
+`ProGate` renders the locked state rather than hiding the feature, and resolves
+to locked while the entitlement is still loading, so a slow network cannot
+briefly hand out a paid feature.
+
+### Hydration reminders
+
+Local notifications, not push: [`0015_hydration_reminders.sql`](supabase/migrations/0015_hydration_reminders.sql)
+stores only the *intent* (on/off, window, interval) and every device the account
+is signed into arms itself from that, in its own local time. There is no device
+token, no per-device registry, and a user who flies to Tokyo gets their 9-to-21
+window *there* — which a server-side scheduler would get wrong.
+
+The plugin has no "every two hours between 9 and 21" primitive, so
+[`plannedReminders`](src/lib/reminders.ts) materializes the schedule as
+individual notifications a week ahead, and the whole queue is rebuilt — never
+diffed — whenever anything it depends on changes: the settings, the entitlement,
+a drink being logged, or the app returning to the foreground
+([`useReminderSync`](src/hooks/useReminderSync.ts)). That last one is what fixes
+"the queue was built yesterday and it is now tomorrow". The policy lives in one
+pure function and is tested as such: today's passed slots are dropped, the rest
+of today is dropped once the goal is met, and the total is capped at 60 because
+iOS keeps only the 64 soonest and would otherwise silently drop the *later* days.
+
+Permission is requested when the toggle is turned on, never at start-up, and a
+refusal leaves the stored setting `false` — a `true` the OS will not honour is a
+claim the settings card would then keep making.
+
+### Data export
+
+Two formats, because they answer different questions.
+[`exportData.ts`](src/lib/exportData.ts) reads the whole account (no date range —
+an export that quietly stopped at 90 days is the kind of half-answer that makes
+people distrust the feature) and then formats it purely: **CSV** is the food log,
+one row per logged food with the macros already scaled to the amount logged,
+because a spreadsheet is what people actually do this with and stored `servings`
+against per-serving macros is not one; **JSON** is the complete record with a
+header naming the app, the schema version and every unit, so the file is still
+readable by someone who no longer has the app.
+
+The billing row is deliberately excluded. It is store-side state the client can
+only read, it says nothing about the user's own logging, and an export is not the
+place to hand someone back their transaction identifiers.
 
 ## How external food data is modeled
 
@@ -643,17 +809,22 @@ app would otherwise flash white on every dark-mode load.
 ```
 src/
   components/   # layout (incl. guest banner), UI primitives, profile settings,
-                #   Add Food modal, barcode scanner
+                #   Add Food modal, barcode scanner, paywall (modal + ProGate)
   context/      # AuthContext, ProfileContext, ThemeContext, I18nContext,
-                #   MealsContext, AppShellContext
-  hooks/        # useFoodLogs, useTargets, useFoodSearch, useDebounce, useScrollLock
+                #   MealsContext, AppShellContext, EntitlementContext
+  hooks/        # useFoodLogs, useTargets, useFoodSearch, useDebounce,
+                #   useScrollLock, useReminderSync
   lib/          # supabase client, macros math, foodApi (Edge Function client),
                 #   foods (CRUD/copy/share), meals (rename/reorder), exportText
-                #   (chat share), i18n, theme (light/dark), types
+                #   (chat share), exportData (full CSV/JSON export), purchases
+                #   (RevenueCat), entitlement (Pro read + purchase sync),
+                #   reminders (local notification scheduling), i18n,
+                #   theme (light/dark), types
   pages/        # Auth, ForgotPassword, Dashboard, Targets, MyFoods, CreateCustomFood, Profile
 supabase/
-  functions/    # food-search Edge Function (external food data proxy)
+  functions/    # food-search + revenuecat-webhook + delete-account Edge Functions
   migrations/   # SQL schema + RLS + profiles + community foods + editable meals
+                #   + subscriptions + hydration reminders
 ```
 
 ## Testing

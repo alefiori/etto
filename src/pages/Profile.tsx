@@ -12,6 +12,9 @@ import { Spinner } from '@/components/ui/Spinner'
 import { MealSettings } from '@/components/profile/MealSettings'
 import { BodyMetrics } from '@/components/profile/BodyMetrics'
 import { WaterSettings } from '@/components/profile/WaterSettings'
+import { HydrationReminders } from '@/components/profile/HydrationReminders'
+import { ProSubscription } from '@/components/profile/ProSubscription'
+import { DataExport } from '@/components/profile/DataExport'
 import { AboutSection } from '@/components/profile/AboutSection'
 import { DeleteAccount } from '@/components/profile/DeleteAccount'
 
@@ -199,8 +202,25 @@ export default function Profile() {
 
         <hr className="border-surface-container-highest" />
 
+        {/* Reminders against that goal — Pro, and native-only in practice */}
+        <HydrationReminders />
+
+        <hr className="border-surface-container-highest" />
+
         {/* Meals: names, how many there are, and their order */}
         <MealSettings />
+
+        <hr className="border-surface-container-highest" />
+
+        {/* Subscription status, restore, and the store's own manage link. Above
+            the export because a lapsed subscriber looking for either one is
+            really looking for this. */}
+        <ProSubscription />
+
+        <hr className="border-surface-container-highest" />
+
+        {/* Take everything with you — Pro */}
+        <DataExport />
 
         <hr className="border-surface-container-highest" />
 

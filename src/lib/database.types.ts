@@ -66,6 +66,13 @@ export type Profile = {
   unit_system: UnitSystem
   /** Explicit daily hydration goal in ml; null means derive it from bodyweight. */
   water_goal_ml: number | null
+  /** When true, the device schedules local hydration reminders (Pro). */
+  water_reminders_enabled: boolean
+  /** Reminder window in the device's local time; end is exclusive (1-24). */
+  water_reminder_start_hour: number
+  water_reminder_end_hour: number
+  /** Gap between reminders inside the window, 30-480. */
+  water_reminder_interval_minutes: number
   /** When true, the adaptive engine owns macro_targets and the manual grid is read-only. */
   adaptive_targets_enabled: boolean
   created_at: string

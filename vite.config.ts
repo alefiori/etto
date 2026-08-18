@@ -42,6 +42,20 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         // Precache the app shell so it launches offline.
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
+        // One chunk is deliberately *not* part of the shell: the RevenueCat Web
+        // Billing SDK, ~200 KB gzipped behind a dynamic import that most sessions
+        // never reach. Precaching it would make every first visit pay most of the
+        // shell again for code that cannot work offline anyway — there is no
+        // taking a payment without a network.
+        //
+        // The barcode scanner is comparably large and stays precached on purpose:
+        // scanning in a shop with bad signal is a real thing this app is for.
+        //
+        // Named by its entry module, which is what Rolldown derives the chunk name
+        // from. `scripts/verify-precache.mjs` runs after the build and fails if it
+        // lands in the manifest anyway, so a bundler upgrade that renames the
+        // chunk is caught rather than silently regressing the shell.
+        globIgnores: ['**/Purchases.es-*.js'],
         navigateFallback: '/index.html',
         // Don't serve the SPA fallback for Supabase / API calls.
         navigateFallbackDenylist: [/^\/api/, /supabase\.co/],
