@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import type { MealKey } from '@/lib/constants'
 import type { CustomFoodPrefill } from '@/lib/foods'
 import { todayISO } from '@/lib/date'
+import { useDayRollover } from '@/hooks/useDayRollover'
 
 /**
  * What is waiting to be pasted, if anything.
@@ -106,6 +107,17 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
     url.searchParams.delete('checkout')
     window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash)
   }, [])
+
+  /**
+   * Re-opening the app after midnight starts on the new day.
+   *
+   * The date is picked once at mount, and backgrounding the app doesn't
+   * unmount it — so without this, yesterday stays on screen and today's
+   * breakfast gets logged against it. Snapping back unconditionally (rather
+   * than only when the user was sitting on "today") is the point: the first
+   * thing you see on re-opening is the day you are actually in.
+   */
+  useDayRollover((today) => setSelectedDate(today))
 
   const value: AppShellValue = {
     selectedDate,
