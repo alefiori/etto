@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { javaSource, kotlinSource, packageOf } from './patch-android-webview.mjs'
+import { MAX_TEXT_ZOOM, javaSource, kotlinSource, packageOf } from './patch-android-webview.mjs'
+
+describe('MAX_TEXT_ZOOM', () => {
+  it('is the 200% WCAG 1.4.4 asks for, matching MAX_TEXT_SCALE on iOS', () => {
+    expect(MAX_TEXT_ZOOM).toBe(200)
+  })
+})
 
 describe('packageOf', () => {
   it('reads the package from a Java source', () => {
@@ -27,9 +33,14 @@ describe('javaSource', () => {
     expect(src).toContain('public class MainActivity extends BridgeActivity {')
   })
 
-  it('pins the WebView text zoom to 100 after super.onStart', () => {
+  it('clamps the WebView text zoom rather than pinning it', () => {
     expect(src).toContain('super.onStart();')
-    expect(src).toContain('getBridge().getWebView().getSettings().setTextZoom(100);')
+    expect(src).toContain(`settings.setTextZoom(Math.min(settings.getTextZoom(), ${MAX_TEXT_ZOOM}));`)
+    expect(src).toContain('import android.webkit.WebSettings;')
+  })
+
+  it('never pins the zoom at 100%, which would ignore the system setting', () => {
+    expect(src).not.toContain('setTextZoom(100)')
   })
 })
 
@@ -41,8 +52,12 @@ describe('kotlinSource', () => {
     expect(src).not.toContain('package app.macrotrack;')
   })
 
-  it('pins the WebView text zoom to 100', () => {
+  it('clamps the WebView text zoom rather than pinning it', () => {
     expect(src).toContain('override fun onStart()')
-    expect(src).toContain('bridge.webView.settings.textZoom = 100')
+    expect(src).toContain(`settings.textZoom = minOf(settings.textZoom, ${MAX_TEXT_ZOOM})`)
+  })
+
+  it('never pins the zoom at 100%, which would ignore the system setting', () => {
+    expect(src).not.toContain('textZoom = 100')
   })
 })

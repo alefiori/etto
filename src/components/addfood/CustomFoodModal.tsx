@@ -1,7 +1,8 @@
-import { useEffect, useId, useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useScrollLock } from '@/hooks/useScrollLock'
-import { pushOverlay } from '@/lib/nativeBootstrap'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { useOverlayDismiss } from '@/hooks/useOverlayDismiss'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner, LoadingBlock } from '@/components/ui/Spinner'
 import { useAppShell } from '@/context/AppShellContext'
@@ -55,6 +56,7 @@ export function CustomFoodModal({
 }) {
   const navigate = useNavigate()
   const titleId = useId()
+  const panelRef = useRef<HTMLDivElement>(null)
   const isEdit = Boolean(foodId)
   const { selectedDate, bumpFoodLogVersion } = useAppShell()
   const { t } = useI18n()
@@ -79,19 +81,8 @@ export function CustomFoodModal({
   const [error, setError] = useState<string | null>(null)
 
   useScrollLock(true)
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', onKey)
-    // See Modal: Android sends no Escape, so back must find this too.
-    const unregister = pushOverlay(onClose)
-    return () => {
-      window.removeEventListener('keydown', onKey)
-      unregister()
-    }
-  }, [onClose])
+  useFocusTrap(true, panelRef)
+  useOverlayDismiss(true, onClose)
 
   // Edit mode: load the existing custom food and fill the form.
   useEffect(() => {
@@ -197,7 +188,10 @@ export function CustomFoodModal({
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <div className="animate-sheet-up flex max-h-[92dvh] w-full flex-col rounded-t-[36px] sm:max-h-[88vh] sm:max-w-[32rem] sm:rounded-lens glass-sheet">
+      <div
+        ref={panelRef}
+        className="animate-sheet-up flex max-h-[92dvh] w-full flex-col rounded-t-[36px] sm:max-h-[88vh] sm:max-w-[32rem] sm:rounded-lens glass-sheet"
+      >
         {/* Header — pinned, so the sheet always says what it is. */}
         <div className="flex shrink-0 flex-col gap-md p-lg pb-md">
           {/* Grab handle — the phone-only affordance for a sheet you can dismiss. */}
@@ -208,7 +202,7 @@ export function CustomFoodModal({
             </h2>
             <button
               onClick={onClose}
-              className="shrink-0 rounded-full glass-chip p-2 text-on-surface transition-colors"
+              className="tap-target flex shrink-0 items-center justify-center rounded-full glass-chip p-2 text-on-surface transition-colors"
               aria-label={t('common.close')}
             >
               <Icon name="close" className="text-sm" />
@@ -240,7 +234,7 @@ export function CustomFoodModal({
               onSubmit={(e) => e.preventDefault()}
             >
               {error && (
-                <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+                <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
                   {error}
                 </p>
               )}
@@ -254,6 +248,7 @@ export function CustomFoodModal({
                     {t('createFood.foodName')}
                   </label>
                   <input
+                    data-autofocus
                     id="foodName"
                     type="text"
                     value={name}
@@ -405,7 +400,7 @@ export function CustomFoodModal({
                 disabled={busy}
                 className="flex min-h-2xl flex-1 items-center justify-center gap-2 rounded-full font-label-md text-label-md font-semibold transition-all hover:brightness-105 active:scale-95 disabled:opacity-60 grad-primary"
               >
-                {busy ? <Spinner className="h-4 w-4" /> : <Icon name="save" className="text-[20px]" />}
+                {busy ? <Spinner className="h-4 w-4" /> : <Icon name="save" className="text-[1.25rem]" />}
                 {isEdit ? t('createFood.saveChanges') : t('createFood.saveFood')}
               </button>
               <button
@@ -414,7 +409,7 @@ export function CustomFoodModal({
                 disabled={busy}
                 className="flex min-h-2xl flex-1 items-center justify-center gap-2 rounded-full bg-primary-tint/20 font-label-md text-label-md font-semibold text-primary transition-all hover:bg-primary-tint/30 active:scale-95 disabled:opacity-60"
               >
-                <Icon name="add_task" className="text-[20px]" />
+                <Icon name="add_task" className="text-[1.25rem]" />
                 {t('createFood.saveAddToday')}
               </button>
             </div>

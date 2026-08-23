@@ -159,7 +159,12 @@ export default function Dashboard() {
             {isToday(selectedDate) ? formatLong(selectedDate, locale) : formatMonthDay(selectedDate, locale)}
           </p>
         </div>
-        <div className="flex items-center justify-end gap-sm">
+        {/* `flex-wrap`: at the reader's default these three sit on one line, but
+            at a large text size the two actions plus the day stepper are wider
+            than a phone and the actions were being pushed clean off the card —
+            content lost to a font-size setting, which is the whole failure
+            this pass is here to fix. Wrapping costs a row and loses nothing. */}
+        <div className="flex flex-wrap items-center justify-end gap-sm">
           <button
             onClick={() => handleShare(formatDayText(logs, selectedDate, locale, t, meals))}
             disabled={logsLoading || logs.length === 0}
@@ -183,7 +188,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-sm rounded-full p-1 glass-chip">
             <button
               onClick={() => setSelectedDate(addDays(selectedDate, -1))}
-              className="flex items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
+              className="tap-target flex items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
               aria-label={t('dashboard.previousDay')}
             >
               <Icon name="chevron_left" />
@@ -196,7 +201,7 @@ export default function Dashboard() {
             </button>
             <button
               onClick={() => setSelectedDate(addDays(selectedDate, 1))}
-              className="flex items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
+              className="tap-target flex items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
               aria-label={t('dashboard.nextDay')}
             >
               <Icon name="chevron_right" />
@@ -216,7 +221,7 @@ export default function Dashboard() {
           }`}
         >
           <div className="flex min-w-0 items-center gap-sm text-on-surface">
-            <Icon name="content_paste" className="shrink-0 text-[20px] text-primary" />
+            <Icon name="content_paste" className="shrink-0 text-[1.25rem] text-primary" />
             <p className="truncate font-body-md text-body-md">
               {clipboard.kind === 'day' && (
                 <>
@@ -254,19 +259,19 @@ export default function Dashboard() {
               <button
                 onClick={handlePasteDay}
                 disabled={!canPasteHere || pasting}
-                className="flex h-9 items-center gap-xs rounded-full px-3.5 font-label-md text-label-md transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 grad-primary"
+                className="flex min-h-9 items-center gap-xs rounded-full px-3.5 font-label-md text-label-md transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 grad-primary"
                 title={canPasteHere ? t('dashboard.pasteIntoThisDay') : t('dashboard.navigateToPaste')}
               >
-                {pasting ? <Spinner className="h-4 w-4" /> : <Icon name="content_paste" className="text-[16px]" />}
+                {pasting ? <Spinner className="h-4 w-4" /> : <Icon name="content_paste" className="text-[1rem]" />}
                 {t('dashboard.pasteHere')}
               </button>
             )}
             <button
               onClick={clearClipboard}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
+              className="tap-target flex min-h-10 min-w-10 shrink-0 items-center justify-center p-2 rounded-full text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
               aria-label={t(CLEAR_ARIA[clipboard.kind])}
             >
-              <Icon name="close" className="text-[18px]" />
+              <Icon name="close" className="text-[1.125rem]" />
             </button>
           </div>
         </div>
@@ -278,7 +283,7 @@ export default function Dashboard() {
       <Toast message={notice} />
 
       {actionError && (
-        <p className="rounded-lens bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+        <p role="alert" className="rounded-lens bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
           {actionError}
         </p>
       )}
@@ -332,10 +337,10 @@ export default function Dashboard() {
                       {t(`macro.${m.key}`)}
                     </h3>
                     <span
-                      className="hidden h-[30px] w-[30px] items-center justify-center rounded-full md:flex"
+                      className="hidden min-h-[30px] min-w-[30px] items-center justify-center rounded-full p-1 md:flex"
                       style={{ color: m.color, backgroundColor: m.tint }}
                     >
-                      <Icon name={m.icon} className="text-[17px]" />
+                      <Icon name={m.icon} className="text-[1.0625rem]" />
                     </span>
                   </div>
                   <ProgressRing
@@ -344,9 +349,21 @@ export default function Dashboard() {
                     color={m.color}
                     trackColor={RING_TRACK}
                     drawDelay={drawDelay(i)}
-                    className="relative mt-2 h-[84px] w-[84px] md:h-[124px] md:w-[124px]"
+                    label={t('dashboard.macroRingAria', {
+                      macro: t(`macro.${m.key}`),
+                      consumed: round(c, 0),
+                      target: round(tgt, 0),
+                      remaining: round(remaining(tgt, c), 0),
+                    })}
+                    // Fluid, not fixed. A dial is a box drawn around type, so it has to
+                    // grow with the type — but it also lives in a third of a phone's
+                    // width, so it must never grow past the card and get clipped by
+                    // its `overflow-hidden`. `w-full` up to the drawn size does both:
+                    // identical at the reader's default, and it gives up its own
+                    // proportions rather than the numbers inside it when text scales.
+                    className="relative mt-2 aspect-square w-full max-w-[5.25rem] md:max-w-[7.75rem]"
                   >
-                    <span className="font-headline-md text-xl text-on-surface md:text-[30px] md:leading-8">
+                    <span className="font-headline-md text-xl text-on-surface md:text-[1.875rem] md:leading-8">
                       {round(c, 0)}
                       <span className="text-xs font-normal text-on-surface-variant md:text-sm">g</span>
                     </span>
@@ -388,7 +405,7 @@ export default function Dashboard() {
               style={{ animationDelay: '120ms' }}
             >
               {error && (
-                <p className="rounded-lens bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+                <p role="alert" className="rounded-lens bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
                   {error}
                 </p>
               )}
@@ -458,7 +475,12 @@ export default function Dashboard() {
                     target={goalKcal}
                     color="rgba(255,255,255,.95)"
                     trackColor="rgba(255,255,255,.22)"
-                    className="h-[172px] w-[172px]"
+                    label={t('dashboard.calorieRingAria', {
+                      consumed: Math.round(consumedKcal).toLocaleString(),
+                      goal: Math.round(goalKcal).toLocaleString(),
+                      remaining: remainingKcal.toLocaleString(),
+                    })}
+                    className="aspect-square w-full max-w-[10.75rem]"
                   >
                     <span className="block font-data-display text-data-display leading-none">
                       {Math.round(consumedKcal).toLocaleString()}
@@ -530,14 +552,20 @@ function MealCard({
 
   return (
     <div className={`rounded-lens p-md md:p-lg glass ${empty ? 'border-dashed border-outline' : ''}`}>
-      <div className="mb-md flex items-center justify-between gap-sm border-b border-(--glass-row-border) pb-sm">
-        <div className="flex min-w-0 items-center gap-sm">
+      {/* `flex-wrap` plus a floor on the name's width. The meal's name was
+          competing on one line with two icon buttons and the calorie total,
+          and `truncate` resolved that competition by deleting the name — at
+          150% text "Breakfast" came out as "B…". Below the floor the actions
+          drop to a second row instead, which costs a line and keeps the word.
+          The floor is in rem, so it rises with the text that needs the room. */}
+      <div className="mb-md flex flex-wrap items-center justify-between gap-sm border-b border-(--glass-row-border) pb-sm">
+        <div className="flex min-w-[8rem] flex-1 items-center gap-sm">
           <span
             className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
               empty ? 'text-on-surface-variant glass-chip' : 'bg-primary-tint/[0.14] text-primary'
             }`}
           >
-            <Icon name={icon} className="text-[19px]" />
+            <Icon name={icon} className="text-[1.1875rem]" />
           </span>
           <h3
             className={`truncate font-headline-md text-headline-md ${
@@ -547,15 +575,15 @@ function MealCard({
             {label}
           </h3>
         </div>
-        <div className="flex shrink-0 items-center gap-sm">
+        <div className="ml-auto flex shrink-0 items-center gap-sm">
           {canPaste && (
             <button
               onClick={onPaste}
               disabled={pasting}
-              className="flex h-9 items-center gap-xs rounded-full px-3.5 font-label-md text-label-md transition-opacity hover:opacity-90 disabled:opacity-40 grad-primary"
+              className="flex min-h-9 items-center gap-xs rounded-full px-3.5 font-label-md text-label-md transition-opacity hover:opacity-90 disabled:opacity-40 grad-primary"
               title={t('dashboard.pasteMealHere')}
             >
-              {pasting ? <Spinner className="h-4 w-4" /> : <Icon name="content_paste" className="text-[16px]" />}
+              {pasting ? <Spinner className="h-4 w-4" /> : <Icon name="content_paste" className="text-[1rem]" />}
               {t('dashboard.pasteMealHere')}
             </button>
           )}
@@ -571,19 +599,19 @@ function MealCard({
             <div className="flex items-center gap-0.5">
               <button
                 onClick={onShare}
-                className="flex h-10 w-10 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) hover:text-primary"
+                className="tap-target flex min-h-10 min-w-10 items-center justify-center p-2 rounded-full text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) hover:text-primary"
                 aria-label={t('dashboard.shareMealAria', { meal: label })}
                 title={t('dashboard.shareMealAria', { meal: label })}
               >
-                <Icon name="ios_share" className="text-[20px]" />
+                <Icon name="ios_share" className="text-[1.25rem]" />
               </button>
               <button
                 onClick={onCopy}
-                className="flex h-10 w-10 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) hover:text-primary"
+                className="tap-target flex min-h-10 min-w-10 items-center justify-center p-2 rounded-full text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) hover:text-primary"
                 aria-label={t('dashboard.copyMealAria', { meal: label })}
                 title={t('dashboard.copyMealAria', { meal: label })}
               >
-                <Icon name="content_copy" className="text-[20px]" />
+                <Icon name="content_copy" className="text-[1.25rem]" />
               </button>
             </div>
           )}

@@ -1,7 +1,8 @@
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useScrollLock } from '@/hooks/useScrollLock'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { useOverlayDismiss } from '@/hooks/useOverlayDismiss'
 import { useI18n } from '@/context/I18nContext'
-import { pushOverlay } from '@/lib/nativeBootstrap'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { SourceTag } from '@/components/ui/SourceTag'
@@ -49,6 +50,7 @@ export function FoodEntrySheet({
 }) {
   const { t } = useI18n()
   const titleId = useId()
+  const panelRef = useRef<HTMLDivElement>(null)
 
   // The editor works in the food's serving unit (grams, ml, pieces) because
   // that is what the label on the packet says; servings is derived on save.
@@ -56,26 +58,14 @@ export function FoodEntrySheet({
   const [amount, setAmount] = useState(loggedAmount)
 
   useScrollLock(open)
+  useFocusTrap(open, panelRef)
+  useOverlayDismiss(open, onClose)
 
   // Reopening always starts from what is logged, so an abandoned edit doesn't
   // come back the next time the row is tapped.
   useEffect(() => {
     if (open) setAmount(loggedAmount)
   }, [open, loggedAmount])
-
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', onKey)
-    // See Modal: Android sends no Escape, so back must find this too.
-    const unregister = pushOverlay(onClose)
-    return () => {
-      window.removeEventListener('keydown', onKey)
-      unregister()
-    }
-  }, [open, onClose])
 
   if (!open) return null
 
@@ -97,7 +87,10 @@ export function FoodEntrySheet({
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <div className="animate-sheet-up flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(var(--spacing-lg)+(var(--spacing-safe-bottom)))] sm:max-w-[28rem] sm:rounded-lens sm:pb-lg glass-sheet">
+      <div
+        ref={panelRef}
+        className="animate-sheet-up flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(var(--spacing-lg)+(var(--spacing-safe-bottom)))] sm:max-w-[28rem] sm:rounded-lens sm:pb-lg glass-sheet"
+      >
         {/* Grab handle — the phone-only affordance for a sheet you can dismiss. */}
         <div className="mx-auto -mt-2 h-1 w-9 shrink-0 rounded-full bg-outline-variant sm:hidden" />
 
@@ -112,7 +105,7 @@ export function FoodEntrySheet({
           </div>
           <button
             onClick={onClose}
-            className="shrink-0 rounded-full glass-chip p-2 text-on-surface transition-colors hover:glass-chip"
+            className="tap-target flex shrink-0 items-center justify-center rounded-full glass-chip p-2 text-on-surface transition-colors hover:glass-chip"
             aria-label={t('common.close')}
           >
             <Icon name="close" className="text-sm" />
@@ -135,12 +128,13 @@ export function FoodEntrySheet({
               onClick={() => setAmount((a) => Math.max(0, round(a - step, 2)))}
               disabled={amount <= 0}
               aria-label={t('foodInfo.decrease')}
-              className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-row text-primary transition-transform active:scale-95 disabled:opacity-40 glass-field"
+              className="flex min-h-[52px] min-w-[52px] shrink-0 items-center justify-center rounded-row p-2 text-primary transition-transform active:scale-95 disabled:opacity-40 glass-field"
             >
               <Icon name="remove" className="text-2xl" />
             </button>
-            <div className="flex h-[52px] flex-1 items-center justify-center gap-1 rounded-row glass-field">
+            <div className="flex min-h-[52px] flex-1 items-center justify-center gap-1 rounded-row px-2 glass-field">
               <input
+                data-autofocus
                 type="number"
                 inputMode="decimal"
                 min={0}
@@ -149,14 +143,14 @@ export function FoodEntrySheet({
                 onChange={(e) => setAmount(Math.max(0, parseFloat(e.target.value) || 0))}
                 onFocus={(e) => e.target.select()}
                 aria-label={t('dashboard.amountInUnit', { unit })}
-                className="w-20 border-0 bg-transparent text-right text-[26px] font-bold text-on-surface outline-hidden"
+                className="w-20 border-0 bg-transparent text-right text-[1.625rem] font-bold text-on-surface outline-hidden"
               />
               <span className="font-label-md text-body-md text-on-surface-variant">{unit}</span>
             </div>
             <button
               onClick={() => setAmount((a) => round(a + step, 2))}
               aria-label={t('foodInfo.increase')}
-              className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-row text-primary transition-transform active:scale-95 glass-field"
+              className="flex min-h-[52px] min-w-[52px] shrink-0 items-center justify-center rounded-row p-2 text-primary transition-transform active:scale-95 glass-field"
             >
               <Icon name="add" className="text-2xl" />
             </button>
@@ -219,7 +213,7 @@ export function FoodEntrySheet({
         </p>
 
         {error && (
-          <p className="rounded-xl bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+          <p role="alert" className="rounded-xl bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
             {error}
           </p>
         )}
@@ -227,14 +221,14 @@ export function FoodEntrySheet({
         <div className="flex gap-sm">
           <button
             onClick={onCopy}
-            className="flex h-12 flex-1 items-center justify-center gap-xs rounded-xl glass-chip font-label-md text-label-md text-on-surface transition-colors hover:glass-chip"
+            className="flex min-h-12 flex-1 items-center justify-center gap-xs rounded-xl glass-chip font-label-md text-label-md text-on-surface transition-colors hover:glass-chip"
           >
             <Icon name="content_copy" className="text-sm" />
             {t('foodInfo.copyFood')}
           </button>
           <button
             onClick={onDelete}
-            className="flex h-12 flex-1 items-center justify-center gap-xs rounded-xl bg-error-container font-label-md text-label-md text-on-error-container transition-opacity hover:opacity-90"
+            className="flex min-h-12 flex-1 items-center justify-center gap-xs rounded-xl bg-error-container font-label-md text-label-md text-on-error-container transition-opacity hover:opacity-90"
           >
             <Icon name="delete" className="text-sm" />
             {t('common.delete')}
@@ -246,7 +240,7 @@ export function FoodEntrySheet({
         <button
           onClick={() => (changed ? onSave(draftServings) : onClose())}
           disabled={saving || amount <= 0}
-          className={`flex h-[52px] w-full items-center justify-center gap-sm rounded-xl font-label-md text-label-md transition-opacity hover:opacity-90 disabled:opacity-40 ${
+          className={`flex min-h-[52px] w-full items-center justify-center gap-sm rounded-xl px-md py-2 font-label-md text-label-md transition-opacity hover:opacity-90 disabled:opacity-40 ${
             changed ? 'bg-primary text-on-primary' : 'glass-chip text-on-surface-variant'
           }`}
         >

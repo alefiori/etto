@@ -254,13 +254,13 @@ export default function Targets() {
           )}
           {status === 'saved' && (
             <>
-              <Icon name="cloud_done" className="text-[18px] text-primary" />
+              <Icon name="cloud_done" className="text-[1.125rem] text-primary" />
               <span>{t('targets.saved')}</span>
             </>
           )}
           {status === 'error' && (
             <>
-              <Icon name="cloud_off" className="text-[18px] text-error" />
+              <Icon name="cloud_off" className="text-[1.125rem] text-error" />
               <span className="text-error">{saveError ?? t('targets.couldNotSave')}</span>
               <button
                 onClick={flushNow}
@@ -272,7 +272,7 @@ export default function Targets() {
           )}
           {status === 'idle' && (
             <>
-              <Icon name="cloud_sync" className="text-[18px]" />
+              <Icon name="cloud_sync" className="text-[1.125rem]" />
               <span>{t('targets.autosaveHint')}</span>
             </>
           )}
@@ -281,7 +281,7 @@ export default function Targets() {
 
       <div className="mx-auto w-full max-w-[1400px] p-container-margin-mobile lg:p-container-margin-desktop">
         {error && (
-          <p className="mb-md rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+          <p role="alert" className="mb-md rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
             {error}
           </p>
         )}
@@ -297,7 +297,7 @@ export default function Targets() {
             <button
               onClick={() => setCopied(null)}
               aria-label={t('targets.clearCopiedDay')}
-              className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
+              className="tap-target flex shrink-0 items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
             >
               <Icon name="close" className="text-sm" />
             </button>
@@ -338,22 +338,22 @@ export default function Targets() {
                           onClick={() => pasteInto(dow)}
                           aria-label={t('targets.pasteIntoDay', { day: dayLabel })}
                           title={t('targets.pasteIntoDay', { day: dayLabel })}
-                          className="rounded-full bg-primary p-1 text-on-primary transition-opacity hover:opacity-90"
+                          className="tap-target flex items-center justify-center rounded-full bg-primary p-1 text-on-primary transition-opacity hover:opacity-90"
                         >
-                          <Icon name="content_paste" className="text-[18px]" />
+                          <Icon name="content_paste" className="text-[1.125rem]" />
                         </button>
                       )}
                       <button
                         onClick={() => setCopied(dow)}
                         aria-label={t('targets.copyDayAria', { day: dayLabel })}
                         title={t('targets.copyDayAria', { day: dayLabel })}
-                        className={`rounded-full p-1 transition-colors hover:glass-chip hover:text-primary ${
+                        className={`flex items-center justify-center rounded-full p-1 transition-colors hover:glass-chip hover:text-primary ${
                           copied === dow
                             ? 'bg-primary-tint/[0.14] text-primary'
                             : 'text-outline-variant'
                         }`}
                       >
-                        <Icon name="content_copy" className="text-[18px]" />
+                        <Icon name="content_copy" className="text-[1.125rem]" />
                       </button>
                     </div>
                   </div>
@@ -385,17 +385,17 @@ export default function Targets() {
                           // colour back over the glass, so seven of these read
                           // as holes punched through the card. Same field as
                           // everywhere else now.
-                          className="h-2xl w-full rounded-[16px] glass-field px-md text-right font-body-md text-body-md text-on-surface outline-hidden transition-all placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+                          className="min-h-2xl w-full rounded-[16px] glass-field px-md text-right font-body-md text-body-md text-on-surface outline-hidden transition-all placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
                         />
                       </div>
                     ))}
                   </div>
 
                   <div className="mt-auto flex flex-col items-center justify-center rounded-lg glass-chip p-sm pt-sm">
-                    <span className="text-[12px] font-semibold uppercase tracking-wider text-on-surface-variant">
+                    <span className="text-[0.75rem] font-semibold uppercase tracking-wider text-on-surface-variant">
                       {t('targets.totalCalories')}
                     </span>
-                    <div className="font-data-display text-[28px] font-bold leading-[36px] text-on-surface">
+                    <div className="font-data-display text-[1.75rem] font-bold leading-[36px] text-on-surface">
                       {Math.round(kcal)}
                     </div>
                   </div>

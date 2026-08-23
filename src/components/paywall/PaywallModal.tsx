@@ -165,7 +165,7 @@ export function PaywallModal({ open, onClose }: { open: boolean; onClose: () => 
           type="button"
           onClick={onClose}
           aria-label={t('common.close')}
-          className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
+          className="tap-target flex items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
         >
           <Icon name="close" />
         </button>
@@ -177,7 +177,7 @@ export function PaywallModal({ open, onClose }: { open: boolean; onClose: () => 
         <ul className="flex flex-col gap-sm">
           {FEATURE_KEYS.map((key) => (
             <li key={key} className="flex items-start gap-sm font-body-md text-body-md text-on-surface">
-              <Icon name="check_circle" className="mt-0.5 text-[18px] text-primary" />
+              <Icon name="check_circle" className="mt-0.5 text-[1.125rem] text-primary" />
               {t(key)}
             </li>
           ))}
@@ -230,7 +230,7 @@ export function PaywallModal({ open, onClose }: { open: boolean; onClose: () => 
                   }`}
                 >
                   {offer.id === 'yearly' && (
-                    <span className="absolute -top-2 rounded-full bg-tertiary px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-on-tertiary">
+                    <span className="absolute -top-2 rounded-full bg-tertiary px-2 py-0.5 text-[0.6875rem] font-semibold uppercase tracking-wide text-on-tertiary">
                       {t('paywall.bestValue')}
                     </span>
                   )}
@@ -289,7 +289,7 @@ export function PaywallModal({ open, onClose }: { open: boolean; onClose: () => 
             className="flex flex-col gap-1 rounded-lg glass-chip px-md py-sm transition-colors hover:bg-(--glass-chip-hover)"
           >
             <span className="flex items-center gap-2 font-label-md text-label-md text-primary">
-              <Icon name="open_in_new" className="text-[16px]" />
+              <Icon name="open_in_new" className="text-[1rem]" />
               {t('paywall.buyOnWeb')}
             </span>
             {/* The destination is named rather than hidden behind "the web":

@@ -102,16 +102,32 @@
   --spacing-safe-bottom: var(--safe-bottom, 0px);
   --spacing-safe-left: var(--safe-left, 0px);
   --spacing-safe-right: var(--safe-right, 0px);
-  --spacing-topbar: calc(72px + var(--safe-top, 0px));
-  /* The phone's bottom chrome is one object now — a 68px pill holding the four
-     destinations *and* the add button, inset from the bottom edge by
-     `chrome-inset`. So it occupies 16→84px, and these two are measured off
-     that: content stops clear of it, and a toast lands in the gap just above
-     it rather than over the control it is reporting on. They were 160px and
-     98px when the add button floated separately above the bar. */
-  --spacing-bottomnav: calc(112px + var(--safe-bottom, 0px));
+  /* How much room the phone chrome takes, and therefore how much the content
+     lane has to leave for it.
+     *
+     * `--chrome-top` and `--chrome-bottom` are written by useChromeMetrics from
+     * a ResizeObserver on the real elements; the literals here are the drawn
+     * sizes and serve as the fallback for the first paint and for the widths
+     * where that chrome doesn't exist. They were plain constants until the app
+     * started honouring the reader's text size — chrome that holds text is not
+     * a fixed height once the text can grow. See src/lib/textScale.ts.
+     *
+     * The top bar pads itself past the notch, so its measured height already
+     * includes the safe inset and the fallback has to add it by hand.
+     *
+     * The bottom chrome is one object — a pill holding the four destinations
+     * *and* the add button, inset from the bottom edge by `chrome-inset`. So
+     * the two tokens below it are the pill plus that inset plus a gap:
+     * `bottomnav` is where content stops, and `above-chrome` is where a toast
+     * lands, just above the pill rather than over the control it reports on. */
+  --spacing-topbar: var(--chrome-top, calc(72px + var(--safe-top, 0px)));
   --spacing-chrome-inset: calc(16px + var(--safe-bottom, 0px));
-  --spacing-above-chrome: calc(96px + var(--safe-bottom, 0px));
+  --spacing-bottomnav: calc(
+    var(--chrome-bottom, 68px) + var(--spacing-chrome-inset) + 28px
+  );
+  --spacing-above-chrome: calc(
+    var(--chrome-bottom, 68px) + var(--spacing-chrome-inset) + 12px
+  );
   --spacing-container-margin-desktop: 40px;
 
   --font-sans: Manrope, system-ui, sans-serif;
@@ -123,29 +139,40 @@
   --font-label-md: Manrope;
   --font-data-display: Manrope;
 
-  --text-body-lg: 18px;
-  --text-body-lg--line-height: 28px;
+  /* The type scale, in rem rather than px.
+   *
+   * Same drawn sizes — 1rem is 16px at the default root — but expressed
+   * against the root font size, so the reader's own text-size setting moves
+   * all of them together. In px they moved for nobody: a browser default-font
+   * setting, an iOS Dynamic Type slider and (once the native pin came off) an
+   * Android font scale all work by changing the root, and a px size is by
+   * definition the one thing that ignores it. See src/lib/textScale.ts.
+   *
+   * Line heights convert too, or the leading would stay put while the glyphs
+   * grew and the text would collide with itself at the larger sizes. */
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.75rem;
   --text-body-lg--font-weight: 400;
-  --text-body-md: 16px;
-  --text-body-md--line-height: 24px;
+  --text-body-md: 1rem;
+  --text-body-md--line-height: 1.5rem;
   --text-body-md--font-weight: 400;
-  --text-label-md: 14px;
-  --text-label-md--line-height: 20px;
+  --text-label-md: 0.875rem;
+  --text-label-md--line-height: 1.25rem;
   --text-label-md--letter-spacing: 0.05em;
   --text-label-md--font-weight: 600;
-  --text-headline-md: 20px;
-  --text-headline-md--line-height: 28px;
+  --text-headline-md: 1.25rem;
+  --text-headline-md--line-height: 1.75rem;
   --text-headline-md--font-weight: 600;
-  --text-headline-lg-mobile: 24px;
-  --text-headline-lg-mobile--line-height: 32px;
+  --text-headline-lg-mobile: 1.5rem;
+  --text-headline-lg-mobile--line-height: 2rem;
   --text-headline-lg-mobile--letter-spacing: -0.01em;
   --text-headline-lg-mobile--font-weight: 700;
-  --text-headline-lg: 32px;
-  --text-headline-lg--line-height: 40px;
+  --text-headline-lg: 2rem;
+  --text-headline-lg--line-height: 2.5rem;
   --text-headline-lg--letter-spacing: -0.02em;
   --text-headline-lg--font-weight: 700;
-  --text-data-display: 40px;
-  --text-data-display--line-height: 48px;
+  --text-data-display: 2.5rem;
+  --text-data-display--line-height: 3rem;
   --text-data-display--letter-spacing: -0.03em;
   --text-data-display--font-weight: 800;
 
@@ -713,14 +740,16 @@
   #root {
     height: 100%;
   }
-  /* Don't let the OS font-size (accessibility) setting inflate text inside the
-     WebView: on Android it scales all text and overflows the app's fixed chrome
-     (top bar, bottom nav, rings, cards). iOS WKWebView ignores system scaling
-     already. Recent Android WebView no longer honours this opt-out, so the
-     native side pins it too — see scripts/patch-android-webview.mjs. */
+  /* The OS font-size (accessibility) setting is honoured, not suppressed.
+     This used to read `text-size-adjust: 100%`, with `setTextZoom(100)` in the
+     Android shell behind it, because a larger system font overflowed chrome
+     built out of fixed pixel heights. The chrome is measured now (see
+     useChromeMetrics) and the type scale is in rem, so the scale can be let
+     through — which is what WCAG 1.4.4 asks for and what a low-vision reader
+     has already asked their phone for. See src/lib/textScale.ts. */
   html {
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
   }
   body {
     @apply bg-background text-on-surface font-sans antialiased;
@@ -748,11 +777,63 @@
   /* Prevent iOS Safari from auto-zooming when a form control is focused.
      Mobile browsers zoom in on any focused input whose font-size is below
      16px, so use that as the safe default for controls without an explicit
-     size utility. */
+     size utility. `1rem` is that same 16px at the default root, and unlike a
+     px literal it grows with the reader's text-size setting — a control whose
+     label scaled but whose own value did not is its own kind of unreadable. */
   input,
   select,
   textarea {
-    font-size: 16px;
+    font-size: 1rem;
+  }
+
+  /* ---------------------------------------------------------------------
+   * Focus.
+   *
+   * The app had no focus style of its own. Every button and link fell back
+   * to whatever ring the user agent draws, which on this material is close
+   * to invisible: the default is a thin dark outline, and it lands on glass
+   * over an aurora that is dark in half the palette. The fields were worse
+   * than that — `outline-hidden` plus `focus:ring-1` gave them a deliberate
+   * ring, and the same `outline-hidden` on a button removed the only
+   * indicator it had. A keyboard user could not tell where they were.
+   *
+   * So it is defined once, here, for everything. `:focus-visible` rather
+   * than `:focus`, so a mouse press doesn't ring the button it clicked.
+   *
+   * Two rings, not one: the violet is the app's own accent and reads
+   * against the pale surfaces, and the halo behind it is what keeps that
+   * violet legible when the control happens to sit on a violet card (the
+   * calorie lens, a selected nav item, any of the gradient CTAs). That pair
+   * is also what carries the 3:1 contrast WCAG asks of the indicator
+   * itself, against both of the surfaces it can land on.
+   *
+   * `outline-offset` sits it just outside the control so it traces the
+   * rounded shape rather than cutting across the label. */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    /* An outline, not a box-shadow: several of these controls already set a
+       shadow of their own (the lenses, the accent CTAs) and a ring drawn as
+       a shadow would be overwritten by the utility class that sets it. The
+       outline also follows the control's own border-radius for free. */
+    outline: 2px solid rgb(var(--primary));
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgb(var(--surface) / 0.9);
+  }
+  /* Containers that take focus so a screen reader announces them — a dialog
+     entered by the trap, the main region entered by the skip link — are not
+     controls, and ringing a whole sheet or page is noise rather than
+     guidance. */
+  :where([role='dialog'], [role='alertdialog'], [role='menu'], main):focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+  /* Windows high-contrast mode replaces the palette wholesale and ignores
+     colours it did not choose. `Highlight` is the system colour reserved
+     for exactly this. */
+  @media (forced-colors: active) {
+    :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+      outline: 3px solid Highlight;
+      box-shadow: none;
+    }
   }
 }
 
@@ -781,7 +862,10 @@
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
   font-style: normal;
-  font-size: 24px;
+  /* 24px at the default root. In rem so an icon keeps its proportion to the
+     label beside it when the reader scales text up — a fixed 24px glyph next
+     to 32px text reads as a rendering bug. */
+  font-size: 1.5rem;
   line-height: 1;
   letter-spacing: normal;
   text-transform: none;
@@ -1052,6 +1136,81 @@ input[type='number'] {
 }
 .animate-bar {
   animation: mt-bar 1.7s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+/* The chrome's micro-labels, and when they stand down.
+ *
+ * The tab bar and the rail name each destination in 10px under a 24px icon. At
+ * the reader's default that is a caption; scaled past ~1.35× it is four words
+ * competing for a phone's width with the add button, and the only way to fit
+ * them is to truncate to two letters — which communicates less than the icon
+ * already did.
+ *
+ * So past the threshold they stop being *drawn* — but they must not stop
+ * existing. The icon beside each one is `aria-hidden`, so the label is the
+ * whole of the link's accessible name: `display: none` takes the text out of
+ * the accessibility tree and leaves a tab bar of four unnamed buttons, which
+ * is far worse than the truncation it was meant to avoid. (It did exactly
+ * that, and the e2e run caught it.)
+ *
+ * The sr-only clip is the right tool: no box, no ink, still read aloud. The
+ * pill gets its height back because a clipped absolute element is out of flow.
+ *
+ * The threshold lives in lib/textScale.ts, which writes the attribute — CSS
+ * cannot compare a custom property against a number.
+ *
+ * The icons grow either way, and the chrome reserves whatever height that
+ * leaves it (see useChromeMetrics), so nothing is covered at any scale. */
+.chrome-label {
+  /* 10px at the default root, in rem so it scales with everything else up to
+     the point where it stops being shown at all. */
+  font-size: 0.625rem;
+}
+[data-text-scale='large'] .chrome-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Tap target — the hit area a finger needs, without the box a design wants.
+ *
+ * The icon buttons around the app are drawn at 32–40px: a 20px glyph in a
+ * `p-2` circle, sized so a row of them reads as chrome rather than as a row of
+ * buttons. Both platform guidelines put the minimum a finger can reliably hit
+ * well above that — 44pt on iOS, 48dp on Android — and growing the circles to
+ * meet it would push the meal header, the sidebar account row and the date
+ * stepper out of shape.
+ *
+ * So the target grows and the button does not. The pseudo-element is centred
+ * on the control and stretched to 44px in both axes; it is transparent, takes
+ * the pointer, and is out of flow, so nothing around it moves. `position:
+ * relative` is asserted here rather than assumed — most of these buttons don't
+ * set one, and an `absolute` child would otherwise escape to the nearest
+ * positioned ancestor and put the hit area somewhere else entirely.
+ *
+ * Only for controls smaller than 44px: on anything already larger this would
+ * *shrink* nothing (it is a minimum, not a size) but it would still overlay a
+ * neighbour, so it is applied per control rather than globally.
+ */
+.tap-target {
+  position: relative;
+}
+.tap-target::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  min-width: 44px;
+  min-height: 44px;
+  width: 100%;
+  height: 100%;
 }
 
 /* Settle — the curve a control answers a pointer on. Named properties rather

@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { BrowserMultiFormatReader, type IScannerControls } from '@zxing/browser'
 import { BarcodeFormat, DecodeHintType } from '@zxing/library'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { useOverlayDismiss } from '@/hooks/useOverlayDismiss'
 import { useI18n } from '@/context/I18nContext'
 import type { TranslationKey } from '@/lib/i18n'
 import { Icon } from '@/components/ui/Icon'
@@ -45,9 +47,18 @@ export function BarcodeScanner({
 }) {
   const { t } = useI18n()
   const videoRef = useRef<HTMLVideoElement>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
   const controlsRef = useRef<IScannerControls | null>(null)
+  const titleId = useId()
   const [status, setStatus] = useState<'starting' | 'scanning' | 'error'>('starting')
   const [errorKey, setErrorKey] = useState<TranslationKey | null>(null)
+
+  // It covers the Add Food modal rather than replacing it, so without a trap of
+  // its own Tab would walk the search results still mounted underneath. Escape
+  // and Android back close only the scanner, leaving that modal open — which is
+  // where the user came from and expects to land back in.
+  useFocusTrap(true, rootRef)
+  useOverlayDismiss(true, onClose)
 
   useEffect(() => {
     let cancelled = false
@@ -91,12 +102,21 @@ export function BarcodeScanner({
   }, [onDetected])
 
   return (
-    <div className="absolute inset-0 z-70 flex flex-col bg-black">
+    <div
+      ref={rootRef}
+      className="absolute inset-0 z-70 flex flex-col bg-black"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+    >
       <header className="flex items-center justify-between gap-md p-md text-white">
-        <h2 className="font-headline-md text-headline-md">{t('scanner.title')}</h2>
+        <h2 id={titleId} className="font-headline-md text-headline-md">
+          {t('scanner.title')}
+        </h2>
         <button
+          data-autofocus
           onClick={onClose}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
+          className="tap-target flex min-h-10 min-w-10 shrink-0 items-center justify-center p-2 rounded-full bg-white/10 transition-colors hover:bg-white/20"
           aria-label={t('scanner.closeScanner')}
         >
           <Icon name="close" />
@@ -104,7 +124,24 @@ export function BarcodeScanner({
       </header>
 
       <div className="relative min-h-0 flex-1">
-        <video ref={videoRef} className="h-full w-full object-cover" muted playsInline />
+        <video
+          ref={videoRef}
+          aria-hidden="true"
+          className="h-full w-full object-cover"
+          muted
+          playsInline
+        />
+
+        {/* Starting → scanning → failed is the entire state of this screen, and
+            none of it is visible to a screen reader: the reticle is a border and
+            the preview is a video. Announcing the transitions is what makes the
+            scanner usable without sight of it — including the failure, which is
+            otherwise a silent black rectangle. */}
+        <p role="status" aria-live="polite" className="sr-only">
+          {status === 'starting' && t('scanner.starting')}
+          {status === 'scanning' && t('scanner.pointCamera')}
+          {status === 'error' && errorKey && t(errorKey)}
+        </p>
 
         {status === 'scanning' && (
           <>
@@ -112,7 +149,10 @@ export function BarcodeScanner({
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <div className="h-[28%] w-[78%] max-w-[24rem] rounded-2xl border-2 border-white/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.45)]" />
             </div>
-            <p className="absolute inset-x-0 bottom-6 text-center font-body-md text-body-md text-white/90">
+            <p
+              aria-hidden="true"
+              className="absolute inset-x-0 bottom-6 text-center font-body-md text-body-md text-white/90"
+            >
               {t('scanner.pointCamera')}
             </p>
           </>
@@ -121,14 +161,18 @@ export function BarcodeScanner({
         {status === 'starting' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-sm text-white">
             <Spinner className="h-6 w-6" />
-            <p className="font-body-md text-body-md">{t('scanner.starting')}</p>
+            <p aria-hidden="true" className="font-body-md text-body-md">
+              {t('scanner.starting')}
+            </p>
           </div>
         )}
 
         {status === 'error' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-md p-xl text-center text-white">
             <Icon name="videocam_off" className="text-4xl text-white/70" />
-            <p className="max-w-[24rem] font-body-md text-body-md text-white/90">{errorKey && t(errorKey)}</p>
+            <p aria-hidden="true" className="max-w-[24rem] font-body-md text-body-md text-white/90">
+              {errorKey && t(errorKey)}
+            </p>
             <button
               onClick={onClose}
               className="rounded-full bg-white px-5 py-2 font-label-md text-label-md font-semibold text-on-surface transition-colors hover:bg-white/90"

@@ -87,7 +87,7 @@ export function WaterCard() {
     <div className="flex flex-col gap-md rounded-lens p-lg glass">
       <div className="flex items-center justify-between gap-md">
         <h3 className="flex items-center gap-2 font-headline-md text-headline-md text-on-surface">
-          <Icon name="water_drop" className="text-[22px]" style={{ color: WATER_COLOR.color }} />
+          <Icon name="water_drop" className="text-[1.375rem]" style={{ color: WATER_COLOR.color }} />
           {t('water.title')}
         </h3>
         {busy && <Spinner className="h-4 w-4 text-primary" />}
@@ -104,7 +104,15 @@ export function WaterCard() {
             target={goalMl}
             color={WATER_COLOR.color}
             trackColor={RING_TRACK}
-            className="h-[96px] w-[96px] shrink-0"
+            // The dial's own digits read as "1.4" then "L" — two fragments
+            // with no relationship. The sentence beside it is the reading,
+            // so the dial borrows it.
+            label={t('water.progress', {
+              consumed: formatVolume(volumeForDisplay(consumedMl, unitSystem)),
+              goal: formatVolume(volumeForDisplay(goalMl, unitSystem)),
+              unit,
+            })}
+            className="aspect-square w-full max-w-[6rem] shrink-0"
           >
             <span
               className="font-headline-md text-headline-md leading-none"
@@ -136,7 +144,7 @@ export function WaterCard() {
       )}
 
       {(saveError || error) && (
-        <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+        <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
           {saveError ?? t('water.couldNotLoad')}
         </p>
       )}
@@ -155,10 +163,10 @@ export function WaterCard() {
               disabled={busy}
               onClick={() => log(ml)}
               aria-label={t('water.addAria', { amount: shown, unit: shownUnit })}
-              className="flex h-10 items-center gap-1 rounded-full px-4 font-label-md text-label-md transition-all active:scale-95 disabled:opacity-40"
+              className="flex min-h-10 items-center gap-1 rounded-full px-4 font-label-md text-label-md transition-all active:scale-95 disabled:opacity-40"
               style={{ backgroundColor: WATER_COLOR.tint, color: WATER_COLOR.textColor }}
             >
-              <Icon name="add" className="text-[16px]" />
+              <Icon name="add" className="text-[1rem]" />
               {shown} {shownUnit}
             </button>
           )
@@ -170,9 +178,9 @@ export function WaterCard() {
             disabled={busy}
             onClick={handleUndo}
             aria-label={t('water.undoAria')}
-            className="flex h-10 items-center gap-1 rounded-full px-3 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) disabled:opacity-40"
+            className="flex min-h-10 items-center gap-1 rounded-full px-3 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) disabled:opacity-40"
           >
-            <Icon name="undo" className="text-[16px]" />
+            <Icon name="undo" className="text-[1rem]" />
             {t('water.undo')}
           </button>
         )}
@@ -185,7 +193,7 @@ export function WaterCard() {
           min={0}
           aria-label={t('water.customAria', { unit })}
           placeholder={unit}
-          className="h-[44px] w-full rounded-[16px] glass-field px-4 font-body-md text-body-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
+          className="min-h-[44px] w-full rounded-[16px] glass-field px-4 font-body-md text-body-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
           value={custom}
           disabled={busy}
           onChange={(e) => setCustom(e.target.value)}
@@ -200,7 +208,7 @@ export function WaterCard() {
           type="button"
           onClick={handleCustom}
           disabled={busy || custom.trim() === ''}
-          className="h-[44px] shrink-0 rounded-full px-lg font-label-md text-label-md transition-all hover:brightness-105 active:scale-95 disabled:opacity-40 grad-primary"
+          className="min-h-[44px] shrink-0 rounded-full px-lg font-label-md text-label-md transition-all hover:brightness-105 active:scale-95 disabled:opacity-40 grad-primary"
         >
           {t('water.add')}
         </button>

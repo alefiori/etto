@@ -62,9 +62,11 @@ test.describe('safe areas on a notched phone', () => {
     await page.goto('/')
 
     // Scoped to the bar that carries the wordmark — the bottom nav has a
-    // Profile link of its own.
+    // Profile link of its own. It is a `<header>` (a banner landmark) rather
+    // than a fourth `<nav>`: it holds the wordmark and one link, and three
+    // navigation landmarks were already competing in the landmark list.
     const topBar = page
-      .locator('nav')
+      .locator('header')
       .filter({ has: page.getByRole('heading', { name: 'MacroTrack' }) })
     await expectBelowNotch(topBar.getByRole('link'), 'the top bar profile button')
     await expectBelowNotch(

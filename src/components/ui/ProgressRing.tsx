@@ -23,6 +23,7 @@ export function ProgressRing({
   trackColor,
   size = 120,
   drawDelay = 120,
+  label,
   className,
   children,
 }: {
@@ -33,6 +34,17 @@ export function ProgressRing({
   size?: number
   /** Stagger, in ms, for a row of dials. See `drawDelay()` in lib/motion.ts. */
   drawDelay?: number
+  /**
+   * What the dial says, in a sentence — "Carbs: 84 g of 220 g, 136 g
+   * remaining".
+   *
+   * The figures inside the ring are laid out for the eye, not for reading
+   * aloud: two spans that come out as "84 g /220g", with the macro's name in
+   * a heading somewhere above and the remainder in a chip somewhere below.
+   * Given a label, the whole dial becomes one image with one name and the
+   * fragments stop being announced separately.
+   */
+  label?: string
   className?: string
   children?: React.ReactNode
 }) {
@@ -83,10 +95,15 @@ export function ProgressRing({
     <div
       className={`relative ${className ?? ''}`}
       style={className ? undefined : { width: size, height: size }}
+      // One name for the whole dial when the caller supplies one; the digits
+      // inside it are then decoration, and hidden below so they aren't read
+      // twice. Unlabelled callers keep the old behaviour — their children are
+      // read as ordinary text.
+      {...(label ? { role: 'img' as const, 'aria-label': label } : {})}
     >
       {/* overflow-visible so the arc's halo isn't clipped: at r=45 with a 10
           stroke the ring already reaches the edge of the 100×100 viewBox. */}
-      <svg className="h-full w-full overflow-visible" viewBox="0 0 100 100">
+      <svg aria-hidden="true" className="h-full w-full overflow-visible" viewBox="0 0 100 100">
         <circle
           cx="50"
           cy="50"
@@ -115,7 +132,12 @@ export function ProgressRing({
           strokeDashoffset={offset}
         />
       </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">{children}</div>
+      <div
+        aria-hidden={label ? 'true' : undefined}
+        className="absolute inset-0 flex flex-col items-center justify-center"
+      >
+        {children}
+      </div>
     </div>
   )
 }

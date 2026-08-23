@@ -83,7 +83,7 @@ export function ProSubscription() {
       <div className="flex items-center gap-2">
         <Icon
           name="workspace_premium"
-          className={`text-[20px] ${isPro ? 'text-primary' : 'text-on-surface-variant'}`}
+          className={`text-[1.25rem] ${isPro ? 'text-primary' : 'text-on-surface-variant'}`}
         />
         <h3 className="font-label-md text-label-md text-on-surface">{t('paywall.title')}</h3>
       </div>
@@ -115,7 +115,7 @@ export function ProSubscription() {
             onClick={openPaywall}
             className="flex min-h-2xl flex-1 items-center justify-center gap-sm rounded-full font-label-md text-label-md transition-all hover:brightness-105 active:scale-95 grad-primary"
           >
-            <Icon name="workspace_premium" className="text-[18px]" />
+            <Icon name="workspace_premium" className="text-[1.125rem]" />
             {t('paywall.upgradeCta')}
           </button>
         )}
@@ -127,7 +127,7 @@ export function ProSubscription() {
             rel="noreferrer noopener"
             className="flex min-h-2xl flex-1 items-center justify-center gap-sm rounded-full font-label-md text-label-md text-on-surface transition-all hover:brightness-[1.06] glass-field active:scale-95"
           >
-            <Icon name="open_in_new" className="text-[18px]" />
+            <Icon name="open_in_new" className="text-[1.125rem]" />
             {t('paywall.manage')}
           </a>
         )}
@@ -138,7 +138,7 @@ export function ProSubscription() {
           disabled={busy}
           className="flex min-h-2xl flex-1 items-center justify-center gap-sm rounded-full font-label-md text-label-md text-on-surface transition-all hover:brightness-[1.06] glass-field active:scale-95 disabled:opacity-60"
         >
-          {busy ? <Spinner className="h-4 w-4" /> : <Icon name="restore" className="text-[18px]" />}
+          {busy ? <Spinner className="h-4 w-4" /> : <Icon name="restore" className="text-[1.125rem]" />}
           {t('paywall.restore')}
         </button>
       </div>

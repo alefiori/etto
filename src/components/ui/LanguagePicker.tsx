@@ -31,14 +31,14 @@ export function LanguagePicker({ className = '' }: { className?: string }) {
     <div className={`relative inline-flex items-center ${className}`}>
       <Icon
         name="translate"
-        className="pointer-events-none absolute left-2 text-[18px] text-on-surface-variant"
+        className="pointer-events-none absolute left-[0.6em] text-[1.125rem] text-on-surface-variant"
       />
       <select
         aria-label={t('common.language')}
         value={locale}
         disabled={saving}
         onChange={(e) => handleChange(e.target.value as Locale)}
-        className="h-9 appearance-none rounded-full glass-field pl-8 pr-7 font-label-md text-label-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
+        className="min-h-9 appearance-none rounded-full glass-field pl-[2.4em] pr-[2em] font-label-md text-label-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
       >
         {LOCALES.map((l) => (
           <option key={l.code} value={l.code}>
@@ -48,7 +48,7 @@ export function LanguagePicker({ className = '' }: { className?: string }) {
       </select>
       <Icon
         name="expand_more"
-        className="pointer-events-none absolute right-1.5 text-[18px] text-outline"
+        className="pointer-events-none absolute right-1.5 text-[1.125rem] text-outline"
       />
     </div>
   )

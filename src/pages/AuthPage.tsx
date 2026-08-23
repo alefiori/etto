@@ -138,7 +138,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
           {/* Branding */}
           <div className="flex flex-col items-center gap-sm text-center">
             <div className="mb-xs flex h-16 w-16 items-center justify-center rounded-full bg-primary-tint/[0.14] text-primary">
-              <Icon name="donut_small" fill className="text-[32px] text-primary" />
+              <Icon name="donut_small" fill className="text-[2rem] text-primary" />
             </div>
             <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-primary md:font-headline-lg md:text-headline-lg">
               MacroTrack
@@ -152,6 +152,11 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
           <div className="mt-sm flex w-full border-b border-surface-container-high">
             <button
               type="button"
+              // The selected tab was bold with an underline and nothing else —
+              // a purely visual state. `aria-pressed` is the shape the rest of
+              // the app already uses for a chosen option among several (the
+              // source filters, the meal picker, the chart ranges).
+              aria-pressed={tab === 'signin'}
               onClick={() => switchTab('signin')}
               className={`flex-1 pb-sm text-center font-label-md text-label-md transition-colors ${
                 tab === 'signin'
@@ -163,6 +168,11 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
             </button>
             <button
               type="button"
+              // The selected tab was bold with an underline and nothing else —
+              // a purely visual state. `aria-pressed` is the shape the rest of
+              // the app already uses for a chosen option among several (the
+              // source filters, the meal picker, the chart ranges).
+              aria-pressed={tab === 'signup'}
               onClick={() => switchTab('signup')}
               className={`flex-1 pb-sm text-center font-label-md text-label-md transition-colors ${
                 tab === 'signup'
@@ -175,12 +185,12 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
           </div>
 
           {notice && (
-            <p className="rounded-lg bg-primary-tint/10 px-md py-sm font-label-md text-label-md text-primary">
+            <p role="status" aria-live="polite" className="rounded-lg bg-primary-tint/10 px-md py-sm font-label-md text-label-md text-primary">
               {notice}
             </p>
           )}
           {error && (
-            <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+            <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
               {error}
             </p>
           )}
@@ -268,7 +278,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
               ) : tab === 'signin' ? (
                 <>
                   <span>{t('auth.signInAction')}</span>
-                  <Icon name="arrow_forward" className="text-[18px]" />
+                  <Icon name="arrow_forward" className="text-[1.125rem]" />
                 </>
               ) : (
                 <span>{t('auth.createAccount')}</span>
@@ -320,7 +330,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
             disabled={busy}
             className="flex min-h-2xl w-full items-center justify-center gap-sm rounded-[16px] glass-field font-label-md text-label-md text-on-surface transition-colors hover:glass-chip disabled:opacity-60"
           >
-            <Icon name="person_outline" className="text-[18px]" />
+            <Icon name="person_outline" className="text-[1.125rem]" />
             <span>{t('auth.continueAsGuest')}</span>
           </button>
         </div>

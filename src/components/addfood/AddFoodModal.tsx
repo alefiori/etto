@@ -220,7 +220,7 @@ export function AddFoodModal({
             </h2>
             <button
               onClick={onClose}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full glass-chip text-on-surface transition-colors hover:glass-chip"
+              className="tap-target flex min-h-10 min-w-10 shrink-0 items-center justify-center p-2 rounded-full glass-chip text-on-surface transition-colors hover:glass-chip"
               aria-label={t('addFood.close')}
             >
               <Icon name="close" />
@@ -237,7 +237,7 @@ export function AddFoodModal({
             <div className="relative flex-1">
               <Icon
                 name="search"
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-outline"
+                className="pointer-events-none absolute left-[0.75em] top-1/2 -translate-y-1/2 text-outline"
               />
               <input
                 autoFocus
@@ -246,7 +246,7 @@ export function AddFoodModal({
                 onChange={(e) => setQuery(e.target.value)}
                 aria-label={t('addFood.searchAria')}
                 placeholder={t('addFood.searchPlaceholder')}
-                className="h-2xl w-full rounded-full glass-field pl-container-margin-desktop pr-4 font-body-md text-body-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
+                className="min-h-2xl w-full rounded-full glass-field pl-[2.75em] pr-4 font-body-md text-body-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
               />
               {loading && <Spinner className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />}
             </div>
@@ -264,9 +264,27 @@ export function AddFoodModal({
             </button>
           </div>
 
+          {/* Live region for the search, kept out of the scroller so it is not
+              re-created as the list re-renders — a live region only announces
+              while it stays in the DOM. It carries the same counts the header
+              below shows, which is why that header is hidden from the reader:
+              one of the two has to be the announcement. */}
+          <p role="status" aria-live="polite" className="sr-only">
+            {loading
+              ? t('addFood.searching')
+              : query.trim() && !searchError
+                ? t(
+                    results.length === 1
+                      ? 'addFood.resultCountOne'
+                      : 'addFood.resultCountOther',
+                    { count: results.length },
+                  )
+                : ''}
+          </p>
+
           <div className="min-h-0 flex-1 overflow-y-auto px-md pb-md">
             {searchError && (
-              <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+              <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
                 {searchError}
               </p>
             )}
@@ -314,7 +332,7 @@ export function AddFoodModal({
                 <h3 className="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">
                   {t('addFood.results')}
                 </h3>
-                <span className="font-body-md text-sm text-outline">
+                <span aria-hidden="true" className="font-body-md text-sm text-outline">
                   {t(results.length === 1 ? 'addFood.resultCountOne' : 'addFood.resultCountOther', {
                     count: results.length,
                   })}
@@ -334,6 +352,11 @@ export function AddFoodModal({
                   <button
                     key={r.id}
                     onClick={() => selectFood(r)}
+                    // Selection was carried by a rim and a tint. On a phone
+                    // choosing a result also swaps the whole panel for the
+                    // detail view, so without this the reader was moved to a
+                    // different screen with no word about why.
+                    aria-pressed={isSelected}
                     // A result is the same lens as a food row on the dashboard —
                     // a row inside a card — rather than a borderless strip that
                     // only takes a shape once it is selected. The selected one
@@ -373,7 +396,7 @@ export function AddFoodModal({
                           {n.subtitle}
                           {isCommunity && (
                             <span className="flex shrink-0 items-center gap-0.5 text-secondary">
-                              <Icon name="group" className="text-[14px]" />
+                              <Icon name="group" className="text-[0.875rem]" />
                               {t('common.community')}
                             </span>
                           )}
@@ -404,7 +427,7 @@ export function AddFoodModal({
           <div className="border-t border-(--glass-row-border) p-md">
             <button
               onClick={() => goCreateCustom()}
-              className="settle flex h-[52px] w-full items-center justify-center gap-2 rounded-full font-label-md text-label-md hover:brightness-105 active:scale-[0.98] grad-primary"
+              className="settle flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full font-label-md text-label-md hover:brightness-105 active:scale-[0.98] grad-primary"
             >
               <Icon name="add_circle" />
               {t('addFood.createCustomFood')}
@@ -430,7 +453,7 @@ export function AddFoodModal({
                   onClick={() => setSelected(null)}
                   className="mb-md flex items-center gap-1 font-label-md text-label-md text-on-surface-variant transition-colors hover:text-on-surface lg:hidden"
                 >
-                  <Icon name="arrow_back" className="text-[20px]" />
+                  <Icon name="arrow_back" className="text-[1.25rem]" />
                   {t('addFood.backToSearch')}
                 </button>
                 <div className="mb-md flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-container text-on-primary-container">
@@ -507,14 +530,14 @@ export function AddFoodModal({
                       value={amount}
                       onChange={(e) => setAmount(Math.max(0, parseFloat(e.target.value) || 0))}
                       onFocus={(e) => e.target.select()}
-                      className="h-2xl flex-1 rounded-[16px] glass-field px-4 text-center font-body-md text-body-md text-on-surface outline-hidden focus:border-primary focus:ring-1 focus:ring-primary"
+                      className="min-h-2xl flex-1 rounded-[16px] glass-field px-4 text-center font-body-md text-body-md text-on-surface outline-hidden focus:border-primary focus:ring-1 focus:ring-primary"
                     />
                     <select
                       aria-label={t('addFood.unit')}
                       value={amountUnit}
                       onChange={(e) => setAmountUnit(e.target.value)}
                       disabled={unitOptions.length <= 1}
-                      className="h-2xl rounded-[16px] glass-field px-3 font-body-md text-body-md text-on-surface outline-hidden focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-70"
+                      className="min-h-2xl rounded-[16px] glass-field px-3 font-body-md text-body-md text-on-surface outline-hidden focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-70"
                     >
                       {unitOptions.map((u) => (
                         <option key={u} value={u}>
@@ -533,7 +556,7 @@ export function AddFoodModal({
                 </div>
 
                 {error && (
-                  <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+                  <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
                     {error}
                   </p>
                 )}

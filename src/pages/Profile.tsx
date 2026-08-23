@@ -6,6 +6,7 @@ import { useI18n } from '@/context/I18nContext'
 import { useTheme } from '@/context/ThemeContext'
 import { LOCALES, type Locale } from '@/lib/i18n'
 import { THEME_PREFERENCES, type ThemePreference } from '@/lib/theme'
+import { radioTabIndex, useRadioGroupKeys } from '@/hooks/useRadioGroupKeys'
 import type { TranslationKey } from '@/lib/i18n'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
@@ -53,6 +54,8 @@ export default function Profile() {
     }
   }
 
+  const appearanceKeys = useRadioGroupKeys(THEME_PREFERENCES, handleAppearanceChange)
+
   async function handleAppearanceChange(next: ThemePreference) {
     setThemeError(null)
     try {
@@ -89,7 +92,11 @@ export default function Profile() {
             <p className="font-label-md text-label-md text-on-surface-variant">{t('profile.signedInAs')}</p>
             {/* Guests are the default entry point now, and they have no email
                 — showing an empty line here would read as a bug. */}
-            <p className="truncate font-headline-md text-headline-md text-on-surface">
+            {/* Wraps rather than truncating: this is the one place the app tells
+                you which account you are in, and "sam@exa…" — which is what a
+                large text size turned it into — does not answer that. `break-all`
+                because an email has no spaces to break at. */}
+            <p className="break-all font-headline-md text-headline-md text-on-surface">
               {isAnonymous || !user?.email ? t('profile.guestAccount') : user.email}
             </p>
           </div>
@@ -103,7 +110,7 @@ export default function Profile() {
             setting below, which treats a null column the same way. */}
         <div className="flex flex-col gap-sm">
           <div className="flex items-center gap-2">
-            <Icon name="light_mode" className="text-[20px] text-on-surface-variant" />
+            <Icon name="light_mode" className="text-[1.25rem] text-on-surface-variant" />
             <span className="font-label-md text-label-md text-on-surface">
               {t('profile.appearanceLabel')}
             </span>
@@ -114,7 +121,13 @@ export default function Profile() {
           <div
             role="radiogroup"
             aria-label={t('profile.appearanceLabel')}
-            className="flex gap-1 rounded-full glass-chip p-1"
+            onKeyDown={appearanceKeys}
+            // `flex-wrap` + a basis rather than a bare `flex-1`: three labelled
+            // options do not fit a phone's width at a large text size, and
+            // `flex-1` alone let them push past the card's right edge instead of
+            // moving to a second row. `rounded-2xl` because a wrapped row of
+            // pills inside a pill reads as a mistake.
+            className="flex flex-wrap gap-1 rounded-2xl glass-chip p-1"
           >
             {THEME_PREFERENCES.map((option) => {
               const active = themePreference === option
@@ -124,20 +137,21 @@ export default function Profile() {
                   type="button"
                   role="radio"
                   aria-checked={active}
+                  tabIndex={radioTabIndex(active)}
                   onClick={() => handleAppearanceChange(option)}
-                  className={`flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 font-label-md text-label-md transition-colors ${
+                  className={`flex min-w-0 flex-1 basis-[6rem] items-center justify-center gap-1.5 rounded-full px-2 py-2.5 font-label-md text-label-md transition-colors ${
                     active
                       ? 'bg-primary text-on-primary'
                       : 'text-on-surface-variant hover:bg-(--glass-chip-hover)'
                   }`}
                 >
-                  <Icon name={APPEARANCE_ICON[option]} className="text-[18px]" />
+                  <Icon name={APPEARANCE_ICON[option]} className="text-[1.125rem]" />
                   {t(APPEARANCE_LABEL[option])}
                 </button>
               )
             })}
           </div>
-          {themeError && <p className="font-label-md text-label-md text-error">{themeError}</p>}
+          {themeError && <p role="alert" className="font-label-md text-label-md text-error">{themeError}</p>}
         </div>
 
         <hr className="border-surface-container-highest" />
@@ -145,7 +159,7 @@ export default function Profile() {
         {/* App + food database language (single preference) */}
         <div className="flex flex-col gap-sm">
           <div className="flex items-center gap-2">
-            <Icon name="translate" className="text-[20px] text-on-surface-variant" />
+            <Icon name="translate" className="text-[1.25rem] text-on-surface-variant" />
             <label
               htmlFor="locale"
               className="font-label-md text-label-md text-on-surface"
@@ -158,7 +172,7 @@ export default function Profile() {
           </p>
           {!profileLoading && !isLocaleExplicit && (
             <p className="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant">
-              <Icon name="smartphone" className="text-[16px]" />
+              <Icon name="smartphone" className="text-[1rem]" />
               {t('profile.languageFollowsDevice')}
             </p>
           )}
@@ -168,7 +182,7 @@ export default function Profile() {
               value={locale}
               disabled={profileLoading || savingLang}
               onChange={(e) => handleLanguageChange(e.target.value as Locale)}
-              className="h-2xl w-full appearance-none rounded-[16px] glass-field px-4 pr-10 font-body-md text-body-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
+              className="min-h-2xl w-full appearance-none rounded-[16px] glass-field px-4 pr-10 font-body-md text-body-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
             >
               {LOCALES.map((l) => (
                 <option key={l.code} value={l.code}>
@@ -186,7 +200,9 @@ export default function Profile() {
             )}
           </div>
           {langError && (
-            <p className="font-label-md text-label-md text-error">{langError}</p>
+            <p role="alert" className="font-label-md text-label-md text-error">
+              {langError}
+            </p>
           )}
         </div>
 
@@ -238,7 +254,7 @@ export default function Profile() {
             onClick={() => navigate('/signin')}
             className="flex min-h-2xl items-center justify-center gap-sm rounded-full font-label-md text-label-md text-on-surface transition-all hover:brightness-[1.06] glass-field active:scale-95"
           >
-            <Icon name="login" className="text-[20px]" />
+            <Icon name="login" className="text-[1.25rem]" />
             {t('auth.signInAction')}
           </button>
         ) : (
@@ -247,7 +263,7 @@ export default function Profile() {
             disabled={busy}
             className="flex min-h-2xl items-center justify-center gap-sm rounded-full bg-error-container font-label-md text-label-md text-on-error-container transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
           >
-            {busy ? <Spinner className="h-4 w-4" /> : <Icon name="logout" className="text-[20px]" />}
+            {busy ? <Spinner className="h-4 w-4" /> : <Icon name="logout" className="text-[1.25rem]" />}
             {t('profile.signOut')}
           </button>
         )}

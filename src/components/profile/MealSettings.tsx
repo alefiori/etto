@@ -57,13 +57,13 @@ export function MealSettings() {
   return (
     <div className="flex flex-col gap-sm">
       <div className="flex items-center gap-2">
-        <Icon name="restaurant_menu" className="text-[20px] text-on-surface-variant" />
+        <Icon name="restaurant_menu" className="text-[1.25rem] text-on-surface-variant" />
         <h3 className="font-label-md text-label-md text-on-surface">{t('meals.title')}</h3>
       </div>
       <p className="font-body-md text-sm text-on-surface-variant">{t('meals.description')}</p>
 
       {error && (
-        <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+        <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
           {t('meals.couldNotSave')}
         </p>
       )}
@@ -73,36 +73,42 @@ export function MealSettings() {
       ) : (
         <ul className="flex flex-col gap-sm">
           {meals.map((meal, index) => (
-            <li key={meal.id} className="flex items-center gap-sm">
-              <Icon name={meal.icon} className="shrink-0 text-[20px] text-on-surface-variant" />
-              <MealNameField meal={meal} onRename={rename} />
-              <div className="flex shrink-0 items-center">
+            // `flex-wrap` and a floor on the name field: the three actions are
+            // `shrink-0`, so as they grow with the text size they were pushing
+            // the field — and themselves — past the card's edge. Wrapping the
+            // actions under the name costs a row and keeps both reachable.
+            <li key={meal.id} className="flex flex-wrap items-center gap-sm">
+              <Icon name={meal.icon} className="shrink-0 text-[1.25rem] text-on-surface-variant" />
+              <div className="min-w-[8rem] flex-1">
+                <MealNameField meal={meal} onRename={rename} />
+              </div>
+              <div className="ml-auto flex shrink-0 items-center">
                 <button
                   type="button"
                   onClick={() => move(meal.id, -1)}
                   disabled={index === 0}
                   aria-label={t('meals.moveUp', { meal: meal.label })}
-                  className="rounded-full p-2 text-on-surface-variant transition-colors hover:glass-chip disabled:opacity-30"
+                  className="tap-target flex items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:glass-chip disabled:opacity-30"
                 >
-                  <Icon name="arrow_upward" className="text-[18px]" />
+                  <Icon name="arrow_upward" className="text-[1.125rem]" />
                 </button>
                 <button
                   type="button"
                   onClick={() => move(meal.id, 1)}
                   disabled={index === meals.length - 1}
                   aria-label={t('meals.moveDown', { meal: meal.label })}
-                  className="rounded-full p-2 text-on-surface-variant transition-colors hover:glass-chip disabled:opacity-30"
+                  className="tap-target flex items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:glass-chip disabled:opacity-30"
                 >
-                  <Icon name="arrow_downward" className="text-[18px]" />
+                  <Icon name="arrow_downward" className="text-[1.125rem]" />
                 </button>
                 <button
                   type="button"
                   onClick={() => setPending(meal)}
                   disabled={meals.length <= 1}
                   aria-label={t('meals.deleteAria', { meal: meal.label })}
-                  className="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-error-container hover:text-on-error-container disabled:opacity-30"
+                  className="tap-target flex items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:bg-error-container hover:text-on-error-container disabled:opacity-30"
                 >
-                  <Icon name="delete" className="text-[18px]" />
+                  <Icon name="delete" className="text-[1.125rem]" />
                 </button>
               </div>
             </li>
@@ -127,7 +133,7 @@ export function MealSettings() {
           disabled={atLimit || adding || newName.trim() === ''}
           className="flex min-h-[44px] shrink-0 items-center gap-xs rounded-full bg-primary-tint/20 px-4 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/30 disabled:opacity-40"
         >
-          {adding ? <Spinner className="h-4 w-4" /> : <Icon name="add" className="text-[18px]" />}
+          {adding ? <Spinner className="h-4 w-4" /> : <Icon name="add" className="text-[1.125rem]" />}
           {t('meals.addMeal')}
         </button>
       </form>

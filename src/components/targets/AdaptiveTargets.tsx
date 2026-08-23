@@ -82,7 +82,7 @@ export function AdaptiveTargets({
       <div className="flex items-start justify-between gap-md">
         <div className="min-w-0">
           <h3 className="flex items-center gap-2 font-headline-md text-headline-md text-on-surface">
-            <Icon name="auto_awesome" className="text-[20px] text-primary" />
+            <Icon name="auto_awesome" className="text-[1.25rem] text-primary" />
             {t('adaptive.title')}
           </h3>
           <p className="mt-1 font-body-md text-sm text-on-surface-variant">
@@ -101,12 +101,12 @@ export function AdaptiveTargets({
       </div>
 
       {actionError && (
-        <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+        <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
           {actionError}
         </p>
       )}
       {error && (
-        <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+        <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
           {t('adaptive.couldNotLoad')}
         </p>
       )}
@@ -122,7 +122,7 @@ export function AdaptiveTargets({
 
       {enabled && (
         <p className="flex items-center gap-1 font-label-md text-label-md text-outline">
-          <Icon name="info" className="text-[16px]" />
+          <Icon name="info" className="text-[1rem]" />
           {t('adaptive.disclaimer')}
         </p>
       )}
@@ -208,7 +208,7 @@ function AdaptiveBody({
 
       {result.clamped && (
         <p className="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant">
-          <Icon name="trending_flat" className="text-[16px]" />
+          <Icon name="trending_flat" className="text-[1rem]" />
           {t('adaptive.clampedNote')}
         </p>
       )}
@@ -217,7 +217,7 @@ function AdaptiveBody({
         type="button"
         onClick={onApply}
         disabled={applying}
-        className="mt-xs flex h-[44px] w-full items-center justify-center gap-2 rounded-full font-label-md text-label-md transition-all hover:brightness-105 active:scale-95 disabled:opacity-40 grad-primary sm:w-auto sm:px-lg"
+        className="mt-xs flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full font-label-md text-label-md transition-all hover:brightness-105 active:scale-95 disabled:opacity-40 grad-primary sm:w-auto sm:px-lg"
       >
         {applying && <Spinner className="h-4 w-4" />}
         {applied ? t('adaptive.applied') : t('adaptive.apply')}
@@ -229,7 +229,7 @@ function AdaptiveBody({
 function Guidance({ text }: { text: string }) {
   return (
     <p className="flex items-start gap-2 rounded-lg glass-chip px-md py-sm font-body-md text-sm text-on-surface-variant">
-      <Icon name="lightbulb" className="mt-0.5 text-[16px] shrink-0" />
+      <Icon name="lightbulb" className="mt-0.5 text-[1rem] shrink-0" />
       {text}
     </p>
   )

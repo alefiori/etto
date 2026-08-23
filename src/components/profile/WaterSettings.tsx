@@ -55,7 +55,7 @@ export function WaterSettings() {
   return (
     <div className="flex flex-col gap-sm">
       <div className="flex items-center gap-2">
-        <Icon name="water_drop" className="text-[20px] text-on-surface-variant" />
+        <Icon name="water_drop" className="text-[1.25rem] text-on-surface-variant" />
         <label htmlFor="water-goal" className="font-label-md text-label-md text-on-surface">
           {t('water.goalSettingLabel', { unit })}
         </label>
@@ -64,7 +64,7 @@ export function WaterSettings() {
       <p className="font-body-md text-sm text-on-surface-variant">{t('water.goalSettingHint')}</p>
 
       {error && (
-        <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+        <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
           {error}
         </p>
       )}

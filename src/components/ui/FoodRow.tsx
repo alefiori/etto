@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { pushOverlay } from '@/lib/nativeBootstrap'
+import { useOverlayDismiss } from '@/hooks/useOverlayDismiss'
 import { Icon } from '@/components/ui/Icon'
 import { MACROS } from '@/lib/constants'
 import { round, type MacroGrams } from '@/lib/macros'
@@ -86,21 +86,42 @@ export function FoodRow({
 
   useEffect(() => {
     if (!menuOpen) return
-    const close = () => setMenuOpen(false)
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close()
-    }
-    window.addEventListener('keydown', onKey)
-    // See Modal: Android sends no Escape, so back must find this too.
-    const unregister = pushOverlay(close)
     // The menu key opens this as readily as a long press does, so give the
     // first item focus — otherwise a keyboard user gets a menu they can't reach.
     menuRef.current?.querySelector<HTMLButtonElement>('button')?.focus()
-    return () => {
-      window.removeEventListener('keydown', onKey)
-      unregister()
-    }
   }, [menuOpen])
+
+  // Escape here, and Android's back, close only this menu — the shared stack
+  // makes sure they don't also take down whatever the row sits inside.
+  useOverlayDismiss(menuOpen, closeMenu)
+
+  /**
+   * Arrow keys walk the menu, Home/End jump to its ends.
+   *
+   * `role="menu"` is a promise that they do: a screen reader tells the user
+   * this is a menu, and the menu pattern is arrow-driven — Tab is expected to
+   * *leave* it, not to step through it. Without this the announcement was
+   * describing a widget the app didn't implement.
+   */
+  function handleMenuKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    const keys = ['ArrowDown', 'ArrowUp', 'Home', 'End']
+    if (!keys.includes(e.key)) return
+    const items = Array.from(
+      menuRef.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]') ?? [],
+    )
+    if (items.length === 0) return
+    e.preventDefault()
+    const at = items.indexOf(document.activeElement as HTMLButtonElement)
+    const next =
+      e.key === 'Home'
+        ? 0
+        : e.key === 'End'
+          ? items.length - 1
+          : // Wraps, as the menu pattern specifies: down off the last item
+            // returns to the first.
+            (at + (e.key === 'ArrowDown' ? 1 : items.length - 1) + items.length) % items.length
+    items[next].focus()
+  }
 
   function openMenu() {
     const rect = rowRef.current?.getBoundingClientRect()
@@ -174,7 +195,8 @@ export function FoodRow({
           if (!menuOpen) openMenu()
         }}
         onClick={handleClick}
-        aria-haspopup="dialog"
+        aria-haspopup="menu"
+        aria-expanded={menuOpen}
         className={`settle relative flex min-h-[58px] w-full select-none items-center gap-3 rounded-row p-sm px-3 text-left [-webkit-touch-callout:none] glass-row ${
           menuOpen ? 'scale-[1.03] shadow-card-hover' : 'hover:brightness-[1.04]'
         }`}
@@ -198,13 +220,16 @@ export function FoodRow({
           <span className="mt-0.5 flex items-center gap-sm text-xs text-on-surface-variant">
             {badge && (
               <span className="flex shrink-0 items-center" title={badge.label}>
-                {/* Sized inline rather than with `text-[14px]`, which would do
+                {/* Sized inline rather than with `text-[0.875rem]`, which would do
                     nothing: `.material-symbols-outlined` sets font-size and is
                     declared after `@tailwind utilities` in index.css, so it
                     beats every text-* utility on an icon — app-wide, not only
                     here. Moving that rule is the real fix and resizes every
-                    icon in the app, so it is not this component's to make. */}
-                <Icon name={badge.icon} style={{ fontSize: 14 }} />
+                    icon in the app, so it is not this component's to make.
+                    In rem, not px, for the same reason as everything else: a
+                    glyph pinned at 14px beside a label the reader has scaled
+                    to 28px reads as a rendering fault. */}
+                <Icon name={badge.icon} style={{ fontSize: '0.875rem' }} />
                 <span className="sr-only">{badge.label}</span>
               </span>
             )}
@@ -230,7 +255,8 @@ export function FoodRow({
           ref={menuRef}
           role="menu"
           aria-label={menuLabel}
-          className={`animate-menu-pop absolute left-2 z-20 w-[232px] divide-y divide-(--glass-row-border) overflow-hidden rounded-lens glass-menu ${
+          onKeyDown={handleMenuKeyDown}
+          className={`animate-menu-pop absolute left-2 z-20 w-[14.5rem] max-w-[calc(100vw-2rem)] divide-y divide-(--glass-row-border) overflow-hidden rounded-lens glass-menu ${
             menuAbove ? 'bottom-full mb-sm origin-bottom-left' : 'top-full mt-sm origin-top-left'
           }`}
         >
@@ -278,7 +304,7 @@ function MenuItem({
       }`}
     >
       {label}
-      <Icon name={icon} className="shrink-0 text-[20px]" />
+      <Icon name={icon} className="shrink-0 text-[1.25rem]" />
     </button>
   )
 }

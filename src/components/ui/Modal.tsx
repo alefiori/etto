@@ -1,6 +1,7 @@
-import { useEffect, type ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { useScrollLock } from '@/hooks/useScrollLock'
-import { pushOverlay } from '@/lib/nativeBootstrap'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { useOverlayDismiss } from '@/hooks/useOverlayDismiss'
 
 /**
  * Overlay container. On desktop it renders as a centered modal; on mobile as a
@@ -26,22 +27,11 @@ export function Modal({
   children: ReactNode
   labelledBy?: string
 }) {
-  useScrollLock(open)
+  const panelRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', onKey)
-    // Android has no Escape key; register with the hardware-back stack too, or
-    // back would exit the app from inside an open modal.
-    const unregister = pushOverlay(onClose)
-    return () => {
-      window.removeEventListener('keydown', onKey)
-      unregister()
-    }
-  }, [open, onClose])
+  useScrollLock(open)
+  useFocusTrap(open, panelRef)
+  useOverlayDismiss(open, onClose)
 
   if (!open) return null
 
@@ -55,7 +45,10 @@ export function Modal({
         if (e.target === e.currentTarget) onClose()
       }}
     >
-      <div className="flex h-full w-full flex-col overflow-hidden pb-safe-bottom pl-safe-left pr-safe-right pt-safe-top sm:h-[90vh] sm:max-w-5xl sm:rounded-[36px] glass-sheet">
+      <div
+        ref={panelRef}
+        className="flex h-full w-full flex-col overflow-hidden pb-safe-bottom pl-safe-left pr-safe-right pt-safe-top sm:h-[90vh] sm:max-w-5xl sm:rounded-[36px] glass-sheet"
+      >
         {children}
       </div>
     </div>

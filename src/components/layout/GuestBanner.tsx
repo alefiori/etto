@@ -1,8 +1,10 @@
-import { useState, type FormEvent } from 'react'
+import { useId, useRef, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useI18n } from '@/context/I18nContext'
 import { useScrollLock } from '@/hooks/useScrollLock'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { useOverlayDismiss } from '@/hooks/useOverlayDismiss'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 
@@ -24,8 +26,14 @@ export function GuestBanner() {
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const titleId = useId()
+  const panelRef = useRef<HTMLDivElement>(null)
 
   useScrollLock(open)
+  useFocusTrap(open, panelRef)
+  // A busy upgrade must not be dismissed out from under itself — the backdrop
+  // click already refuses, and Escape has to agree with it.
+  useOverlayDismiss(open && !busy, () => setOpen(false))
 
   if (!isAnonymous) return null
 
@@ -68,16 +76,22 @@ export function GuestBanner() {
           className="fixed inset-0 z-80 flex items-end justify-center glass-scrim sm:items-center sm:p-lg"
           role="dialog"
           aria-modal="true"
+          aria-labelledby={titleId}
           onMouseDown={(e) => {
             if (e.target === e.currentTarget && !busy) setOpen(false)
           }}
         >
-          <div className="flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(var(--spacing-lg)+(var(--spacing-safe-bottom)))] sm:max-w-[28rem] sm:rounded-lens sm:pb-lg glass-sheet">
+          <div
+            ref={panelRef}
+            className="flex w-full flex-col gap-md rounded-t-[36px] p-lg pb-[calc(var(--spacing-lg)+(var(--spacing-safe-bottom)))] sm:max-w-[28rem] sm:rounded-lens sm:pb-lg glass-sheet"
+          >
             <div className="flex items-center justify-between">
-              <h2 className="font-headline-md text-headline-md text-on-surface">{t('guest.title')}</h2>
+              <h2 id={titleId} className="font-headline-md text-headline-md text-on-surface">
+                {t('guest.title')}
+              </h2>
               <button
                 onClick={() => setOpen(false)}
-                className="rounded-full p-1 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
+                className="tap-target flex items-center justify-center rounded-full p-1 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
                 aria-label={t('common.close')}
               >
                 <Icon name="close" />
@@ -86,12 +100,12 @@ export function GuestBanner() {
             <p className="font-body-md text-body-md text-on-surface-variant">{t('guest.dialogBody')}</p>
 
             {notice && (
-              <p className="rounded-lg bg-primary-tint/10 px-md py-sm font-label-md text-label-md text-primary">
+              <p role="status" aria-live="polite" className="rounded-lg bg-primary-tint/10 px-md py-sm font-label-md text-label-md text-primary">
                 {notice}
               </p>
             )}
             {error && (
-              <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+              <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
                 {error}
               </p>
             )}
@@ -102,6 +116,7 @@ export function GuestBanner() {
                   {t('auth.emailAddress')}
                 </label>
                 <input
+                  data-autofocus
                   id="guest-email"
                   type="email"
                   required

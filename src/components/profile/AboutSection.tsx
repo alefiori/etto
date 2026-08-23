@@ -25,7 +25,7 @@ export function AboutSection() {
   return (
     <div className="flex flex-col gap-sm">
       <div className="flex items-center gap-2">
-        <Icon name="info" className="text-[20px] text-on-surface-variant" />
+        <Icon name="info" className="text-[1.25rem] text-on-surface-variant" />
         <h3 className="font-label-md text-label-md text-on-surface">{t('about.title')}</h3>
       </div>
 
@@ -41,17 +41,17 @@ export function AboutSection() {
           <li key={link.href}>
             <a href={link.href} target="_blank" rel="noreferrer noopener" className={linkClass}>
               <span className="flex items-center gap-sm">
-                <Icon name={link.icon} className="text-[18px] text-on-surface-variant" />
+                <Icon name={link.icon} className="text-[1.125rem] text-on-surface-variant" />
                 {link.label}
               </span>
-              <Icon name="open_in_new" className="text-[18px] text-on-surface-variant" />
+              <Icon name="open_in_new" className="text-[1.125rem] text-on-surface-variant" />
             </a>
           </li>
         ))}
         <li>
           <a href={SUPPORT_URL} className={linkClass}>
             <span className="flex items-center gap-sm">
-              <Icon name="mail" className="text-[18px] text-on-surface-variant" />
+              <Icon name="mail" className="text-[1.125rem] text-on-surface-variant" />
               {t('about.support')}
             </span>
             <span className="truncate font-label-md text-label-md text-on-surface-variant">

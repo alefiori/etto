@@ -7,6 +7,7 @@ import { ProGate } from '@/components/paywall/ProGate'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { Toggle } from '@/components/ui/Toggle'
+import { radioTabIndex, useRadioGroupKeys } from '@/hooks/useRadioGroupKeys'
 import {
   REMINDER_INTERVALS,
   remindersAvailable,
@@ -47,6 +48,12 @@ export function HydrationReminders() {
 
   const settings = settingsFromProfile(profile)
   const perDay = reminderSlots(settings).length
+
+  // Above the `!isPro` return, because it is a hook. `save` is a function
+  // declaration further down, so it is hoisted and in scope here.
+  const intervalKeys = useRadioGroupKeys(REMINDER_INTERVALS, (minutes: number) =>
+    save({ water_reminder_interval_minutes: minutes }),
+  )
 
   if (!isPro) {
     return (
@@ -102,7 +109,7 @@ export function HydrationReminders() {
       <div className="flex items-start justify-between gap-md">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <Icon name="notifications_active" className="text-[20px] text-on-surface-variant" />
+            <Icon name="notifications_active" className="text-[1.25rem] text-on-surface-variant" />
             <span className="font-label-md text-label-md text-on-surface">
               {t('water.remindersLabel')}
             </span>
@@ -121,13 +128,13 @@ export function HydrationReminders() {
       </div>
 
       {error && (
-        <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+        <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
           {error}
         </p>
       )}
 
       {denied && (
-        <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+        <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
           {t('water.remindersDenied')}
         </p>
       )}
@@ -136,7 +143,7 @@ export function HydrationReminders() {
           so instead of letting the toggle imply otherwise. */}
       {!remindersAvailable() && (
         <p className="flex items-start gap-1 rounded-lg glass-chip px-md py-sm font-label-md text-label-md text-on-surface-variant">
-          <Icon name="smartphone" className="mt-0.5 shrink-0 text-[16px]" />
+          <Icon name="smartphone" className="mt-0.5 shrink-0 text-[1rem]" />
           {t('water.remindersMobileOnly')}
         </p>
       )}
@@ -197,7 +204,10 @@ export function HydrationReminders() {
           <div
             role="radiogroup"
             aria-label={t('water.remindersEvery')}
-            className="flex flex-wrap gap-1 rounded-full glass-chip p-1"
+            onKeyDown={intervalKeys}
+            // Already wrapping; `rounded-2xl` so a second row does not overflow
+            // the pill's corners, and a basis so the options wrap whole.
+            className="flex flex-wrap gap-1 rounded-2xl glass-chip p-1"
           >
             {REMINDER_INTERVALS.map((minutes) => {
               const active = settings.intervalMinutes === minutes
@@ -207,9 +217,10 @@ export function HydrationReminders() {
                   type="button"
                   role="radio"
                   aria-checked={active}
+                  tabIndex={radioTabIndex(active)}
                   disabled={loading || saving}
                   onClick={() => save({ water_reminder_interval_minutes: minutes })}
-                  className={`flex-1 rounded-full px-3 py-1.5 font-label-md text-label-md transition-colors disabled:opacity-60 ${
+                  className={`min-w-0 flex-1 basis-[5rem] rounded-full px-3 py-1.5 font-label-md text-label-md transition-colors disabled:opacity-60 ${
                     active
                       ? 'bg-primary text-on-primary'
                       : 'text-on-surface-variant enabled:hover:bg-(--glass-chip-hover)'

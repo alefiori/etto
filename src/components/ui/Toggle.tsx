@@ -29,7 +29,10 @@ export function Toggle({
       aria-describedby={describedBy}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-[28px] w-2xl shrink-0 items-center rounded-full transition-colors disabled:opacity-40 ${
+      // The track is drawn 28px tall because that is what the settings rows
+      // want it to look like; `tap-target` gives it the 44px a finger needs
+      // without changing that, and without shifting the rows it sits in.
+      className={`tap-target relative inline-flex h-[28px] w-2xl shrink-0 items-center rounded-full transition-colors disabled:opacity-40 ${
         checked ? 'bg-primary' : 'bg-outline-variant'
       }`}
     >

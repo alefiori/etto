@@ -58,13 +58,13 @@ export function DataExport() {
   return (
     <div className="flex flex-col gap-sm">
       <div className="flex items-center gap-2">
-        <Icon name="download" className="text-[20px] text-on-surface-variant" />
+        <Icon name="download" className="text-[1.25rem] text-on-surface-variant" />
         <h3 className="font-label-md text-label-md text-on-surface">{t('export.title')}</h3>
       </div>
       <p className="font-body-md text-sm text-on-surface-variant">{t('export.description')}</p>
 
       {error && (
-        <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+        <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
           {error}
         </p>
       )}
@@ -89,7 +89,7 @@ export function DataExport() {
             {busy === format ? (
               <Spinner className="h-5 w-5 shrink-0 text-primary" />
             ) : (
-              <Icon name={icon} className="shrink-0 text-[20px] text-primary" />
+              <Icon name={icon} className="shrink-0 text-[1.25rem] text-primary" />
             )}
             <span className="min-w-0">
               <span className="block font-label-md text-label-md text-on-surface">{t(labelKey)}</span>

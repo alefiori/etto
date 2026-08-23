@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useAppShell } from '@/context/AppShellContext'
@@ -9,6 +10,7 @@ import { CustomFoodModal } from '@/components/addfood/CustomFoodModal'
 import { PaywallModal } from '@/components/paywall/PaywallModal'
 import { GuestBanner } from '@/components/layout/GuestBanner'
 import { useReminderSync } from '@/hooks/useReminderSync'
+import { useChromeMetrics } from '@/hooks/useChromeMetrics'
 
 interface NavItem {
   to: string
@@ -54,7 +56,14 @@ function Sidebar() {
       </div>
 
       {/* Nav */}
-      <nav className="flex flex-1 flex-col gap-sm">
+      <nav
+        aria-label={t('nav.primary')}
+        // `min-h-0` + `overflow-y-auto`: the drawer is a fixed-height column,
+        // and at a large text size four destinations plus the account row and
+        // the CTA no longer fit in it. Scrolling the destinations is the only
+        // outcome here that loses nothing.
+        className="flex min-h-0 flex-1 flex-col gap-sm overflow-y-auto"
+      >
         {NAV_ITEMS.map((item) => (
           <NavLink
             key={item.to}
@@ -86,7 +95,7 @@ function Sidebar() {
         <div className="flex items-center justify-between gap-sm rounded-2xl px-md py-sm glass-row">
           <div className="flex min-w-0 items-center gap-sm">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-tint/[0.14] text-primary">
-              <Icon name="person" className="text-[20px]" />
+              <Icon name="person" className="text-[1.25rem]" />
             </div>
             <span
               className="truncate font-body-md text-sm text-on-surface-variant"
@@ -102,9 +111,9 @@ function Sidebar() {
               onClick={() => navigate('/signin')}
               aria-label={t('auth.signInAction')}
               title={t('auth.signInAction')}
-              className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) hover:text-on-surface"
+              className="tap-target flex shrink-0 items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) hover:text-on-surface"
             >
-              <Icon name="login" className="text-[20px]" />
+              <Icon name="login" className="text-[1.25rem]" />
             </button>
           ) : (
             <button
@@ -115,9 +124,9 @@ function Sidebar() {
               }}
               aria-label={t('nav.signOut')}
               title={t('nav.signOut')}
-              className="shrink-0 rounded-full p-2 text-on-surface-variant transition-colors hover:bg-error-container hover:text-on-error-container"
+              className="tap-target flex shrink-0 items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:bg-error-container hover:text-on-error-container"
             >
-              <Icon name="logout" className="text-[20px]" />
+              <Icon name="logout" className="text-[1.25rem]" />
             </button>
           )}
         </div>
@@ -154,7 +163,7 @@ function NavRail() {
     <aside className="fixed left-[calc(--spacing(3)+(var(--spacing-safe-left)))] top-[calc(--spacing(3)+(var(--spacing-safe-top)))] bottom-[calc(--spacing(3)+(var(--spacing-safe-bottom)))] z-30 hidden w-[80px] shrink-0 flex-col items-center gap-1 rounded-[40px] py-3 md:flex lg:hidden glass-chrome">
       <NavLink to="/" aria-label="MacroTrack" className="mb-1">
         <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-primary-tint/[0.14] text-primary">
-          <Icon name="track_changes" fill className="text-[20px]" />
+          <Icon name="track_changes" fill className="text-[1.25rem]" />
         </div>
       </NavLink>
 
@@ -162,12 +171,16 @@ function NavRail() {
       <button
         onClick={() => openAddFood()}
         aria-label={t('nav.addFood')}
-        className="settle mb-1 flex h-14 w-14 items-center justify-center rounded-[20px] hover:scale-105 active:scale-95 grad-primary"
+        className="settle mb-1 flex min-h-14 min-w-14 items-center justify-center rounded-[20px] p-2 hover:scale-105 active:scale-95 grad-primary"
       >
         <Icon name="add" className="text-2xl" />
       </button>
 
-      <nav className="flex flex-1 flex-col items-center gap-1">
+      <nav
+        aria-label={t('nav.primary')}
+        // See the drawer: the rail is fixed-height too, and its icons grow.
+        className="flex min-h-0 flex-1 flex-col items-center gap-1 overflow-y-auto"
+      >
         {NAV_ITEMS.map((item) => (
           <NavLink
             key={item.to}
@@ -187,7 +200,7 @@ function NavRail() {
                 {/* tracking-normal, against font-label-md's 0.05em: at 10px
                     that letter-spacing is what pushed the longest label past
                     the rail's edge, and it buys nothing at this size. */}
-                <span className="mt-0.5 w-full truncate px-0.5 text-center font-label-md text-[10px] leading-tight tracking-normal">
+                <span className="chrome-label mt-0.5 w-full truncate px-0.5 text-center font-label-md leading-tight tracking-normal">
                   {t(item.shortKey)}
                 </span>
               </>
@@ -211,10 +224,10 @@ function NavRail() {
  * That fade has to be masked onto a layer of its own: `mask-image` on the bar
  * itself would take the wordmark and the profile button with it.
  */
-function TopAppBar() {
+function TopAppBar({ barRef }: { barRef: React.Ref<HTMLElement> }) {
   const { t } = useI18n()
   return (
-    <nav className="fixed top-0 z-40 w-full md:hidden">
+    <header ref={barRef} className="fixed top-0 z-40 w-full md:hidden">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 backdrop-blur-[18px] backdrop-saturate-[1.7] mask-[linear-gradient(180deg,#000_58%,transparent)] [-webkit-mask-image:linear-gradient(180deg,#000_58%,transparent)]"
@@ -228,12 +241,12 @@ function TopAppBar() {
         <NavLink
           to="/profile"
           aria-label={t('nav.profile')}
-          className="settle rounded-full p-2 text-on-surface-variant hover:bg-(--glass-chip) active:scale-95"
+          className="tap-target settle flex items-center justify-center rounded-full p-2 text-on-surface-variant hover:bg-(--glass-chip) active:scale-95"
         >
           <Icon name="account_circle" />
         </NavLink>
       </div>
-    </nav>
+    </header>
   )
 }
 
@@ -252,11 +265,15 @@ function TopAppBar() {
  * is the same lens as the rail's, which puts the action in the same place at
  * every window class: at the near end of the navigation, not beside it.
  */
-function BottomNav() {
+function BottomNav({ barRef }: { barRef: React.Ref<HTMLElement> }) {
   const { openAddFood } = useAppShell()
   const { t } = useI18n()
   return (
-    <nav className="fixed bottom-chrome-inset left-4 right-4 z-50 flex items-center gap-1 rounded-chrome px-2 py-2 md:hidden glass-chrome">
+    <nav
+      ref={barRef}
+      aria-label={t('nav.primary')}
+      className="fixed bottom-chrome-inset left-4 right-4 z-50 flex items-center gap-1 rounded-chrome px-2 py-2 md:hidden glass-chrome"
+    >
       {NAV_ITEMS.map((item) => (
         <NavLink
           key={item.to}
@@ -279,7 +296,7 @@ function BottomNav() {
           {({ isActive }) => (
             <>
               <Icon name={item.icon} fill={isActive} />
-              <span className="mt-0.5 w-full truncate px-0.5 text-center font-label-md text-[10px] tracking-normal">
+              <span className="chrome-label mt-0.5 w-full truncate px-0.5 text-center font-label-md tracking-normal">
                 {t(item.shortKey)}
               </span>
             </>
@@ -298,7 +315,7 @@ function BottomNav() {
         // controls share it (drawer, rail, tab bar) with one visible per window
         // class. A stable hook is cheaper than the guesswork.
         data-testid="add-food-fab"
-        className="settle ml-1.5 flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[19px] active:scale-95 grad-primary"
+        className="settle ml-1.5 flex min-h-[52px] min-w-[52px] shrink-0 items-center justify-center rounded-[19px] p-1.5 active:scale-95 grad-primary"
       >
         <Icon name="add" className="text-2xl" />
       </button>
@@ -316,6 +333,14 @@ export default function AppLayout() {
     _paywallOpen,
     _closePaywall,
   } = useAppShell()
+  const { t } = useI18n()
+
+  // The two pieces of phone chrome the content lane has to clear. Their height
+  // is no longer a constant — it follows the reader's text size — so it is
+  // measured and published rather than assumed. See useChromeMetrics.
+  const topBarRef = useRef<HTMLElement>(null)
+  const bottomNavRef = useRef<HTMLElement>(null)
+  useChromeMetrics(topBarRef, bottomNavRef)
 
   // Keeps the queued hydration reminders honest — see useReminderSync. It lives
   // in the shell rather than on the Profile page because the queue has to be
@@ -327,19 +352,41 @@ export default function AppLayout() {
     // No page colour of its own: the aurora is painted on <body> and the shell
     // has to let it through, or the lenses would be refracting a flat slab.
     <div className="flex h-dvh overflow-hidden text-on-surface antialiased">
+      {/* First thing in the tab order, and invisible until it has focus.
+          Without it a keyboard or switch user pays for the navigation on every
+          page: four destinations, the account row and the add button stand
+          between the top of the document and the first thing on the page they
+          actually came to read. `sr-only` alone would leave it unreachable-
+          looking when focused, so the focus state takes it out of that class
+          and puts it on screen as a real chip. */}
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:font-label-md focus:text-label-md focus:text-on-primary"
+      >
+        {t('nav.skipToContent')}
+      </a>
+
       <Sidebar />
       <NavRail />
-      <TopAppBar />
+      <TopAppBar barRef={topBarRef} />
 
       {/* The rail and drawer float, so the content lane clears their inset as
           well as their width — 12+80 and 16+280 plus a gap in each case. */}
-      <main className="w-full flex-1 overflow-y-auto pb-bottomnav pt-topbar md:ml-[104px] md:pb-lg md:pt-lg lg:ml-[312px]">
+      {/* `tabIndex={-1}` so the skip link above can actually move focus here:
+          a bare `#main` jump scrolls the region into view but leaves focus on
+          the link, and the next Tab goes straight back into the navigation the
+          user just skipped. */}
+      <main
+        id="main"
+        tabIndex={-1}
+        className="w-full flex-1 overflow-y-auto pb-bottomnav pt-topbar outline-hidden md:ml-[104px] md:pb-lg md:pt-lg lg:ml-[312px]"
+      >
         <GuestBanner />
         <Outlet />
       </main>
 
       {/* Carries the primary action itself — see the note on BottomNav. */}
-      <BottomNav />
+      <BottomNav barRef={bottomNavRef} />
 
       <AddFoodModal open={_addFood.open} initialMeal={_addFood.meal} onClose={_closeAddFood} />
 

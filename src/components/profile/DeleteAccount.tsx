@@ -54,7 +54,7 @@ export function DeleteAccount() {
   return (
     <div className="flex flex-col gap-sm">
       <div className="flex items-center gap-2">
-        <Icon name="delete_forever" className="text-[20px] text-error" />
+        <Icon name="delete_forever" className="text-[1.25rem] text-error" />
         <h3 className="font-label-md text-label-md text-on-surface">
           {t('profile.deleteAccount')}
         </h3>
@@ -77,7 +77,7 @@ export function DeleteAccount() {
         onClick={() => setConfirming(true)}
         className="flex min-h-2xl items-center justify-center gap-sm self-start rounded-full border border-error px-4 font-label-md text-label-md text-error transition-colors hover:bg-error-container/40"
       >
-        <Icon name="delete_forever" className="text-[20px]" />
+        <Icon name="delete_forever" className="text-[1.25rem]" />
         {t('profile.deleteAccount')}
       </button>
 

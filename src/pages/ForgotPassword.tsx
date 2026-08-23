@@ -46,7 +46,7 @@ export default function ForgotPassword() {
 
           <div className="flex flex-col items-center gap-sm text-center">
             <div className="mb-xs flex h-16 w-16 items-center justify-center rounded-full bg-primary-tint/[0.14] text-primary">
-              <Icon name="lock_reset" fill className="text-[32px] text-primary" />
+              <Icon name="lock_reset" fill className="text-[2rem] text-primary" />
             </div>
             <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-primary">
               {t('forgotPassword.title')}
@@ -72,7 +72,7 @@ export default function ForgotPassword() {
           ) : (
             <form className="flex flex-col gap-md" onSubmit={handleSubmit}>
               {error && (
-                <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+                <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
                   {error}
                 </p>
               )}

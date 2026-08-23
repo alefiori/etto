@@ -64,14 +64,14 @@ export function BodyMetrics() {
   return (
     <div className="flex flex-col gap-sm">
       <div className="flex items-center gap-2">
-        <Icon name="accessibility_new" className="text-[20px] text-on-surface-variant" />
+        <Icon name="accessibility_new" className="text-[1.25rem] text-on-surface-variant" />
         <h3 className="font-label-md text-label-md text-on-surface">{t('body.title')}</h3>
         {saving && <Spinner className="h-4 w-4 text-primary" />}
       </div>
       <p className="font-body-md text-sm text-on-surface-variant">{t('body.description')}</p>
 
       {error && (
-        <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+        <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
           {error}
         </p>
       )}
@@ -170,7 +170,7 @@ export function BodyMetrics() {
           )}
 
           <p className="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant">
-            <Icon name="info" className="text-[16px]" />
+            <Icon name="info" className="text-[1rem]" />
             {t('body.disclaimer')}
           </p>
         </div>

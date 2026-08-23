@@ -146,7 +146,7 @@ export default function MyFoods() {
         <button
           type="button"
           onClick={() => openCustomFood()}
-          className="settle flex h-2xl items-center justify-center gap-sm rounded-full px-lg font-label-md text-label-md hover:brightness-105 active:scale-95 grad-primary"
+          className="settle flex min-h-2xl items-center justify-center gap-sm rounded-full px-lg font-label-md text-label-md hover:brightness-105 active:scale-95 grad-primary"
         >
           <Icon name="add" />
           {t('myFoods.createCustomFood')}
@@ -156,14 +156,18 @@ export default function MyFoods() {
       <div className="relative rounded-lens p-2 glass">
         <Icon
           name="search"
-          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-outline"
+          className="pointer-events-none absolute left-[0.85em] top-1/2 -translate-y-1/2 text-outline"
         />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          // A placeholder is not a label: it is gone the moment there is text
+          // in the field, and a screen reader reaching an empty one announced
+          // "edit text" with nothing to say what it edits.
+          aria-label={t('myFoods.filterAria')}
           placeholder={t('myFoods.filterPlaceholder')}
-          className="h-2xl w-full rounded-lg border-none bg-transparent pl-container-margin-desktop pr-4 font-body-md text-body-md text-on-surface outline-hidden focus:ring-2 focus:ring-primary"
+          className="min-h-2xl w-full rounded-lg border-none bg-transparent pl-[2.9em] pr-4 font-body-md text-body-md text-on-surface outline-hidden focus:ring-2 focus:ring-primary"
         />
       </div>
 
@@ -196,7 +200,7 @@ export default function MyFoods() {
       </div>
 
       {error && (
-        <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+        <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
           {error}
         </p>
       )}

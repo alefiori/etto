@@ -395,7 +395,7 @@ if a Capacitor upgrade reshapes what it patches:
 
 | Script | What and why |
 | --- | --- |
-| [`patch-android-webview.mjs`](scripts/patch-android-webview.mjs) | Pins WebView text zoom at 100%, so a large system font can't overflow the fixed chrome |
+| [`patch-android-webview.mjs`](scripts/patch-android-webview.mjs) | Clamps the WebView text zoom to 200% — the system font-size setting is honoured, up to the scale the layout is built and tested to absorb. It used to *pin* it at 100%, which ignored the setting outright; see [Accessibility](#accessibility) |
 | [`patch-android-manifest.mjs`](scripts/patch-android-manifest.mjs) | Declares `android.permission.CAMERA`. The scanner opens the camera with `getUserMedia`, not a Capacitor plugin, so nothing contributes it and the template ships INTERNET only — Android then denies the WebView's request **without prompting**, and the scanner reports a denial the user was never asked to make. Also marks `android.hardware.camera{,.autofocus}` optional, which declaring the permission would otherwise imply as required and delist the app for devices without an autofocus rear camera |
 | [`patch-android-notification-icon.mjs`](scripts/patch-android-notification-icon.mjs) | Writes `ic_stat_water_drop`, the hydration reminders' small icon. Android draws a small icon as a silhouette — alpha only — so the full-colour launcher icon Capacitor falls back to arrives in the status bar as a solid grey blob |
 | [`patch-ios-project.mjs`](scripts/patch-ios-project.mjs) | `NSCameraUsageDescription` (without it iOS **terminates** the app on the first barcode scan), `CFBundleLocalizations` (the app localizes itself in JS, so iOS would otherwise advertise it as English-only), and the app's `PrivacyInfo.xcprivacy` — written *and* registered in the pbxproj Resources phase, since an unregistered file is never copied into the bundle. Also sets `DEVELOPMENT_TEAM` from `$APPLE_TEAM_ID` when one is set, since the template's empty team blocks every device build and Xcode's own fix is undone by the next sync |
@@ -814,19 +814,74 @@ src/
   context/      # AuthContext, ProfileContext, ThemeContext, I18nContext,
                 #   MealsContext, AppShellContext, EntitlementContext
   hooks/        # useFoodLogs, useTargets, useFoodSearch, useDebounce,
-                #   useScrollLock, useReminderSync
+                #   useScrollLock, useReminderSync, useFocusTrap,
+                #   useOverlayDismiss, useRadioGroupKeys, useChromeMetrics
   lib/          # supabase client, macros math, foodApi (Edge Function client),
                 #   foods (CRUD/copy/share), meals (rename/reorder), exportText
                 #   (chat share), exportData (full CSV/JSON export), purchases
                 #   (RevenueCat), entitlement (Pro read + purchase sync),
                 #   reminders (local notification scheduling), i18n,
-                #   theme (light/dark), types
+                #   theme (light/dark), textScale (OS text-size support), types
   pages/        # Auth, ForgotPassword, Dashboard, Targets, MyFoods, CreateCustomFood, Profile
 supabase/
   functions/    # food-search + revenuecat-webhook + delete-account Edge Functions
   migrations/   # SQL schema + RLS + profiles + community foods + editable meals
                 #   + subscriptions + hydration reminders
 ```
+
+## Accessibility
+
+The app targets WCAG 2.2 AA, on the web and in both native shells. The pieces
+that are easy to lose in a refactor are the ones worth naming here.
+
+**Text size is the reader's to choose.** This used to be refused outright:
+`text-size-adjust: 100%` in the stylesheet, with `setTextZoom(100)` in the
+Android shell behind it, because a larger system font overflowed chrome built
+out of fixed pixel heights. That is WCAG 1.4.4 failing on the one setting a
+low-vision reader is most likely to have already turned on. The layout absorbs
+the scale now, up to the 200% WCAG asks for:
+
+- The type scale in [`src/index.css`](src/index.css) is in `rem`, so a browser's
+  default-font setting, Android's font scale and iOS Dynamic Type all move it.
+- [`src/lib/textScale.ts`](src/lib/textScale.ts) supplies the one platform that
+  needs help. WKWebView ignores Dynamic Type, so the scale is measured off an
+  `-apple-system-body` probe and written to the root font size. It also detects
+  the *rendered* scale off a second probe, which is the only way to see
+  Android's `textZoom` — that multiplies font sizes at layout without changing
+  any style value.
+- [`src/hooks/useChromeMetrics.ts`](src/hooks/useChromeMetrics.ts) measures the
+  top bar and tab bar with a `ResizeObserver` and publishes their real heights,
+  which the content lane reserves. Chrome that holds text is not a fixed height
+  once the text can grow, and the old 72px/112px constants slid the first and
+  last card underneath it.
+- Past ~1.35× the tab bar and rail drop their 10px destination labels — clipped
+  to a screen-reader-only box, never `display: none`, which would take the
+  links' only accessible name with it.
+
+`e2e/a11y.spec.ts` holds this down: every route is driven at 100%, 150% and
+200% and asserted to reflow without a horizontal scrollbar and without any
+element crossing the viewport edge.
+
+**Keyboard and focus.** [`useFocusTrap`](src/hooks/useFocusTrap.ts) confines Tab
+to the open overlay and returns focus to whatever opened it —
+`aria-modal="true"` only constrains a screen reader, never the Tab key, so both
+are needed. [`useOverlayDismiss`](src/hooks/useOverlayDismiss.ts) stacks Escape
+the way `pushOverlay` already stacked Android's back button, so cancelling a
+confirm dialog no longer takes the sheet underneath it down too. A skip link is
+the first thing in the tab order, and `:focus-visible` is defined once for
+everything (with a `forced-colors` variant) — before this there was no focus
+indicator in the app at all.
+
+**Announcements.** Errors carry `role="alert"`, confirmations `role="status"`.
+Roughly two dozen messages were previously drawn and never spoken, including
+every sign-in failure. The barcode scanner narrates its own state, since a
+camera preview and a reticle convey nothing without sight of them.
+
+**Names and roles.** The progress rings are single labelled images rather than
+loose fragments ("84 g" then "/220g"). The long-press food menu implements the
+menu pattern it advertises — arrow keys, Home/End — and the two radio groups
+implement theirs, with a roving tabindex. Icon-only controls smaller than 44px
+carry `.tap-target`, which grows the hit area without moving the design.
 
 ## Testing
 
@@ -844,6 +899,12 @@ supabase/
   `npm run e2e` (first time locally: `npx playwright install chromium`). The
   build is driven by [`.env.test`](.env.test), whose stub host the fixtures
   intercept.
+- **Accessibility** has a suite of its own,
+  [`e2e/a11y.spec.ts`](e2e/a11y.spec.ts), covering the contracts that are
+  invisible in a screenshot and easy to break by accident: the skip link, the
+  named landmarks, the focus trap and its restore, live-region announcement of a
+  real failure, the labelled rings, and reflow at 100/150/200% text on every
+  route. See [Accessibility](#accessibility).
 
 ## Continuous integration
 
@@ -881,8 +942,10 @@ renders the app icons from [`assets/`](assets/) with `@capacitor/assets` — the
 same rings/brand as the web [`public/icon.svg`](public/icon.svg), as a full-bleed
 `icon-only.svg` for iOS and `icon-foreground`/`icon-background.svg` for the
 Android adaptive icon, plus `splash[-dark].svg` (the icon on the app's aurora
-ground) for the launch screen; `patch-android-webview.mjs` pins the Android
-WebView text zoom; and `verify-ipad.mjs` asserts the iPad invariants.
+ground) for the launch screen; `patch-android-webview.mjs` clamps the Android
+WebView text zoom to 200% (it is honoured below that — see
+[Accessibility](#accessibility)); and `verify-ipad.mjs` asserts the iPad
+invariants.
 
 The **web** icon set is generated instead of committed by hand: everything in
 `public/` except the SVGs is rendered from

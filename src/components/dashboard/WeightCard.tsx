@@ -156,8 +156,8 @@ export function WeightCard() {
     <div className="flex flex-col gap-md rounded-lens p-lg glass">
       <div className="flex items-start justify-between gap-md">
         <h3 className="flex items-center gap-2 font-headline-md text-headline-md text-on-surface">
-          <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-primary-tint/[0.14] text-primary">
-            <Icon name="monitor_weight" className="text-[18px]" />
+          <span className="flex min-h-[30px] min-w-[30px] shrink-0 items-center justify-center rounded-full bg-primary-tint/[0.14] p-1 text-primary">
+            <Icon name="monitor_weight" className="text-[1.125rem]" />
           </span>
           {t('weight.title')}
         </h3>
@@ -187,7 +187,7 @@ export function WeightCard() {
             step={0.1}
             aria-label={t('weight.inputAria', { unit })}
             placeholder={t('weight.todayLabel')}
-            className="h-2xl w-full rounded-full glass-field pl-4 pr-12 font-body-md text-body-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
+            className="min-h-2xl w-full rounded-full glass-field pl-4 pr-12 font-body-md text-body-md text-on-surface outline-hidden transition-colors focus:border-primary focus:ring-1 focus:ring-primary disabled:opacity-60"
             value={draft}
             disabled={saving}
             onChange={(e) => setDraft(e.target.value)}
@@ -212,7 +212,7 @@ export function WeightCard() {
           type="button"
           onClick={handleSave}
           disabled={saving || draft.trim() === ''}
-          className="flex h-2xl shrink-0 items-center gap-2 rounded-full px-lg font-label-md text-label-md transition-all hover:brightness-105 active:scale-95 disabled:opacity-40 grad-primary"
+          className="flex min-h-2xl shrink-0 items-center gap-2 rounded-full px-lg font-label-md text-label-md transition-all hover:brightness-105 active:scale-95 disabled:opacity-40 grad-primary"
         >
           {saving ? <Spinner className="h-4 w-4" /> : null}
           {justSaved ? t('weight.saved') : t('weight.save')}
@@ -225,7 +225,7 @@ export function WeightCard() {
         </p>
       )}
       {error && (
-        <p className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
+        <p role="alert" className="rounded-lg bg-error-container px-md py-sm font-label-md text-label-md text-on-error-container">
           {t('weight.couldNotLoad')}
         </p>
       )}
@@ -248,7 +248,7 @@ export function WeightCard() {
               "down 0.3 a week" says nothing about 30 days versus a year. */}
           {trendReady && (
             <p className={`flex items-center gap-1.5 font-label-md text-label-md ${rateTone}`}>
-              <Icon name={rateIcon} className="shrink-0 text-[16px]" />
+              <Icon name={rateIcon} className="shrink-0 text-[1rem]" />
               <span>{trendText}</span>
               <span className="text-on-surface-variant">· {t(rangeLabelKey)}</span>
             </p>
