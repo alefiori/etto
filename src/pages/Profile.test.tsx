@@ -212,6 +212,23 @@ describe('Profile page', () => {
       expect(h.deleteAccount).toHaveBeenCalledTimes(1)
     })
 
+    it('tells a guest what a registered account would not need to hear', async () => {
+      // A guest account has no email, so the signed-in line — delete it and you
+      // can still sign in, just to nothing — would be wrong here. What a guest
+      // needs is that there is nothing left to sign into at all.
+      h.isAnonymous = true
+      h.user = null
+      const user = userEvent.setup()
+      render(<Profile />)
+
+      await user.click(screen.getByRole('button', { name: 'Delete guest account' }))
+
+      expect(await screen.findByText('Delete your guest account?')).toBeInTheDocument()
+      expect(
+        screen.getByText(/no email to sign back in with/),
+      ).toBeInTheDocument()
+    })
+
     it('reports a failure rather than pretending the account is gone', async () => {
       h.deleteAccount.mockRejectedValue(new Error('nope'))
       const user = userEvent.setup()

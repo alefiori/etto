@@ -300,6 +300,12 @@ export const it: Translation = {
     deleteAccountStoreNote:
       'Questo non annulla il tuo abbonamento. Annullalo nelle impostazioni del tuo account App Store o Google Play, altrimenti continuerai a essere addebitato.',
     deleteAccountFailed: 'Impossibile eliminare il tuo account. Riprova.',
+    deleteAccountGuest: 'Elimina account ospite',
+    deleteAccountGuestDescription:
+      'Cancella definitivamente questo account ospite e tutto ciò che contiene: registrazioni, alimenti, obiettivi e misurazioni. Non ha un’email, quindi registrarti in seguito non lo riporterà indietro.',
+    deleteAccountGuestConfirmTitle: 'Eliminare il tuo account ospite?',
+    deleteAccountGuestConfirmMessage:
+      'Questa operazione cancella questo account ospite e ogni voce al suo interno. Non è reversibile. Un account ospite non ha un’email con cui accedere di nuovo, quindi dopo non si potrà recuperare nulla: crea un account se vuoi conservare questi dati.',
   },
   about: {
     title: 'Informazioni e note legali',

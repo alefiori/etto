@@ -300,6 +300,12 @@ export const pt: Translation = {
     deleteAccountStoreNote:
       'Isto não cancela a sua subscrição. Cancele-a nas definições da sua conta App Store ou Google Play, caso contrário continuará a ser cobrado.',
     deleteAccountFailed: 'Não foi possível eliminar a sua conta. Tente novamente.',
+    deleteAccountGuest: 'Eliminar conta de convidado',
+    deleteAccountGuestDescription:
+      'Apaga permanentemente esta conta de convidado e tudo o que contém — registos, alimentos, objetivos e medições. Não tem e-mail, por isso criar uma conta mais tarde não a traz de volta.',
+    deleteAccountGuestConfirmTitle: 'Eliminar a sua conta de convidado?',
+    deleteAccountGuestConfirmMessage:
+      'Isto apaga esta conta de convidado e todas as entradas nela. Não pode ser anulado. Uma conta de convidado não tem e-mail com que voltar a iniciar sessão, por isso depois não há nada a recuperar — crie uma conta primeiro se quiser manter estes dados.',
   },
   about: {
     title: 'Sobre e informação legal',

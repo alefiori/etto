@@ -300,6 +300,12 @@ export const es: Translation = {
     deleteAccountStoreNote:
       'Esto no cancela tu suscripción. Cancélala en los ajustes de tu cuenta de App Store o Google Play, o se te seguirá cobrando.',
     deleteAccountFailed: 'No se pudo eliminar tu cuenta. Inténtalo de nuevo.',
+    deleteAccountGuest: 'Eliminar cuenta de invitado',
+    deleteAccountGuestDescription:
+      'Borra permanentemente esta cuenta de invitado y todo lo que contiene: registros, alimentos, objetivos y mediciones. No tiene correo electrónico, así que crear una cuenta más tarde no la recuperará.',
+    deleteAccountGuestConfirmTitle: '¿Eliminar tu cuenta de invitado?',
+    deleteAccountGuestConfirmMessage:
+      'Esto borra esta cuenta de invitado y todas sus entradas. No se puede deshacer. Una cuenta de invitado no tiene un correo con el que volver a iniciar sesión, así que después no habrá nada que recuperar: crea una cuenta si quieres conservar estos datos.',
   },
   about: {
     title: 'Información y aspectos legales',
