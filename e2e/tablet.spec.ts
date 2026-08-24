@@ -74,6 +74,18 @@ test.describe('iPad portrait', () => {
     expect(box!.x).toBeGreaterThanOrEqual(80)
   })
 
+  test('does not scroll the rail sideways when a destination is hovered', async ({ page }) => {
+    await page.goto('/')
+    // Same trap as the drawer, one window class down: the rail scrolls its
+    // destinations vertically, so the hover lift needs room inside the
+    // scrollport or it turns into a horizontal scrollbar down the rail.
+    const nav = page.locator('aside:visible nav')
+    await nav.getByRole('link', { name: 'Targets' }).hover()
+
+    const overflow = await nav.evaluate((el) => el.scrollWidth - el.clientWidth)
+    expect(overflow).toBeLessThanOrEqual(0)
+  })
+
   test('lays the week out in a grid rather than one long column', async ({ page }) => {
     await page.goto('/targets')
     await expect(page.locator('#target-1-carbs')).toBeVisible()
@@ -94,6 +106,23 @@ test.describe('iPad landscape', () => {
     await expect(page.getByText('Health Companion')).toBeVisible()
 
     expect(await visibleChromeWidth(page)).toBeCloseTo(280, 0)
+  })
+
+  test('does not scroll the drawer sideways when a destination is hovered', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByText('Health Companion')).toBeVisible()
+
+    // The destinations scroll vertically (they have to, at a large text size),
+    // which makes their column a scroll container on *both* axes — CSS gives
+    // `overflow-x: visible` no meaning next to an `auto`. The hover lift moves
+    // each destination a couple of pixels towards the pointer, and without room
+    // for it that lift is horizontal overflow: a scrollbar appears across the
+    // drawer for as long as the pointer rests on a link.
+    const nav = page.locator('aside:visible nav')
+    await nav.getByRole('link', { name: 'Weekly Targets' }).hover()
+
+    const overflow = await nav.evaluate((el) => el.scrollWidth - el.clientWidth)
+    expect(overflow).toBeLessThanOrEqual(0)
   })
 })
 
