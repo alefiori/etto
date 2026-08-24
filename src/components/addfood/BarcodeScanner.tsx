@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
-import { BrowserMultiFormatReader, type IScannerControls } from '@zxing/browser'
+import { BrowserMultiFormatOneDReader, type IScannerControls } from '@zxing/browser'
 import { BarcodeFormat, DecodeHintType } from '@zxing/library'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { useOverlayDismiss } from '@/hooks/useOverlayDismiss'
@@ -8,7 +8,18 @@ import type { TranslationKey } from '@/lib/i18n'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 
-/** Retail product barcodes — restricting formats speeds up and steadies decoding. */
+/**
+ * Retail product barcodes — restricting formats speeds up and steadies decoding.
+ *
+ * These are all one-dimensional, which is why the reader below is the *OneD*
+ * variant. The general `BrowserMultiFormatReader` wraps ZXing's
+ * `MultiFormatReader`, and that statically imports the Aztec, DataMatrix,
+ * MaxiCode, MicroQR, PDF417 and QR readers — none of which can ever fire here,
+ * because the hints below exclude them. Hints filter at *runtime*; only the
+ * narrower reader keeps that code out of the bundle, and this chunk is one the
+ * service worker precaches (see globIgnores in vite.config.ts), so its size is
+ * paid on every first visit rather than only by someone who opens the camera.
+ */
 const PRODUCT_FORMATS = [
   BarcodeFormat.EAN_13,
   BarcodeFormat.EAN_8,
@@ -66,7 +77,7 @@ export function BarcodeScanner({
 
     const hints = new Map()
     hints.set(DecodeHintType.POSSIBLE_FORMATS, PRODUCT_FORMATS)
-    const reader = new BrowserMultiFormatReader(hints)
+    const reader = new BrowserMultiFormatOneDReader(hints)
 
     async function start() {
       try {

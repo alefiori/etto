@@ -62,6 +62,12 @@ jobs:
       - name: Verify the precached shell
         run: npm run verify:precache
 
+      # `chunkSizeWarningLimit` is raised past the billing SDK, so the per-chunk
+      # warning no longer holds the line on what a first paint costs. This does
+      # — see scripts/verify-bundle-budget.mjs.
+      - name: Verify the first-paint budget
+        run: npm run verify:budget
+
   unit:
     name: Unit tests
     runs-on: ubuntu-latest

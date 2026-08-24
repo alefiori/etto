@@ -11,6 +11,7 @@
     "sync:native": "npm run build:native && cap sync && node scripts/generate-native-icons.mjs && node scripts/patch-android-webview.mjs && node scripts/patch-android-manifest.mjs && node scripts/patch-android-notification-icon.mjs && node scripts/patch-ios-project.mjs && node scripts/verify-ipad.mjs",
     "verify:ipad": "node scripts/verify-ipad.mjs",
     "verify:precache": "node scripts/verify-precache.mjs",
+    "verify:budget": "node scripts/verify-bundle-budget.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint .",

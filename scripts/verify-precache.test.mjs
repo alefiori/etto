@@ -35,25 +35,25 @@ describe('offenders', () => {
   it('catches an excluded chunk that made it into the shell', () => {
     const withBilling = SW.replace(
       '{revision:"a1",url:"index.html"}',
-      '{revision:"a1",url:"assets/Purchases.es-B99CvF33.js"}',
+      '{revision:"a1",url:"assets/purchases-web-B99CvF33.js"}',
     )
-    expect(offenders(precachedUrls(withBilling))).toEqual(['Purchases.es'])
+    expect(offenders(precachedUrls(withBilling))).toEqual(['purchases-web'])
   })
 
   it('matches across the content hash, which changes every build', () => {
-    expect(offenders(['assets/Purchases.es-ZZZZZZZZ.js'])).toEqual(['Purchases.es'])
+    expect(offenders(['assets/purchases-web-ZZZZZZZZ.js'])).toEqual(['purchases-web'])
   })
 })
 
 describe('staleExclusions', () => {
   it('is empty when every exclusion still matches an emitted chunk', () => {
-    expect(staleExclusions(['Purchases.es-B99CvF33.js', 'index-LvoVKXuq.js'])).toEqual([])
+    expect(staleExclusions(['purchases-web-B99CvF33.js', 'index-LvoVKXuq.js'])).toEqual([])
   })
 
   it('catches an exclusion that no longer matches anything', () => {
     // The quiet failure this exists for: a renamed chunk leaves the exclusion
     // matching nothing, so it silently protects nothing while looking correct.
-    expect(staleExclusions(['index-LvoVKXuq.js'])).toEqual(['Purchases.es'])
+    expect(staleExclusions(['index-LvoVKXuq.js'])).toEqual(['purchases-web'])
   })
 })
 
@@ -64,7 +64,9 @@ describe('the exclusion list', () => {
     // than no check at all.
     const config = readFileSync('vite.config.ts', 'utf8')
     const globs = /globIgnores:\s*\[([^\]]*)\]/.exec(config)?.[1] ?? ''
-    const names = [...globs.matchAll(/'\*\*\/([^-]+)-\*\.js'/g)].map((m) => m[1])
+    // `[^*]+` rather than `[^-]+`: chunk names we choose ourselves contain
+    // hyphens, and the content hash is what the trailing `-*` stands for.
+    const names = [...globs.matchAll(/'\*\*\/([^*]+)-\*\.js'/g)].map((m) => m[1])
     expect(names.sort()).toEqual([...EXCLUDED_CHUNKS].sort())
   })
 

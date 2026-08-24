@@ -19,6 +19,65 @@ export default defineConfig(({ mode }) => ({
   define: {
     __APP_VERSION__: JSON.stringify(version),
   },
+  build: {
+    // The only chunk above the default 500 KB is the RevenueCat Web Billing SDK
+    // (~760 KB raw), and it is over by design: lazy behind the paywall, kept out
+    // of the precached shell, and useless offline anyway. See globIgnores below.
+    // Anything *else* crossing this line is a real regression worth the noise.
+    chunkSizeWarningLimit: 800,
+    rolldownOptions: {
+      // @zxing/library's entry does `export * from './browser'`, dragging in its
+      // legacy browser layer — BrowserPDF417Reader, BrowserAztecCodeReader and
+      // friends — and every decoder behind them. The package ships no
+      // `sideEffects: false`, so the bundler has to assume importing any of it
+      // matters and keeps the lot: swapping the scanner to the one-dimensional
+      // reader alone changed the chunk by nothing at all.
+      //
+      // Scoped to @zxing deliberately, rather than relaxing side effects
+      // globally. It is a pure decoding library: nothing under it assigns to
+      // `window`/`globalThis`, so there is no import whose only purpose is the
+      // effect of running it.
+      treeshake: {
+        moduleSideEffects: [{ test: /node_modules[\\/]@zxing[\\/]/, sideEffects: false }],
+      },
+      output: {
+        // Chunk names Rolldown derives from module ids are not ours to rely on:
+        // the shared vendor chunk was landing as `Icon-*.js` while holding all
+        // of supabase-js, and the RevenueCat chunk as `Purchases.es-*.js` — a
+        // name owned by RevenueCat's build, which globIgnores below and
+        // scripts/verify-precache.mjs both have to match. Naming the groups
+        // here makes those two agreements about a string this repo controls.
+        //
+        // Deliberately no catch-all `vendor` group: one risks pulling a
+        // lazily-reached dependency into the eagerly-loaded graph, which is the
+        // opposite of what this is for. Everything unnamed keeps Rolldown's
+        // automatic splitting.
+        codeSplitting: {
+          groups: [
+            // Must stay its own lazy chunk — the service worker excludes it
+            // from the shell by name.
+            {
+              name: 'purchases-web',
+              test: /node_modules[\\/]@revenuecat[\\/]purchases-js/,
+              priority: 30,
+            },
+            {
+              name: 'supabase',
+              test: /node_modules[\\/]@supabase[\\/]/,
+              priority: 20,
+            },
+            // React and the router change far less often than app code, so a
+            // chunk of their own survives an app deploy in the browser cache.
+            {
+              name: 'react-vendor',
+              test: /node_modules[\\/](react|react-dom|scheduler|react-router)[\\/]/,
+              priority: 10,
+            },
+          ],
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     ...(mode === 'native' ? [] : [VitePWA({
@@ -48,14 +107,16 @@ export default defineConfig(({ mode }) => ({
         // shell again for code that cannot work offline anyway — there is no
         // taking a payment without a network.
         //
-        // The barcode scanner is comparably large and stays precached on purpose:
-        // scanning in a shop with bad signal is a real thing this app is for.
+        // The barcode scanner stays precached on purpose: scanning in a shop with
+        // bad signal is a real thing this app is for. It is affordable now that it
+        // only carries the one-dimensional readers — see BarcodeScanner.tsx.
         //
-        // Named by its entry module, which is what Rolldown derives the chunk name
-        // from. `scripts/verify-precache.mjs` runs after the build and fails if it
-        // lands in the manifest anyway, so a bundler upgrade that renames the
-        // chunk is caught rather than silently regressing the shell.
-        globIgnores: ['**/Purchases.es-*.js'],
+        // Named by the `purchases-web` code-splitting group above rather than by
+        // whatever Rolldown would derive from the SDK's entry module.
+        // `scripts/verify-precache.mjs` runs after the build and fails both if the
+        // chunk lands in the manifest anyway and if the name matches nothing at
+        // all, so a rename here is caught rather than silently regressing the shell.
+        globIgnores: ['**/purchases-web-*.js'],
         navigateFallback: '/index.html',
         // Don't serve the SPA fallback for Supabase / API calls.
         navigateFallbackDenylist: [/^\/api/, /supabase\.co/],

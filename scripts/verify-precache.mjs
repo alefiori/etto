@@ -9,14 +9,15 @@
  * Precaching it would make every first visit pay most of the shell again for code
  * most visits never run. `globIgnores` excludes it; this checks that it worked.
  *
- * The barcode scanner is comparably large and deliberately *stays* precached —
- * scanning in a shop with bad signal is a real thing this app is for.
+ * The barcode scanner deliberately *stays* precached — scanning in a shop with bad
+ * signal is a real thing this app is for.
  *
- * The check exists because the exclusion is by *chunk name*, and chunk names come
- * from the bundler. A Rolldown upgrade, or a dependency renaming its entry
- * module, would quietly put 200 KB back into the shell with nothing failing. Run
- * after `npm run build`; a no-op with a clear message when there is no service
- * worker to inspect (a `--mode native` build skips the PWA plugin entirely).
+ * The check exists because the exclusion is by *chunk name*. The name is now ours
+ * — the `purchases-web` code-splitting group in vite.config.ts — rather than one
+ * Rolldown derived from the SDK's entry module, but the two still have to be
+ * changed together, and nothing in the build fails if they drift. Run after
+ * `npm run build`; a no-op with a clear message when there is no service worker to
+ * inspect (a `--mode native` build skips the PWA plugin entirely).
  */
 
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
@@ -29,7 +30,7 @@ const ASSETS = 'dist/assets'
  * Chunks that must never be precached, as the substring their filename carries
  * before the content hash. Kept in step with `globIgnores` in vite.config.ts.
  */
-export const EXCLUDED_CHUNKS = ['Purchases.es']
+export const EXCLUDED_CHUNKS = ['purchases-web']
 
 /** The URLs in a generated Workbox precache manifest. */
 export function precachedUrls(swSource) {
