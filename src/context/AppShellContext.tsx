@@ -1,4 +1,12 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react'
 import type { MealKey } from '@/lib/constants'
 import type { CustomFoodPrefill } from '@/lib/foods'
 import { todayISO } from '@/lib/date'
@@ -52,6 +60,14 @@ interface AppShellValue {
   /** The same idea for hydration, kept separate so a drink doesn't refetch food. */
   waterVersion: number
   bumpWaterVersion: () => void
+  /**
+   * And for weigh-ins. Shared rather than private to the weight card, because
+   * hydration reads the latest weight to derive its goal — a weigh-in that
+   * only the card that took it knew about left the water goal on the number
+   * from the day before.
+   */
+  weightVersion: number
+  bumpWeightVersion: () => void
   /** What was copied and is waiting to be pasted, or null. */
   clipboard: Clipboard | null
   /** A day's foods, for pasting into another day. */
@@ -61,6 +77,20 @@ interface AppShellValue {
   /** One logged food, for pasting into any meal on any day. */
   copyFood: (foodId: string, name: string, servings: number) => void
   clearClipboard: () => void
+  /**
+   * What pull-to-refresh means on the page currently mounted.
+   *
+   * The shell owns the gesture — it owns the scroll container — but only the
+   * page knows what its data is, and "refetch everything the app has ever
+   * loaded" would make a pull far more expensive than the one screen the user
+   * is looking at. So a page hands its own refetch down through
+   * {@link useRefreshHandler} and the shell drives it. A page that registers
+   * nothing gets no indicator and no gesture, rather than a spinner that
+   * refreshes nothing.
+   *
+   * internal — see useRefreshHandler, which is what pages actually call.
+   */
+  _registerRefresh: (fn: (() => Promise<unknown>) | null) => void
   /** internal — consumed by AppLayout to render the modals */
   _addFood: { open: boolean; meal?: MealKey }
   _closeAddFood: () => void
@@ -68,6 +98,10 @@ interface AppShellValue {
   _closeCustomFood: () => void
   _paywallOpen: boolean
   _closePaywall: () => void
+  /** internal — true while a page has a refresh handler registered. */
+  _refreshable: boolean
+  /** internal — runs the registered handler, or resolves if there is none. */
+  _runRefresh: () => Promise<void>
 }
 
 const AppShellContext = createContext<AppShellValue | undefined>(undefined)
@@ -77,6 +111,7 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
   const [foodLogVersion, setFoodLogVersion] = useState(0)
   const [foodsVersion, setFoodsVersion] = useState(0)
   const [waterVersion, setWaterVersion] = useState(0)
+  const [weightVersion, setWeightVersion] = useState(0)
   const [addFood, setAddFood] = useState<{ open: boolean; meal?: MealKey }>({ open: false })
   const [customFood, setCustomFood] = useState<{
     open: boolean
@@ -119,6 +154,27 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
    */
   useDayRollover((today) => setSelectedDate(today))
 
+  /**
+   * The active page's refresh handler.
+   *
+   * A ref rather than state, so that a page re-registering (which it does on
+   * every render whose handler identity changed) costs nothing. The boolean
+   * beside it is state because the shell has to re-render to show or hide the
+   * affordance.
+   */
+  const refreshHandler = useRef<(() => Promise<unknown>) | null>(null)
+  const [refreshable, setRefreshable] = useState(false)
+
+  // Stable, both of them: useRefreshHandler registers from an effect keyed on
+  // this identity, and the gesture hook re-attaches its listeners on it.
+  const registerRefresh = useCallback((fn: (() => Promise<unknown>) | null) => {
+    refreshHandler.current = fn
+    setRefreshable(fn !== null)
+  }, [])
+  const runRefresh = useCallback(async () => {
+    await refreshHandler.current?.()
+  }, [])
+
   const value: AppShellValue = {
     selectedDate,
     setSelectedDate,
@@ -128,6 +184,8 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
     bumpFoodsVersion: () => setFoodsVersion((v) => v + 1),
     waterVersion,
     bumpWaterVersion: () => setWaterVersion((v) => v + 1),
+    weightVersion,
+    bumpWeightVersion: () => setWeightVersion((v) => v + 1),
     clipboard,
     copyDay: (date, count) => setClipboard({ kind: 'day', date, count }),
     copyMeal: (date, meal, count) => setClipboard({ kind: 'meal', date, meal, count }),
@@ -147,6 +205,9 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
     _closeCustomFood: () => setCustomFood({ open: false }),
     _paywallOpen: paywallOpen,
     _closePaywall: () => setPaywallOpen(false),
+    _registerRefresh: registerRefresh,
+    _refreshable: refreshable,
+    _runRefresh: runRefresh,
   }
 
   return <AppShellContext.Provider value={value}>{children}</AppShellContext.Provider>

@@ -19,6 +19,11 @@ vi.mock('@/context/AuthContext', () => ({
 vi.mock('@/hooks/useTargets', () => ({
   useTargets: () => ({ byDay: h.byDay, loading: false, error: null, refetch: vi.fn() }),
 }))
+// The page declares what pull-to-refresh does here; the gesture itself belongs
+// to the shell, which these cases render without. Its own test covers it.
+vi.mock('@/hooks/useRefreshHandler', () => ({
+  useRefreshHandler: () => {},
+}))
 vi.mock('@/context/ProfileContext', () => ({
   useProfile: () => ({
     profile: { adaptive_targets_enabled: h.adaptive },

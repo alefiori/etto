@@ -5,6 +5,7 @@ import { useProfile } from '@/context/ProfileContext'
 import { useI18n } from '@/context/I18nContext'
 import { useMeals } from '@/context/MealsContext'
 import { useTargets } from '@/hooks/useTargets'
+import { useRefreshHandler } from '@/hooks/useRefreshHandler'
 import { useFoodLogs } from '@/hooks/useFoodLogs'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner, LoadingBlock } from '@/components/ui/Spinner'
@@ -45,17 +46,34 @@ export default function Dashboard() {
     openAddFood,
     foodLogVersion,
     bumpFoodLogVersion,
+    bumpWaterVersion,
+    bumpWeightVersion,
     clipboard,
     copyDay,
     copyMeal,
     copyFood,
     clearClipboard,
   } = useAppShell()
-  const { byDay, loading: targetsLoading } = useTargets()
-  const { logs, loading: logsLoading, error } = useFoodLogs(selectedDate, foodLogVersion)
+  const { byDay, loading: targetsLoading, refetch: refetchTargets } = useTargets()
+  const { logs, loading: logsLoading, error, refetch: refetchLogs } = useFoodLogs(
+    selectedDate,
+    foodLogVersion,
+  )
   const { locale } = useProfile()
   const { t } = useI18n()
-  const { meals, loading: mealsLoading, labelFor } = useMeals()
+  const { meals, loading: mealsLoading, labelFor, refetch: refetchMeals } = useMeals()
+
+  // What a pull down the dashboard refetches: this page's own three queries,
+  // awaited so the indicator is still spinning while they land, plus a bump of
+  // the two counters the hydration and weight cards fetch on. Those two run
+  // their own request and show their own spinner, so they are asked rather than
+  // awaited — the alternative is lifting their data up here purely so the
+  // gesture can wait on it.
+  useRefreshHandler(async () => {
+    bumpWaterVersion()
+    bumpWeightVersion()
+    await Promise.all([refetchLogs(), refetchTargets(), refetchMeals()])
+  })
 
   const [pasting, setPasting] = useState(false)
   const [pastingMeal, setPastingMeal] = useState<MealKey | null>(null)

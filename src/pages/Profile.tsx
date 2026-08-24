@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useProfile } from '@/context/ProfileContext'
 import { useI18n } from '@/context/I18nContext'
 import { useTheme } from '@/context/ThemeContext'
+import { useEntitlement } from '@/context/EntitlementContext'
 import { LOCALES, type Locale } from '@/lib/i18n'
 import { THEME_PREFERENCES, type ThemePreference } from '@/lib/theme'
 import { radioTabIndex, useRadioGroupKeys } from '@/hooks/useRadioGroupKeys'
@@ -18,6 +19,7 @@ import { ProSubscription } from '@/components/profile/ProSubscription'
 import { DataExport } from '@/components/profile/DataExport'
 import { AboutSection } from '@/components/profile/AboutSection'
 import { DeleteAccount } from '@/components/profile/DeleteAccount'
+import { useRefreshHandler } from '@/hooks/useRefreshHandler'
 
 const APPEARANCE_ICON: Record<ThemePreference, string> = {
   system: 'smartphone',
@@ -33,6 +35,7 @@ const APPEARANCE_LABEL: Record<ThemePreference, TranslationKey> = {
 
 export default function Profile() {
   const { user, signOut, isAnonymous } = useAuth()
+  const { refetch: refetchEntitlement } = useEntitlement()
   const navigate = useNavigate()
   const { locale, setLocale, isLocaleExplicit, loading: profileLoading } = useProfile()
   const { preference: themePreference, setPreference } = useTheme()
@@ -41,6 +44,12 @@ export default function Profile() {
   const [savingLang, setSavingLang] = useState(false)
   const [langError, setLangError] = useState<string | null>(null)
   const [themeError, setThemeError] = useState<string | null>(null)
+
+  // Everything else on this page is a local preference the user just set. What
+  // a pull is for here is the subscription: it is decided by the store, and it
+  // changes without the app being told — a renewal that went through, a
+  // billing problem that got fixed on another device.
+  useRefreshHandler(refetchEntitlement)
 
   async function handleSignOut() {
     setBusy(true)

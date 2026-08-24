@@ -42,7 +42,9 @@ vi.mock('@/context/ProfileContext', () => ({
 // stubbed here, defaulting to a free account. The gated behaviour itself is
 // covered by e2e/pro.spec.ts against a real entitlement row.
 vi.mock('@/context/AppShellContext', () => ({
-  useAppShell: () => ({ openPaywall: h.openPaywall }),
+  // `_registerRefresh` is how the page declares what pull-to-refresh does;
+  // outside the real shell it registers into nothing.
+  useAppShell: () => ({ openPaywall: h.openPaywall, _registerRefresh: () => {} }),
 }))
 vi.mock('@/context/EntitlementContext', () => ({
   useEntitlement: () => ({

@@ -30,11 +30,11 @@ import { ProgressRing } from '@/components/ui/ProgressRing'
 export function WaterCard() {
   const { t } = useI18n()
   const { profile, unitSystem } = useProfile()
-  const { selectedDate, waterVersion, bumpWaterVersion } = useAppShell()
+  const { selectedDate, waterVersion, weightVersion, bumpWaterVersion } = useAppShell()
   const { logs, loading, error } = useWaterLogs(selectedDate, waterVersion)
   // Only to derive a goal when the user hasn't set one; a short window is
   // enough to find the latest weigh-in.
-  const { logs: weights } = useWeightLogs(30, 0)
+  const { logs: weights } = useWeightLogs(30, weightVersion)
 
   const [custom, setCustom] = useState('')
   const [busy, setBusy] = useState(false)

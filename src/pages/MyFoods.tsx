@@ -11,6 +11,7 @@ import { calories } from '@/lib/macros'
 import { deleteFood, setFoodPublic, type CustomFoodPrefill } from '@/lib/foods'
 import type { Food } from '@/lib/database.types'
 import type { TranslationKey } from '@/lib/i18n'
+import { useRefreshHandler } from '@/hooks/useRefreshHandler'
 
 type SourceFilter = 'all' | 'custom' | 'imported'
 
@@ -72,6 +73,10 @@ export default function MyFoods() {
     else setFoods((data as Food[]) ?? [])
     setLoading(false)
   }, [user])
+
+  // A pull re-reads the library — the one thing on this page that another
+  // device can change underneath it.
+  useRefreshHandler(fetchFoods)
 
   // Refetch when the sheet saves. It used to be a route, so saving navigated
   // back here and remounted the page; a sheet closes over a list that is still

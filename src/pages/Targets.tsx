@@ -10,6 +10,7 @@ import { LoadingBlock } from '@/components/ui/Spinner'
 import { MACROS, TARGET_DAYS } from '@/lib/constants'
 import { calories, type MacroGrams } from '@/lib/macros'
 import type { TranslationKey } from '@/lib/i18n'
+import { useRefreshHandler } from '@/hooks/useRefreshHandler'
 
 /** Map a JS day-of-week index (0 = Sunday) to its weekday translation key. */
 const DOW_KEY: Record<number, TranslationKey> = {
@@ -50,6 +51,11 @@ export default function Targets() {
   const [saveError, setSaveError] = useState<string | null>(null)
   /** The day currently held for pasting (day_of_week), or null. */
   const [copied, setCopied] = useState<number | null>(null)
+
+  // A pull re-reads the seven rows. Unedited ones are replaced by whatever the
+  // server has — which is the point on a second device — and the autosave
+  // queue is untouched, so an edit still in flight lands and wins.
+  useRefreshHandler(refetch)
 
   // Autosave bookkeeping. The current values also live in a ref so the
   // debounced flush always writes what is on screen, without every keystroke

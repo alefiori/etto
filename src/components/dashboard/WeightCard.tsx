@@ -70,13 +70,12 @@ export function WeightCard() {
   const { t } = useI18n()
   const { profile, unitSystem } = useProfile()
   const { isPro } = useEntitlement()
-  const { openPaywall } = useAppShell()
+  const { openPaywall, weightVersion, bumpWeightVersion } = useAppShell()
   const [rangeDays, setRangeDays] = useState<number>(90)
-  const [version, setVersion] = useState(0)
   // Logging a weight is free; reading the trend out of it is what Pro buys. A
   // locked card has no business pulling a year of rows, so the window collapses
   // to the shortest one that can still name the latest reading.
-  const { logs, loading, error } = useWeightLogs(isPro ? rangeDays : 30, version)
+  const { logs, loading, error } = useWeightLogs(isPro ? rangeDays : 30, weightVersion)
 
   const [draft, setDraft] = useState('')
   const [saving, setSaving] = useState(false)
@@ -113,7 +112,7 @@ export function WeightCard() {
       await saveWeight(todayISO(), weightToKg(parsed, unitSystem))
       setDraft('')
       setJustSaved(true)
-      setVersion((v) => v + 1)
+      bumpWeightVersion()
       window.setTimeout(() => setJustSaved(false), 2000)
     } catch {
       setSaveError(t('weight.couldNotSave'))

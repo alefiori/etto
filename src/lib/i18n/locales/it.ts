@@ -13,6 +13,9 @@ export const it: Translation = {
     community: 'Community',
     add: 'Aggiungi',
     language: 'Lingua',
+    refresh: 'Aggiorna',
+    refreshing: 'Aggiornamento…',
+    refreshed: 'Aggiornato',
   },
   nav: {
     dashboard: 'Dashboard',

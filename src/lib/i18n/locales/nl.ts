@@ -13,6 +13,9 @@ export const nl: Translation = {
     community: 'Community',
     add: 'Toevoegen',
     language: 'Taal',
+    refresh: 'Vernieuwen',
+    refreshing: 'Vernieuwen…',
+    refreshed: 'Bijgewerkt',
   },
   nav: {
     dashboard: 'Dashboard',

@@ -18,6 +18,9 @@ export const en = {
     community: 'Community',
     add: 'Add',
     language: 'Language',
+    refresh: 'Refresh',
+    refreshing: 'Refreshing…',
+    refreshed: 'Updated',
   },
   nav: {
     dashboard: 'Dashboard',

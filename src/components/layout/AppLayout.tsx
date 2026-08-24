@@ -9,8 +9,10 @@ import { AddFoodModal } from '@/components/addfood/AddFoodModal'
 import { CustomFoodModal } from '@/components/addfood/CustomFoodModal'
 import { PaywallModal } from '@/components/paywall/PaywallModal'
 import { GuestBanner } from '@/components/layout/GuestBanner'
+import { PullToRefresh } from '@/components/layout/PullToRefresh'
 import { useReminderSync } from '@/hooks/useReminderSync'
 import { useChromeMetrics } from '@/hooks/useChromeMetrics'
+import { usePullToRefresh } from '@/hooks/usePullToRefresh'
 
 interface NavItem {
   to: string
@@ -62,7 +64,16 @@ function Sidebar() {
         // and at a large text size four destinations plus the account row and
         // the CTA no longer fit in it. Scrolling the destinations is the only
         // outcome here that loses nothing.
-        className="flex min-h-0 flex-1 flex-col gap-sm overflow-y-auto"
+        //
+        // `-mx-1 px-1` is what pays for that scroll container. Asking for
+        // `overflow-y: auto` makes the column scrollable on *both* axes — CSS
+        // gives `overflow-x: visible` no meaning next to an `auto` and computes
+        // it to `auto` as well — so the destinations' 2px hover lift had
+        // nowhere to land and drew a horizontal scrollbar across the drawer for
+        // as long as the pointer rested on a link. The padding gives the lift
+        // room inside the scrollport and the negative margin takes it back out
+        // of the layout, so every destination sits exactly where it did.
+        className="-mx-1 flex min-h-0 flex-1 flex-col gap-sm overflow-y-auto px-1"
       >
         {NAV_ITEMS.map((item) => (
           <NavLink
@@ -178,8 +189,13 @@ function NavRail() {
 
       <nav
         aria-label={t('nav.primary')}
-        // See the drawer: the rail is fixed-height too, and its icons grow.
-        className="flex min-h-0 flex-1 flex-col items-center gap-1 overflow-y-auto"
+        // See the drawer: the rail is fixed-height too, and its icons grow —
+        // and it pays for its scroll container the same way. `px-1` alone here,
+        // with no negative margin to answer it: the destinations are a fixed
+        // 68px centred in the 80px rail, so symmetric padding leaves every one
+        // of them exactly where it was while giving the hover lift somewhere to
+        // go, and it keeps the scrollbar inside the rail's own edge.
+        className="flex min-h-0 flex-1 flex-col items-center gap-1 overflow-y-auto px-1"
       >
         {NAV_ITEMS.map((item) => (
           <NavLink
@@ -332,6 +348,8 @@ export default function AppLayout() {
     bumpFoodsVersion,
     _paywallOpen,
     _closePaywall,
+    _refreshable,
+    _runRefresh,
   } = useAppShell()
   const { t } = useI18n()
 
@@ -347,6 +365,17 @@ export default function AppLayout() {
   // re-armed when the app is resumed or a drink is logged, neither of which
   // happens anywhere near the settings that describe it. A no-op on the web.
   useReminderSync()
+
+  // Pull down at the top of the content lane to refetch. The lane is the
+  // scroller — the document itself never scrolls here — so the gesture has to
+  // be read off it; what a pull actually refetches is whatever the page on
+  // screen registered. See usePullToRefresh and useRefreshHandler.
+  const mainRef = useRef<HTMLElement>(null)
+  const pull = usePullToRefresh({
+    scrollRef: mainRef,
+    onRefresh: _runRefresh,
+    enabled: _refreshable,
+  })
 
   return (
     // No page colour of its own: the aurora is painted on <body> and the shell
@@ -378,9 +407,22 @@ export default function AppLayout() {
           user just skipped. */}
       <main
         id="main"
+        ref={mainRef}
         tabIndex={-1}
-        className="w-full flex-1 overflow-y-auto pb-bottomnav pt-topbar outline-hidden md:ml-[104px] md:pb-lg md:pt-lg lg:ml-[312px]"
+        // `overscroll-contain`: with a pull-to-refresh of its own, the lane must
+        // not also hand the overscroll on to whatever is behind it — that is
+        // Chrome's own pull-to-refresh on an Android install, and two of them
+        // answering one gesture is one too many.
+        className="w-full flex-1 overflow-y-auto overscroll-contain pb-bottomnav pt-topbar outline-hidden md:ml-[104px] md:pb-lg md:pt-lg lg:ml-[312px]"
       >
+        <PullToRefresh
+          phase={pull.phase}
+          distance={pull.distance}
+          progress={pull.progress}
+          announce={pull.announce}
+          onRefresh={pull.refresh}
+          enabled={_refreshable}
+        />
         <GuestBanner />
         <Outlet />
       </main>
