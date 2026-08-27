@@ -42,9 +42,9 @@ eiwitten en vetten per weekdag in, zodat een trainingsdag en een rustdag niet
 hetzelfde getal zijn. En als dat wel zo is, kopieer je één dag naar de hele week.
 
 **Invoeren dat niet in de weg zit**
-Zoek in je eigen voeding, in die van andere MacroTrack-gebruikers en in drie
-gratis voedingsdatabases — Open Food Facts, USDA FoodData Central en Edamam — in
-één lijst, met bij elk resultaat waar het vandaan komt. Of scan de barcode op de
+Zoek in je eigen voeding, in die van andere MacroTrack-gebruikers, in nationale
+voedingswaardetabellen en in twee gratis databases — Open Food Facts en USDA
+FoodData Central — in één lijst, met bij elk resultaat waar het vandaan komt. Of scan de barcode op de
 verpakking en sla het zoeken helemaal over.
 
 Groepeer voeding in maaltijden die je zelf een naam geeft. Hernoemen, herordenen,
@@ -100,4 +100,5 @@ schattingen worden berekend uit wat je invult en kunnen onjuist zijn. Overleg me
 een arts of diëtist voordat je je voeding verandert.
 
 Voedingsgegevens van Open Food Facts (ODbL), USDA FoodData Central (publiek
-domein) en de Edamam Food Database.
+domein), ANSES-Ciqual (Licence Ouverte), CoFID (Open Government Licence v3.0) en
+CREA.

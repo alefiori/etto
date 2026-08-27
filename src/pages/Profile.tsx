@@ -17,6 +17,7 @@ import { WaterSettings } from '@/components/profile/WaterSettings'
 import { HydrationReminders } from '@/components/profile/HydrationReminders'
 import { ProSubscription } from '@/components/profile/ProSubscription'
 import { DataExport } from '@/components/profile/DataExport'
+import { DataSources } from '@/components/profile/DataSources'
 import { AboutSection } from '@/components/profile/AboutSection'
 import { DeleteAccount } from '@/components/profile/DeleteAccount'
 import { useRefreshHandler } from '@/hooks/useRefreshHandler'
@@ -246,6 +247,13 @@ export default function Profile() {
 
         {/* Take everything with you — Pro */}
         <DataExport />
+
+        <hr className="border-surface-container-highest" />
+
+        {/* Attribution for the national food-composition tables. The open
+            licences they ship under require the source and edition to be stated
+            wherever the data is reused, so this is an obligation, not credits. */}
+        <DataSources />
 
         <hr className="border-surface-container-highest" />
 

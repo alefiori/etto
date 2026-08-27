@@ -318,6 +318,11 @@ export const en = {
     deleteAccountGuestConfirmMessage:
       'This erases this guest account and every entry in it. It cannot be undone. A guest account has no email to sign back in with, so nothing can be recovered afterwards — create an account first if you want to keep this data.',
   },
+  dataSources: {
+    title: 'Food data sources',
+    description:
+      'Generic foods come from national food-composition tables, used under the licences below.',
+  },
   about: {
     title: 'About & legal',
     disclaimer:

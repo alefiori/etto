@@ -1,0 +1,107 @@
+# Watches the upstream national food-composition datasets for a new edition.
+#
+# These tables move on a multi-year cadence (Ciqual 2017 -> 2020 -> 2025, CoFID
+# 2015 -> 2019 -> 2021), so this job is expected to find nothing almost every
+# time. It stays cheap by fetching only upstream *metadata* — file ids,
+# checksums, sizes, publication dates — and never downloading or parsing the
+# datasets themselves.
+#
+# When something does change it opens a pull request rather than writing to the
+# database, for three reasons: both licences require us to state which version
+# we redistribute (answerable from git only if the CSVs are committed), a bad
+# upstream release would otherwise reach every user unreviewed, and the
+# interesting event is "a new edition exists" — worth ten minutes of a human's
+# attention once every few years.
+#
+# CREA is deliberately excluded: it publishes no versioned artifact, and
+# re-reading 900 pages on a schedule for a static 2019 table would not be a
+# reasonable thing to do to someone else's server. Refresh it by hand with
+# `node scripts/build-reference-foods.mjs --source crea`.
+
+name: Reference food datasets
+
+on:
+  schedule:
+    # 05:00 UTC on the 1st of each month.
+    - cron: '0 5 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check:
+    name: Check upstream for a new edition
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Look for a new edition
+        id: check
+        run: |
+          set +e
+          node scripts/build-reference-foods.mjs --check --source ciqual
+          ciqual=$?
+          node scripts/build-reference-foods.mjs --check --source cofid
+          cofid=$?
+          set -e
+          # 0 = unchanged, 10 = a new edition, anything else = broken.
+          for code in "$ciqual" "$cofid"; do
+            if [ "$code" -ne 0 ] && [ "$code" -ne 10 ]; then
+              echo "::error::Upstream metadata check failed (exit $code) — a URL or API shape probably moved."
+              exit 1
+            fi
+          done
+          if [ "$ciqual" -eq 10 ] || [ "$cofid" -eq 10 ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "### Reference datasets: :white_check_mark: up to date" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Install dependencies
+        if: steps.check.outputs.changed == 'true'
+        run: npm ci
+
+      - name: Rebuild the changed datasets
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          npm run data:reference -- --source ciqual
+          npm run data:reference -- --source cofid
+
+      - name: Verify the rebuilt data still parses and imports
+        if: steps.check.outputs.changed == 'true'
+        run: npx vitest run scripts/reference-foods.test.mjs
+
+      - name: Open a pull request
+        if: steps.check.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/reference-foods-update
+          title: 'chore(data): a new food-composition dataset edition is available'
+          commit-message: 'chore(data): refresh the reference food datasets'
+          body: |
+            `scripts/build-reference-foods.mjs --check` found a new upstream edition
+            and rebuilt the committed CSVs.
+
+            **Review the diff as nutrition data, not as text.** Worth checking before merging:
+
+            - Does the row count move by a plausible amount? A large drop suggests a
+              truncated download or a renamed column, not a real edition.
+            - Are there new macro-sum outliers in the build log? Those are the
+              signature of a mis-mapped column.
+            - Did `dataset_version` change as expected?
+
+            Merging deploys it: the `supabase-deploy` job runs
+            `scripts/import-reference-foods.mjs`, which projects these CSVs into
+            `public.reference_foods`.
+
+            Already-logged foods are unaffected — `upsertExternalFood()` snapshots
+            macros into a `foods` row at log time, so nobody's history is rewritten.
+          labels: data

@@ -10,16 +10,15 @@
 // Two modes (GET query params):
 //   ?q=milk&lang=en     -> text search, fans out to every source, merged+deduped
 //   ?barcode=3017620...  -> single-product lookup (Open Food Facts, falling
-//                           back to Edamam UPC lookup when OFF has no match)
+//                           back to a USDA GTIN/UPC lookup when OFF has no match)
 //
-// Adding a new source: write a `SearchFn` that returns ExternalFood[] and add it
-// to the SOURCES array below. Read any API key via Deno.env.get(...). Nothing
-// else (client, other sources) needs to change.
+// Adding a new external source: write a `SearchFn` that returns ExternalFood[]
+// and add it to the SOURCES array below. Read any API key via Deno.env.get(...).
+// A source backed by our own tables additionally needs a migration and a data
+// load — see scripts/import-reference-foods.mjs.
 //
 // Deploy:  supabase functions deploy food-search
 //          supabase secrets set USDA_API_KEY=...   (optional; defaults to DEMO_KEY)
-//          supabase secrets set EDAMAM_APP_ID=... EDAMAM_APP_KEY=...   (optional;
-//          Edamam is skipped when unset — https://developer.edamam.com/food-database-api)
 //          supabase secrets set OFF_USERNAME=... OFF_PASSWORD=...   (optional; a
 //          regular Open Food Facts account — OFF has no API keys. When set, OFF
 //          requests are sent authenticated so they skip the anonymous rate limit
@@ -29,15 +28,16 @@
 // Pure API-JSON -> ExternalFood mapping lives in ./normalize.ts so it can be
 // unit-tested from Node/Vitest (it touches no Deno globals). This file keeps the
 // fetch/env/rate-limit/serving concerns.
+import { createClient } from 'npm:@supabase/supabase-js@2'
 import {
   dedupe,
-  normalizeEdamam,
   normalizeFdc,
   normalizeOff,
-  type EdamamHit,
+  normalizeReference,
   type ExternalFood,
   type FdcFood,
   type OffProduct,
+  type ReferenceRow,
 } from './normalize.ts'
 
 // Text search uses Open Food Facts' Search-a-licious endpoint
@@ -46,12 +46,11 @@ import {
 // the legacy CGI search.pl 503s after only a few rapid anonymous calls. That
 // throttling silently drops OFF from results (a failing source degrades to []),
 // and with it any product that lives *only* in OFF — i.e. exactly the newer /
-// niche foods USDA and Edamam don't cover. Barcode lookup still uses the v2
-// product endpoint, which isn't affected.
+// niche foods USDA doesn't cover. Barcode lookup still uses the v2 product
+// endpoint, which isn't affected.
 const OFF_SEARCH_URL = 'https://search.openfoodfacts.org/search'
 const OFF_PRODUCT_URL = 'https://world.openfoodfacts.org/api/v2/product'
 const USDA_SEARCH_URL = 'https://api.nal.usda.gov/fdc/v1/foods/search'
-const EDAMAM_PARSER_URL = 'https://api.edamam.com/api/food-database/v2/parser'
 
 // OFF blocks/deprioritizes generic User-Agents and asks that heavier callers
 // identify a real contact, so keep this pointed at the actual project + email.
@@ -60,8 +59,12 @@ const USER_AGENT =
 const DEFAULT_LANG = 'en'
 const PAGE_SIZE = '20'
 const USDA_API_KEY = Deno.env.get('USDA_API_KEY') || 'DEMO_KEY'
-const EDAMAM_APP_ID = Deno.env.get('EDAMAM_APP_ID') || ''
-const EDAMAM_APP_KEY = Deno.env.get('EDAMAM_APP_KEY') || ''
+// Injected by the Edge Runtime; nothing to configure. The anon key is
+// deliberate — reference_foods is world-readable by policy, and this function
+// proxies user-supplied query strings, so it has no business holding a key that
+// bypasses RLS.
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || ''
+const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') || ''
 // Open Food Facts has no API keys; authentication is HTTP Basic Auth with a
 // regular OFF account. When set, it lifts our requests out of the anonymous
 // rate limit. Skipped when unset (calls stay anonymous, best-effort).
@@ -133,6 +136,9 @@ async function lookupOffBarcode(
     `${OFF_PRODUCT_URL}/${encodeURIComponent(code)}.json?${params.toString()}`,
     { headers: offHeaders(), signal },
   )
+  // OFF answers 404 for a barcode it has no product for — a miss, not a
+  // failure, so it falls through to the next source without logging noise.
+  if (res.status === 404) return null
   if (!res.ok) throw new Error(`Open Food Facts lookup failed (${res.status})`)
   const data = (await res.json()) as { status?: number; product?: OffProduct }
   if (data.status !== 1 || !data.product) return null
@@ -161,56 +167,77 @@ const searchUsda: SearchFn = async (q, _lang, signal) => {
 }
 
 // ---------------------------------------------------------------------------
-// Edamam Food Database (parser endpoint)
+// USDA barcode fallback
 // ---------------------------------------------------------------------------
 
-/** Call the parser endpoint with either `ingr` (text) or `upc` (barcode). */
-async function edamamParse(
-  query: Record<string, string>,
-  signal: AbortSignal,
-): Promise<ExternalFood[]> {
-  if (!EDAMAM_APP_ID || !EDAMAM_APP_KEY) return [] // credentials not configured; skip
+/**
+ * Barcode lookup for products Open Food Facts doesn't know. FDC exposes no
+ * dedicated UPC endpoint, so this is a text search for the digits — which makes
+ * the exact-match guard below load-bearing rather than defensive: without it a
+ * numeric query could return an unrelated product whose description merely
+ * contains the string.
+ *
+ * Coverage is US branded foods only. OFF remains far stronger in Europe, which
+ * is why it stays first.
+ */
+async function lookupUsdaBarcode(code: string, signal: AbortSignal): Promise<ExternalFood | null> {
   const params = new URLSearchParams({
-    app_id: EDAMAM_APP_ID,
-    app_key: EDAMAM_APP_KEY,
-    'nutrition-type': 'logging',
-    ...query,
+    api_key: USDA_API_KEY,
+    query: code,
+    dataType: 'Branded',
+    pageSize: '5',
   })
-  const res = await fetch(`${EDAMAM_PARSER_URL}?${params.toString()}`, {
+  const res = await fetch(`${USDA_SEARCH_URL}?${params.toString()}`, {
     headers: { Accept: 'application/json' },
     signal,
   })
-  // Edamam answers 404 for an unknown UPC — a miss, not a failure.
-  if (res.status === 404) return []
-  if (!res.ok) throw new Error(`Edamam search failed (${res.status})`)
-  const data = (await res.json()) as { parsed?: EdamamHit[]; hints?: EdamamHit[] }
-  // `parsed` holds exact matches, `hints` related ones; the same foodId can
-  // appear in both — the shared dedupe() pass drops the repeats.
-  return [...(data.parsed ?? []), ...(data.hints ?? [])]
-    .map((h) => normalizeEdamam(h.food))
-    .filter((f): f is ExternalFood => !!f)
-    .slice(0, Number(PAGE_SIZE))
+  if (!res.ok) throw new Error(`USDA barcode lookup failed (${res.status})`)
+  const data = (await res.json()) as { foods?: FdcFood[] }
+  // EAN-13 and UPC-A write the same product with a different number of leading
+  // zeros, so compare without them.
+  const strip = (s: string) => s.replace(/^0+/, '')
+  const hit = (data.foods ?? []).find((f) => f.gtinUpc && strip(f.gtinUpc) === strip(code))
+  return hit ? normalizeFdc(hit) : null
 }
 
-/** Text search via the parser endpoint. English-only, so `lang` is ignored. */
-const searchEdamam: SearchFn = (q, _lang, signal) => edamamParse({ ingr: q }, signal)
+// ---------------------------------------------------------------------------
+// Reference food-composition tables (ANSES-Ciqual, CoFID, CREA)
+//
+// Served from our own `reference_foods` table through the
+// search_reference_foods() RPC: no external hop, no rate limit, no API key, and
+// it cannot 503 the way OFF does under load. See supabase/migrations/0016.
+// ---------------------------------------------------------------------------
 
-async function lookupEdamamBarcode(
-  code: string,
-  signal: AbortSignal,
-): Promise<ExternalFood | null> {
-  const foods = await edamamParse({ upc: code }, signal)
-  return foods[0] ?? null
+// One client per isolate rather than per request.
+const db =
+  SUPABASE_URL && SUPABASE_ANON_KEY
+    ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } })
+    : null
+
+const searchReference: SearchFn = async (q, lang, signal) => {
+  if (!db) return [] // unconfigured -> skipped, never fatal
+  const { data, error } = await db
+    .rpc('search_reference_foods', { q, lang, max_results: Number(PAGE_SIZE) })
+    .abortSignal(signal)
+  if (error) throw new Error(`Reference search failed (${error.message})`)
+  return ((data ?? []) as ReferenceRow[])
+    .map(normalizeReference)
+    .filter((f): f is ExternalFood => !!f)
 }
 
 // ---------------------------------------------------------------------------
 // Source registry — add new sources here.
 // ---------------------------------------------------------------------------
 
+// Order is the ranking knob: searchAllSources concatenates in this order and
+// dedupe() is first-seen-wins, so position changes order, never membership.
+// The reference tables lead because they are local, instant, never rate-limited
+// and macro-complete — and they simply do not match brand names, so for a
+// branded query they return nothing and the other two fill the list as before.
 const SOURCES: { name: string; search: SearchFn }[] = [
+  { name: 'reference', search: searchReference },
   { name: 'openfoodfacts', search: searchOpenFoodFacts },
   { name: 'usda', search: searchUsda },
-  { name: 'edamam', search: searchEdamam },
 ]
 
 // ---------------------------------------------------------------------------
@@ -298,12 +325,13 @@ Deno.serve(async (req: Request) => {
     const barcode = (url.searchParams.get('barcode') ?? '').trim()
 
     if (barcode) {
-      // Open Food Facts first (richer, localized data), then Edamam's UPC
-      // lookup for products OFF doesn't know. A source erroring (not just
-      // missing the product) moves on to the next instead of failing the call.
+      // Open Food Facts first (richer, localized, far better European
+      // coverage), then USDA's branded GTIN/UPC data for products OFF doesn't
+      // know. A source erroring (not just missing the product) moves on to the
+      // next instead of failing the call.
       const lookups = [
         () => lookupOffBarcode(barcode, lang, req.signal),
-        () => lookupEdamamBarcode(barcode, req.signal),
+        () => lookupUsdaBarcode(barcode, req.signal),
       ]
       for (const lookup of lookups) {
         try {
@@ -311,6 +339,10 @@ Deno.serve(async (req: Request) => {
           if (food) return json([food], 200)
         } catch (err) {
           if (err instanceof Error && err.name === 'AbortError') throw err
+          // A failing source falls through to the next rather than sinking the
+          // scan, but log it: silently swallowing these made a rate-limited or
+          // misconfigured source indistinguishable from "product not found".
+          console.error(`barcode ${barcode}: ${err instanceof Error ? err.message : err}`)
         }
       }
       return json([], 200)

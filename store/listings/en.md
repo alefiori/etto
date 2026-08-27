@@ -45,9 +45,9 @@ protein and fats for each weekday, so a training day and a rest day are not the
 same number. Copy one day across the whole week when they are.
 
 **Logging that gets out of the way**
-Search your own foods, foods shared by other MacroTrack users, and three free
-nutrition databases — Open Food Facts, USDA FoodData Central and Edamam — in one
-list, each result tagged with where it came from. Or scan the barcode on the
+Search your own foods, foods shared by other MacroTrack users, national
+food-composition tables and two free nutrition databases — Open Food Facts and
+USDA FoodData Central — in one list, each result tagged with where it came from. Or scan the barcode on the
 package and skip the search entirely.
 
 Group foods into meals you name yourself. Rename them, reorder them, add or
@@ -101,4 +101,5 @@ calculated from what you enter and can be wrong. Talk to a doctor or dietitian
 before changing your diet.
 
 Nutrition data from Open Food Facts (ODbL), USDA FoodData Central (public
-domain), and the Edamam Food Database.
+domain), ANSES-Ciqual (Etalab Open Licence), CoFID (Open Government Licence
+v3.0) and CREA.

@@ -310,6 +310,11 @@ export const nl: Translation = {
     deleteAccountGuestConfirmMessage:
       'Hiermee wis je dit gastaccount en elke invoer erin. Dit kan niet ongedaan worden gemaakt. Een gastaccount heeft geen e-mailadres om weer mee in te loggen, dus daarna valt er niets terug te halen — maak eerst een account als je deze gegevens wilt bewaren.',
   },
+  dataSources: {
+    title: 'Bronnen van voedingsdata',
+    description:
+      'Generieke voedingsmiddelen komen uit nationale voedingswaardetabellen, gebruikt onder de onderstaande licenties.',
+  },
   about: {
     title: 'Over & juridisch',
     disclaimer:

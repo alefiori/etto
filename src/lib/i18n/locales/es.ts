@@ -310,6 +310,11 @@ export const es: Translation = {
     deleteAccountGuestConfirmMessage:
       'Esto borra esta cuenta de invitado y todas sus entradas. No se puede deshacer. Una cuenta de invitado no tiene un correo con el que volver a iniciar sesión, así que después no habrá nada que recuperar: crea una cuenta si quieres conservar estos datos.',
   },
+  dataSources: {
+    title: 'Fuentes de datos alimentarios',
+    description:
+      'Los alimentos genéricos proceden de tablas nacionales de composición de alimentos, usadas bajo las licencias indicadas.',
+  },
   about: {
     title: 'Información y aspectos legales',
     disclaimer:

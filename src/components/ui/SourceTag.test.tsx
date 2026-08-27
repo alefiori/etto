@@ -11,6 +11,17 @@ describe('SourceTag', () => {
     rerender(<SourceTag source="openfoodfacts" />)
     expect(screen.getByText(SOURCE_LABELS.openfoodfacts)).toBeInTheDocument()
 
+    rerender(<SourceTag source="ciqual" />)
+    expect(screen.getByText(SOURCE_LABELS.ciqual)).toBeInTheDocument()
+
+    rerender(<SourceTag source="cofid" />)
+    expect(screen.getByText(SOURCE_LABELS.cofid)).toBeInTheDocument()
+
+    rerender(<SourceTag source="crea" />)
+    expect(screen.getByText(SOURCE_LABELS.crea)).toBeInTheDocument()
+
+    // Edamam is retired as a search source, but foods logged from it before it
+    // was dropped still render their attribution rather than a blank chip.
     rerender(<SourceTag source="edamam" />)
     expect(screen.getByText(SOURCE_LABELS.edamam)).toBeInTheDocument()
   })

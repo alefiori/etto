@@ -45,9 +45,10 @@ jour d'entraînement et un jour de repos ne soient pas le même chiffre. Et quan
 ils le sont, copiez un jour sur toute la semaine.
 
 **Une saisie qui ne vous ralentit pas**
-Cherchez parmi vos aliments, ceux partagés par d'autres utilisateurs et trois
-bases nutritionnelles gratuites — Open Food Facts, USDA FoodData Central et
-Edamam — dans une seule liste, chaque résultat portant sa provenance. Ou scannez
+Cherchez parmi vos aliments, ceux partagés par d'autres utilisateurs, les tables
+nationales de composition nutritionnelle et deux bases gratuites — Open Food
+Facts et USDA FoodData Central — dans une seule liste, chaque résultat portant sa
+provenance. Ou scannez
 le code-barres de l'emballage et sautez la recherche.
 
 Regroupez les aliments dans des repas que vous nommez. Renommez-les,
@@ -107,4 +108,5 @@ erronés. Consultez un médecin ou un diététicien avant de modifier votre
 alimentation.
 
 Données nutritionnelles d'Open Food Facts (ODbL), USDA FoodData Central (domaine
-public) et Edamam Food Database.
+public), ANSES-Ciqual (Licence Ouverte), CoFID (Open Government Licence v3.0) et
+CREA.

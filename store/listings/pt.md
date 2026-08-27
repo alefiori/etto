@@ -43,9 +43,10 @@ de descanso não sejam o mesmo número. E quando são, copie um dia para a seman
 inteira.
 
 **Registar sem atrito**
-Pesquise nos seus alimentos, nos partilhados por outros utilizadores e em três
-bases de dados nutricionais gratuitas — Open Food Facts, USDA FoodData Central e
-Edamam — numa única lista, com a origem indicada em cada resultado. Ou leia o
+Pesquise nos seus alimentos, nos partilhados por outros utilizadores, nas tabelas
+nacionais de composição de alimentos e em duas bases gratuitas — Open Food Facts
+e USDA FoodData Central — numa única lista, com a origem indicada em cada
+resultado. Ou leia o
 código de barras da embalagem e salte a pesquisa.
 
 Agrupe alimentos em refeições que dá nome. Mude os nomes, reordene-as, adicione
@@ -101,4 +102,5 @@ e as estimativas são calculados a partir do que introduz e podem estar errados.
 Fale com um médico ou nutricionista antes de mudar a sua alimentação.
 
 Dados nutricionais do Open Food Facts (ODbL), USDA FoodData Central (domínio
-público) e Edamam Food Database.
+público), ANSES-Ciqual (Licence Ouverte), CoFID (Open Government Licence v3.0) e
+CREA.

@@ -6,7 +6,24 @@
  * union — see {@link BuiltInMealKey} in lib/constants for the four defaults.
  */
 export type MealKey = string
-export type FoodSource = 'custom' | 'openfoodfacts' | 'usda' | 'edamam'
+/**
+ * What a stored `foods.source` can be — which is a wider set than what a search
+ * can currently *produce*.
+ *
+ * `edamam` is retired, not removed: the Edamam source was dropped when the
+ * national composition tables landed, but foods logged from it before then
+ * still exist and are still referenced by food_logs. Dropping the value here
+ * would render their attribution chip blank (SourceTag indexes SOURCE_LABELS by
+ * this union), so it stays. Nothing new is ever written with it.
+ */
+export type FoodSource =
+  | 'custom'
+  | 'openfoodfacts'
+  | 'usda'
+  | 'ciqual'
+  | 'cofid'
+  | 'crea'
+  | 'edamam'
 /** External (non-custom) food databases the app imports from. */
 export type ExternalSource = Exclude<FoodSource, 'custom'>
 

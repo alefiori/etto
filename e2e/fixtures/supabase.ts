@@ -286,8 +286,22 @@ async function handleAuth(route: Route, store: Store) {
 }
 
 async function handleFunction(route: Route) {
-  // food-search Edge Function: return one deterministic external result.
+  // food-search Edge Function: return deterministic external results, one per
+  // shape the UI has to render — a branded product from an external API, and a
+  // generic entry from a reference composition table (no brand, and the source
+  // chip the reference tables share).
   return json(route, [
+    {
+      source: 'ciqual',
+      externalId: '1000',
+      name: 'Stub Poulet, blanc, cru',
+      brand: null,
+      serving_amount: 100,
+      serving_unit: 'g',
+      carbs_g: 0,
+      protein_g: 23,
+      fats_g: 1,
+    },
     {
       source: 'openfoodfacts',
       externalId: '737628064502',

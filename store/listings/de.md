@@ -44,10 +44,10 @@ und ein Ruhetag nicht dieselbe Zahl sind. Und wenn doch, kopierst du einen Tag
 auf die ganze Woche.
 
 **Erfassen, das nicht bremst**
-Suche in deinen eigenen Lebensmitteln, in denen anderer MacroTrack-Nutzer und in
-drei kostenlosen Nährwertdatenbanken — Open Food Facts, USDA FoodData Central und
-Edamam — in einer einzigen Liste, jedes Ergebnis mit seiner Herkunft
-gekennzeichnet. Oder scanne den Barcode auf der Packung und überspringe die Suche
+Suche in deinen eigenen Lebensmitteln, in denen anderer MacroTrack-Nutzer, in
+nationalen Nährwerttabellen und in zwei kostenlosen Datenbanken — Open Food Facts
+und USDA FoodData Central — in einer einzigen Liste, jedes Ergebnis mit seiner
+Herkunft gekennzeichnet. Oder scanne den Barcode auf der Packung und überspringe die Suche
 ganz.
 
 Fasse Lebensmittel zu Mahlzeiten zusammen, die du selbst benennst. Umbenennen,
@@ -103,5 +103,5 @@ Schätzungen werden aus deinen Eingaben berechnet und können falsch sein. Spric
 mit einer Ärztin oder einer Ernährungsberatung, bevor du deine Ernährung
 umstellst.
 
-Nährwertdaten von Open Food Facts (ODbL), USDA FoodData Central (gemeinfrei) und
-der Edamam Food Database.
+Nährwertdaten von Open Food Facts (ODbL), USDA FoodData Central (gemeinfrei),
+ANSES-Ciqual (Licence Ouverte), CoFID (Open Government Licence v3.0) und CREA.

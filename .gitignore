@@ -58,3 +58,6 @@ DerivedData
 
 # Listing graphics rendered from assets/ by `npm run store:assets`.
 /store/assets
+
+# Cached upstream pages for scripts/build-reference-foods.mjs (re-fetchable).
+data/reference/.cache/

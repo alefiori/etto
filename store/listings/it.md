@@ -44,9 +44,10 @@ allenamento e uno di riposo non sono lo stesso numero. Quando invece lo sono,
 copia un giorno su tutta la settimana.
 
 **Registrare senza intoppi**
-Cerca fra i tuoi alimenti, quelli condivisi dagli altri utenti e tre database
-nutrizionali gratuiti — Open Food Facts, USDA FoodData Central ed Edamam — in
-un unico elenco, con l'origine indicata su ogni risultato. Oppure scansiona il
+Cerca fra i tuoi alimenti, quelli condivisi dagli altri utenti, le tabelle
+nazionali di composizione degli alimenti e due database nutrizionali gratuiti —
+Open Food Facts e USDA FoodData Central — in un unico elenco, con l'origine
+indicata su ogni risultato. Oppure scansiona il
 codice a barre sulla confezione e salta del tutto la ricerca.
 
 Raggruppa gli alimenti in pasti che nomini tu. Rinominali, riordinali,
@@ -103,4 +104,5 @@ stime sono calcolati da ciò che inserisci e possono essere errati. Consulta un
 medico o un dietista prima di cambiare la tua alimentazione.
 
 Dati nutrizionali da Open Food Facts (ODbL), USDA FoodData Central (pubblico
-dominio) ed Edamam Food Database.
+dominio), ANSES-Ciqual (Licence Ouverte), CoFID (Open Government Licence v3.0) e
+CREA.

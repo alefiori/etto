@@ -7,10 +7,11 @@ A responsive, installable daily macros tracker built with **React + Vite +
 TypeScript**, **Tailwind CSS**, and **Supabase** (Postgres + Auth). Set
 per-weekday macro targets, log foods against them, and watch your daily carbs /
 protein / fats fill up. Food data comes from your own custom foods, foods shared
-by the community, and three free databases:
-[Open Food Facts](https://world.openfoodfacts.org),
-[USDA FoodData Central](https://fdc.nal.usda.gov), and
-[Edamam](https://developer.edamam.com/food-database-api).
+by the community, two free databases —
+[Open Food Facts](https://world.openfoodfacts.org) and
+[USDA FoodData Central](https://fdc.nal.usda.gov) — and three national
+food-composition tables imported into our own database: **ANSES-Ciqual**
+(France), **CoFID** (UK) and **CREA** (Italy).
 
 The app is a **PWA** (installable, works offline via a precached shell), is fully
 **localized into 7 languages**, and lets you **try it instantly as a guest**
@@ -50,7 +51,8 @@ and the palette are not; see [Theming](#theming).
   logged items follow a meal when it's renamed or moved, and deleting a meal
   moves its items to the one above it rather than losing them.
 - **Add Food** — debounced search merging your own foods, community foods, and
-  live Open Food Facts / USDA / Edamam results (each tagged with its source);
+  the national composition tables, and live Open Food Facts / USDA results
+  (each tagged with its source);
   pick a meal, adjust servings, and log. Includes a **barcode scanner**
   (camera-based, via ZXing) for looking foods up by their UPC/EAN.
 - **Create Custom Food** — name, serving, per-serving macros with live calorie
@@ -105,7 +107,7 @@ and the palette are not; see [Theming](#theming).
 | Styling    | Tailwind CSS v4 (via PostCSS, not the CDN)                       |
 | Routing    | React Router v7                                                  |
 | Backend    | Supabase (Postgres + Auth + RLS + Edge Functions)               |
-| Food data  | Open Food Facts + USDA FoodData Central + Edamam (server-side proxy) |
+| Food data  | ANSES-Ciqual + CoFID + CREA (local tables) · Open Food Facts + USDA FoodData Central (server-side proxy) |
 | Barcode    | `@zxing/browser` + `@zxing/library` (camera scanning)           |
 | i18n       | Zero-dependency in-house catalog (7 locales)                    |
 | PWA        | `vite-plugin-pwa` (Workbox) + `@vite-pwa/assets-generator`      |
@@ -137,12 +139,13 @@ supabase db push
 ```
 
 **Option B — Supabase SQL Editor:** open the SQL Editor in the dashboard and run
-each migration file **in order** (`0001_init.sql` → `0015_hydration_reminders.sql`).
+each migration file **in order** (`0001_init.sql` → `0016_reference_foods.sql`).
 
 Together the migrations create `macro_targets`, `foods`, `food_logs`,
 `profiles`, and `meals`; enable RLS with owner-only policies (global foods with a
-null `user_id` are readable by everyone); add the `usda` and `edamam` food
-sources; add per-user profile settings (preferred language); add **community
+null `user_id` are readable by everyone); add the `usda`, `edamam`, `ciqual`,
+`cofid` and `crea` food sources, plus the world-readable `reference_foods` table
+and its ranked `search_reference_foods()` lookup; add per-user profile settings (preferred language); add **community
 foods** (`foods.is_public`) — including the guards that keep a shared food safe
 to unshare and prevent deleting one that other people have logged; and make
 meals **per-user rows** (seeded with the defaults for new and existing accounts)
@@ -168,9 +171,11 @@ on the sign-in screen, so it is effectively required rather than optional.
 All external food lookups (text search + barcode) run **server-side** in a
 Supabase [Edge Function](supabase/functions/food-search), not from the browser.
 This is required: [Open Food Facts](https://world.openfoodfacts.org)' search API
-sends no CORS headers, so browsers can't call it directly, and the USDA/Edamam
-API keys must not ship in the client bundle. The function fans out to every
-source in parallel, normalizes results to a shared shape, and de-duplicates them.
+sends no CORS headers, so browsers can't call it directly, and the USDA API key
+must not ship in the client bundle. The function fans out to every source in
+parallel — including the local `reference_foods` tables, which it queries first
+because they are instant, never rate-limited and cannot fail — normalizes
+results to a shared shape, and de-duplicates them.
 It also caches each merged result briefly (60 s per query + language) so the
 burst of requests a debounced search box fires as you type collapses onto a
 single upstream fan-out — keeping the app well under the sources' rate limits.
@@ -181,9 +186,6 @@ supabase functions deploy food-search --project-ref <your-project-ref>
 # Optional: set the USDA key as a function secret (defaults to DEMO_KEY)
 supabase secrets set USDA_API_KEY=your-fdc-api-key --project-ref <your-project-ref>
 
-# Optional: enable the Edamam source (skipped entirely when unset)
-supabase secrets set EDAMAM_APP_ID=your-app-id EDAMAM_APP_KEY=your-app-key --project-ref <your-project-ref>
-
 # Optional: authenticate Open Food Facts to skip its anonymous rate limit
 supabase secrets set OFF_USERNAME=your-off-user OFF_PASSWORD=your-off-password --project-ref <your-project-ref>
 ```
@@ -191,10 +193,12 @@ supabase secrets set OFF_USERNAME=your-off-user OFF_PASSWORD=your-off-password -
 A free USDA key comes from the
 [FoodData Central signup](https://fdc.nal.usda.gov/api-key-signup.html); without
 it the function uses the shared `DEMO_KEY`, which works but is heavily
-rate-limited (and may return 429s under load). Edamam credentials come from the
-[Edamam Food Database API](https://developer.edamam.com/food-database-api)
-(free tier available); without them the Edamam source is silently skipped and
-the other sources still work.
+rate-limited (and may return 429s under load). The key is also what backs the
+barcode fallback: when Open Food Facts has no record of a scanned code, the
+function looks it up against USDA's branded `gtinUpc` data.
+
+The reference tables need no key at all — the function reads them from our own
+database with the auto-injected anon key.
 
 Open Food Facts needs no API key — read access is fully open. Text search uses
 OFF's **Search-a-licious** endpoint (`search.openfoodfacts.org`), which OFF
@@ -645,39 +649,85 @@ place to hand someone back their transaction identifiers.
 
 ## How external food data is modeled
 
-Open Food Facts, USDA FoodData Central, and Edamam all report nutrients
-**per 100 g**, so every imported food is stored on a fixed **100 g basis**
-(`serving_amount=100`, `serving_unit='g'`) using the per-100g values directly —
-logging then works in multiples of 100 g (1.5 servings = 150 g). When a search
-result is logged, the app **upserts** it into `foods` with the appropriate
-`source` (`'openfoodfacts'`, `'usda'`, or `'edamam'`), `off_id=<the source's id>`
-(barcode/code for OFF, `fdcId` for USDA, `foodId` for Edamam), and
-`is_custom=false` — de-duplicating on
-`(source, off_id)` — before inserting the `food_logs` row. Logs always reference
-a stable local food. A result with **no** macro data at all is skipped, but one
-that carries only *some* macros is kept with the missing values treated as `0`
-(mirroring how Edamam omits zero-valued nutrients). This keeps the many
-newly-added / community-entered Open Food Facts products — which often have
-partial nutrition — visible in search rather than silently dropped; the imported
-food can be edited as a custom food to correct any blank. (USDA, whose entries
-are curated and macro-complete, still requires all three.)
+Every source reports nutrients **per 100 g**, so every imported food is stored
+on a fixed **100 g basis** (`serving_amount=100`, `serving_unit='g'`) using the
+per-100g values directly — logging then works in multiples of 100 g (1.5 servings
+= 150 g). The one exception is CoFID's alcoholic beverages, which are tabulated
+per 100 ml; those carry `serving_unit='ml'` rather than being restated as a mass.
+
+When a search result is logged, the app **upserts** it into `foods` with the
+appropriate `source`, `off_id=<the source's id>` (barcode/code for OFF, `fdcId`
+for USDA, the dataset's own food code for the composition tables), and
+`is_custom=false` — de-duplicating on `(source, off_id)` — before inserting the
+`food_logs` row. Logs always reference a stable local food, and the macros are
+**snapshotted at log time**. That is what makes refreshing a reference dataset
+safe: replacing `reference_foods` wholesale cannot rewrite what someone already
+ate.
+
+Missing macros are handled differently per source, deliberately:
+
+- **Open Food Facts** — a result with no macro data at all is skipped, but one
+  carrying only *some* macros is kept with the blanks treated as `0`. This keeps
+  the many newly-added / community-entered products, which often have partial
+  nutrition, visible in search rather than silently dropped; the imported food
+  can be edited as a custom food to correct any blank.
+- **USDA and the composition tables** — all three macros are required. Their
+  entries are curated, so a blank means "not determined" rather than "zero", and
+  publishing it as `0` would invent a nutrition value. The import pipeline drops
+  such foods before they ever reach the database and reports each one.
+
+### The reference tables
+
+ANSES-Ciqual, CoFID and CREA are **imported into our own database** rather than
+queried over the network, in a separate `reference_foods` table (see
+[`0016_reference_foods.sql`](supabase/migrations/0016_reference_foods.sql)). They
+deliberately do *not* live in `foods` as `user_id IS NULL` rows: the client's
+local food query is ordered newest-first and capped at 20, so ~6,200 imported
+rows would crowd out both the user's own foods and community foods, and because
+`food_logs.food_id` cascades, pruning a food dropped upstream would delete
+people's logs with it.
+
+Search goes through `search_reference_foods()`, a ranked Postgres lookup
+combining weighted full-text matching with trigram similarity, over
+accent-folded text — French and Italian food names are unusable otherwise.
+Language **ranks** rather than filters, so an English speaker still finds
+*camembert* and the five locales with no table of their own still get results.
+
+Two committed scripts maintain it:
+[`build-reference-foods.mjs`](scripts/build-reference-foods.mjs) parses upstream
+into the CSVs under `data/reference/`, and
+[`import-reference-foods.mjs`](scripts/import-reference-foods.mjs) projects those
+CSVs into Postgres, no-opping when the checksum already matches. The committed
+CSV is the source of truth and the database is a projection of it, so a dataset
+refresh arrives as a **reviewable diff of real nutrition values** and `git`
+answers which edition is live. A [monthly workflow](.github/workflows/reference-foods.yml)
+checks upstream metadata and opens a PR when a new edition appears.
+
+One caveat worth knowing: CoFID's carbohydrate figure is **available
+carbohydrate as monosaccharide equivalent**, not the "by difference" value on EU
+labels, so it runs slightly higher — pure sucrose comes out at 105 g/100 g. That
+is correct, not a mapping error.
+
+### The search path
 
 Search ([`useFoodSearch`](src/hooks/useFoodSearch.ts)) queries the user's own
 foods (locally, via Supabase) alongside a single call to the
 [`food-search` Edge Function](supabase/functions/food-search/index.ts) through a
 thin client ([`src/lib/foodApi.ts`](src/lib/foodApi.ts)). The function holds a
-small registry of source adapters — currently Open Food Facts, USDA, and
-Edamam — runs them in parallel, normalizes each to the shared
+small registry of source adapters — the reference tables first, then Open Food
+Facts and USDA — runs them in parallel, normalizes each to the shared
 `ExternalFood` shape, and merges + de-duplicates across sources; a failing source
-degrades gracefully to no results from that source. The pure
+degrades gracefully to no results from that source. Registry order *is* the
+ranking knob, since de-duplication is first-seen-wins. The pure
 raw-JSON-to-`ExternalFood` mapping lives in a Deno-free
 [`normalize.ts`](supabase/functions/food-search/normalize.ts) so it can be
 unit-tested from Vitest ([`normalize.test.ts`](supabase/functions/food-search/normalize.test.ts)),
-while `index.ts` keeps the fetch / env / caching concerns. **Adding a new source**
-(e.g. FatSecret, Nutritionix) is a server-side-only change: add an adapter to the
-function's `SOURCES` array — no client or env changes needed. All math (4/4/9 kcal
-per gram, per-serving scaling, per-100g conversion, remaining-vs-target, ring
-offsets) lives in [`src/lib/macros.ts`](src/lib/macros.ts).
+while `index.ts` keeps the fetch / env / caching concerns. **Adding a new
+network-backed source** is a server-side-only change: add an adapter to the
+function's `SOURCES` array. A source backed by our own tables additionally needs
+a migration and a data load. All math (4/4/9 kcal per gram, per-serving scaling,
+per-100g conversion, remaining-vs-target, ring offsets) lives in
+[`src/lib/macros.ts`](src/lib/macros.ts).
 
 ## Community foods
 
@@ -826,7 +876,12 @@ src/
 supabase/
   functions/    # food-search + revenuecat-webhook + delete-account Edge Functions
   migrations/   # SQL schema + RLS + profiles + community foods + editable meals
-                #   + subscriptions + hydration reminders
+                #   + subscriptions + hydration reminders + reference foods
+scripts/        # build/native/verification tooling, plus the reference-food
+                #   pipeline (build-* parses upstream, import-* loads Postgres)
+data/
+  reference/    # committed food-composition CSVs + UPSTREAM.json (the source of
+                #   truth for public.reference_foods; .cache/ is gitignored)
 ```
 
 ## Accessibility
@@ -925,7 +980,7 @@ not a failure) unless these repository secrets are set:
 | `SUPABASE_DB_PASSWORD`  | Database password, used by `supabase db push`                 |
 
 The Edge Function deploy pushes **code only** — it doesn't touch the function
-secrets from step 4 (`USDA_API_KEY`, `EDAMAM_*`, `OFF_*`). If a first `db push`
+secrets from step 4 (`USDA_API_KEY`, `OFF_*`). If a first `db push`
 fails because the remote schema diverged from the migration history, run a
 one-time [`supabase migration repair`](https://supabase.com/docs/reference/cli/supabase-migration-repair).
 
@@ -1039,7 +1094,15 @@ Food data is provided by:
 - **[USDA FoodData Central](https://fdc.nal.usda.gov)** — U.S. Department of
   Agriculture, Agricultural Research Service. FoodData Central data is in the
   public domain.
-- **[Edamam Food Database](https://developer.edamam.com/food-database-api)** —
-  nutrition data provided by the Edamam Food Database API.
+- **[ANSES-Ciqual](https://doi.org/10.57745/RDMHWY)** — Anses. 2025. Table de
+  composition nutritionnelle des aliments Ciqual. Licence Ouverte / Open Licence
+  2.0 (Etalab).
+- **[CoFID](https://www.gov.uk/government/publications/composition-of-foods-integrated-dataset-cofid)**
+  — McCance and Widdowson's The Composition of Foods Integrated Dataset 2021,
+  Office for Health Improvement and Disparities. Contains public sector
+  information licensed under the Open Government Licence v3.0.
+- **[CREA](https://www.crea.gov.it/alimenti-e-nutrizione)** — CREA Research
+  Centre for Food and Nutrition, Tabelle di composizione degli alimenti (2019),
+  used with attribution.
 </content>
 </invoke>

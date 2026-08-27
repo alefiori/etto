@@ -3,7 +3,8 @@ import type { Food, MealKey } from './database.types'
 import type { ExternalFood } from './foodSources'
 
 /**
- * Ensure an external food (Open Food Facts / USDA / Edamam) exists as a local
+ * Ensure an external food (Open Food Facts / USDA / a national composition
+ * table) exists as a local
  * `foods` row and return it. De-duplicates on (source, off_id) so logs always
  * reference a stable local food and the same item isn't imported twice.
  */

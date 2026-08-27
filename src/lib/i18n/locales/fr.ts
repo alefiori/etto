@@ -310,6 +310,11 @@ export const fr: Translation = {
     deleteAccountGuestConfirmMessage:
       'Cela efface ce compte invité et toutes ses entrées. L’opération est irréversible. Un compte invité n’a pas d’adresse e-mail permettant de se reconnecter, rien ne pourra donc être récupéré — créez d’abord un compte si vous voulez conserver ces données.',
   },
+  dataSources: {
+    title: 'Sources des données alimentaires',
+    description:
+      'Les aliments génériques proviennent de tables nationales de composition nutritionnelle, utilisées sous les licences ci-dessous.',
+  },
   about: {
     title: 'À propos et mentions légales',
     disclaimer:

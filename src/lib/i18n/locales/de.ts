@@ -310,6 +310,11 @@ export const de: Translation = {
     deleteAccountGuestConfirmMessage:
       'Damit werden dieses Gastkonto und alle darin enthaltenen Einträge gelöscht. Das lässt sich nicht rückgängig machen. Ein Gastkonto hat keine E-Mail-Adresse, mit der du dich wieder anmelden kannst, danach ist also nichts wiederherstellbar — erstelle zuerst ein Konto, wenn du diese Daten behalten möchtest.',
   },
+  dataSources: {
+    title: 'Quellen der Lebensmitteldaten',
+    description:
+      'Generische Lebensmittel stammen aus nationalen Nährwerttabellen, genutzt unter den unten genannten Lizenzen.',
+  },
   about: {
     title: 'Über die App & Rechtliches',
     disclaimer:

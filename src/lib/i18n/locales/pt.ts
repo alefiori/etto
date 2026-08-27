@@ -310,6 +310,11 @@ export const pt: Translation = {
     deleteAccountGuestConfirmMessage:
       'Isto apaga esta conta de convidado e todas as entradas nela. Não pode ser anulado. Uma conta de convidado não tem e-mail com que voltar a iniciar sessão, por isso depois não há nada a recuperar — crie uma conta primeiro se quiser manter estes dados.',
   },
+  dataSources: {
+    title: 'Fontes dos dados alimentares',
+    description:
+      'Os alimentos genéricos provêm de tabelas nacionais de composição de alimentos, usadas ao abrigo das licenças indicadas.',
+  },
   about: {
     title: 'Sobre e informação legal',
     disclaimer:

@@ -131,16 +131,23 @@
     subscription is active.
   </li>
   <li>
-    <strong>Open Food Facts</strong>, <strong>USDA FoodData Central</strong> and
-    <strong>Edamam</strong> — supply food and nutrition data. See below.
+    <strong>Open Food Facts</strong> and <strong>USDA FoodData Central</strong> —
+    supply food and nutrition data. See below.
   </li>
 </ul>
 
 <h3>Food lookups</h3>
 <p>
-  When you search for a food or scan a barcode, the search term or barcode is
-  sent to those three databases so they can answer. The request goes through our
-  own server, which means the external databases receive the search term and
+  Searching for a food queries two kinds of source. National food-composition
+  tables — ANSES-Ciqual (France), CoFID (United Kingdom) and CREA (Italy) — are
+  held in our own database, so those results are found <em>without your search
+  term leaving our servers at all</em>. The organisations that publish those
+  tables receive nothing from us and are not involved in your searches.
+</p>
+<p>
+  The same search, and any barcode you scan, is also sent to Open Food Facts and
+  USDA FoodData Central so they can answer. That request goes through our own
+  server, which means those two databases receive the search term or barcode and
   <em>not</em> your account, your device, or your IP address. Your logs are never
   sent to them.
 </p>

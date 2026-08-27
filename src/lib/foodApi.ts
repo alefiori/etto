@@ -47,7 +47,7 @@ export async function searchExternalFoods(
 }
 
 /**
- * Barcode lookup (Open Food Facts, with an Edamam UPC fallback server-side).
+ * Barcode lookup (Open Food Facts, with a USDA GTIN/UPC fallback server-side).
  * Returns the product or null when not found.
  */
 export async function lookupBarcode(

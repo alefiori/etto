@@ -7,7 +7,14 @@
 
 // Mirrors src/lib/foodSources.ts ExternalFood (kept in sync intentionally; the
 // Deno runtime can't import from the app's src/).
-export type ExternalSource = 'openfoodfacts' | 'usda' | 'edamam'
+export type ExternalSource =
+  | 'openfoodfacts'
+  | 'usda'
+  // National food-composition tables, served from our own reference_foods table
+  // rather than an external API. See supabase/migrations/0016.
+  | 'ciqual'
+  | 'cofid'
+  | 'crea'
 export interface ExternalFood {
   source: ExternalSource
   externalId: string
@@ -90,8 +97,8 @@ function offBrand(brands: string | string[] | undefined): string | null {
  *
  * Returns null only when the product can't be logged at all: no code, no name,
  * or no macro data whatsoever. A product that carries *some* macros but leaves
- * others blank is kept, with the blanks treated as 0. This mirrors how the
- * Edamam adapter handles omitted nutrients and, importantly, stops us from
+ * others blank is kept, with the blanks treated as 0. That leniency is for
+ * OFF specifically: it stops us from
  * hiding the newly-added / community-entered OFF products that so often have
  * partial nutrition — exactly the foods users reported as "missing" from
  * search. Trade-off: a genuinely-unknown macro is recorded as 0 (which can
@@ -138,6 +145,8 @@ export interface FdcFood {
   description?: string
   brandName?: string
   brandOwner?: string
+  /** Barcode on Branded foods; used by index.ts as the barcode fallback. */
+  gtinUpc?: string
   foodNutrients?: FdcNutrient[]
 }
 
@@ -178,49 +187,62 @@ export function normalizeFdc(f: FdcFood): ExternalFood | null {
 }
 
 // ---------------------------------------------------------------------------
-// Edamam Food Database
+// Reference food-composition tables (ANSES-Ciqual, CoFID, CREA)
+//
+// These rows come from our own `reference_foods` table via the
+// search_reference_foods() RPC rather than an external API, so they arrive
+// already validated: the import pipeline (scripts/reference-foods.mjs) drops
+// any food with an undetermined macro instead of publishing it as 0. The
+// mapping here is therefore a rename, not a rescue — anything malformed at this
+// point means the RPC contract changed, and is dropped rather than guessed at.
 // ---------------------------------------------------------------------------
 
-export interface EdamamFood {
-  foodId?: string
-  label?: string
-  brand?: string
-  // Nutrients are per 100 g: ENERC_KCAL energy, PROCNT protein, FAT fat,
-  // CHOCDF carbohydrate. Edamam omits keys it has no value for.
-  nutrients?: Record<string, number | undefined>
-}
-export interface EdamamHit {
-  food?: EdamamFood
-}
-
-function edamamNutrient(f: EdamamFood, key: string): number | null {
-  const v = f.nutrients?.[key]
-  return typeof v === 'number' && Number.isFinite(v) ? v : null
+/** One row as returned by the search_reference_foods() RPC. */
+export interface ReferenceRow {
+  source?: string
+  external_id?: string
+  name?: string
+  serving_amount?: number
+  serving_unit?: string
+  carbs_g?: number
+  protein_g?: number
+  fats_g?: number
 }
 
-export function normalizeEdamam(f: EdamamFood | undefined): ExternalFood | null {
-  if (!f) return null
-  const id = (f.foodId || '').trim()
-  const name = (f.label || '').trim()
+const REFERENCE_SOURCES = ['ciqual', 'cofid', 'crea'] as const
+
+export function normalizeReference(r: ReferenceRow | undefined): ExternalFood | null {
+  if (!r) return null
+  const source = (r.source || '') as (typeof REFERENCE_SOURCES)[number]
+  if (!REFERENCE_SOURCES.includes(source)) return null
+
+  const id = (r.external_id || '').trim()
+  const name = (r.name || '').trim()
   if (!id || !name) return null
 
-  const carbs = edamamNutrient(f, 'CHOCDF')
-  const protein = edamamNutrient(f, 'PROCNT')
-  const fat = edamamNutrient(f, 'FAT')
-  // Edamam omits zero-valued nutrients, so a missing macro on an otherwise
-  // nutrition-bearing entry means 0 — but drop entries with no macro data at
-  // all (e.g. bare parser matches without nutrition).
-  if (carbs === null && protein === null && fat === null) return null
+  const carbs = num(r.carbs_g)
+  const protein = num(r.protein_g)
+  const fat = num(r.fats_g)
+  // Unlike OFF, a missing macro here is not a thin community entry — it is a
+  // broken contract, because the importer guarantees all three are present.
+  if (carbs === null || protein === null || fat === null) return null
+
+  // Composition tables are per 100 g, except CoFID's alcoholic beverages, which
+  // are tabulated per 100 ml. Carry the unit through rather than silently
+  // restating a volume as a mass.
+  const amount = num(r.serving_amount)
+  const unit = (r.serving_unit || '').trim()
 
   return {
-    source: 'edamam',
+    source,
     externalId: id,
     name,
-    brand: (f.brand || '').trim() || null,
-    serving_amount: 100,
-    serving_unit: 'g',
-    carbs_g: round(carbs ?? 0),
-    protein_g: round(protein ?? 0),
-    fats_g: round(fat ?? 0),
+    // A composition-table entry is a generic food, never a branded product.
+    brand: null,
+    serving_amount: amount !== null && amount > 0 ? amount : 100,
+    serving_unit: unit === 'ml' ? 'ml' : 'g',
+    carbs_g: round(carbs),
+    protein_g: round(protein),
+    fats_g: round(fat),
   }
 }

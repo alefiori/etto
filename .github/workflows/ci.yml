@@ -269,6 +269,7 @@ jobs:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ -z "$SUPABASE_PROJECT_REF" ] || [ -z "$SUPABASE_DB_PASSWORD" ]; then
             echo "::warning::SUPABASE_ACCESS_TOKEN / SUPABASE_PROJECT_REF / SUPABASE_DB_PASSWORD not set; skipping Supabase deploy."
@@ -290,9 +291,21 @@ jobs:
           $SUPABASE db push --password "$SUPABASE_DB_PASSWORD"
 
           echo "Deploying the food-search Edge Function ..."
-          # Code only — existing function secrets (USDA_API_KEY, EDAMAM_*, OFF_*)
-          # are managed out-of-band and left untouched.
+          # Code only — existing function secrets (USDA_API_KEY, OFF_*) are
+          # managed out-of-band and left untouched.
           $SUPABASE functions deploy food-search --project-ref "$SUPABASE_PROJECT_REF"
+
+          echo "Loading the reference food datasets ..."
+          # Projects the committed data/reference/*.csv into public.reference_foods.
+          # No-ops in one query when the checksum already matches, so this is
+          # safe on every push; only a rebuilt dataset actually writes.
+          if [ -n "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            SUPABASE_URL="https://$SUPABASE_PROJECT_REF.supabase.co" \
+            SUPABASE_SERVICE_ROLE_KEY="$SUPABASE_SERVICE_ROLE_KEY" \
+              node scripts/import-reference-foods.mjs
+          else
+            echo "::warning::SUPABASE_SERVICE_ROLE_KEY not set; skipping the reference food import."
+          fi
 
           echo "Deploying the revenuecat-webhook Edge Function ..."
           # --no-verify-jwt is required: RevenueCat is not a Supabase client and

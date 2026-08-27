@@ -1,0 +1,901 @@
+source,external_id,name,name_lang,name_en,synonyms,serving_amount,serving_unit,carbs_g,protein_g,fats_g,kcal,dataset_version
+crea,000020,"Farro perlato, crudo",it,,cat1,100,g,69.3,14.6,2.4,353,crea-2019
+crea,000025,"Farro perlato, cotto, bollito",it,,cat1,100,g,37.3,6.2,1,178,crea-2019
+crea,000030,Frumento duro,it,,cat1,100,g,62.5,13,2.9,332,crea-2019
+crea,000040,Frumento tenero,it,,cat1,100,g,65.2,12.3,2.6,336,crea-2019
+crea,000045,"Couscous, crudo",it,,cat1,100,g,76.5,13.7,1.1,361,crea-2019
+crea,000046,"Couscous, cotto",it,,cat1,100,g,39.7,3.6,1.1,179,crea-2019
+crea,000050,Grano saraceno,it,,cat1,100,g,61.2,12.4,3.3,329,crea-2019
+crea,000060,Mais,it,,cat1,100,g,75.1,9.2,3.8,357,crea-2019
+crea,000070,"Mais, dolce, in scatola, sgocciolato",it,,cat1,100,g,20.5,3.4,1.3,105,crea-2019
+crea,000075,"Polenta, cruda",it,,cat1,100,g,72.7,8,0.7,323,crea-2019
+crea,000076,"Polenta, cotta",it,,cat1,100,g,17.8,0.9,0.04,73,crea-2019
+crea,000080,Miglio,it,,cat1,100,g,64.9,11.8,3.9,343,crea-2019
+crea,000081,"Miglio, decorticato",it,,cat1,100,g,67.8,11,4.2,342,crea-2019
+crea,000090,Orzo perlato,it,,cat1,100,g,73.7,9.4,1.5,346,crea-2019
+crea,000095,"Orzo perlato, cotto, bollito",it,,cat1,100,g,26.4,2.6,0.6,118,crea-2019
+crea,000096,"Quinoa, cruda",it,,cat1,100,g,57.8,15.4,8.1,376,crea-2019
+crea,000097,"Quinoa, cotta, bollita",it,,cat1,100,g,24.3,4.8,2.5,140,crea-2019
+crea,000100,"Riso, brillato",it,,cat1,100,g,80.4,6.7,0.4,334,crea-2019
+crea,000105,"Riso, brillato, cotto, bollito",it,,cat1,100,g,24.2,2,0.1,100,crea-2019
+crea,000110,"Riso, integrale",it,,cat1,100,g,77.4,7.5,1.9,341,crea-2019
+crea,000115,"Riso, integrale, cotto, bollito",it,,cat1,100,g,25.5,2.5,0.6,113,crea-2019
+crea,000120,"Riso, parboiled",it,,cat1,100,g,81.3,7.4,0.3,338,crea-2019
+crea,000125,"Riso, parboiled, cotto, bollito",it,,cat1,100,g,23.3,2.1,0.1,97,crea-2019
+crea,000130,"Riso Basmati, crudo",it,,cat1,100,g,82.9,9,1.9,367,crea-2019
+crea,000135,"Riso Basmati, cotto, bollito",it,,cat1,100,g,25.2,3,0.6,113,crea-2019
+crea,000140,"Riso Venere, crudo",it,,cat1,100,g,80.4,7.8,1.3,355,crea-2019
+crea,000145,"Riso Venere, cotto, bollito",it,,cat1,100,g,36.9,3.5,0.3,160,crea-2019
+crea,000150,Crusca di frumento,it,,cat1,100,g,26.6,14.1,5.5,290,crea-2019
+crea,000200,Farina d'avena,it,,cat1,100,g,66.3,12.6,7.1,378,crea-2019
+crea,000210,Farina d'orzo,it,,cat1,100,g,68.4,10.6,1.9,333,crea-2019
+crea,000220,"Farina di frumento, tipo 00",it,,cat1,100,g,71.6,11,0.7,323,crea-2019
+crea,000230,"Farina di frumento, tipo 0",it,,cat1,100,g,69.5,11.5,1,321,crea-2019
+crea,000240,"Farina di frumento, integrale",it,,cat1,100,g,61.8,11.9,1.9,313,crea-2019
+crea,000250,"Farina di frumento, duro",it,,cat1,100,g,63.2,12.9,2.8,330,crea-2019
+crea,000260,Farina di mais,it,,cat1,100,g,73.5,8.7,2.7,341,crea-2019
+crea,000270,Farina di riso,it,,cat1,100,g,79.1,7.3,0.5,332,crea-2019
+crea,000280,Farina di segale,it,,cat1,100,g,67.8,11.7,2,342,crea-2019
+crea,000290,Farina di soia,it,,cat2,100,g,23.4,36.8,23.5,469,crea-2019
+crea,000300,"Mais, amido",it,,cat1,100,g,87,0.3,0,328,crea-2019
+crea,000310,Semola,it,,cat1,100,g,76.9,11.5,0.5,346,crea-2019
+crea,000320,Farina di manioca,it,,cat1,100,g,87.2,0.6,0.2,332,crea-2019
+crea,000330,Germe di frumento,it,,cat1,100,g,43.5,26,10,378,crea-2019
+crea,000500,Pane al malto,it,,cat1,100,g,56.6,8.3,2.4,278,crea-2019
+crea,000510,Pane di segale,it,,cat1,100,g,45.4,8.3,1.7,228,crea-2019
+crea,000530,Pane bianco,it,,cat1,100,g,59.5,8.1,0.5,268,crea-2019
+crea,000540,Pane di tipo semintegrale,it,,cat1,100,g,52,8.3,0.3,239,crea-2019
+crea,000550,Pane di tipo integrale,it,,cat1,100,g,44.1,8.5,1.3,224,crea-2019
+crea,000560,Pane formato rosetta,it,,cat1,100,g,57.6,9,1.9,275,crea-2019
+crea,000570,Pangrattato,it,,cat1,100,g,77.8,10.1,2.1,357,crea-2019
+crea,000580,Panini al latte,it,,cat1,100,g,48.1,9,8.7,298,crea-2019
+crea,000590,Panini all'olio,it,,cat1,100,g,52.6,7.7,5.8,288,crea-2019
+crea,000600,Pane azzimo,it,,cat1,100,g,81.7,10.7,1,365,crea-2019
+crea,000700,Pizza bianca,it,,cat1,100,g,57.9,7.9,5.9,306,crea-2019
+crea,000710,Pizza con pomodoro,it,,cat1,100,g,40.7,7.6,6.6,248,crea-2019
+crea,000720,Pizza con pomodoro e mozzarella,it,,cat1,100,g,35.5,12.1,7.6,255,crea-2019
+crea,000800,Pasta di semola,it,,cat1,100,g,72.7,13.5,1.2,341,crea-2019
+crea,000805,"Pasta di semola, cotta, bollita",it,,cat1,100,g,37.3,6.9,0.6,175,crea-2019
+crea,000850,"Pasta di semola, integrale",it,,cat1,100,g,64.8,13.3,2.2,330,crea-2019
+crea,000855,"Pasta di semola, integrale, cotta, bollita",it,,cat1,100,g,36,7.4,1.2,182,crea-2019
+crea,000870,"Pasta all'uovo, secca",it,,cat1,100,g,71,13,2.4,346,crea-2019
+crea,000871,"Pasta all'uovo, secca, cotta, bollita",it,,cat1,100,g,25.5,4.6,0.8,123,crea-2019
+crea,000875,"Ravioli, crudi, freschi",it,,cat1,100,g,40.7,10.6,7.3,265,crea-2019
+crea,000876,"Ravioli, cotti",it,,cat1,100,g,27.5,7.2,4.6,177,crea-2019
+crea,000880,"Tortellini, freschi",it,,cat1,100,g,49.9,12.2,7.1,302,crea-2019
+crea,000885,"Tortellini, freschi, cotti",it,,cat1,100,g,26,6.4,3.7,158,crea-2019
+crea,000890,"Tortellini, secchi",it,,cat1,100,g,57.6,15.7,10.8,379,crea-2019
+crea,000900,"Biscotti, frollini",it,,cat1,100,g,71.7,7.2,13.8,426,crea-2019
+crea,000910,"Biscotti, integrali",it,,cat1,100,g,70.8,7.8,12.3,419,crea-2019
+crea,000950,"Biscotti, secchi",it,,cat1,100,g,80.4,6.6,7.9,404,crea-2019
+crea,000960,"Biscotti, alla soia",it,,cat1,100,g,70.8,11.5,6.1,375,crea-2019
+crea,000970,"Biscotti, integrali, con soia",it,,cat1,100,g,60.4,11.5,20.4,464,crea-2019
+crea,000990,"Biscotti, wafers",it,,cat1,100,g,76.2,7.1,15,452,crea-2019
+crea,001000,"Crackers, al formaggio",it,,cat1,100,g,59.2,10.1,25.5,498,crea-2019
+crea,001010,"Crackers, alla soia",it,,cat1,100,g,67.7,13.1,11.7,421,crea-2019
+crea,001020,"Crackers, salati",it,,cat1,100,g,67.5,9.4,10,386,crea-2019
+crea,001030,"Crackers, integrali",it,,cat1,100,g,61.7,12,11.4,402,crea-2019
+crea,001500,Fette biscottate,it,,cat1,100,g,75,11.3,6,387,crea-2019
+crea,001510,"Fette biscottate, integrali",it,,cat1,100,g,63,14.2,10,394,crea-2019
+crea,002000,Grissini,it,,cat1,100,g,65.1,11.3,13.9,421,crea-2019
+crea,002500,Cornetti,it,,cat1,100,g,54.7,7.2,18.3,403,crea-2019
+crea,002510,Croissants,it,,cat1,100,g,38,8.3,20.3,362,crea-2019
+crea,003000,Bastoncini di crusca di frumento,it,,cat1,100,g,38.4,14,3.2,301,crea-2019
+crea,003020,Corn flakes,it,,cat1,100,g,87.4,6.6,0.8,367,crea-2019
+crea,003030,Fiocchi d'avena,it,,cat1,100,g,66.8,8,7.5,367,crea-2019
+crea,003040,Muesli,it,,cat1,100,g,71.7,9.7,6,374,crea-2019
+crea,003050,"Riso, soffiato, da prima colazione",it,,cat1,100,g,85.1,6,1,354,crea-2019
+crea,004000,"Ceci, secchi",it,,cat2,100,g,46.9,20.9,6.3,343,crea-2019
+crea,004005,"Ceci, secchi, cotti, bolliti",it,,cat2,100,g,18.9,7,2.4,132,crea-2019
+crea,004010,"Ceci, in scatola, scolati",it,,cat2,100,g,13.9,6.7,2.3,111,crea-2019
+crea,004100,Fagioli,it,,cat2,100,g,47.5,23.6,2,326,crea-2019
+crea,004105,"Fagioli, cotti, bolliti",it,,cat2,100,g,17,7.9,0.7,117,crea-2019
+crea,004110,"Fagioli, Borlotti, freschi",it,,cat2,100,g,22.7,10.2,0.8,143,crea-2019
+crea,004115,"Fagioli, Borlotti, freschi, cotti, bolliti",it,,cat2,100,g,11.2,5.7,0.5,78,crea-2019
+crea,004120,"Fagioli, Borlotti, secchi",it,,cat2,100,g,47.7,20.2,2,312,crea-2019
+crea,004125,"Fagioli, Borlotti, secchi, cotti, bolliti",it,,cat2,100,g,16.4,6.9,0.4,106,crea-2019
+crea,004130,"Fagioli, Borlotti, in scatola, scolati",it,,cat2,100,g,15.9,6.7,0.5,102,crea-2019
+crea,004200,"Fagioli, Cannellini, secchi",it,,cat2,100,g,45.5,23.4,1.6,314,crea-2019
+crea,004205,"Fagioli, Cannellini, secchi, cotti, bolliti",it,,cat2,100,g,14.9,8,0.4,107,crea-2019
+crea,004210,"Fagioli, Cannellini in scatola, scolati",it,,cat2,100,g,12.5,6,0.6,86,crea-2019
+crea,004220,"Fagioli dall'occhio, secchi",it,,cat2,100,g,50.9,22.4,1.4,318,crea-2019
+crea,004305,"Fagiolini a corallo, cotti, bolliti",it,,cat2,100,g,4.6,1.7,0.1,31,crea-2019
+crea,004310,"Fagiolini, freschi",it,,cat2,100,g,2.4,2.1,0.1,24,crea-2019
+crea,004325,"Fagiolini, surgelati, cotti, bolliti",it,,cat2,100,g,4.6,1.7,0.1,31,crea-2019
+crea,004400,"Fave, fresche",it,,cat2,100,g,4.5,5.2,0.4,51,crea-2019
+crea,004406,"Fave, fresche, cotte, in padella",it,,cat2,100,g,5.3,6.1,0.5,61,crea-2019
+crea,004410,"Fave, secche",it,,cat2,100,g,52.8,21.3,2.1,331,crea-2019
+crea,004420,"Fave, secche, sgusciate, crude",it,,cat2,100,g,53.6,25.2,3,343,crea-2019
+crea,004425,"Fave, secche, sgusciate, cotte, bollite",it,,cat2,100,g,22.4,11,1.3,146,crea-2019
+crea,004500,"Lenticchie, secche",it,,cat2,100,g,51.1,22.7,1,319,crea-2019
+crea,004505,"Lenticchie, secche, cotte, bollite",it,,cat2,100,g,16.3,6.9,0.4,109,crea-2019
+crea,004510,"Lenticchie, in scatola, scolate",it,,cat2,100,g,15.4,5,0.5,91,crea-2019
+crea,004600,"Lupini, ammollati",it,,cat2,100,g,7.1,16.4,2.4,119,crea-2019
+crea,004700,"Piselli, freschi",it,,cat2,100,g,6.5,5.5,0.6,64,crea-2019
+crea,004706,"Piselli, freschi, cotti, in padella",it,,cat2,100,g,11.5,9.7,1,104,crea-2019
+crea,004710,"Piselli, secchi",it,,cat2,100,g,48.2,21.7,2,317,crea-2019
+crea,004720,"Piselli, in scatola, scolati",it,,cat2,100,g,11.1,5.3,0.6,78,crea-2019
+crea,004730,"Piselli, surgelati",it,,cat2,100,g,6.5,5.4,0.3,61,crea-2019
+crea,004900,"Soia, secca",it,,cat2,100,g,23.2,36.9,19.1,430,crea-2019
+crea,004910,"Soia, isolato proteico",it,,cat2,100,g,4.5,86.5,0.7,369,crea-2019
+crea,005000,Aglio,it,,cat3,100,g,1,8.4,0.8,53,crea-2019
+crea,005001,Aglio Rosso di Castelliri,it,,cat2,100,g,1.02,8.9,0.5,52,crea-2019
+crea,005002,Aglio Rosso di Procerno,it,,cat2,100,g,1,8.9,0.9,57,crea-2019
+crea,005003,Aglio Rosso di Sulmona,it,,cat2,100,g,1,8.7,1.3,58,crea-2019
+crea,005004,Aglio Bianco Piacentino,it,,cat2,100,g,0.9,7.2,0.6,47,crea-2019
+crea,005010,"Agretti, crudi",it,,cat3,100,g,2.2,1.8,0.2,22,crea-2019
+crea,005025,"Agretti, cotti, bolliti",it,,cat3,100,g,2.6,2.1,0.2,25,crea-2019
+crea,005030,"Asparagi di bosco, crudi",it,,cat3,100,g,4,4.6,0.2,40,crea-2019
+crea,005040,"Asparagi di campo, crudi",it,,cat3,100,g,3.3,3.6,0.2,33,crea-2019
+crea,005045,"Asparagi di campo, cotti, bolliti",it,,cat3,100,g,3.4,3.8,0.2,34,crea-2019
+crea,005050,"Asparagi di serra, crudi",it,,cat3,100,g,3,3,0.1,28,crea-2019
+crea,005060,"Barbabietole rosse, crude",it,,cat3,100,g,4,1.1,0,25,crea-2019
+crea,005065,"Barbabietole rosse, cotte, bollite",it,,cat3,100,g,7.8,2.1,0,43,crea-2019
+crea,005080,"Bieta, cruda",it,,cat3,100,g,1.8,1.3,0.1,15,crea-2019
+crea,005084,"Bieta, cotta, al microonde",it,,cat3,100,g,1.8,1.3,0.1,15,crea-2019
+crea,005085,"Bieta, cotta, bollita",it,,cat3,100,g,2.1,1.5,0.1,18,crea-2019
+crea,005090,"Broccoletti di rapa, crudi",it,,cat3,100,g,2,2.9,0.3,28,crea-2019
+crea,005095,"Broccoletti di rapa, cotti, bolliti",it,,cat3,100,g,2.1,3.1,0.3,29,crea-2019
+crea,005105,"Broccolo a testa, cotto, bollito",it,,cat3,100,g,3.2,3.1,0.4,34,crea-2019
+crea,005110,"Broccolo a testa, crudo",it,,cat3,100,g,3.1,3,0.4,33,crea-2019
+crea,005120,"Carciofi, crudi",it,,cat3,100,g,2.5,2.7,0.2,33,crea-2019
+crea,005124,"Carciofi, cotti, al microonde",it,,cat3,100,g,2.5,2.8,0.2,34,crea-2019
+crea,005125,"Carciofi, cotti, bolliti",it,,cat3,100,g,3.3,3.6,0.3,44,crea-2019
+crea,005130,"Carciofi, surgelati",it,,cat3,100,g,2.5,2.7,0.2,32,crea-2019
+crea,005131,Carciofo Romanesco IGP,it,,cat2,100,g,6.1,3,0.2,48,crea-2019
+crea,005132,"Carciofo, verde, precoce",it,,cat3,100,g,5.4,2.9,0.2,45,crea-2019
+crea,005134,"Carciofo, violetto, precoce",it,,cat3,100,g,5.2,2.8,0.2,43,crea-2019
+crea,005136,"Carciofo, Spinoso sardo",it,,cat3,100,g,8.9,1.9,0.2,45,crea-2019
+crea,005140,"Cardi, crudi",it,,cat3,100,g,1.7,0.6,0.1,13,crea-2019
+crea,005150,"Carote, crude",it,,cat3,100,g,7.6,1.1,0.2,41,crea-2019
+crea,005154,"Carote, cotte, al microonde",it,,cat3,100,g,7.7,1.1,0.2,41,crea-2019
+crea,005155,"Carote, cotte, bollite",it,,cat3,100,g,8.7,1.3,0.2,47,crea-2019
+crea,005160,"Cavolfiore, crudo",it,,cat3,100,g,2.7,3.2,0.2,30,crea-2019
+crea,005164,"Cavolfiore, cotto, al microonde",it,,cat3,100,g,2.8,3.2,0.2,30,crea-2019
+crea,005165,"Cavolfiore, cotto, bollito",it,,cat3,100,g,2.9,3.4,0.2,31,crea-2019
+crea,005170,"Cavoli di Bruxelles, crudi",it,,cat3,100,g,4.2,4.2,0.5,47,crea-2019
+crea,005175,"Cavoli di Bruxelles, cotti, bolliti",it,,cat3,100,g,4.6,4.7,0.6,53,crea-2019
+crea,005180,"Cavolo broccolo verde ramoso, crudo",it,,cat3,100,g,2,3.4,0.3,30,crea-2019
+crea,005185,"Cavolo broccolo verde ramoso, cotto, bollito",it,,cat3,100,g,3.5,6,0.5,52,crea-2019
+crea,005190,"Cavolo cappuccio, rosso, crudo",it,,cat3,100,g,2.7,1.9,0.2,22,crea-2019
+crea,005195,"Cardi, cotti, bolliti",it,,cat3,100,g,2.9,1,0.2,22,crea-2019
+crea,005200,"Cavolo cappuccio, verde, crudo",it,,cat3,100,g,2.5,2.1,0.1,24,crea-2019
+crea,005205,"Cavolo cappuccio, verde, cotto, bollito",it,,cat3,100,g,2.5,2.1,0.1,24,crea-2019
+crea,005210,"Cavolo verza, cruda",it,,cat3,100,g,3.8,2,0.1,29,crea-2019
+crea,005215,"Cavolo verza, cotto, bollito",it,,cat3,100,g,3.8,2,0.1,29,crea-2019
+crea,005220,"Cetrioli, freschi",it,,cat3,100,g,1.8,0.7,0.5,16,crea-2019
+crea,005230,"Cicoria, da taglio, coltivata, cruda",it,,cat3,100,g,1.7,1.2,0.1,14,crea-2019
+crea,005240,"Cicoria, di campo, cruda",it,,cat3,100,g,0.7,1.4,0.2,17,crea-2019
+crea,005245,"Cicoria, di campo, cotta, bollita",it,,cat3,100,g,0.7,1.4,0.2,17,crea-2019
+crea,005250,"Cicoria, witloof o indivia belga, cruda",it,,cat3,100,g,3.2,0.7,0.3,20,crea-2019
+crea,005300,"Cipolle, crude",it,,cat3,100,g,5.7,1,0.1,28,crea-2019
+crea,005305,"Cipolle, cotte, bollite",it,,cat3,100,g,7.8,1.4,0.1,39,crea-2019
+crea,005310,"Cipolline, crude",it,,cat3,100,g,8.5,1.3,0.1,42,crea-2019
+crea,005315,"Cipolline, cotte, bollite",it,,cat3,100,g,10.9,1.7,0.1,53,crea-2019
+crea,005320,"Finocchi, crudi",it,,cat3,100,g,1.5,1.2,0,15,crea-2019
+crea,005324,"Finocchi, cotti, al microonde",it,,cat3,100,g,1.5,1.2,0,15,crea-2019
+crea,005325,"Finocchi, cotti, bolliti",it,,cat3,100,g,1.7,1.4,0,17,crea-2019
+crea,005330,"Fiori di zucca, freschi",it,,cat3,100,g,0.5,1.7,0.4,18,crea-2019
+crea,005340,"Foglie di rapa, crude",it,,cat3,100,g,2.8,2.6,0.1,27,crea-2019
+crea,005350,Germogli di soia,it,,cat3,100,g,3,6.2,1.4,54,crea-2019
+crea,005400,"Indivia, fresca",it,,cat3,100,g,2.7,0.9,0.3,20,crea-2019
+crea,005410,"Lattuga, fresca",it,,cat3,100,g,2.2,1.8,0.4,22,crea-2019
+crea,005420,"Lattuga, a cappuccio, fresca",it,,cat3,100,g,3,1.5,0.2,22,crea-2019
+crea,005430,"Lattuga, da taglio, fresca",it,,cat3,100,g,2.2,1.1,0.1,17,crea-2019
+crea,005435,"Lattughino, fresco",it,,cat3,100,g,1.4,1.5,0.2,16,crea-2019
+crea,005436,"Lattughino IV gamma, fresco",it,,cat3,100,g,1.4,1.4,0.2,16,crea-2019
+crea,005440,"Radicchio, rosso, fresco",it,,cat3,100,g,1.6,1.4,0.1,19,crea-2019
+crea,005441,"Radicchio rosso di Treviso IGP, precoce",it,,cat2,100,g,1,1.6,0.1,16,crea-2019
+crea,005442,"Radicchio rosso di Treviso IGP, tardivo",it,,cat2,100,g,1.4,1.5,0.1,16,crea-2019
+crea,005443,Radicchio variegato di Castelfranco IGP,it,,cat2,100,g,1.4,1.3,0.1,16,crea-2019
+crea,005450,"Radicchio, verde, fresco",it,,cat3,100,g,0.5,1.9,0.5,14,crea-2019
+crea,005460,"Rucola o Ruchetta, fresca",it,,cat3,100,g,3.9,2.6,0.3,30,crea-2019
+crea,005465,Scarola,it,,cat3,100,g,2.3,1.1,0.3,19,crea-2019
+crea,005466,"Scarola IV gamma, fresca",it,,cat3,100,g,2.2,0.9,0.2,17,crea-2019
+crea,005470,"Tarassaco o dente di leone, fresco",it,,cat3,100,g,3.7,3.1,1.1,37,crea-2019
+crea,005500,"Melanzane, crude",it,,cat3,100,g,2.6,1,0.4,23,crea-2019
+crea,005506,"Melanzane, cotte, in padella",it,,cat3,100,g,5.4,1.3,0.7,39,crea-2019
+crea,005507,"Melanzane, cotte, al microonde",it,,cat3,100,g,3,0.8,0.4,23,crea-2019
+crea,005600,"Peperoni, crudi",it,,cat3,100,g,4.2,0.9,0.3,26,crea-2019
+crea,005606,"Peperoni, cotti, in padella",it,,cat3,100,g,24.3,5.2,1.5,143,crea-2019
+crea,005610,"Peperoni, rossi e gialli, crudi",it,,cat3,100,g,6.7,0.9,0.3,35,crea-2019
+crea,005620,"Peperoni, gialli, crudi",it,,cat3,100,g,6.8,0.9,0.2,35,crea-2019
+crea,005624,"Peperoni, gialli, cotti, al microonde",it,,cat3,100,g,8.1,1.1,0.2,41,crea-2019
+crea,005630,"Peperoni, rossi, crudi",it,,cat3,100,g,6.5,0.9,0.3,34,crea-2019
+crea,005634,"Peperoni, rossi, cotti, al microonde",it,,cat3,100,g,7.9,1.1,0.4,42,crea-2019
+crea,005640,"Peperoni, verdi, crudi",it,,cat3,100,g,6,0.7,0.2,31,crea-2019
+crea,005650,"Porri, crudi",it,,cat3,100,g,5.2,2.1,0.1,35,crea-2019
+crea,005655,"Porri, cotti, bolliti",it,,cat3,100,g,5.3,2.1,0.1,35,crea-2019
+crea,005660,"Rape, crude",it,,cat3,100,g,4,1,0,24,crea-2019
+crea,005665,"Rape, cotte, bollite",it,,cat3,100,g,4.3,1.1,0,26,crea-2019
+crea,005670,"Ravanelli, freschi",it,,cat3,100,g,1.8,0.8,0.1,13,crea-2019
+crea,005680,"Sedano, crudo",it,,cat3,100,g,2.4,2.3,0.2,23,crea-2019
+crea,005684,"Sedano, cotto, al microonde",it,,cat3,100,g,2.4,2.4,0.2,24,crea-2019
+crea,005690,"Sedano rapa, crudo",it,,cat3,100,g,3.8,1.9,0.1,29,crea-2019
+crea,005700,"Spinaci, crudi",it,,cat3,100,g,2.9,3.4,0.7,35,crea-2019
+crea,005704,"Spinaci, cotti, al microonde",it,,cat3,100,g,3,3.4,0.7,35,crea-2019
+crea,005705,"Spinaci, cotti, bolliti",it,,cat3,100,g,3.5,4,0.8,41,crea-2019
+crea,005710,"Spinaci, surgelati",it,,cat3,100,g,0,2.8,0,15,crea-2019
+crea,005720,"Zucca gialla, fresca",it,,cat3,100,g,3.5,1.1,0.1,29,crea-2019
+crea,005730,"Zucchine, crude",it,,cat3,100,g,1.7,1.5,0.1,16,crea-2019
+crea,005735,"Zucchine, cotte, bollite",it,,cat3,100,g,3.4,3.2,0.2,30,crea-2019
+crea,005740,"Zucchine, chiare",it,,cat3,100,g,1.7,1.9,0.1,17,crea-2019
+crea,005741,"Zucchine chiare, cotte, al vapore",it,,cat3,100,g,2.5,2,0,20,crea-2019
+crea,005742,"Zucchine chiare, cotte, in padella grigliate",it,,cat3,100,g,5.7,0,0.2,29,crea-2019
+crea,005744,"Zucchine, chiare, cotte, al microonde",it,,cat3,100,g,3,2,0.1,23,crea-2019
+crea,005750,"Zucchine, scure, crude",it,,cat3,100,g,2.1,1.4,0.1,17,crea-2019
+crea,005751,"Zucchine, scure, cotte, al vapore",it,,cat3,100,g,2.7,1.6,0.1,20,crea-2019
+crea,005752,"Zucchine, scure, cotte, in padella grigliate",it,,cat3,100,g,5.6,2.7,0.1,37,crea-2019
+crea,005754,"Zucchine, scure, cotte, al microonde",it,,cat3,100,g,3.5,1.8,0,23,crea-2019
+crea,006000,"Funghi coltivati, prataioli, crudi",it,,cat3,100,g,0.8,3.7,0.2,24,crea-2019
+crea,006006,"Funghi coltivati, prataioli, cotti, in padella",it,,cat3,100,g,1.5,7,0.4,46,crea-2019
+crea,006010,"Funghi coltivati, pleurotes, crudi",it,,cat3,100,g,5.6,2.2,0.3,37,crea-2019
+crea,006016,"Funghi coltivati, pleurotes, cotti, in padella",it,,cat3,100,g,5.3,2.6,0.4,35,crea-2019
+crea,006020,"Funghi ovuli, crudi",it,,cat3,100,g,1.6,2,0.3,23,crea-2019
+crea,006030,"Funghi porcini, crudi",it,,cat3,100,g,1,3.9,0.7,31,crea-2019
+crea,006200,"Tartufo, nero",it,,cat3,100,g,0.7,6,0.5,48,crea-2019
+crea,006500,"Patate, crude",it,,cat3,100,g,16,2,0.1,72,crea-2019
+crea,006505,"Patate, con buccia, cotte, bollite",it,,cat3,100,g,17.9,2.1,1,88,crea-2019
+crea,006511,"Patate, cotte, arrosto",it,,cat3,100,g,25.7,2.9,4.5,152,crea-2019
+crea,006514,"Patate, cotte, al microonde",it,,cat3,100,g,17.9,2.1,1,88,crea-2019
+crea,006515,"Patate, senza buccia, cotte, bollite",it,,cat3,100,g,16.9,1.8,0.1,74,crea-2019
+crea,006517,"Patate, fritte",it,,cat3,100,g,29.9,3.9,6.7,192,crea-2019
+crea,006570,"Patatine, fritte, confezionate in busta",it,,cat3,100,g,58,5.4,29.6,512,crea-2019
+crea,006580,"Patate novelle, crude",it,,cat3,100,g,15.7,2,0.3,72,crea-2019
+crea,006584,"Patate novelle, cotte, al microonde",it,,cat3,100,g,15.7,2,0.3,72,crea-2019
+crea,006585,"Patate novelle, cotte, bollite",it,,cat3,100,g,14.9,1.9,0.2,68,crea-2019
+crea,006590,"Gnocchi di patate, crudi",it,,cat1,100,g,37.9,3.9,0.3,164,crea-2019
+crea,006591,"Gnocchi di patate, cotti",it,,cat1,100,g,34,3.5,0.2,147,crea-2019
+crea,006596,"Topinambur, cotto, bollito",it,,cat3,100,g,10.6,1.6,0.1,52,crea-2019
+crea,006600,"Pomodori, da insalata, freschi",it,,cat3,100,g,2.8,1.2,0.2,19,crea-2019
+crea,006610,"Pomodori, maturi, freschi",it,,cat3,100,g,3.5,1,0.2,23,crea-2019
+crea,006620,"Pomodori, San Marzano, freschi",it,,cat3,100,g,3,1.1,0.2,21,crea-2019
+crea,006630,"Pomodori, Nerina, verdi, freschi",it,,cat3,100,g,2.8,0.9,0.4,21,crea-2019
+crea,006640,"Pomodori, Nerina, rossi, freschi",it,,cat3,100,g,2.8,1.1,0.4,21,crea-2019
+crea,006650,"Pomodorini ciliegino, freschi",it,,cat3,100,g,7.2,1.1,0.4,37,crea-2019
+crea,006660,"Pomodori, conserva",it,,cat3,100,g,20.4,3.9,0.4,100,crea-2019
+crea,006670,"Pomodori, passata",it,,cat3,100,g,3,1.3,0.2,21,crea-2019
+crea,006680,"Pomodori, pelati in scatola",it,,cat3,100,g,3,1.2,0.5,22,crea-2019
+crea,006690,"Pomodori, succo",it,,cat3,100,g,3,0.8,0,16,crea-2019
+crea,006800,"Basilico, fresco",it,,cat3,100,g,5.2,3.1,0.8,42,crea-2019
+crea,006810,"Menta, fresca",it,,cat3,100,g,5.3,3.8,0.7,49,crea-2019
+crea,006820,Pepe nero,it,,cat3,100,g,49,11.4,3.3,311,crea-2019
+crea,006830,"Peperoncini piccanti, freschi",it,,cat3,100,g,3.8,1.8,0.5,30,crea-2019
+crea,006840,"Prezzemolo, fresco",it,,cat3,100,g,0,3.7,0.6,30,crea-2019
+crea,006850,"Rosmarino, fresco",it,,cat3,100,g,13.5,1.4,4.4,110,crea-2019
+crea,006860,"Salvia, fresco",it,,cat3,100,g,15.6,3.9,4.6,132,crea-2019
+crea,006990,"Vegetali misti, surgelati",it,,cat3,100,g,13.7,3.3,0.3,67,crea-2019
+crea,007000,"Albicocche, fresche",it,,cat4,100,g,9.8,0.4,0.1,42,crea-2019
+crea,007010,"Albicocche, disidratate",it,,cat4,100,g,80.6,5.6,1,356,crea-2019
+crea,007020,"Albicocche, sciroppate",it,,cat4,100,g,16.1,0.4,0.1,65,crea-2019
+crea,007030,"Albicocche, secche",it,,cat4,100,g,66.5,5,0.5,286,crea-2019
+crea,007040,"Cocomero, fresco",it,,cat4,100,g,3.7,0.4,0,16,crea-2019
+crea,007050,"Fichi, freschi",it,,cat4,100,g,14.2,0.9,0.2,63,crea-2019
+crea,007053,"Fichi, seccati al forno e mandorlati",it,,cat4,100,g,58.2,5.2,4.2,305,crea-2019
+crea,007060,"Fichi, canditi",it,,cat4,100,g,73.7,3.5,0.2,294,crea-2019
+crea,007070,"Fichi, secchi",it,,cat4,100,g,58,3.5,2.7,282,crea-2019
+crea,007080,"Fichi d'india, freschi",it,,cat4,100,g,13,0.8,0.1,63,crea-2019
+crea,007090,"Loti o kaki, freschi",it,,cat4,100,g,16,0.6,0.3,70,crea-2019
+crea,007100,"Melagrane, fresche",it,,cat4,100,g,15.9,0.5,0.2,68,crea-2019
+crea,007110,"Mele, fresche, senza buccia",it,,cat4,100,g,13.7,0.3,0.1,57,crea-2019
+crea,007120,"Mele, fresche, con buccia",it,,cat4,100,g,10,0.2,0,44,crea-2019
+crea,007130,"Mele, fresche, annurche",it,,cat4,100,g,10.2,0.3,0.1,45,crea-2019
+crea,007140,"Mele, fresche, deliziose",it,,cat4,100,g,11.1,0.2,0.1,46,crea-2019
+crea,007150,"Mele, fresche, golden",it,,cat4,100,g,10.7,0.4,0.1,46,crea-2019
+crea,007160,"Mele, fresche, granny smith",it,,cat4,100,g,9.4,0.5,0.1,42,crea-2019
+crea,007170,"Mele, fresche, imperatore",it,,cat4,100,g,11.3,0.2,0.1,48,crea-2019
+crea,007180,"Mele, fresche, renette",it,,cat4,100,g,10,0.3,0.1,43,crea-2019
+crea,007190,"Mele, disidratate",it,,cat4,100,g,82.2,1.3,2,356,crea-2019
+crea,007220,"Mele cotogne, fresche",it,,cat4,100,g,6.3,0.3,0.1,38,crea-2019
+crea,007230,"Melone, d'estate, fresco",it,,cat4,100,g,7.4,0.8,0.2,34,crea-2019
+crea,007240,"Melone, d'inverno, fresco",it,,cat4,100,g,4.9,0.5,0.2,24,crea-2019
+crea,007250,"Nespole, fresche",it,,cat4,100,g,6.1,0.4,0.4,32,crea-2019
+crea,007260,"Pere, fresche, senza buccia",it,,cat4,100,g,8.8,0.3,0.1,43,crea-2019
+crea,007261,"Pere, fresche, Abate Fetel",it,,cat4,100,g,12.7,0.2,0.3,59,crea-2019
+crea,007262,"Pere, fresche, Coscia",it,,cat4,100,g,8.6,0.3,0.1,42,crea-2019
+crea,007263,"Pere, fresche, Kaiser",it,,cat4,100,g,9.2,0.3,0.5,48,crea-2019
+crea,007264,"Pere, fresche, Max-Red Barlett",it,,cat4,100,g,10,0.3,0.4,50,crea-2019
+crea,007265,"Pere, fresche, William",it,,cat4,100,g,10.2,0.3,0.5,52,crea-2019
+crea,007270,"Pere, candite",it,,cat4,100,g,73.9,1,0.4,294,crea-2019
+crea,007280,"Pesche, fresche, senza buccia",it,,cat4,100,g,6.1,0.8,0.1,30,crea-2019
+crea,007290,"Pesche, fresche, con buccia",it,,cat4,100,g,5.8,0.7,0,28,crea-2019
+crea,007300,"Pesche, disidratate",it,,cat4,100,g,88,4.8,0.9,364,crea-2019
+crea,007310,"Pesche, sciroppate",it,,cat4,100,g,14,0.5,0,56,crea-2019
+crea,007320,"Pesche, secche",it,,cat4,100,g,68.3,3.1,0.7,280,crea-2019
+crea,007330,"Peschenoci, fresche",it,,cat4,100,g,7,1.4,0.1,36,crea-2019
+crea,007340,"Prugne, fresche",it,,cat4,100,g,10.5,0.5,0.1,45,crea-2019
+crea,007350,"Prugne, gialle",it,,cat4,100,g,6.6,0.5,0.1,30,crea-2019
+crea,007360,"Prugne, rosse",it,,cat4,100,g,10.5,0.5,0.1,45,crea-2019
+crea,007370,"Prugne, secche",it,,cat4,100,g,55,2.2,0.5,236,crea-2019
+crea,007380,"Uva, fresca",it,,cat4,100,g,15.6,0.5,0.1,64,crea-2019
+crea,007390,"Uva, bianca, fresca",it,,cat4,100,g,21.5,0.4,0.1,86,crea-2019
+crea,007400,"Uva, nera, fresca",it,,cat4,100,g,12.6,0.5,0.1,53,crea-2019
+crea,007410,"Uva, secca",it,,cat4,100,g,72,1.9,0.6,293,crea-2019
+crea,007420,"Uva, succo, in cartone",it,,cat4,100,g,17.3,0.3,0,66,crea-2019
+crea,007460,"Ananas, fresco",it,,cat4,100,g,10,0.5,0,42,crea-2019
+crea,007470,"Ananas, sciroppato",it,,cat4,100,g,16.6,0.5,0,66,crea-2019
+crea,007480,"Anona, fresca",it,,cat4,100,g,15.8,1.8,0.2,73,crea-2019
+crea,007490,"Avocado, fresco",it,,cat4,100,g,1.8,4.4,23,238,crea-2019
+crea,007500,"Babaco, fresco",it,,cat4,100,g,4.5,0.7,0.2,24,crea-2019
+crea,007510,"Banane, fresche",it,,cat4,100,g,17.4,1.2,0.3,76,crea-2019
+crea,007520,"Cocco, fresco",it,,cat5,100,g,4.4,3.5,35,358,crea-2019
+crea,007530,"Cocco, essiccato",it,,cat5,100,g,16.4,5.6,62,669,crea-2019
+crea,007550,"Feijoa, fresca",it,,cat4,100,g,9.6,0.7,0.8,59,crea-2019
+crea,007560,"Guava, fresca",it,,cat4,100,g,3.5,0.7,0.5,31,crea-2019
+crea,007570,"Kiwi, freschi",it,,cat4,100,g,9,1.2,0.6,48,crea-2019
+crea,007580,"Litchi, freschi",it,,cat4,100,g,17.2,1.1,0.1,72,crea-2019
+crea,007590,"Mango, fresco",it,,cat4,100,g,12.6,1,0.2,56,crea-2019
+crea,007600,"Papaia, fresca",it,,cat4,100,g,6.9,0.4,0.1,33,crea-2019
+crea,007610,"Passiflora, fresca",it,,cat4,100,g,5.7,3,0.3,64,crea-2019
+crea,007630,"Datteri, secchi",it,,cat4,100,g,63.1,2.7,0.6,270,crea-2019
+crea,007700,"Amarene, fresche",it,,cat4,100,g,10.2,0.8,0,44,crea-2019
+crea,007710,"Ciliege, fresche",it,,cat4,100,g,11,0.8,0.1,48,crea-2019
+crea,007720,"Ciliege, candite",it,,cat4,100,g,66.4,0.4,0,252,crea-2019
+crea,007730,"Fragole, fresche",it,,cat4,100,g,5.3,0.9,0.4,30,crea-2019
+crea,007740,"Lamponi, freschi",it,,cat4,100,g,6.5,1,0.6,49,crea-2019
+crea,007750,Mora di rovo,it,,cat4,100,g,8.1,1.3,0,42,crea-2019
+crea,007760,"Mirtilli, freschi",it,,cat4,100,g,10.1,0.9,0.2,49,crea-2019
+crea,007770,"Ribes, freschi",it,,cat4,100,g,9.7,0.9,0,52,crea-2019
+crea,008000,"Arance, fresche",it,,cat4,100,g,7.8,0.7,0.2,37,crea-2019
+crea,008001,"Arance bionde, fresche",it,,cat4,100,g,9.9,0.7,0.2,45,crea-2019
+crea,008002,"Arance Valencia, fresche",it,,cat4,100,g,8,0.7,0.3,39,crea-2019
+crea,008003,"Arance Washington Navel, fresche",it,,cat4,100,g,9.4,1,0.2,44,crea-2019
+crea,008004,"Arance rosse, fresche",it,,cat4,100,g,9.9,0.7,0.2,45,crea-2019
+crea,008005,"Arance Moro, fresche",it,,cat4,100,g,9,0.7,0.2,42,crea-2019
+crea,008006,"Arance Sanguinello, fresche",it,,cat4,100,g,10.6,0.7,0.1,47,crea-2019
+crea,008007,"Arance Tarocco, fresche",it,,cat4,100,g,10,0.7,0.2,45,crea-2019
+crea,008010,"Arance succo, fresco",it,,cat4,100,g,8.2,0.5,0,33,crea-2019
+crea,008011,"Arance bionde succo, fresco",it,,cat4,100,g,9.6,0.5,0,38,crea-2019
+crea,008012,"Arance rosse succo, fresco",it,,cat4,100,g,9.8,0.5,0,39,crea-2019
+crea,008020,"Clementine, fresche",it,,cat4,100,g,8.7,0.9,0.1,40,crea-2019
+crea,008030,"Limoni, freschi",it,,cat4,100,g,2.5,0.6,0,16,crea-2019
+crea,008040,"Limoni, succo",it,,cat4,100,g,2.5,0.2,0,10,crea-2019
+crea,008050,"Mandaranci, freschi",it,,cat4,100,g,12.8,0.8,0.2,57,crea-2019
+crea,008060,"Mandarini, freschi",it,,cat4,100,g,17.6,0.9,0.3,76,crea-2019
+crea,008070,"Pompelmo, fresco",it,,cat4,100,g,6.2,0.6,0,29,crea-2019
+crea,008500,"Arachidi, tostate",it,,cat5,100,g,8.5,29,50,620,crea-2019
+crea,008510,Carrube,it,,cat5,100,g,49.9,3.3,0.7,253,crea-2019
+crea,008520,Castagne,it,,cat5,100,g,36.7,2.9,1.7,174,crea-2019
+crea,008521,"Castagne, arrostite",it,,cat5,100,g,41.8,3.7,2.4,210,crea-2019
+crea,008525,"Castagne, bollite",it,,cat5,100,g,26.1,2.5,1.3,130,crea-2019
+crea,008530,"Castagne, secche",it,,cat5,100,g,62,6,3.4,315,crea-2019
+crea,008540,"Mandorle dolci, secche",it,,cat5,100,g,4.6,22,55.3,628,crea-2019
+crea,008550,"Nocciole, secche",it,,cat5,100,g,6.1,13.8,64.1,671,crea-2019
+crea,008560,Noci,it,,cat5,100,g,5.5,10.5,57.7,589,crea-2019
+crea,008570,"Noci, secche",it,,cat5,100,g,5.1,14.3,68.1,702,crea-2019
+crea,008580,Noci pecan,it,,cat5,100,g,7.9,7.2,71.8,723,crea-2019
+crea,008590,Pinoli,it,,cat5,100,g,4,31.9,50.3,604,crea-2019
+crea,008600,Pistacchi,it,,cat5,100,g,8.1,18.1,56.1,629,crea-2019
+crea,008605,Pistacchio di Bronte DOP,it,,cat2,100,g,7.3,24.3,48.9,595,crea-2019
+crea,008610,Anacardi,it,,cat5,100,g,33,15,46,604,crea-2019
+crea,008620,Macadamia,it,,cat5,100,g,5.1,8,76,751,crea-2019
+crea,008800,Olive da tavola conservate,it,,cat4,100,g,5,1.5,27,277,crea-2019
+crea,008810,"Olive, nere",it,,cat4,100,g,0.8,1.6,25.1,243,crea-2019
+crea,008820,"Olive, verdi",it,,cat4,100,g,1,0.8,15,148,crea-2019
+crea,008830,"Olive, verdi, in salamoia",it,,cat4,100,g,1,1.2,11,113,crea-2019
+crea,008840,Oliva Nocellara del Belice,it,,cat2,100,g,0.06,1.4,22.1,211,crea-2019
+crea,008850,Oliva Giarraffa,it,,cat2,100,g,0.19,1.4,20,192,crea-2019
+crea,008930,Succo di frutta,it,,cat4,100,g,14.5,0.3,0.1,56,crea-2019
+crea,008940,Cocktail di frutta sciroppata,it,,cat4,100,g,14.8,0.4,0,59,crea-2019
+crea,009010,Burro d'arachidi,it,,cat1,100,g,8,24.9,53.7,625,crea-2019
+crea,009100,"Margarina, 100% vegetale",it,,cat1,100,g,0.4,0.6,84,760,crea-2019
+crea,009110,"Margarina, 2/3 di grassi animali, 1/3 di grassi vegetali",it,,cat1,100,g,0.4,0.7,84,760,crea-2019
+crea,009200,Olio di oliva,it,,cat1,100,g,0,0,99.9,899,crea-2019
+crea,009210,Olio di oliva extra vergine,it,,cat1,100,g,0,0,99.9,899,crea-2019
+crea,009610,Olio di arachide,it,,cat1,100,g,0,0,99.9,899,crea-2019
+crea,009620,Olio di cocco,it,,cat1,100,g,0,0,99.9,899,crea-2019
+crea,009630,Olio di colza,it,,cat1,100,g,0,0,99.9,899,crea-2019
+crea,009640,Olio di germe di grano,it,,cat1,100,g,0,0,99.9,899,crea-2019
+crea,009650,Olio di girasole,it,,cat1,100,g,0,0,99.9,899,crea-2019
+crea,009660,Olio di mais,it,,cat1,100,g,0,0,99.9,899,crea-2019
+crea,009670,Olio di mandorle dolci,it,,cat1,100,g,0,0,99.9,899,crea-2019
+crea,009680,Olio di palma,it,,cat1,100,g,0,0,99.9,899,crea-2019
+crea,009690,Olio di sesamo,it,,cat1,100,g,0,0,99.9,899,crea-2019
+crea,009700,Olio di soia,it,,cat1,100,g,0,0,99.9,899,crea-2019
+crea,009710,Olio di vinacciolo,it,,cat1,100,g,0,0,99.9,899,crea-2019
+crea,009799,Oli vegetali,it,,cat1,100,g,0,0,99.9,899,crea-2019
+crea,101120,"Bovino adulto o vitellone, tagli anteriori, crudo",it,,cat6,100,g,0,20.5,7,145,crea-2019
+crea,101130,"Bovino adulto o vitellone, tagli posteriori, crudo",it,,cat6,100,g,0,21.5,3.4,117,crea-2019
+crea,101150,"Bovino adulto o vitellone, costata, crudo",it,,cat6,100,g,0,21.3,6.1,140,crea-2019
+crea,101160,"Bovino adulto o vitellone, fesa, crudo",it,,cat6,100,g,0,21.8,1.8,103,crea-2019
+crea,101170,"Bovino adulto o vitellone, filetto, crudo",it,,cat6,100,g,0,20.5,5,127,crea-2019
+crea,101180,"Bovino adulto o vitellone, girello, crudo",it,,cat6,100,g,0,21.3,2.8,110,crea-2019
+crea,101190,"Bovino adulto o vitellone, lombata, crudo",it,,cat6,100,g,0,21.8,5.2,134,crea-2019
+crea,101200,"Bovino adulto o vitellone, noce, crudo",it,,cat6,100,g,0,21.3,2.3,106,crea-2019
+crea,101210,"Bovino adulto o vitellone, scamone, crudo",it,,cat6,100,g,0,21.4,3.7,119,crea-2019
+crea,101220,"Bovino adulto o vitellone, sottofesa, crudo",it,,cat6,100,g,0,22,2.6,111,crea-2019
+crea,101230,"Bovino adulto o vitellone, copertina di sotto, copertina di spalla, sottospalla e collo, crudo",it,,cat6,100,g,0,20.3,5.7,132,crea-2019
+crea,101240,"Bovino adulto o vitellone, geretto anteriore e posteriore, crudo",it,,cat6,100,g,0,20.9,3.2,112,crea-2019
+crea,101250,"Bovino adulto o vitellone, pancia, biancostato e punta di petto, crudo",it,,cat6,100,g,0,19.7,10.2,171,crea-2019
+crea,101260,"Bovino adulto o vitellone, spalla, muscolo, girello e fesone, crudo",it,,cat6,100,g,0,21.5,2.4,108,crea-2019
+crea,101520,"Vitello, filetto, crudo",it,,cat6,100,g,0,20.7,2.7,107,crea-2019
+crea,101521,"Vitello, filetto, cotto in padella",it,,cat6,100,g,0,24.4,3.2,126,crea-2019
+crea,102000,"Bufalo, solo tessuto muscolare, crudo",it,,cat6,100,g,0,22,1.1,98,crea-2019
+crea,103010,"Cavallo, tessuto muscolare e grasso, crudo",it,,cat6,100,g,0.6,19.8,6.8,143,crea-2019
+crea,103020,"Cavallo, solo tessuto muscolare, crudo",it,,cat6,100,g,0.7,23.5,1,106,crea-2019
+crea,104020,"Agnello, crudo",it,,cat6,100,g,0,20,8.8,159,crea-2019
+crea,104029,"Agnello, cotto, al forno",it,,cat6,100,g,0,25,11,199,crea-2019
+crea,104030,"Agnello, coscio, crudo",it,,cat6,100,g,0,20,2.5,102,crea-2019
+crea,104033,"Agnello, coscio, cotto, al forno",it,,cat6,100,g,0,23,2.9,118,crea-2019
+crea,104040,"Agnello, costoletta, crudo",it,,cat6,100,g,0,20.4,2.7,106,crea-2019
+crea,104043,"Agnello, costoletta, cotto, al forno",it,,cat6,100,g,0,22.7,3,118,crea-2019
+crea,104250,"Capra, solo tessuto muscolare, crudo",it,,cat6,100,g,0,21.2,2.3,106,crea-2019
+crea,104300,"Capretto, crudo",it,,cat6,100,g,0,19.2,4,113,crea-2019
+crea,104610,"Pecora, solo tessuto muscolare, crudo",it,,cat6,100,g,0,21,4.1,121,crea-2019
+crea,105200,"Maiale, coscio, crudo",it,,cat6,100,g,0,20.2,3.2,110,crea-2019
+crea,105210,"Maiale, lombo, crudo",it,,cat6,100,g,0,20.7,7,146,crea-2019
+crea,105220,"Maiale, spalla, crudo",it,,cat6,100,g,0,19,6.3,133,crea-2019
+crea,105230,"Maiale, bistecca, crudo",it,,cat6,100,g,0,21.3,8,157,crea-2019
+crea,105236,"Maiale, bistecca, cotto, in padella",it,,cat6,100,g,0,25.4,9.5,187,crea-2019
+crea,105600,"Maiale, pesante, coscio, crudo",it,,cat6,100,g,0,20.4,5.1,127,crea-2019
+crea,105700,"Maiale, pesante, lombo, crudo",it,,cat6,100,g,0,20.8,9.9,172,crea-2019
+crea,105800,"Maiale, pesante, spalla, crudo",it,,cat6,100,g,0,19,8.9,156,crea-2019
+crea,106010,"Anatra domestica, crudo",it,,cat6,100,g,0,21.4,8.2,159,crea-2019
+crea,106020,"Faraona, coscio, con pelle, crudo",it,,cat6,100,g,0.3,24.3,3.8,133,crea-2019
+crea,106030,"Faraona, coscio, senza pelle, crudo",it,,cat6,100,g,0.3,24,3.3,127,crea-2019
+crea,106032,"Faraona, coscio, senza pelle, cotto, allo spiedo",it,,cat6,100,g,0.3,34.4,6.1,194,crea-2019
+crea,106050,"Faraona, petto, senza pelle, crudo",it,,cat6,100,g,0.2,25.8,1.9,121,crea-2019
+crea,106052,"Faraona, petto, senza pelle, cotto, allo spiedo",it,,cat6,100,g,0.2,30.7,2.5,146,crea-2019
+crea,106100,"Gallina, crudo",it,,cat6,100,g,0,20.9,12.3,194,crea-2019
+crea,106150,"Oca, crudo",it,,cat6,100,g,0,15.8,34.4,373,crea-2019
+crea,106200,"Pollo, intero, con pelle, crudo",it,,cat6,100,g,0,19,10.6,171,crea-2019
+crea,106203,"Pollo, intero, con pelle, cotto, al forno",it,,cat6,100,g,0,27.1,10.2,200,crea-2019
+crea,106210,"Pollo, intero, senza pelle, crudo",it,,cat6,100,g,0,19.4,3.6,110,crea-2019
+crea,106213,"Pollo, intero, senza pelle, cotto, al forno",it,,cat6,100,g,0,27.9,5.4,160,crea-2019
+crea,106251,"Pollo, intero, con pelle, cotto, arrosto",it,,cat6,100,g,0,28.3,14.7,245,crea-2019
+crea,106261,"Pollo, intero, senza pelle, cotto, arrosto",it,,cat6,100,g,0,28.9,10,206,crea-2019
+crea,106270,"Pollo, ala, con pelle, crudo",it,,cat6,100,g,0,16.7,14.3,196,crea-2019
+crea,106273,"Pollo, ala, con pelle, cotta, al forno",it,,cat6,100,g,0,31.7,17.4,283,crea-2019
+crea,106400,"Pollo, fuso, con pelle, crudo",it,,cat6,100,g,0,18.4,5.7,125,crea-2019
+crea,106403,"Pollo, fuso, con pelle, cotto, al forno",it,,cat6,100,g,0,31.2,8.5,201,crea-2019
+crea,106410,"Pollo, fuso, senza pelle, crudo",it,,cat6,100,g,0,18.5,3.7,107,crea-2019
+crea,106413,"Pollo, fuso, senza pelle, cotto, al forno",it,,cat6,100,g,0,29.9,6.2,175,crea-2019
+crea,106500,"Pollo, petto, crudo",it,,cat6,100,g,0,23.3,0.8,100,crea-2019
+crea,106506,"Pollo, petto, cotto, in padella",it,,cat6,100,g,0,30.2,0.9,129,crea-2019
+crea,106600,"Pollo, sovracoscia, con pelle, crudo",it,,cat6,100,g,0,17.4,14,196,crea-2019
+crea,106603,"Pollo, sovracoscia, con pelle, cotto, al forno",it,,cat6,100,g,0,26.7,12.5,219,crea-2019
+crea,106610,"Pollo, sovracoscia, senza pelle, crudo",it,,cat6,100,g,0,18.7,6.3,132,crea-2019
+crea,106613,"Pollo, sovracoscia, senza pelle, cotto, al forno",it,,cat6,100,g,0,28.3,8.3,188,crea-2019
+crea,106700,"Tacchino intero, con pelle, crudo",it,,cat6,100,g,0,18.2,6.9,135,crea-2019
+crea,106710,"Tacchino intero, senza pelle, crudo",it,,cat6,100,g,0,21.9,2.4,109,crea-2019
+crea,106719,"Tacchino intero, senza pelle, cotto, al forno",it,,cat6,100,g,0,23.3,2.6,117,crea-2019
+crea,106800,"Tacchino, coscio, con pelle, crudo",it,,cat6,100,g,0,18.1,6.5,131,crea-2019
+crea,106850,"Tacchino, fesa, crudo",it,,cat6,100,g,0,24,1.2,107,crea-2019
+crea,106856,"Tacchino, fesa, cotta, al forno",it,,cat6,100,g,0,29.6,1.4,131,crea-2019
+crea,106900,"Tacchino, fuso, con pelle, crudo",it,,cat6,100,g,0,17.9,6,126,crea-2019
+crea,106903,"Tacchino, fuso, con pelle, cotto, al forno",it,,cat6,100,g,0,26.7,9.3,191,crea-2019
+crea,106910,"Tacchino, fuso, senza pelle, crudo",it,,cat6,100,g,0,18,4.6,113,crea-2019
+crea,106913,"Tacchino, fuso, senza pelle, cotto, al forno",it,,cat6,100,g,0,28,8.7,190,crea-2019
+crea,106960,"Tacchino, sovracoscia, senza pelle, crudo",it,,cat6,100,g,0,18.5,5.1,120,crea-2019
+crea,106963,"Tacchino, sovracoscia, senza pelle, cotto, al forno",it,,cat6,100,g,0,30.2,6.8,182,crea-2019
+crea,107010,"Coniglio intero, crudo",it,,cat6,100,g,0,19.9,4.3,118,crea-2019
+crea,107019,"Coniglio, intero, cotto",it,,cat6,100,g,0,27.9,6,166,crea-2019
+crea,107020,"Coniglio, intero surgelato, crudo",it,,cat6,100,g,0,20.3,3.9,116,crea-2019
+crea,107030,"Coniglio, coscio, crudo",it,,cat6,100,g,0,21,5.9,137,crea-2019
+crea,108010,"Cervo, solo tessuto muscolare, crudo",it,,cat6,100,g,0,21,0.8,91,crea-2019
+crea,108100,"Daino, solo tessuto muscolare, crudo",it,,cat6,100,g,0,21,1.2,95,crea-2019
+crea,108510,"Fagiano, crudo",it,,cat6,100,g,0,24.3,5.2,144,crea-2019
+crea,108520,"Piccione giovane, crudo",it,,cat6,100,g,0,22.1,5.5,138,crea-2019
+crea,108530,"Quaglia, crudo",it,,cat6,100,g,0,25,6.8,161,crea-2019
+crea,108900,"Struzzo, solo tessuto muscolare, crudo",it,,cat6,100,g,0,20.9,0.9,92,crea-2019
+crea,108901,"Struzzo, solo tessuto muscolare, cotto, al forno",it,,cat6,100,g,0,22.2,1.4,101,crea-2019
+crea,109010,"Lumaca, cruda",it,,cat6,100,g,0,12.9,1.7,67,crea-2019
+crea,109510,"Rana, crudo",it,,cat6,100,g,0,15.5,0.2,64,crea-2019
+crea,110020,Bresaola della Valtellina IGP,it,,cat2,100,g,0.4,33.1,2,152,crea-2019
+crea,110100,Capocollo,it,,cat7,100,g,1.4,20.8,40.2,450,crea-2019
+crea,110110,Capocollo di Calabria,it,,cat2,100,g,0.9,29.1,24.9,344,crea-2019
+crea,110130,Ciccioli,it,,cat7,100,g,0,45.2,50.6,636,crea-2019
+crea,110150,Coppa,it,,cat7,100,g,0,28.9,31.6,400,crea-2019
+crea,110190,"Cotechino, confezionato precotto",it,,cat7,100,g,0,17.2,42.3,449,crea-2019
+crea,110195,"Cotechino Modena IGP, cotto",it,,cat2,100,g,3.2,23.6,16.3,253,crea-2019
+crea,110200,Mortadella Bologna IGP,it,,cat2,100,g,0,15.7,25,288,crea-2019
+crea,110210,Mortadella di bovini e suini,it,,cat7,100,g,0.5,13.3,37,388,crea-2019
+crea,110300,Pancetta magretta,it,,cat7,100,g,0,21.7,25.3,314,crea-2019
+crea,110310,Pancetta tesa,it,,cat7,100,g,0,20.9,28.1,337,crea-2019
+crea,110320,Pancetta arrotolata,it,,cat7,100,g,0,15.1,52.2,530,crea-2019
+crea,110400,Prosciutto cotto,it,,cat7,100,g,1.7,15.7,7.6,138,crea-2019
+crea,110401,"Prosciutto cotto, sgrassato",it,,cat7,100,g,1.9,17,3.5,107,crea-2019
+crea,110410,"Prosciutto cotto, alta qualità",it,,cat7,100,g,0.8,18,11.9,182,crea-2019
+crea,110411,"Prosciutto cotto, alta qualità, sgrassato",it,,cat7,100,g,0.9,19.5,5,126,crea-2019
+crea,110420,"Prosciutto cotto, scelto",it,,cat7,100,g,0.6,17.5,9.2,155,crea-2019
+crea,110421,"Prosciutto cotto, scelto, sgrassato",it,,cat7,100,g,0.5,19.4,4,115,crea-2019
+crea,110500,Prosciutto crudo di Modena DOP,it,,cat2,100,g,0.1,25.6,22.9,309,crea-2019
+crea,110501,"Prosciutto crudo di Modena DOP, sgrassato",it,,cat2,100,g,0.1,30.2,8.9,201,crea-2019
+crea,110505,Prosciutto crudo di montagna,it,,cat7,100,g,0,26.2,22,303,crea-2019
+crea,110510,"Prosciutto crudo DOP, di Parma",it,,cat2,100,g,0.3,25.9,18.3,269,crea-2019
+crea,110511,"Prosciutto crudo di Parma DOP, sgrassato",it,,cat2,100,g,0.4,29.1,6.4,176,crea-2019
+crea,110515,Prosciutto crudo di Pietraroja,it,,cat2,100,g,0,26.2,28.1,358,crea-2019
+crea,110520,Prosciutto crudo di San Daniele DOP,it,,cat2,100,g,0.2,25.7,18.6,271,crea-2019
+crea,110521,"Prosciutto crudo di San Daniele DOP, sgrassato",it,,cat2,100,g,0.4,29,6.5,176,crea-2019
+crea,110525,"Prosciutto crudo, disossato",it,,cat7,100,g,0,26.9,12.9,224,crea-2019
+crea,110526,"Prosciutto crudo, disossato, sgrassato",it,,cat7,100,g,0,29.3,4.6,159,crea-2019
+crea,110530,"Prosciutto crudo, gambuccio",it,,cat7,100,g,0,26.2,22.4,306,crea-2019
+crea,110535,"Prosciutto crudo, Nazionale",it,,cat7,100,g,0.1,27.8,13.7,235,crea-2019
+crea,110536,"Prosciutto crudo, Nazionale, sgrassato",it,,cat7,100,g,0.3,30.5,5.1,169,crea-2019
+crea,110600,Salame Brianza,it,,cat7,100,g,1,26.5,30.5,384,crea-2019
+crea,110610,Salami italiani alla cacciatora DOP,it,,cat2,100,g,0.7,28.4,32.7,411,crea-2019
+crea,110620,Salame Fabriano,it,,cat7,100,g,1.5,26.5,34.3,420,crea-2019
+crea,110630,Salame Felino,it,,cat7,100,g,0.5,30.5,27.9,375,crea-2019
+crea,110640,Salame Milano,it,,cat7,100,g,1.1,25.4,31,385,crea-2019
+crea,110650,Salame Napoli,it,,cat7,100,g,0.2,27.4,29.7,378,crea-2019
+crea,110660,Salame nostrano,it,,cat7,100,g,1.1,27.3,28.5,370,crea-2019
+crea,110670,Salame ungherese,it,,cat7,100,g,1.1,23.6,35.7,420,crea-2019
+crea,110700,Salsiccia di fegato,it,,cat7,100,g,0.9,12.4,41.2,424,crea-2019
+crea,110710,"Salsiccia di suino, fresca",it,,cat7,100,g,0.6,15.4,26.7,304,crea-2019
+crea,110716,"Salsiccia di suino, fresca, cotta, in padella",it,,cat7,100,g,0,22.2,26.1,324,crea-2019
+crea,110720,"Salsiccia di suino, secca",it,,cat7,100,g,0,22,47.3,514,crea-2019
+crea,110730,Salsiccia di Calabria,it,,cat2,100,g,1.3,33.6,25.2,366,crea-2019
+crea,110740,Soppressata di Calabria,it,,cat2,100,g,0.9,34.2,26.3,377,crea-2019
+crea,110800,Speck dell'Alto Adige IGP,it,,cat2,100,g,1.2,30.7,19.1,299,crea-2019
+crea,110900,"Wurstel di puro suino, crudo",it,,cat7,100,g,1.9,13.2,21.1,250,crea-2019
+crea,110906,"Wurstel di puro suino, cotto",it,,cat7,100,g,0.3,14.6,22.2,259,crea-2019
+crea,110950,"Zampone confezionato, precotto",it,,cat7,100,g,0,19.1,31.6,361,crea-2019
+crea,110955,"Zampone Modena IGP, cotto",it,,cat2,100,g,2.6,23.7,17.5,262,crea-2019
+crea,113010,"Carne bovina in gelatina, in scatola",it,,cat7,100,g,0,12.6,1.8,67,crea-2019
+crea,113020,"Carne bovina pressata, in scatola",it,,cat7,100,g,0,16.5,8.3,141,crea-2019
+crea,114010,Patè di coniglio,it,,cat7,100,g,1.1,13,32.2,346,crea-2019
+crea,114020,Patè di fegato,it,,cat7,100,g,1.3,12.7,31.7,341,crea-2019
+crea,114030,Patè di pollo,it,,cat7,100,g,2.3,11.1,26.2,289,crea-2019
+crea,114040,Patè di prosciutto,it,,cat7,100,g,1.1,11.3,34.3,358,crea-2019
+crea,115010,Animelle di bovini,it,,cat9,100,g,0.1,11.5,28.6,304,crea-2019
+crea,115019,"Animelle di bovini, cotte",it,,cat9,100,g,0.2,16.4,40.9,434,crea-2019
+crea,115110,Cervello di bovini,it,,cat9,100,g,0.8,10,12.7,157,crea-2019
+crea,115120,Coratella di agnello,it,,cat9,100,g,1,15.7,4.7,109,crea-2019
+crea,115130,Coratella di vitello,it,,cat9,100,g,0.8,17.1,3.2,100,crea-2019
+crea,115210,Cuore di bovini,it,,cat9,100,g,0.5,16.8,6,123,crea-2019
+crea,115219,"Cuore di bovini, cotto",it,,cat9,100,g,0.8,25.8,9.2,189,crea-2019
+crea,115220,Cuore di equini,it,,cat9,100,g,0.6,18.7,7.7,146,crea-2019
+crea,115230,Cuore di ovini,it,,cat9,100,g,0.4,16.9,7.2,134,crea-2019
+crea,115240,Cuore di pollo,it,,cat9,100,g,0.2,14.1,5.1,103,crea-2019
+crea,115249,"Cuore di pollo, cotto",it,,cat9,100,g,0.3,20.1,7.3,147,crea-2019
+crea,115250,Cuore di suino,it,,cat9,100,g,0.4,18.3,9.4,159,crea-2019
+crea,115260,Cuore di tacchino,it,,cat9,100,g,0.2,14.1,5.1,103,crea-2019
+crea,115269,"Cuore di tacchino, cotto",it,,cat9,100,g,0.3,20.1,7.3,147,crea-2019
+crea,115320,Fegato di bovini,it,,cat9,100,g,5.9,20,4.4,142,crea-2019
+crea,115329,"Fegato di bovini, cotto",it,,cat9,100,g,7.9,26.7,5.9,190,crea-2019
+crea,115340,Fegato di equini,it,,cat9,100,g,5.3,22.4,4,145,crea-2019
+crea,115350,Fegato di ovini,it,,cat9,100,g,2,19.5,5.5,135,crea-2019
+crea,115360,Fegato di pollo,it,,cat9,100,g,1.5,22.8,6.3,154,crea-2019
+crea,115369,"Fegato di pollo, cotto",it,,cat9,100,g,2,29.4,7.4,192,crea-2019
+crea,115370,Fegato di suini,it,,cat9,100,g,1.5,22.8,4.8,140,crea-2019
+crea,115379,"Fegato di suini, cotto",it,,cat9,100,g,2,29.4,6.4,183,crea-2019
+crea,115380,Fegato di tacchino,it,,cat9,100,g,0.5,17.8,6,127,crea-2019
+crea,115389,"Fegato di tacchino, cotto",it,,cat9,100,g,0.8,27.4,9.2,195,crea-2019
+crea,115400,Lingua di bovini,it,,cat9,100,g,0.4,17.1,18,232,crea-2019
+crea,115409,"Lingua di bovini, cotta, fritta",it,,cat9,100,g,0.5,22.8,24,309,crea-2019
+crea,115500,Milza di bovini,it,,cat9,100,g,0,18.5,3.7,107,crea-2019
+crea,115600,Polmone di bovini,it,,cat9,100,g,0,14,2.1,75,crea-2019
+crea,115710,Rene di bovini,it,,cat9,100,g,0.8,18.4,4.6,118,crea-2019
+crea,115800,Trippa di bovini,it,,cat9,100,g,0,15.8,5,108,crea-2019
+crea,119020,"Cheese burger, fast food",it,,cat8,100,g,30.2,16.3,13.1,300,crea-2019
+crea,119030,"Hamburger, fast food",it,,cat8,100,g,30.1,13.1,9.1,251,crea-2019
+crea,119040,"Chicken Nuggets, fast food",it,,cat8,100,g,15.4,17.7,12.4,242,crea-2019
+crea,119050,"Hamburger piccolo, solo carne, fast food",it,,cat8,100,g,0,24.5,18.4,264,crea-2019
+crea,119060,"Panino, fast food",it,,cat8,100,g,47,10.1,3,248,crea-2019
+crea,119070,"Panino con hamburger piccolo, fast food",it,,cat8,100,g,29,15.6,8.9,254,crea-2019
+crea,119080,"Patatine, fritte, fast food",it,,cat8,100,g,37.6,3.3,13.7,283,crea-2019
+crea,120010,Acciuga o alice,it,,cat1,100,g,1.5,16.8,2.6,96,crea-2019
+crea,120020,"Acciuga o alice, sott'olio",it,,cat1,100,g,0.2,25.9,11.3,206,crea-2019
+crea,120030,"Acciuga o alice, sotto sale",it,,cat1,100,g,2.3,25,3.1,137,crea-2019
+crea,120210,"Anguilla, affumicata",it,,cat1,100,g,0.2,17.5,17.8,231,crea-2019
+crea,120220,"Anguilla, marinata",it,,cat1,100,g,0.6,14.8,21.9,259,crea-2019
+crea,120230,Anguilla di fiume,it,,cat1,100,g,0.1,11.8,23.7,261,crea-2019
+crea,120240,Anguilla di mare,it,,cat1,100,g,0.7,14.6,19.6,237,crea-2019
+crea,120250,"Anguilla d'allevamento, filetti",it,,cat1,100,g,0.5,16.2,18.9,237,crea-2019
+crea,120290,Capitone,it,,cat1,100,g,0.5,13,21.5,247,crea-2019
+crea,120300,Aringa,it,,cat1,100,g,0,16.5,16.7,216,crea-2019
+crea,120310,"Aringa, affumicata",it,,cat1,100,g,0,19.9,12.7,194,crea-2019
+crea,120320,"Aringa, marinata",it,,cat1,100,g,0,18.3,14,199,crea-2019
+crea,120330,"Aringa, sotto sale",it,,cat1,100,g,0,19.8,15.4,218,crea-2019
+crea,120400,Boga,it,,cat1,100,g,0.8,18.3,1.2,87,crea-2019
+crea,120500,Carpa,it,,cat1,100,g,0,18.9,7.1,139,crea-2019
+crea,120510,Cefalo muggine,it,,cat1,100,g,0.7,15.8,6.8,127,crea-2019
+crea,120590,"Bottarga, cefalo muggine",it,,cat1,100,g,0,43.5,25.7,405,crea-2019
+crea,120610,Cernia surgelata,it,,cat1,100,g,0.5,17,2,88,crea-2019
+crea,120710,Coregone,it,,cat1,100,g,0.1,19,6.5,135,crea-2019
+crea,120810,Corvina,it,,cat1,100,g,0.2,20,0.8,88,crea-2019
+crea,120910,Dentice,it,,cat1,100,g,0.7,16.7,3.5,101,crea-2019
+crea,120920,"Dentice, surgelato",it,,cat1,100,g,0.7,17.2,3.5,103,crea-2019
+crea,121010,Halibut,it,,cat1,100,g,0,20.6,3.5,114,crea-2019
+crea,121100,Lattarini,it,,cat1,100,g,0,14.6,9.6,145,crea-2019
+crea,121200,Luccio,it,,cat1,100,g,0.1,18.7,0.6,81,crea-2019
+crea,121310,Melù o pesce molo,it,,cat1,100,g,0,17.4,0.3,72,crea-2019
+crea,121320,"Melù o pesce molo, stoccafisso, secco",it,,cat1,100,g,1.1,80.1,3.5,356,crea-2019
+crea,121330,"Melù o pesce molo, stoccafisso, ammollato",it,,cat1,100,g,0.3,20.7,0.9,92,crea-2019
+crea,121410,Merluzzo o nasello,it,,cat1,100,g,0,17,0.3,71,crea-2019
+crea,121420,"Merluzzo o nasello, surgelato",it,,cat1,100,g,0,17.3,0.6,75,crea-2019
+crea,121423,"Merluzzo o nasello, surgelato, cotto, in forno",it,,cat1,100,g,0,17.5,0.9,78,crea-2019
+crea,121424,"Merluzzo o nasello, surgelato, cotto, al microonde",it,,cat1,100,g,0,24.8,0.9,107,crea-2019
+crea,121430,"Merluzzo o nasello, surgelato, filetti",it,,cat1,100,g,0,15.6,0.6,68,crea-2019
+crea,121440,"Merluzzo o nasello, baccalà, secco",it,,cat1,100,g,0,29,1.7,131,crea-2019
+crea,121450,"Merluzzo o nasello, baccalà, ammollato",it,,cat1,100,g,0,21.6,1,95,crea-2019
+crea,121490,"Merluzzo o nasello, bastoncini di pesce, surgelati",it,,cat1,100,g,15,11,10.1,191,crea-2019
+crea,121500,Mormora,it,,cat1,100,g,2,18,1.9,97,crea-2019
+crea,121600,Occhiata,it,,cat1,100,g,2,19,3.7,117,crea-2019
+crea,121710,"Orata, surgelata",it,,cat1,100,g,1,19.8,1.2,94,crea-2019
+crea,121720,"Orata, filetti",it,,cat1,100,g,1,20.7,3.8,121,crea-2019
+crea,121730,"Orata d'allevamento, filetti",it,,cat1,100,g,1.2,19.7,8.4,159,crea-2019
+crea,121800,Pagello,it,,cat1,100,g,0,21,1.9,101,crea-2019
+crea,121900,Pagello bocca d'oro,it,,cat1,100,g,3,20,3,118,crea-2019
+crea,122000,Palombo,it,,cat1,100,g,1.3,16,1.2,80,crea-2019
+crea,122100,Pesce gatto,it,,cat1,100,g,0.2,15.5,3.3,92,crea-2019
+crea,122200,Razza,it,,cat1,100,g,0.7,14.2,0.9,68,crea-2019
+crea,122300,Rombo,it,,cat1,100,g,1.2,16.3,1.3,81,crea-2019
+crea,122400,Salmone,it,,cat1,100,g,1,18.4,12,185,crea-2019
+crea,122410,"Salmone, affumicato",it,,cat1,100,g,1.2,25.4,4.5,147,crea-2019
+crea,122430,"Salmone, in salamoia",it,,cat1,100,g,1,21.1,11.5,192,crea-2019
+crea,122500,Salpa,it,,cat1,100,g,2,18,2.7,104,crea-2019
+crea,122600,Sarago,it,,cat1,100,g,1,20.7,1.2,97,crea-2019
+crea,122700,Sarda,it,,cat1,100,g,1.5,20.8,4.5,129,crea-2019
+crea,122800,Sardine,it,,cat1,100,g,1.5,20.3,15.4,225,crea-2019
+crea,122806,"Sardine, fritte",it,,cat1,100,g,1,32.3,21.2,324,crea-2019
+crea,122900,Scorfano,it,,cat1,100,g,0.6,19,0.4,82,crea-2019
+crea,123000,Sgombro o maccarello,it,,cat1,100,g,0.5,17,11.1,170,crea-2019
+crea,123010,"Sgombro o maccarello, in salamoia",it,,cat1,100,g,0,19.3,11.1,177,crea-2019
+crea,123100,Sogliola,it,,cat1,100,g,0.8,16.9,1.4,83,crea-2019
+crea,123110,"Sogliola, surgelata",it,,cat1,100,g,0.1,17.3,1.3,81,crea-2019
+crea,123200,Spigola,it,,cat1,100,g,0.6,16.5,1.5,82,crea-2019
+crea,123220,"Spigola d'allevamento, filetti",it,,cat1,100,g,0.8,21.3,6.8,149,crea-2019
+crea,123300,Storione,it,,cat1,100,g,0,19.2,7.6,145,crea-2019
+crea,123390,"Caviale, storione",it,,cat1,100,g,3.3,26.9,15,255,crea-2019
+crea,123400,Tinca,it,,cat1,100,g,0.9,17.9,0.5,79,crea-2019
+crea,123500,Tonno,it,,cat1,100,g,0.1,21.5,8.1,159,crea-2019
+crea,123550,"Tonno in salamoia, sgocciolato",it,,cat1,100,g,0,25.1,0.3,103,crea-2019
+crea,123610,"Tonno sott'olio, sgocciolato",it,,cat1,100,g,0,25.2,10.1,192,crea-2019
+crea,123900,Triglia,it,,cat1,100,g,1.1,15.8,6.2,123,crea-2019
+crea,124000,Trota,it,,cat1,100,g,0,14.7,3,86,crea-2019
+crea,124010,Trota surgelata,it,,cat1,100,g,0,17.8,2.3,92,crea-2019
+crea,124013,"Trota surgelata, cotta, al microonde",it,,cat1,100,g,0,20.4,2.6,105,crea-2019
+crea,124014,"Trota surgelata, cotta, in forno",it,,cat1,100,g,0,26.7,3.2,136,crea-2019
+crea,124050,"Trota iridea d'allevamento, filetti",it,,cat1,100,g,0,20.3,4.1,118,crea-2019
+crea,124100,Suro o sugarello,it,,cat1,100,g,1,18.3,3,104,crea-2019
+crea,127100,Calamaro,it,,cat1,100,g,0.6,12.6,1.7,68,crea-2019
+crea,127110,Calamaro surgelato,it,,cat1,100,g,0.6,13.1,1.5,68,crea-2019
+crea,127120,Cozza o mitilo,it,,cat1,100,g,3.4,11.7,2.7,84,crea-2019
+crea,127130,Ostrica,it,,cat1,100,g,5.4,10.2,0.9,69,crea-2019
+crea,127150,Polpo,it,,cat1,100,g,1.4,10.6,1,57,crea-2019
+crea,127160,Seppia,it,,cat1,100,g,0.7,14,1.5,72,crea-2019
+crea,127170,Vongola,it,,cat1,100,g,3.9,9.8,1.2,65,crea-2019
+crea,128050,Aragosta,it,,cat1,100,g,1,16,1.9,85,crea-2019
+crea,128055,"Aragosta, bollita",it,,cat1,100,g,1,16.2,1.9,86,crea-2019
+crea,128100,Gamberi,it,,cat1,100,g,2.9,13.6,0.6,71,crea-2019
+crea,128110,"Gamberi sgusciati, surgelati",it,,cat1,100,g,2.9,16.5,0.9,85,crea-2019
+crea,128200,"Granchio, in scatola",it,,cat1,100,g,0,18.1,0.9,81,crea-2019
+crea,130010,Latte di capra,it,,cat1,100,g,4.7,3.9,4.8,76,crea-2019
+crea,131010,Latte di pecora,it,,cat1,100,g,5.2,5.3,6.9,103,crea-2019
+crea,132010,Latte di bufala,it,,cat1,100,g,5.1,4.5,8.5,114,crea-2019
+crea,135010,"Latte di vacca, pastorizzato, intero",it,,cat1,100,g,4.9,3.3,3.6,64,crea-2019
+crea,135020,"Latte di vacca, pastorizzato, parzialmente scremato",it,,cat1,100,g,5,3.5,1.5,46,crea-2019
+crea,135030,"Latte di vacca, pastorizzato, scremato",it,,cat1,100,g,5.3,3.6,0.2,36,crea-2019
+crea,135510,"Latte di vacca, condensato, zuccherato",it,,cat1,100,g,56.5,8.7,9,328,crea-2019
+crea,135520,"Latte di vacca, evaporato, non zuccherato",it,,cat1,100,g,8.6,7,8.2,134,crea-2019
+crea,135610,"Latte di vacca, in polvere, intero",it,,cat1,100,g,42,25.7,24.9,484,crea-2019
+crea,135620,"Latte di vacca, in polvere, parzialmente scremato",it,,cat1,100,g,50.2,28.8,12.7,418,crea-2019
+crea,135630,"Latte di vacca, in polvere, scremato",it,,cat1,100,g,56.2,33.1,0.9,351,crea-2019
+crea,135810,"Latte di vacca, UHT, intero",it,,cat1,100,g,4.7,3.3,3.6,63,crea-2019
+crea,135820,"Latte di vacca, UHT, parzialmente scremato",it,,cat1,100,g,5.1,3.2,1.6,46,crea-2019
+crea,140100,"Crema di latte, 12% di lipidi",it,,cat1,100,g,4.4,2.8,12.5,140,crea-2019
+crea,140300,"Panna da montare, 35% di lipidi",it,,cat1,100,g,3.4,2.3,35,337,crea-2019
+crea,140400,"Panna da cucina, sterilizzata, 23% di lipidi",it,,cat1,100,g,4,2.7,23,233,crea-2019
+crea,150010,"Yogurt, da latte intero",it,,cat1,100,g,4.3,3.8,3.9,66,crea-2019
+crea,150015,"Yogurt, 0% lipidi",it,,cat1,100,g,6,4.7,0.1,42,crea-2019
+crea,150020,"Yogurt greco, da latte intero",it,,cat1,100,g,2,6.4,9.1,115,crea-2019
+crea,150025,"Yogurt greco, da latte magro, alla frutta",it,,cat1,100,g,11,6,0.9,74,crea-2019
+crea,150030,"Yogurt greco, 0% lipidi",it,,cat1,100,g,4,9,0,51,crea-2019
+crea,150035,"Yogurt greco, 0% lipidi, aromatizzato",it,,cat1,100,g,15,7.5,0,86,crea-2019
+crea,150500,"Yogurt da latte intero, alla frutta",it,,cat1,100,g,10.5,3.4,2.8,80,crea-2019
+crea,151000,"Yogurt da latte, parzialmente scremato",it,,cat1,100,g,3.8,3.4,1.7,43,crea-2019
+crea,152000,"Yogurt da latte, scremato",it,,cat1,100,g,4,3.3,0.9,36,crea-2019
+crea,158000,Yogurt caprino,it,,cat1,100,g,5.1,3.6,2.9,60,crea-2019
+crea,160400,Formaggio molle da tavola,it,,cat1,100,g,1,25.4,30.2,377,crea-2019
+crea,160410,Brie,it,,cat1,100,g,0.2,19.3,26.9,320,crea-2019
+crea,160420,Burrini,it,,cat1,100,g,4.1,22.1,47,527,crea-2019
+crea,160430,Butirro calabro,it,,cat1,100,g,0.3,24.7,38.8,449,crea-2019
+crea,160800,Caciocavallo,it,,cat1,100,g,2.3,35.7,31.1,431,crea-2019
+crea,160810,Cacioricotta di capra,it,,cat1,100,g,1.5,11.9,14.3,182,crea-2019
+crea,160820,Caciotta mista,it,,cat1,100,g,1.8,24.5,31,384,crea-2019
+crea,160830,Caciotta romana di pecora,it,,cat1,100,g,2.1,27.7,27.3,364,crea-2019
+crea,160840,Caciotta toscana,it,,cat1,100,g,0.8,24.6,29.6,368,crea-2019
+crea,160850,Caciottina vaccina,it,,cat1,100,g,3,21.1,25.4,324,crea-2019
+crea,160860,Caciottina fresca,it,,cat1,100,g,0.5,17.3,21.3,263,crea-2019
+crea,160870,Camembert,it,,cat1,100,g,0.2,20.9,24.7,307,crea-2019
+crea,160880,Cheddar,it,,cat1,100,g,0.5,26.7,31,388,crea-2019
+crea,160890,Crescenza,it,,cat1,100,g,1.9,16.1,23.3,281,crea-2019
+crea,161200,Dolce verde,it,,cat1,100,g,2.5,19.1,21.1,276,crea-2019
+crea,161600,Edam,it,,cat1,100,g,1.4,25.5,24.3,326,crea-2019
+crea,161610,Emmenthal,it,,cat1,100,g,3.6,28.5,30.6,403,crea-2019
+crea,162000,Feta,it,,cat1,100,g,1.5,15.6,20.2,250,crea-2019
+crea,162010,Fior di latte,it,,cat1,100,g,0.7,20.6,20.3,268,crea-2019
+crea,162020,Fontina,it,,cat1,100,g,0.8,24.5,28.9,361,crea-2019
+crea,162030,Formaggino,it,,cat1,100,g,6,11.2,26.9,309,crea-2019
+crea,162040,Formaggino con ridotto contenuto di grasso,it,,cat1,100,g,6.5,14.7,17.3,239,crea-2019
+crea,162050,Formaggio cremoso spalmabile,it,,cat1,100,g,0,8.6,31,313,crea-2019
+crea,162400,Gorgonzola,it,,cat1,100,g,1,19.1,27.1,324,crea-2019
+crea,162410,"Grana Padano, DOP",it,,cat1,100,g,0,33.9,28.5,392,crea-2019
+crea,162420,Groviera,it,,cat1,100,g,1.5,30.6,32.1,417,crea-2019
+crea,163200,Italico,it,,cat1,100,g,1.2,21.2,25.2,316,crea-2019
+crea,164400,Latteria,it,,cat1,100,g,1.4,30.7,36.4,456,crea-2019
+crea,164800,Mascarpone,it,,cat1,100,g,0.3,7.6,47,455,crea-2019
+crea,164810,Mozzarella di bufala,it,,cat1,100,g,0.4,16.7,24.4,288,crea-2019
+crea,164811,Mozzarella di bufala campana DOP,it,,cat1,100,g,1.4,14.1,21.7,257,crea-2019
+crea,164820,Mozzarella di vacca,it,,cat1,100,g,0.7,18.7,19.5,253,crea-2019
+crea,166000,Parmigiano Reggiano DOP,it,,cat1,100,g,0,32.4,29.7,397,crea-2019
+crea,166010,Caciottina mista,it,,cat1,100,g,1.5,26.9,28.5,370,crea-2019
+crea,166050,Pecorino,it,,cat1,100,g,0.2,28.8,32,404,crea-2019
+crea,166060,Pecorino romano,it,,cat1,100,g,1.8,26,33.1,409,crea-2019
+crea,166070,Pecorino siciliano,it,,cat1,100,g,2.4,28.9,33.6,427,crea-2019
+crea,166100,Provolone,it,,cat1,100,g,2,28.1,28.2,374,crea-2019
+crea,166800,Ricotta di bufala,it,,cat1,100,g,3.7,10.5,17.3,212,crea-2019
+crea,166810,Ricotta di pecora,it,,cat1,100,g,4.2,9.5,11.5,157,crea-2019
+crea,166820,Ricotta di vacca,it,,cat1,100,g,3.5,8.8,10.9,146,crea-2019
+crea,166850,Robiola,it,,cat1,100,g,2.3,20,27.7,338,crea-2019
+crea,167200,Scamorza,it,,cat1,100,g,1,25,25.6,334,crea-2019
+crea,167250,Stracchino,it,,cat1,100,g,0,18.5,25.1,300,crea-2019
+crea,167600,Taleggio,it,,cat1,100,g,0.9,19,26.2,315,crea-2019
+crea,170010,Fiocchi di formaggio magro,it,,cat1,100,g,3.2,9.7,7.1,115,crea-2019
+crea,170510,"Formaggio cremoso spalmabile, light",it,,cat1,100,g,3.1,9.2,14.5,179,crea-2019
+crea,180010,"Uova di anatra, intero",it,,cat1,100,g,0.7,12.2,15.4,190,crea-2019
+crea,181100,"Uova di gallina, intero",it,,cat1,100,g,0,12.4,8.7,128,crea-2019
+crea,181105,"Uova di gallina, intero, cotto, alla coque o sodo",it,,cat1,100,g,0,12.4,8.7,128,crea-2019
+crea,181117,"Uova di gallina, intero, cotto, a frittata o strapazzato",it,,cat1,100,g,0,14.6,10.2,150,crea-2019
+crea,181500,"Uova di gallina, intero, congelato",it,,cat1,100,g,0,12.4,8.7,128,crea-2019
+crea,181600,"Uova di gallina, intero, in polvere",it,,cat1,100,g,0.4,51.9,36.4,537,crea-2019
+crea,182010,"Uova di gallina, albume",it,,cat1,100,g,0,10.7,0,43,crea-2019
+crea,183010,"Uova di gallina, tuorlo",it,,cat1,100,g,0,15.8,29.1,325,crea-2019
+crea,183015,"Uova di gallina, tuorlo, cotto, in camicia",it,,cat1,100,g,0,15.8,29.1,325,crea-2019
+crea,183800,"Uova di gallina, tuorlo, congelato",it,,cat1,100,g,0,15.8,29.1,325,crea-2019
+crea,183900,"Uova di gallina, tuorlo, in polvere",it,,cat1,100,g,0.02,31.2,57.5,642,crea-2019
+crea,185010,"Uova di oca, intero",it,,cat1,100,g,1,13.8,14.4,189,crea-2019
+crea,189010,"Uova di tacchina, intero",it,,cat1,100,g,1,12.8,10.2,147,crea-2019
+crea,190010,Burro,it,,cat1,100,g,1.1,0.8,83.4,758,crea-2019
+crea,191010,Lardo,it,,cat1,100,g,0,0,99,891,crea-2019
+crea,192010,Sego di bue,it,,cat1,100,g,0,0.8,96.5,872,crea-2019
+crea,193010,Strutto o sugna,it,,cat1,100,g,0,0.3,99,892,crea-2019
+crea,194000,Olio di fegato di merluzzo,it,,cat1,100,g,0,0,99.9,899,crea-2019
+crea,201500,"Zucchero, saccarosio",it,,cat1,100,g,104.5,0,0,392,crea-2019
+crea,202010,Caramelle dure,it,,cat1,100,g,91.6,0,0,344,crea-2019
+crea,202020,"""|Caramelle tipo """"mou""""|""",it,,cat1,100,g,71.1,2.1,17.2,430,crea-2019
+crea,202030,Lenti colorate ripiene di cioccolato,it,,cat1,100,g,73.9,5.4,17.5,456,crea-2019
+crea,202500,"Gomme da masticare, lastrine e confetti",it,,cat1,100,g,70,0,0,262,crea-2019
+crea,202800,Torrone alla mandorla,it,,cat1,100,g,52,10.8,26.8,483,crea-2019
+crea,203010,"Cioccolato, al latte",it,,cat1,100,g,50.5,7.3,36.3,552,crea-2019
+crea,203020,"Cioccolato, fondente",it,,cat1,100,g,49.7,6.6,33.6,531,crea-2019
+crea,203030,"Cioccolato, al latte con nocciole",it,,cat1,100,g,48.6,7.2,36.9,553,crea-2019
+crea,203500,Crema di nocciole e cacao,it,,cat1,100,g,58.1,6.9,32.4,537,crea-2019
+crea,204010,Canditi,it,,cat1,100,g,75,0.5,0,292,crea-2019
+crea,204500,Marmellata,it,,cat1,100,g,58.7,0.5,0,227,crea-2019
+crea,206010,"Gelato confezionato, cacao, in vaschetta",it,,cat1,100,g,25.3,3.6,7.1,173,crea-2019
+crea,206020,"Gelato confezionato, caffè, in vaschetta",it,,cat1,100,g,23.9,5.1,15,245,crea-2019
+crea,206040,"Gelato confezionato, fior di latte, in vaschetta",it,,cat1,100,g,20.7,4.2,13.7,218,crea-2019
+crea,206050,"Gelato confezionato, fior di latte, ricoperto di sorbetto alla fragola",it,,cat1,100,g,21.3,1.4,1.7,101,crea-2019
+crea,206060,"Gelato confezionato, nocciola, in vaschetta",it,,cat1,100,g,25.2,3.3,8.4,183,crea-2019
+crea,206070,"Gelato confezionato, panna, in vaschetta",it,,cat1,100,g,27.2,3.2,8.2,189,crea-2019
+crea,206080,"Gelato confezionato, panna ricoperta di cioccolato fondente",it,,cat1,100,g,28.2,4.5,21.4,316,crea-2019
+crea,206090,"Gelato confezionato, stracciatella, in vaschetta",it,,cat1,100,g,31.5,2.9,7,193,crea-2019
+crea,206100,"Gelato confezionato, vaniglia, in vaschetta",it,,cat1,100,g,25.7,2.7,6.7,167,crea-2019
+crea,206260,"Gelato confezionato, biscotto con crema, zabaione e cioccolato",it,,cat1,100,g,49.1,5.3,7.3,271,crea-2019
+crea,206270,"Gelato confezionato, cono con panna e cioccolato",it,,cat1,100,g,34.9,5.1,15.5,291,crea-2019
+crea,206280,"Gelato confezionato, cono con panna, scaglie di cioccolato e noccioline",it,,cat1,100,g,33.3,4.2,20.5,326,crea-2019
+crea,206710,"Gelato confezionato, ghiacciolo all'arancio",it,,cat1,100,g,36.5,0,0,137,crea-2019
+crea,206800,"Gelato confezionato, sorbetto al limone, in vaschetta",it,,cat1,100,g,34.2,0.9,0,132,crea-2019
+crea,207010,Baba' al rhum,it,,cat1,100,g,41.2,5.9,5.7,288,crea-2019
+crea,207020,"Cannoli alla crema, industriale",it,,cat1,100,g,41.9,6.2,20.7,368,crea-2019
+crea,208500,"Crostata, con crema al cacao, industriale",it,,cat1,100,g,67,4.6,24.7,492,crea-2019
+crea,208510,"Crostata, con marmellata, industriale",it,,cat1,100,g,65.5,4.9,8.2,339,crea-2019
+crea,208520,"Crostata, con marmellata di albicocche, industriale",it,,cat1,100,g,71.7,0.9,16.5,421,crea-2019
+crea,209010,Torta margherita,it,,cat1,100,g,63.4,8.9,10.4,370,crea-2019
+crea,210010,Miele,it,,cat1,100,g,80.3,0.6,0,304,crea-2019
+crea,210030,"Merendine, con marmellata, industriale",it,,cat1,100,g,67.9,5.5,9.5,364,crea-2019
+crea,210040,"Merendine, farcite con cacao, industriale",it,,cat1,100,g,65.5,6.2,15.1,410,crea-2019
+crea,210050,"Merendine, tipo pan di Spagna, industriale",it,,cat1,100,g,62.7,7.4,13.1,386,crea-2019
+crea,210060,"Merendine, tipo brioche, industriale",it,,cat1,100,g,65.7,8.2,17.6,440,crea-2019
+crea,210070,"Merendine, tipo pasta frolla, industriale",it,,cat1,100,g,71.7,5.3,17.1,447,crea-2019
+crea,214000,"Barretta al cocco ricoperta di cioccolato, industriale",it,,cat1,100,g,58.2,4.8,26.1,472,crea-2019
+crea,214500,Wafer ricoperto di cioccolato,it,,cat1,100,g,60.3,8.2,26.6,498,crea-2019
+crea,215000,"Savoiardi, industriali",it,,cat1,100,g,69.6,11.9,9.2,395,crea-2019
+crea,216000,Panettone,it,,cat1,100,g,56.2,6.4,10.7,337,crea-2019
+crea,217000,Pasta di mandorle,it,,cat5,100,g,54.6,9.9,23.4,455,crea-2019
+crea,401010,Aranciata,it,,cat1,100,g,10,0.1,0,38,crea-2019
+crea,401100,Bevanda tipo cola,it,,cat1,100,g,10.5,0,0,39,crea-2019
+crea,403010,"Bevanda alcolica, Aperitivo a base di vino",it,,cat1,100,g,17,0,0,186,crea-2019
+crea,404010,"Bevanda alcolica, Birra chiara",it,,cat1,100,g,3.5,0.2,0,34,crea-2019
+crea,405010,"Bevanda alcolica, Vino da pasto bianco",it,,cat1,100,g,0,0,0,70,crea-2019
+crea,405020,"Bevanda alcolica, Vino da pasto rosso",it,,cat1,100,g,0,0,0,75,crea-2019
+crea,406010,"Bevanda alcolica, Marsala tipico",it,,cat1,100,g,28,0,0,203,crea-2019
+crea,406500,"Bevanda alcolica, Vermouth dolce",it,,cat1,100,g,13.9,0,0,139,crea-2019
+crea,406510,"Bevanda alcolica, Vermouth secco",it,,cat1,100,g,4,0,0,121,crea-2019
+crea,407010,"Bevanda alcolica, Liquori da dessert",it,,cat1,100,g,31.1,0,0,314,crea-2019
+crea,407510,"Bevanda alcolica, Marsala all'uovo",it,,cat1,100,g,12.4,0,0,150,crea-2019
+crea,408010,"Bevanda alcolica, Brandy",it,,cat1,100,g,0,0,0,230,crea-2019
+crea,408100,"Bevanda alcolica, Grappa",it,,cat1,100,g,0,0,0,242,crea-2019
+crea,408900,"Bevanda alcolica, Whisky",it,,cat1,100,g,0,0,0,245,crea-2019
+crea,409000,"Bevanda alcolica, Spumante",it,,cat1,100,g,0.6,0,0,87,crea-2019
+crea,501200,Pop corn,it,,cat1,100,g,77.9,12,4.2,408,crea-2019
+crea,502260,"Ketchup, salsa",it,,cat1,100,g,24,2.1,0,100,crea-2019
+crea,502760,"Maionese, industriale",it,,cat1,100,g,2.1,4.3,70,655,crea-2019
+crea,503010,Dadi da brodo,it,,cat1,100,g,5,15.7,18.7,250,crea-2019
+crea,503100,"Lievito di birra, compresso",it,,cat1,100,g,1.1,12.1,0.4,70,crea-2019
+crea,504010,Farina di castagne,it,,cat5,100,g,62,6.1,3.7,318,crea-2019
+crea,504100,Fecola di patate,it,,cat1,100,g,90.7,1.4,0,346,crea-2019
+crea,507100,Pappa reale,it,,cat1,100,g,14,10,6,146,crea-2019
+crea,508010,"Cacao amaro, in polvere",it,,cat1,100,g,11.5,20.4,25.6,355,crea-2019
+crea,508100,"Tè, foglie",it,,cat1,100,g,3,19.6,2,108,crea-2019
+crea,508200,Caffe' tostato,it,,cat1,100,g,28.5,10.4,15.4,287,crea-2019
+crea,509010,"Soia, bevanda",it,,cat1,100,g,0.8,2.9,1.9,32,crea-2019
+crea,509020,"Soia, salsa",it,,cat1,100,g,8.3,8.7,0,66,crea-2019
+crea,509030,"Soia, yogurt",it,,cat1,100,g,3.9,5,4.2,72,crea-2019
+crea,900010,"Minestre in scatola, crema di asparagi",it,,cat1,100,g,4.2,1,0.7,26,crea-2019
+crea,900110,"Minestre in scatola, crema di cipolle",it,,cat1,100,g,2.2,2.2,1,26,crea-2019
+crea,900210,"Minestre in scatola, crema di funghi",it,,cat1,100,g,4.2,1,4,56,crea-2019
+crea,900310,"Minestre in scatola, crema di pollo",it,,cat1,100,g,4.5,1.7,3.8,58,crea-2019
+crea,900410,"Minestre in scatola, crema di pomodori",it,,cat1,100,g,6.4,0.8,1,36,crea-2019
+crea,905010,"Minestrone, cotto",it,,cat3,100,g,7.8,2,0.4,45,crea-2019
+crea,905100,Minestrone liofilizzato,it,,cat1,100,g,47.6,10.1,8.8,298,crea-2019
+crea,PC0001,Pizza Napoletana Margherita STG,it,,cat1,100,g,27.4,10.7,9.3,235,crea-2019
+crea,PC0002,Cannoli siciliani,it,,cat1,100,g,42.7,7.2,14.6,325,crea-2019
+crea,PC0003,Brasato al Barolo,it,,cat1,100,g,0.3,13.8,5.6,108,crea-2019
+crea,PC0004,Baccalà alla vicentina,it,,cat1,100,g,0.3,21.5,47.9,520,crea-2019
+crea,PC0005,Castagnaccio,it,,cat1,100,g,39.3,3.4,6.8,234,crea-2019
+crea,PC0006,Sugo di pomodoro,it,,cat1,100,g,3.6,1.3,5.7,74,crea-2019
+crea,PC0007,Ragù alla bolognese,it,,cat1,100,g,1.9,12,15.4,196,crea-2019
+crea,PC0008,Pesto alla genovese,it,,cat1,100,g,1.8,11,21.8,250,crea-2019
+crea,PC0009,Risotto alla parmigiana,it,,cat1,100,g,25.4,4.1,7.5,181,crea-2019
+crea,PC0010,Pasta e fagioli,it,,cat1,100,g,12.2,4.9,5.1,116,crea-2019
+crea,PC0011,Frittata,it,,cat1,100,g,0,16.1,13.4,185,crea-2019
+crea,PC0012,Spezzatino di vitellone al vino rosso,it,,cat1,100,g,3,18.1,8.6,161,crea-2019
+crea,PC0013,Scaloppina di tacchino al limone,it,,cat1,100,g,11.5,20.5,4.9,170,crea-2019
+crea,PC0014,Trota al forno,it,,cat1,100,g,5.8,20.8,8.9,186,crea-2019
+crea,PC0015,Merluzzo in umido,it,,cat1,100,g,1.7,9.7,4.3,86,crea-2019
+crea,PC0016,Pasta al sugo di pomodoro,it,,cat1,100,g,19.5,3.3,2.6,113,crea-2019
+crea,PC0017,Pasta al ragù alla bolognese,it,,cat1,100,g,16,8.4,8,168,crea-2019
+crea,PC0018,Pasta al pesto alla genovese,it,,cat1,100,g,21.4,6.7,7.2,175,crea-2019
+crea,PC0019,Riso al sugo di pomodoro,it,,cat1,100,g,16.5,1.7,2.2,90,crea-2019
+crea,PC0020,Riso al ragù alla bolognese,it,,cat1,100,g,13.6,6.7,7.4,145,crea-2019
+crea,PC0021,Riso burro e Parmigiano reggiano,it,,cat1,100,g,22.1,3.4,5.2,144,crea-2019
+crea,PC0022,Gnocchi al sugo di pomodoro,it,,cat1,100,g,19.4,2.5,2.8,112,crea-2019
+crea,PC0023,Gnocchi al ragù alla bolognese,it,,cat1,100,g,15.4,8.4,9,175,crea-2019
+crea,PC0024,Gnocchi al pesto alla genovese,it,,cat1,100,g,21.7,6.4,8.4,186,crea-2019
+crea,PC0025,Ravioli al burro e salvia,it,,cat1,100,g,24.7,6.5,12.9,238,crea-2019
+crea,PC0026,Ravioli al sugo di pomodoro,it,,cat1,100,g,17.6,4.8,5.1,135,crea-2019
+crea,PC0027,Polenta al sugo di pomodoro,it,,cat1,100,g,14.2,1,1.5,73,crea-2019
+crea,PC0028,Polenta al ragù alla bolognese,it,,cat1,100,g,12.4,4.6,5.3,114,crea-2019
+crea,PC0029,Alici al forno,it,,cat1,100,g,7.1,18.2,8,172,crea-2019
+crea,PC0030,Spigola al cartoccio,it,,cat1,100,g,0.9,16.2,6.4,126,crea-2019
+crea,PC0031,Sogliola al vino bianco,it,,cat1,100,g,5.6,19,10.1,188,crea-2019
+crea,PC0032,Frittata prosciutto cotto e formaggio,it,,cat1,100,g,0.3,16.2,15.4,205,crea-2019
+crea,PC0033,Pasta cacio e pepe,it,,cat1,100,g,27.4,6.9,3.8,167,crea-2019
+crea,PC0034,Pasta burro e parmigiano,it,,cat1,100,g,27.3,6,6.1,184,crea-2019
+crea,PC0035,"Pasta aglio, olio e peperoncino",it,,cat1,100,g,26.5,4.2,7.9,190,crea-2019
+crea,PC0036,Alici marinate,it,,cat1,100,g,1.4,14.2,6.4,120,crea-2019
+crea,PC0037,Pasta alla carbonara,it,,cat1,100,g,28.4,10.8,10.3,245,crea-2019
+crea,PC0038,Pasta alle vongole,it,,cat1,100,g,28.3,6.7,2.4,157,crea-2019
+crea,PC0039,Pasta alla amatriciana,it,,cat1,100,g,28.7,7.5,11,241,crea-2019
+crea,PC0040,Carciofi alla romana,it,,cat1,100,g,1.8,2.2,5.9,85,crea-2019
+crea,PC0041,Pomodori al riso,it,,cat1,100,g,14.5,2,2.8,93,crea-2019
+crea,PC0042,Parmigiana di melanzane,it,,cat1,100,g,4,7,21,242,crea-2019
+crea,PC0043,Gateau,it,,cat1,100,g,11.6,9.1,7.7,156,crea-2019
+crea,PC0044,Besciamella,it,,cat1,100,g,9.5,3.9,9.5,139,crea-2019
+crea,PC0045,Pan di Spagna,it,,cat1,100,g,49.7,10.1,5.1,275,crea-2019
+crea,PC0046,Pastiera,it,,cat1,100,g,43.6,7.2,11,295,crea-2019
+crea,PC0047,Torta di mele,it,,cat1,100,g,46.3,5,11.5,300,crea-2019
+crea,PC0048,Lasagna,it,,cat1,100,g,13.4,11.7,10.8,196,crea-2019
+crea,PC0049,"Maionese, artigianale",it,,cat1,100,g,0.1,3.2,71.9,660,crea-2019
+crea,PC0050,Pasta integrale al sugo di pomodoro,it,,cat1,100,g,21.3,4.6,3.2,132,crea-2019
+crea,PC0051,Zucchine grigliate,it,,cat1,100,g,5.5,4.3,3.8,75,crea-2019
+crea,PE0001,Riso Cantonese,it,,cat1,100,g,29.8,5.5,7.8,207,crea-2019
+crea,PE0002,Nachos,it,,cat1,100,g,63.8,6.5,26.1,512,crea-2019
+crea,PE0003,Kebab solo carne,it,,cat1,100,g,0,29.7,16.7,269,crea-2019
+crea,PE0004,Falafel,it,,cat1,100,g,19.8,7.1,9.5,198,crea-2019
+crea,PE0005,Sarmale,it,,cat1,100,g,7.9,5.7,5.2,103,crea-2019
+crea,PE0006,Involtini Primavera,it,,cat1,100,g,21.6,3.5,15.4,238,crea-2019
+crea,PE0007,Nuvole di gamberi,it,,cat1,100,g,57,0.8,38,559,crea-2019
+crea,PE0008,Ravioli al vapore,it,,cat1,100,g,21.4,7.2,17.5,270,crea-2019
+crea,PE0009,Spaghetti fritti,it,,cat1,100,g,13.6,4.6,10.4,165,crea-2019
+crea,PE0010,Pollo all'ananas,it,,cat1,100,g,5.5,11.5,6.6,126,crea-2019
+crea,PE0011,Pollo alle mandorle,it,,cat1,100,g,2.4,16.5,11.9,182,crea-2019
+crea,PE0012,Maiale in agrodolce,it,,cat1,100,g,17.7,8.7,14.6,233,crea-2019
+crea,PE0013,Gamberetti con funghi e bambù,it,,cat1,100,g,1.9,8.6,7.3,110,crea-2019
+crea,PE0014,Frutta mista caramellata,it,,cat1,100,g,36,1.9,8,217,crea-2019
+crea,PE0015,Gelato misto fritto,it,,cat1,100,g,34.7,4.2,11.7,252,crea-2019
+crea,PE0016,Hummus,it,,cat1,100,g,9.4,6.2,11,168,crea-2019
+crea,PE0017,Tabulè,it,,cat1,100,g,14,3,2.4,95,crea-2019

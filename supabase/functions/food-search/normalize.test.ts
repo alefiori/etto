@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import {
   dedupe,
-  normalizeEdamam,
   normalizeFdc,
   normalizeOff,
+  normalizeReference,
   type ExternalFood,
   type OffProduct,
 } from './normalize.ts'
@@ -123,19 +123,63 @@ describe('normalizeFdc', () => {
   })
 })
 
-describe('normalizeEdamam', () => {
-  it('keeps an entry with some macros, filling omitted (zero) nutrients with 0', () => {
-    const food = normalizeEdamam({
-      foodId: 'food_abc',
-      label: 'Egg',
-      nutrients: { PROCNT: 13 }, // CHOCDF / FAT omitted by Edamam => 0
+describe('normalizeReference', () => {
+  // Rows arrive from our own search_reference_foods() RPC, already validated by
+  // the import pipeline, so this mapper is strict where normalizeOff is lenient.
+  const row = {
+    source: 'ciqual',
+    external_id: '1000',
+    name: 'Poulet, blanc, cru',
+    serving_amount: 100,
+    serving_unit: 'g',
+    carbs_g: 0,
+    protein_g: 23.1,
+    fats_g: 1.2,
+  }
+
+  it('maps a row onto ExternalFood with no brand', () => {
+    expect(normalizeReference(row)).toEqual({
+      source: 'ciqual',
+      externalId: '1000',
+      name: 'Poulet, blanc, cru',
+      // A composition-table entry is a generic food, never a branded product.
+      brand: null,
+      serving_amount: 100,
+      serving_unit: 'g',
+      carbs_g: 0,
+      protein_g: 23.1,
+      fats_g: 1.2,
     })
-    expect(food).toMatchObject({ source: 'edamam', carbs_g: 0, protein_g: 13, fats_g: 0 })
   })
 
-  it('drops an entry with no macro data and undefined input', () => {
-    expect(normalizeEdamam({ foodId: 'x', label: 'Bare match', nutrients: {} })).toBeNull()
-    expect(normalizeEdamam(undefined)).toBeNull()
+  it('carries CoFID millilitre servings through instead of restating them as grams', () => {
+    const beer = normalizeReference({
+      ...row,
+      source: 'cofid',
+      external_id: '17-200',
+      name: 'Beer, bitter, draught',
+      serving_unit: 'ml',
+    })
+    expect(beer).toMatchObject({ source: 'cofid', serving_unit: 'ml', serving_amount: 100 })
+  })
+
+  it('drops a row missing any macro, rather than filling it with 0 as the OFF adapter does', () => {
+    // The importer guarantees all three, so absence means the RPC contract
+    // changed — publishing 0 would invent a nutrition value.
+    expect(normalizeReference({ ...row, protein_g: undefined })).toBeNull()
+  })
+
+  it('drops rows with an unrecognised source, a missing id or a missing name', () => {
+    expect(normalizeReference({ ...row, source: 'openfoodfacts' })).toBeNull()
+    expect(normalizeReference({ ...row, source: 'evil' })).toBeNull()
+    expect(normalizeReference({ ...row, external_id: '  ' })).toBeNull()
+    expect(normalizeReference({ ...row, name: '' })).toBeNull()
+    expect(normalizeReference(undefined)).toBeNull()
+  })
+
+  it('falls back to a 100 g basis when the serving is absent or nonsensical', () => {
+    expect(normalizeReference({ ...row, serving_amount: 0 })).toMatchObject({ serving_amount: 100 })
+    expect(normalizeReference({ ...row, serving_unit: 'oz' })).toMatchObject({ serving_unit: 'g' })
   })
 })
 
