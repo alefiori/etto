@@ -139,14 +139,15 @@ supabase db push
 ```
 
 **Option B — Supabase SQL Editor:** open the SQL Editor in the dashboard and run
-each migration file **in order** (`0001_init.sql` → `0016_reference_foods.sql`).
+each migration file **in order** (`0001_init.sql` → `0017_data_api_grants.sql`).
 
 Together the migrations create `macro_targets`, `foods`, `food_logs`,
 `profiles`, and `meals`; enable RLS with owner-only policies (global foods with a
 null `user_id` are readable by everyone); add the `usda`, `edamam`, `ciqual`,
 `cofid` and `crea` food sources, plus the world-readable `reference_foods` table
-and its ranked `search_reference_foods()` lookup; add per-user profile settings (preferred language); add **community
-foods** (`foods.is_public`) — including the guards that keep a shared food safe
+and its ranked `search_reference_foods()` lookup; grant the API roles access to
+every table (see below); add per-user profile settings (preferred language); add
+**community foods** (`foods.is_public`) — including the guards that keep a shared food safe
 to unshare and prevent deleting one that other people have logged; and make
 meals **per-user rows** (seeded with the defaults for new and existing accounts)
 instead of a fixed enum on `food_logs.meal`; make `profiles.off_language`
@@ -728,6 +729,16 @@ function's `SOURCES` array. A source backed by our own tables additionally needs
 a migration and a data load. All math (4/4/9 kcal per gram, per-serving scaling,
 per-100g conversion, remaining-vs-target, ring offsets) lives in
 [`src/lib/macros.ts`](src/lib/macros.ts).
+
+> **Adding a table? Grant on it.** Supabase no longer auto-exposes new tables in
+> `public` to the `anon` / `authenticated` / `service_role` API roles (the
+> `auto_expose_new_tables` note in `supabase/config.toml`). A table with RLS
+> policies but no `GRANT` is invisible through PostgREST while working perfectly
+> in `psql` — which is how migrations 0001-0015 ended up shipping without them,
+> and why `0017_data_api_grants.sql` exists. Every new migration that creates a
+> table must grant on it explicitly, as `0016` and `0017` do. Default privileges
+> are deliberately *not* used, because they would make every future table
+> exposed-by-default again.
 
 ## Community foods
 
