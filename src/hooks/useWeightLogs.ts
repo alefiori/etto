@@ -14,11 +14,18 @@ interface State {
  *
  * `version` is the same cache-invalidation counter pattern useFoodLogs uses —
  * bump it after a write to force a refetch.
+ *
+ * `enabled` is how a locked card opts out — see useWaterLogs. Weigh-ins are a
+ * Pro feature, so a free session never asks for them.
  */
-export function useWeightLogs(days: number, version: number) {
-  const [state, setState] = useState<State>({ logs: [], loading: true, error: null })
+export function useWeightLogs(days: number, version: number, enabled = true) {
+  const [state, setState] = useState<State>({ logs: [], loading: enabled, error: null })
 
   const load = useCallback(async () => {
+    if (!enabled) {
+      setState({ logs: [], loading: false, error: null })
+      return
+    }
     setState((s) => ({ ...s, loading: true, error: null }))
     const today = todayISO()
     try {
@@ -27,7 +34,7 @@ export function useWeightLogs(days: number, version: number) {
     } catch (e) {
       setState({ logs: [], loading: false, error: e instanceof Error ? e.message : String(e) })
     }
-  }, [days])
+  }, [days, enabled])
 
   useEffect(() => {
     load()

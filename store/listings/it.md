@@ -60,13 +60,13 @@ sotto, e un totale calorico che cresce mentre registri. Copia un'intera
 giornata su un'altra data, o un singolo pasto in qualsiasi slot di qualsiasi
 giorno — comodo se fai la stessa colazione cinque giorni su sette.
 
-**Il peso, senza il rumore**
+**Il peso, senza il rumore — Pro**
 Una pesata al giorno, con i valori grezzi come punti e una linea smussata che
 li attraversa: così uno sbalzo d'acqua notturno non sembra un aumento. Il ritmo
 settimanale è calcolato in modo robusto, quindi una mattina storta non lo
 sposta.
 
-**L'acqua, senza un'altra app**
+**L'acqua, senza un'altra app — Pro**
 Aggiungi bicchieri e bottiglie con un tocco, verso un obiettivo giornaliero che
 si ricava dal tuo peso finché non ne imposti uno tu.
 
@@ -87,11 +87,14 @@ chiaro e scuro, anche questi seguono il dispositivo. Un vero layout per tablet,
 non un telefono ingrandito.
 
 **MacroTrack Pro (facoltativo)**
-Tutto quanto sopra è gratuito. Pro aggiunge gli obiettivi adattivi: invece di
-moltiplicare una formula per una stima dell'attività, calcola quanto consumi
-davvero confrontando ciò che hai registrato con come si è mosso il tuo peso — e
-ti dice quando i dati non bastano ancora per una risposta, invece di
-inventarsela.
+Registrazione, scanner, alimenti personalizzati e della community, pasti,
+obiettivi settimanali e tutte e sette le lingue sono gratis, senza bisogno di un
+account. Pro aggiunge quello che ci si costruisce sopra: peso e acqua, promemoria
+per l'idratazione, l'esportazione di tutto ciò che hai registrato e gli obiettivi
+adattivi — che invece di moltiplicare una formula per una stima dell'attività
+calcolano quanto consumi davvero confrontando ciò che hai registrato con come si
+è mosso il tuo peso, e ti dicono quando i dati non bastano ancora per una
+risposta invece di inventarsela.
 
 Pro è disponibile con abbonamento mensile o annuale, oppure con un acquisto
 unico a vita. Gli abbonamenti si rinnovano automaticamente fino alla

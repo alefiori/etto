@@ -65,6 +65,10 @@ const GOAL_MOVES: Record<GoalDirection, 'up' | 'down' | 'flat'> = {
  * gap between the two is the whole point: a 700 g overnight jump is water, and
  * seeing the trend hold flat through it is what stops people abandoning a diet
  * that is actually working.
+ *
+ * Weight tracking is Pro in full — the weigh-in as much as the trend it feeds.
+ * The card keeps its heading when locked, for the same reason WaterCard does,
+ * and asks for no rows at all.
  */
 export function WeightCard() {
   const { t } = useI18n()
@@ -72,10 +76,7 @@ export function WeightCard() {
   const { isPro } = useEntitlement()
   const { openPaywall, weightVersion, bumpWeightVersion } = useAppShell()
   const [rangeDays, setRangeDays] = useState<number>(90)
-  // Logging a weight is free; reading the trend out of it is what Pro buys. A
-  // locked card has no business pulling a year of rows, so the window collapses
-  // to the shortest one that can still name the latest reading.
-  const { logs, loading, error } = useWeightLogs(isPro ? rangeDays : 30, weightVersion)
+  const { logs, loading, error } = useWeightLogs(rangeDays, weightVersion, isPro)
 
   const [draft, setDraft] = useState('')
   const [saving, setSaving] = useState(false)
@@ -150,6 +151,24 @@ export function WeightCard() {
   const rateTone = onTrack ? 'text-success' : 'text-on-surface-variant'
   const rateIcon =
     direction === 'flat' ? 'trending_flat' : direction === 'down' ? 'arrow_downward' : 'arrow_upward'
+
+  // Below every hook, so the locked branch keeps the same hook order as the
+  // unlocked one.
+  if (!isPro) {
+    return (
+      <div className="flex flex-col gap-md rounded-lens p-lg glass">
+        <h3 className="flex items-center gap-2 font-headline-md text-headline-md text-on-surface">
+          <span className="flex min-h-[30px] min-w-[30px] shrink-0 items-center justify-center rounded-full bg-primary-tint/[0.14] p-1 text-primary">
+            <Icon name="monitor_weight" className="text-[1.125rem]" />
+          </span>
+          {t('weight.title')}
+        </h3>
+        <ProGate title={t('weight.locked')} onUpgrade={openPaywall}>
+          {null}
+        </ProGate>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-md rounded-lens p-lg glass">
@@ -234,13 +253,10 @@ export function WeightCard() {
           <Spinner className="h-5 w-5 text-primary" />
         </div>
       ) : (
-        /* The weigh-in above is free; everything below it — the smoothed trend,
-           the weekly rate, and the 90/365-day windows — is what "weight trends
-           and full history" means on the paywall. The card is deliberately split
-           here rather than gating the whole thing: a free user must still be
-           able to record a weight, or the data the trend is made of never
-           exists, and neither does a reason to subscribe. */
-        <ProGate title={t('weight.trendsLocked')} onUpgrade={openPaywall}>
+        /* Everything below the weigh-in — the smoothed trend, the weekly rate
+           and the 90/365-day windows — sits inside the same entitlement as the
+           input above it, so there is no second gate here. */
+        <>
           {/* The rate reads as a status line of its own now that the range
               switch has moved below the chart, so it carries the direction as
               an arrow and names the window it was measured over — otherwise
@@ -328,7 +344,7 @@ export function WeightCard() {
               </button>
             ))}
           </div>
-        </ProGate>
+        </>
       )}
     </div>
   )

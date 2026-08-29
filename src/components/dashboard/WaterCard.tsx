@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useI18n } from '@/context/I18nContext'
 import { useProfile } from '@/context/ProfileContext'
+import { useEntitlement } from '@/context/EntitlementContext'
 import { useAppShell } from '@/context/AppShellContext'
+import { ProGate } from '@/components/paywall/ProGate'
 import { useWaterLogs } from '@/hooks/useWaterLogs'
 import { useWeightLogs } from '@/hooks/useWeightLogs'
 import {
@@ -26,15 +28,21 @@ import { ProgressRing } from '@/components/ui/ProgressRing'
  * Drinks are appended one row at a time rather than accumulated into a daily
  * total, so tapping +250 twice quickly can't lose one to a read-modify-write
  * race — and "undo" is just deleting the last row.
+ *
+ * Hydration tracking is Pro in full. The card keeps its heading when locked so
+ * the dashboard still shows that water belongs here — a feature that vanishes
+ * for free users is one they never learn exists — but nothing below it renders
+ * and neither query is issued.
  */
 export function WaterCard() {
   const { t } = useI18n()
   const { profile, unitSystem } = useProfile()
-  const { selectedDate, waterVersion, weightVersion, bumpWaterVersion } = useAppShell()
-  const { logs, loading, error } = useWaterLogs(selectedDate, waterVersion)
+  const { isPro } = useEntitlement()
+  const { selectedDate, waterVersion, weightVersion, bumpWaterVersion, openPaywall } = useAppShell()
+  const { logs, loading, error } = useWaterLogs(selectedDate, waterVersion, isPro)
   // Only to derive a goal when the user hasn't set one; a short window is
   // enough to find the latest weigh-in.
-  const { logs: weights } = useWeightLogs(30, weightVersion)
+  const { logs: weights } = useWeightLogs(30, weightVersion, isPro)
 
   const [custom, setCustom] = useState('')
   const [busy, setBusy] = useState(false)
@@ -82,6 +90,22 @@ export function WaterCard() {
   }
 
   const reached = consumedMl >= goalMl
+
+  // Below every hook, so the locked branch keeps the same hook order as the
+  // unlocked one.
+  if (!isPro) {
+    return (
+      <div className="flex flex-col gap-md rounded-lens p-lg glass">
+        <h3 className="flex items-center gap-2 font-headline-md text-headline-md text-on-surface">
+          <Icon name="water_drop" className="text-[1.375rem]" style={{ color: WATER_COLOR.color }} />
+          {t('water.title')}
+        </h3>
+        <ProGate title={t('water.locked')} onUpgrade={openPaywall}>
+          {null}
+        </ProGate>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-md rounded-lens p-lg glass">

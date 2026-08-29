@@ -74,7 +74,16 @@ export function AdaptiveTargets({
   }
 
   if (!isPro) {
-    return <ProGate title={t('adaptive.description')} onUpgrade={openPaywall}>{null}</ProGate>
+    return (
+      <ProGate
+        title={t('adaptive.description')}
+        label={t('adaptive.title')}
+        icon="auto_awesome"
+        onUpgrade={openPaywall}
+      >
+        {null}
+      </ProGate>
+    )
   }
 
   return (

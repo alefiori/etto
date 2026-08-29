@@ -3,6 +3,7 @@ import { useI18n } from '@/context/I18nContext'
 import { useEntitlement } from '@/context/EntitlementContext'
 import { useAppShell } from '@/context/AppShellContext'
 import { ProGate } from '@/components/paywall/ProGate'
+import { ProBadge } from '@/components/paywall/ProBadge'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { buildExportFile, collectExport, deliverExport, type ExportFormat } from '@/lib/exportData'
@@ -33,7 +34,12 @@ export function DataExport() {
 
   if (!isPro) {
     return (
-      <ProGate title={t('export.description')} onUpgrade={openPaywall}>
+      <ProGate
+        title={t('export.description')}
+        label={t('export.title')}
+        icon="download"
+        onUpgrade={openPaywall}
+      >
         {null}
       </ProGate>
     )
@@ -57,9 +63,10 @@ export function DataExport() {
 
   return (
     <div className="flex flex-col gap-sm">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Icon name="download" className="text-[1.25rem] text-on-surface-variant" />
         <h3 className="font-label-md text-label-md text-on-surface">{t('export.title')}</h3>
+        <ProBadge />
       </div>
       <p className="font-body-md text-sm text-on-surface-variant">{t('export.description')}</p>
 

@@ -24,16 +24,19 @@ import { isNativePlatform } from '@/lib/platform'
 import type { TranslationKey } from '@/lib/i18n'
 
 /**
- * The four features Pro unlocks, in the order they were built.
+ * The five features Pro unlocks, strongest first.
  *
  * Every one of these exists in the binary. Listing a feature the app does not
  * contain is an App Store 2.3.1 rejection, so this array and what the app can
  * actually do have to be kept in step — if a feature is ever pulled, its line
- * comes out of here first.
+ * comes out of here first. The same obligation runs the other way through
+ * `paywall.freeNote`: it names what stays free, so a feature moving behind the
+ * gate has to leave that sentence as it arrives in this list.
  */
 const FEATURE_KEYS = [
   'paywall.featureAdaptive',
-  'paywall.featureTrends',
+  'paywall.featureWeight',
+  'paywall.featureWater',
   'paywall.featureReminders',
   'paywall.featureExport',
 ] as const

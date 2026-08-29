@@ -4,6 +4,7 @@ import { useI18n } from '@/context/I18nContext'
 import { useEntitlement } from '@/context/EntitlementContext'
 import { useAppShell } from '@/context/AppShellContext'
 import { ProGate } from '@/components/paywall/ProGate'
+import { ProBadge } from '@/components/paywall/ProBadge'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { Toggle } from '@/components/ui/Toggle'
@@ -57,7 +58,12 @@ export function HydrationReminders() {
 
   if (!isPro) {
     return (
-      <ProGate title={t('water.remindersDescription')} onUpgrade={openPaywall}>
+      <ProGate
+        title={t('water.remindersDescription')}
+        label={t('water.remindersLabel')}
+        icon="notifications_active"
+        onUpgrade={openPaywall}
+      >
         {null}
       </ProGate>
     )
@@ -108,11 +114,12 @@ export function HydrationReminders() {
     <div className="flex flex-col gap-sm">
       <div className="flex items-start justify-between gap-md">
         <div className="min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Icon name="notifications_active" className="text-[1.25rem] text-on-surface-variant" />
             <span className="font-label-md text-label-md text-on-surface">
               {t('water.remindersLabel')}
             </span>
+            <ProBadge />
             {saving && <Spinner className="h-4 w-4 text-primary" />}
           </div>
           <p className="mt-1 font-body-md text-sm text-on-surface-variant">

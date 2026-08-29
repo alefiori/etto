@@ -16,10 +16,15 @@ function daysAgo(n: number): string {
   return `${d.getFullYear()}-${m}-${day}`
 }
 
+/**
+ * Weight is Pro in full — the weigh-in as much as the trend it feeds. Everything
+ * in this block therefore runs as a subscriber; what a free user sees instead is
+ * the last block in the file.
+ */
 test.describe('weight tracking', () => {
-  test('prompts for a first weigh-in when there is no history', async ({ page, store }) => {
-    // The prompt stands in for the chart, so it lives inside the Pro half.
-    seedPro(store)
+  test.beforeEach(async ({ store }) => seedPro(store))
+
+  test('prompts for a first weigh-in when there is no history', async ({ page }) => {
     await seedSession(page)
     await page.goto('/')
 
@@ -63,7 +68,6 @@ test.describe('weight tracking', () => {
     page,
     store,
   }) => {
-    seedPro(store)
     // One reading is a dot, not a trend. A chart frame around it reads as a
     // chart that failed to load, and the range switch under it offers to
     // re-scale nothing.
@@ -90,7 +94,6 @@ test.describe('weight tracking', () => {
     page,
     store,
   }) => {
-    seedPro(store)
     // A steady loss of 100 g a day over a fortnight.
     for (let i = 14; i >= 0; i--) {
       store.weight_logs.push({
@@ -114,7 +117,6 @@ test.describe('weight tracking', () => {
   })
 
   test('holds the trend steady through an overnight water spike', async ({ page, store }) => {
-    seedPro(store)
     // Two flat weeks at 80 kg, then the scale reads 2 kg heavier this morning —
     // the salty-dinner case that makes people abandon a diet that is working.
     for (let i = 14; i >= 0; i--) {
@@ -156,7 +158,7 @@ test.describe('weight tracking', () => {
   })
 })
 
-test.describe('weight trends behind the paywall', () => {
+test.describe('weight tracking behind the paywall', () => {
   /** A fortnight of readings — enough that a chart would be drawn for a subscriber. */
   function seedHistory(store: { weight_logs: Record<string, unknown>[] }) {
     for (let i = 14; i >= 0; i--) {
@@ -171,40 +173,42 @@ test.describe('weight trends behind the paywall', () => {
     }
   }
 
-  test('a free user can still log a weight and see the latest reading', async ({ page, store }) => {
-    // The half of the card that produces the data is not for sale: without it
-    // there would be no trend to subscribe for.
+  test('the card is locked whole — the weigh-in included', async ({ page, store }) => {
+    // Not a card with its chart taken out: the input that produces the data is
+    // behind the same entitlement as the trend drawn from it.
     seedHistory(store)
     await seedSession(page)
     await page.goto('/')
 
-    await expect(page.getByLabel("Today's weight in kg")).toBeEnabled()
-    // The latest reading is the newest, not the oldest: the series counts down.
-    await expect(page.getByText('80 kg')).toBeVisible()
-
-    await page.getByLabel("Today's weight in kg").fill('79.8')
-    await page.getByRole('button', { name: 'Save' }).click()
-    await expect(page.getByText('Saved')).toBeVisible()
-    expect(store.weight_logs.some((w) => w.weight_kg === 79.8)).toBe(true)
-  })
-
-  test('the trend, the rate and the ranges are locked', async ({ page, store }) => {
-    seedHistory(store)
-    await seedSession(page)
-    await page.goto('/')
-
+    // The heading stays, so the dashboard still shows that weight belongs here.
+    await expect(page.getByRole('heading', { name: 'Weight' })).toBeVisible()
+    await expect(page.getByLabel("Today's weight in kg")).toHaveCount(0)
     await expect(page.getByRole('img', { name: /Weight trend over the last/ })).toHaveCount(0)
     await expect(page.getByText('Down 0.7 kg/week')).toHaveCount(0)
     await expect(page.getByRole('button', { name: '90 days' })).toHaveCount(0)
     await expect(page.getByText(/tells real change from water weight/)).toBeVisible()
   })
 
-  test('Pro unlocks all three', async ({ page, store }) => {
+  test('no history is read for a locked card', async ({ page, store }) => {
+    seedHistory(store)
+    const asked: string[] = []
+    await seedSession(page)
+    page.on('request', (r) => {
+      if (r.url().includes('/rest/v1/weight_logs')) asked.push(r.url())
+    })
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Weight' })).toBeVisible()
+
+    expect(asked).toEqual([])
+  })
+
+  test('Pro unlocks the whole card', async ({ page, store }) => {
     seedHistory(store)
     seedPro(store)
     await seedSession(page)
     await page.goto('/')
 
+    await expect(page.getByLabel("Today's weight in kg")).toBeEnabled()
     await expect(page.getByRole('img', { name: /Weight trend over the last/ })).toBeVisible()
     await expect(page.getByText('Down 0.7 kg/week')).toBeVisible()
     await expect(page.getByRole('button', { name: '90 days' })).toBeVisible()
@@ -216,7 +220,9 @@ test.describe('weight trends behind the paywall', () => {
     await seedSession(page)
     await page.goto('/')
 
-    await expect(page.getByRole('img', { name: /Weight trend over the last/ })).toHaveCount(0)
-    await expect(page.getByText('Pro feature')).toBeVisible()
+    await expect(page.getByLabel("Today's weight in kg")).toHaveCount(0)
+    // By the card's own locked line rather than by "Pro feature", which the
+    // water card beside it now shows too.
+    await expect(page.getByText(/tells real change from water weight/)).toBeVisible()
   })
 })

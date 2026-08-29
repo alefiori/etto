@@ -474,9 +474,24 @@ allows it.
 
 ## Pro subscription
 
-Pro unlocks adaptive targets, weight trends, hydration reminders and data
-export. Everything the app shipped with — logging, barcode scanning, custom and
-community foods, water tracking, all 7 languages — stays free.
+Pro unlocks adaptive targets, weight tracking, water tracking, hydration
+reminders and data export. Logging, barcode scanning, custom and community
+foods, meals, weekly targets and all 7 languages stay free.
+
+**Where the line falls, and why it is drawn card-by-card.** Water and weight are
+gated *whole* rather than split into a free input and a paid readout. The split
+the weight card used to have — log for free, pay for the trend — reads better on
+paper than it works: half a card is an odd thing to own, and the free half
+produced data whose only use was locked. Gating the card whole makes the offer
+legible from the dashboard, and the heading stays behind so a free user can still
+see that the feature exists. Both cards ask for no rows at all while locked, so a
+free session pays for neither query.
+
+Gating is client-side, through `ProGate` and `useEntitlement`, exactly as it is
+for the other Pro features. The `water_logs` and `weight_logs` policies stay
+owner-read-write: an entitlement check in RLS would fight the provider's
+never-revoke-on-read-failure policy below, locking a paying customer out of
+writing while the UI still — correctly — shows them Pro.
 
 **Entitlements are decided server-side.** `public.subscriptions` is the one
 table here that is not owner-read-write: it has a `select` policy and

@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useProfile } from '@/context/ProfileContext'
 import { useI18n } from '@/context/I18nContext'
+import { useEntitlement } from '@/context/EntitlementContext'
+import { useAppShell } from '@/context/AppShellContext'
+import { ProGate } from '@/components/paywall/ProGate'
+import { ProBadge } from '@/components/paywall/ProBadge'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { volumeForDisplay, volumeToMl, volumeUnit } from '@/lib/water'
@@ -15,10 +19,15 @@ const inputClass =
  * so the goal keeps up as the user's bodyweight changes rather than freezing at
  * signup. That is the same convention `profiles.off_language` uses for
  * "follow the device language", hence the placeholder rather than a number.
+ *
+ * Pro, because the goal is the target the (Pro) water card fills toward —
+ * leaving it settable for a free user would be a setting with nothing to act on.
  */
 export function WaterSettings() {
   const { profile, unitSystem, updateProfile, loading } = useProfile()
   const { t } = useI18n()
+  const { isPro } = useEntitlement()
+  const { openPaywall } = useAppShell()
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -31,6 +40,21 @@ export function WaterSettings() {
   useEffect(() => {
     setDraft(storedMl != null ? String(Math.round(volumeForDisplay(storedMl, unitSystem))) : '')
   }, [storedMl, unitSystem])
+
+  // Below every hook. The gate names the row it replaces — on a settings page
+  // a bare description has no heading of its own to hang from.
+  if (!isPro) {
+    return (
+      <ProGate
+        title={t('water.goalLocked')}
+        label={t('water.goalSettingLabel', { unit })}
+        icon="water_drop"
+        onUpgrade={openPaywall}
+      >
+        {null}
+      </ProGate>
+    )
+  }
 
   async function commit() {
     const value = draft.trim()
@@ -54,11 +78,12 @@ export function WaterSettings() {
 
   return (
     <div className="flex flex-col gap-sm">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Icon name="water_drop" className="text-[1.25rem] text-on-surface-variant" />
         <label htmlFor="water-goal" className="font-label-md text-label-md text-on-surface">
           {t('water.goalSettingLabel', { unit })}
         </label>
+        <ProBadge />
         {saving && <Spinner className="h-4 w-4 text-primary" />}
       </div>
       <p className="font-body-md text-sm text-on-surface-variant">{t('water.goalSettingHint')}</p>

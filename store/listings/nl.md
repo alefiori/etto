@@ -57,12 +57,12 @@ over is, en een calorietotaal dat meegroeit terwijl je invoert. Kopieer een hele
 dag naar een andere datum, of één maaltijd naar elk moment op elke dag —
 handig als je vijf dagen per week hetzelfde ontbijt neemt.
 
-**Gewicht, zonder de ruis**
+**Gewicht, zonder de ruis — Pro**
 Eén weging per dag, als ruwe punten met een gladde lijn erdoorheen, zodat een
 vochtschommeling in de nacht niet als aankomen leest. Het weektempo wordt robuust
 geschat, dus één slechte ochtend verschuift het niet.
 
-**Water, zonder aparte app**
+**Water, zonder aparte app — Pro**
 Voeg glazen en flessen met één tik toe, richting een dagdoel dat zichzelf uit je
 lichaamsgewicht afleidt zolang je er geen instelt.
 
@@ -83,11 +83,14 @@ thema's, die het apparaat ook volgen. Een echte tabletindeling, geen uitgerekte
 telefoon.
 
 **MacroTrack Pro (optioneel)**
-Alles hierboven is gratis. Pro voegt adaptieve doelen toe: in plaats van een
-formule met een geschatte activiteit te vermenigvuldigen, berekent het wat je
-werkelijk verbrandt door wat je invoerde te vergelijken met hoe je gewicht zich
-echt bewoog — en het zegt het wanneer de gegevens nog geen antwoord toelaten, in
-plaats van er een te verzinnen.
+Noteren, scannen, eigen en gedeelde voedingsmiddelen, maaltijden, weekdoelen en
+alle zeven talen zijn gratis, zonder account. Pro voegt toe wat daarop voortbouwt:
+gewicht en water, hydratatieherinneringen, een export van alles wat je hebt
+genoteerd, en adaptieve doelen — die, in plaats van een formule met een geschatte
+activiteit te vermenigvuldigen, berekenen wat je werkelijk verbrandt door wat je
+invoerde te vergelijken met hoe je gewicht zich echt bewoog, en het zeggen
+wanneer de gegevens nog geen antwoord toelaten in plaats van er een te
+verzinnen.
 
 Pro is er als maand- of jaarabonnement, of als eenmalige levenslange aankoop.
 Abonnementen verlengen automatisch tot je opzegt; beheren of opzeggen doe je in

@@ -62,13 +62,13 @@ entière sur une autre date, ou un seul repas dans n'importe quel créneau de
 n'importe quel jour — pratique quand vous prenez le même petit-déjeuner cinq
 jours sur sept.
 
-**Le poids, sans le bruit**
+**Le poids, sans le bruit — Pro**
 Une pesée par jour, tracée en points bruts avec une ligne lissée qui les
 traverse, pour qu'une variation d'eau nocturne ne ressemble pas à une prise. Le
 rythme hebdomadaire est ajusté de façon robuste : un mauvais matin ne le déplace
 pas.
 
-**L'eau, sans une application de plus**
+**L'eau, sans une application de plus — Pro**
 Ajoutez verres et bouteilles d'un geste, vers un objectif quotidien déduit de
 votre poids tant que vous n'en fixez pas un.
 
@@ -90,11 +90,12 @@ choisissiez une. Thèmes clair et sombre, qui suivent aussi votre appareil. Une
 vraie mise en page pour tablette, pas un téléphone agrandi.
 
 **MacroTrack Pro (facultatif)**
-Tout ce qui précède est gratuit. Pro ajoute les objectifs adaptatifs : au lieu
-de multiplier une formule par une estimation d'activité, il calcule ce que vous
-dépensez réellement en comparant ce que vous avez saisi à l'évolution réelle de
-votre poids — et vous dit quand les données ne permettent pas encore de
-répondre, au lieu d'inventer.
+La saisie, le scanner, vos aliments et ceux de la communauté, les repas et les
+sept langues sont gratuits, sans compte. Pro ajoute ce qui vient ensuite : le
+poids et l'eau, les rappels d'hydratation, l'export de tout votre journal, et
+les objectifs adaptatifs — qui calculent ce que vous dépensez réellement en
+comparant vos saisies à l'évolution réelle de votre poids, au lieu de multiplier
+une formule par une estimation d'activité.
 
 Pro est proposé en abonnement mensuel ou annuel, ou en achat unique à vie. Les
 abonnements se renouvellent automatiquement jusqu'à résiliation ; gérez-les ou

@@ -1,4 +1,4 @@
-import { test, expect, seedSession, USER_ID } from './fixtures/supabase'
+import { test, expect, seedSession, seedPro, USER_ID } from './fixtures/supabase'
 
 function todayISO(): string {
   const d = new Date()
@@ -7,8 +7,18 @@ function todayISO(): string {
   return `${d.getFullYear()}-${m}-${day}`
 }
 
+/**
+ * Hydration is Pro in full — the card, the goal, and the settings row behind it.
+ * Everything in this block therefore runs as a subscriber; what a free user sees
+ * instead is the last block in the file.
+ */
 test.describe('water tracking', () => {
-  test('starts the day empty with a default goal', async ({ page }) => {
+  test.beforeEach(async ({ store }) => seedPro(store))
+
+  test('starts the day empty with a default goal', async ({ page, store }) => {
+    // A weigh-in is Pro too, so the derived goal has nothing to read: the
+    // 2000ml fallback applies.
+    expect(store.weight_logs).toHaveLength(0)
     await seedSession(page)
     await page.goto('/')
 
@@ -160,5 +170,54 @@ test.describe('water tracking', () => {
     await page.getByLabel('Daily water goal (ml)').blur()
 
     await expect.poll(() => store.profiles[0].water_goal_ml).toBeNull()
+  })
+})
+
+test.describe('hydration behind the paywall', () => {
+  test('the card is locked whole — the quick-adds included', async ({ page }) => {
+    // Not a trimmed-down card: a free user cannot log a drink at all.
+    await seedSession(page)
+    await page.goto('/')
+
+    // The heading stays, so the dashboard still shows that water belongs here.
+    await expect(page.getByRole('heading', { name: 'Water' })).toBeVisible()
+    await expect(page.getByLabel('Add 250 ml')).toHaveCount(0)
+    await expect(page.getByLabel('Custom amount in ml')).toHaveCount(0)
+    await expect(page.getByText(/Log every glass against a daily goal/)).toBeVisible()
+  })
+
+  test('asks for no rows it will never show', async ({ page }) => {
+    // A locked card that still queried water_logs would be paying for a round
+    // trip on every dashboard load for nothing.
+    const asked: string[] = []
+    await seedSession(page)
+    page.on('request', (r) => {
+      const url = r.url()
+      if (url.includes('/rest/v1/water_logs')) asked.push(url)
+    })
+    await page.goto('/')
+    await expect(page.getByRole('heading', { name: 'Water' })).toBeVisible()
+
+    expect(asked).toEqual([])
+  })
+
+  test('the daily goal is locked in the profile, and names itself', async ({ page }) => {
+    // A gate on a settings page has no heading of its own to hang from, so it
+    // carries the row's name and the Pro chip.
+    await seedSession(page)
+    await page.goto('/profile')
+
+    await expect(page.getByLabel('Daily water goal (ml)')).toHaveCount(0)
+    await expect(page.getByText('Daily water goal (ml)')).toBeVisible()
+    await expect(page.getByText(/The daily target your water ring fills toward/)).toBeVisible()
+  })
+
+  test('the paywall opens from the locked card', async ({ page }) => {
+    await seedSession(page)
+    await page.goto('/')
+
+    await page.getByRole('button', { name: 'See Pro' }).first().click()
+
+    await expect(page.getByRole('heading', { name: 'MacroTrack Pro', level: 2 })).toBeVisible()
   })
 })

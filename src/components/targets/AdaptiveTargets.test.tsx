@@ -177,7 +177,10 @@ describe('AdaptiveTargets for a free user', () => {
 
   it('shows an upgrade prompt instead of the panel', () => {
     renderPanel()
-    expect(screen.getByText('Pro feature')).toBeInTheDocument()
+    // The locked state still names the feature and marks it as paid — a bare
+    // description would leave the row with nothing to attach to.
+    expect(screen.getByText('Adaptive targets')).toBeInTheDocument()
+    expect(screen.getByText('Pro')).toBeInTheDocument()
     expect(screen.queryByRole('switch')).not.toBeInTheDocument()
   })
 

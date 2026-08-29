@@ -200,7 +200,7 @@ test.describe('adaptive targets behind the paywall', () => {
     await seedSession(page)
     await page.goto('/targets')
 
-    await expect(page.getByText('Pro feature')).toBeVisible()
+    await expect(page.getByText('Adaptive targets')).toBeVisible()
     await expect(page.getByRole('switch', { name: 'Adaptive targets' })).toHaveCount(0)
     // The manual grid stays fully usable — nothing that already shipped is
     // taken away.
@@ -212,7 +212,7 @@ test.describe('adaptive targets behind the paywall', () => {
     await seedSession(page)
     await page.goto('/targets')
 
-    await expect(page.getByText('Pro feature')).toBeVisible()
+    await expect(page.getByText('Adaptive targets')).toBeVisible()
   })
 
   test('a lifetime purchase with no expiry does unlock it', async ({ page, store }) => {

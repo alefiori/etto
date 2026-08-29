@@ -60,12 +60,12 @@ calorie total that adds up as you log. Copy a whole day onto another date, or
 copy a single meal into any slot on any day — useful when you eat the same
 breakfast five days a week.
 
-**Weight, without the noise**
+**Weight, without the noise — Pro**
 One weigh-in a day, plotted as raw dots with a smoothed line through them, so an
 overnight water swing doesn't read as a gain. The weekly rate is fitted
 robustly, which means one bad morning doesn't move it.
 
-**Water, without a separate app**
+**Water, without a separate app — Pro**
 Quick-add glasses and bottles against a daily goal that works itself out from
 your bodyweight until you set one.
 
@@ -85,10 +85,13 @@ following your device language until you pick one. Light and dark themes, also
 following your device. A real tablet layout rather than a stretched phone one.
 
 **MacroTrack Pro (optional)**
-Everything above is free. Pro adds adaptive targets: instead of multiplying a
-formula by an activity guess, it estimates what you actually burn by comparing
-what you logged against how your weight really moved — and tells you when your
-data can't support an answer yet, rather than inventing one.
+Logging, barcode scanning, custom and community foods, meals, weekly targets and
+all seven languages are free, with no account needed. Pro adds the tracking built
+on top of them: weight and water, hydration reminders, an export of everything
+you have logged, and adaptive targets — which, instead of multiplying a formula
+by an activity guess, estimate what you actually burn by comparing what you
+logged against how your weight really moved, and tell you when your data can't
+support an answer yet rather than inventing one.
 
 Pro is available as a monthly or yearly subscription, or a one-time lifetime
 purchase. Subscriptions renew automatically until cancelled; manage or cancel

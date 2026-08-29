@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test'
-import { test, expect, seedSession, USER_ID, type Store } from './fixtures/supabase'
+import { test, expect, seedSession, seedPro, USER_ID, type Store } from './fixtures/supabase'
 
 /**
  * The accessibility contracts that are easy to break by accident and invisible
@@ -22,8 +22,16 @@ function todayISO(): string {
   return `${d.getFullYear()}-${m}-${day}`
 }
 
-/** A day with targets and one logged food, so the dashboard has real content. */
+/**
+ * A day with targets and one logged food, so the dashboard has real content.
+ *
+ * Pro as well, because the water and weight cards are behind it: a free
+ * dashboard reflows two upgrade prompts where a subscriber's reflows a quick-add
+ * row, a ring, a number field and a chart — and it is the latter that these
+ * contracts have to hold for.
+ */
 function seedDay(store: Store) {
+  seedPro(store)
   for (let dow = 0; dow < 7; dow++) {
     store.macro_targets.push({
       id: `t-${dow}`,

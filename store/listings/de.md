@@ -60,13 +60,13 @@ Kalorienbilanz, die beim Erfassen mitwächst. Kopiere einen ganzen Tag auf ein
 anderes Datum oder eine einzelne Mahlzeit in einen beliebigen Slot an einem
 beliebigen Tag — praktisch, wenn du fünf Tage die Woche dasselbe frühstückst.
 
-**Gewicht, ohne das Rauschen**
+**Gewicht, ohne das Rauschen — Pro**
 Ein Wiegen pro Tag, als Rohwerte gepunktet mit einer geglätteten Linie
 hindurch — so sieht eine nächtliche Wasserschwankung nicht nach Zunahme aus. Die
 Wochenrate wird robust geschätzt, ein schlechter Morgen verschiebt sie also
 nicht.
 
-**Wasser, ohne zweite App**
+**Wasser, ohne zweite App — Pro**
 Gläser und Flaschen mit einem Tipp hinzufügen, gegen ein Tagesziel, das sich aus
 deinem Körpergewicht ergibt, solange du keines festlegst.
 
@@ -86,11 +86,14 @@ wählst. Helles und dunkles Design, das ebenfalls dem Gerät folgt. Ein echtes
 Tablet-Layout statt eines vergrößerten Handys.
 
 **MacroTrack Pro (optional)**
-Alles oben ist kostenlos. Pro ergänzt adaptive Ziele: Statt eine Formel mit
-einer geschätzten Aktivität zu multiplizieren, ermittelt es deinen tatsächlichen
-Verbrauch aus dem Vergleich zwischen dem, was du erfasst hast, und dem, wie sich
-dein Gewicht wirklich entwickelt hat — und sagt dir, wenn die Daten für eine
-Antwort noch nicht reichen, statt eine zu erfinden.
+Erfassen, Barcode-Scanner, eigene und geteilte Lebensmittel, Mahlzeiten,
+Wochenziele und alle sieben Sprachen sind kostenlos, ganz ohne Konto. Pro ergänzt
+das, was darauf aufbaut: Gewicht und Wasser, Trink-Erinnerungen, einen Export von
+allem, was du erfasst hast, und adaptive Ziele — die, statt eine Formel mit einer
+geschätzten Aktivität zu multiplizieren, deinen tatsächlichen Verbrauch aus dem
+Vergleich zwischen dem, was du erfasst hast, und dem, wie sich dein Gewicht
+wirklich entwickelt hat, ermitteln und dir sagen, wenn die Daten für eine Antwort
+noch nicht reichen, statt eine zu erfinden.
 
 Pro gibt es im Monats- oder Jahresabo oder als einmaligen Lifetime-Kauf. Abos
 verlängern sich automatisch bis zur Kündigung; verwalten oder kündigen kannst du
