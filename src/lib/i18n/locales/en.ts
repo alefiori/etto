@@ -308,15 +308,6 @@ export const en = {
     deleteAccountStoreNote:
       'This does not cancel your subscription. Cancel it in your App Store or Google Play account settings, or you will keep being charged.',
     deleteAccountFailed: 'Could not delete your account. Please try again.',
-    // A guest account is a real account — same rows, same deletion — but it has
-    // no email, so the wording differs on the one point that matters: there is
-    // nothing to sign back into afterwards, and signing up first keeps the data.
-    deleteAccountGuest: 'Delete guest account',
-    deleteAccountGuestDescription:
-      'Permanently erase this guest account and everything in it — logs, foods, targets and measurements. It has no email, so signing up later will not bring it back.',
-    deleteAccountGuestConfirmTitle: 'Delete your guest account?',
-    deleteAccountGuestConfirmMessage:
-      'This erases this guest account and every entry in it. It cannot be undone. A guest account has no email to sign back in with, so nothing can be recovered afterwards — create an account first if you want to keep this data.',
   },
   dataSources: {
     title: 'Food data sources',

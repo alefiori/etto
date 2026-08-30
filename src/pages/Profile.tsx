@@ -285,13 +285,18 @@ export default function Profile() {
           </button>
         )}
 
-        <hr className="border-surface-container-highest" />
-
         {/* Apple 5.1.1(v): an app that creates accounts must delete them from
-            inside the app. Offered to guests too — a guest account holds the
-            same logs. Last on the page, behind a confirmation, as its
-            destructiveness deserves. */}
-        <DeleteAccount />
+            inside the app. Registered accounts only — a guest never created
+            one, has no credentials to revoke and nothing to sign back into, so
+            the section (and its rule) are dropped rather than left showing an
+            irreversible button for an account that does not exist yet. Last on
+            the page, behind a confirmation, as its destructiveness deserves. */}
+        {!isAnonymous && (
+          <>
+            <hr className="border-surface-container-highest" />
+            <DeleteAccount />
+          </>
+        )}
       </div>
     </div>
   )

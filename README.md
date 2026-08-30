@@ -497,7 +497,12 @@ same copies rather than embedding a second one that would drift.
 through the [`delete-account`](supabase/functions/delete-account) Edge Function.
 It takes the user id from the caller's own JWT, never from the request body, so
 a request cannot express "delete someone else"; it is deployed **with** JWT
-verification, unlike `revenuecat-webhook`.
+verification, unlike `revenuecat-webhook`. It is offered to **registered
+accounts only**: a guest never created an account, has no credentials to revoke
+and nothing to sign back into afterwards, so the section is absent for a guest
+rather than offering to irreversibly delete something they never signed up for.
+The guest's route to the same place is the sign-in above it — signing up
+upgrades the guest session in place and keeps the data.
 
 One thing that is not obvious: deleting an account used to be able to destroy
 *other people's* data. `foods.user_id` cascades from `auth.users` and

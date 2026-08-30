@@ -303,12 +303,6 @@ export const de: Translation = {
     deleteAccountStoreNote:
       'Dies kündigt dein Abo nicht. Kündige es in den Kontoeinstellungen im App Store oder bei Google Play, sonst wird dir weiterhin etwas berechnet.',
     deleteAccountFailed: 'Dein Konto konnte nicht gelöscht werden. Bitte versuche es erneut.',
-    deleteAccountGuest: 'Gastkonto löschen',
-    deleteAccountGuestDescription:
-      'Lösche dieses Gastkonto und alles darin dauerhaft — Einträge, Lebensmittel, Ziele und Messwerte. Es hat keine E-Mail-Adresse, eine spätere Registrierung holt es also nicht zurück.',
-    deleteAccountGuestConfirmTitle: 'Dein Gastkonto löschen?',
-    deleteAccountGuestConfirmMessage:
-      'Damit werden dieses Gastkonto und alle darin enthaltenen Einträge gelöscht. Das lässt sich nicht rückgängig machen. Ein Gastkonto hat keine E-Mail-Adresse, mit der du dich wieder anmelden kannst, danach ist also nichts wiederherstellbar — erstelle zuerst ein Konto, wenn du diese Daten behalten möchtest.',
   },
   dataSources: {
     title: 'Quellen der Lebensmitteldaten',

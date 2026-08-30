@@ -303,12 +303,6 @@ export const fr: Translation = {
     deleteAccountStoreNote:
       'Cela n’annule pas votre abonnement. Annulez-le dans les réglages de votre compte App Store ou Google Play, sinon vous continuerez à être facturé.',
     deleteAccountFailed: 'Impossible de supprimer votre compte. Veuillez réessayer.',
-    deleteAccountGuest: 'Supprimer le compte invité',
-    deleteAccountGuestDescription:
-      'Effacer définitivement ce compte invité et tout ce qu’il contient : journaux, aliments, objectifs et mesures. Il n’a pas d’adresse e-mail : créer un compte plus tard ne le rétablira pas.',
-    deleteAccountGuestConfirmTitle: 'Supprimer votre compte invité ?',
-    deleteAccountGuestConfirmMessage:
-      'Cela efface ce compte invité et toutes ses entrées. L’opération est irréversible. Un compte invité n’a pas d’adresse e-mail permettant de se reconnecter, rien ne pourra donc être récupéré — créez d’abord un compte si vous voulez conserver ces données.',
   },
   dataSources: {
     title: 'Sources des données alimentaires',
