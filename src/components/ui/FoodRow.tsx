@@ -216,8 +216,11 @@ export function FoodRow({
             {name}
           </span>
           {/* Amount and macros share one line: at phone width the right-hand
-              column has room for the calories and nothing else. */}
-          <span className="mt-0.5 flex items-center gap-sm text-xs text-on-surface-variant">
+              column has room for the calories and nothing else. They wrap
+              rather than run off it — five shrink-0 chips at 200% text are
+              wider than a 320px phone, and the row has no scroll of its own to
+              reach what falls past the edge. */}
+          <span className="mt-0.5 flex flex-wrap items-center gap-x-sm gap-y-0.5 text-xs text-on-surface-variant">
             {badge && (
               <span className="flex shrink-0 items-center" title={badge.label}>
                 {/* Sized inline rather than with `text-[0.875rem]`, which would do

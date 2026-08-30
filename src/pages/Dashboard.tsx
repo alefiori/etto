@@ -203,7 +203,16 @@ export default function Dashboard() {
             <Icon name="content_copy" className="text-sm" />
             <span className="hidden sm:inline">{t('dashboard.copyDay')}</span>
           </button>
-          <div className="flex items-center gap-sm rounded-full p-1 glass-chip">
+          {/* `flex-wrap` and a width cap, because this trio is the widest
+              fixed thing on the page: two 44px targets either side of a word.
+              At 200% text on a 320px viewport — Android's largest display size
+              on top of its largest font size — it came to 324px in a 288px
+              lane, and `justify-end` took the difference off the left edge, so
+              "previous day" was half off-screen and the shell's `overflow:
+              hidden` swallowed the rest. Wrapped, it costs a row and keeps
+              every target reachable; `rounded-full` clamps to half the height,
+              so two rows read as a taller stadium rather than a broken pill. */}
+          <div className="flex max-w-full flex-wrap items-center justify-center gap-sm rounded-full p-1 glass-chip">
             <button
               onClick={() => setSelectedDate(addDays(selectedDate, -1))}
               className="tap-target flex items-center justify-center rounded-full p-2 text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover)"
@@ -603,7 +612,11 @@ function MealCard({
             {label}
           </h3>
         </div>
-        <div className="ml-auto flex shrink-0 items-center gap-sm">
+        {/* `shrink-0` keeps the actions whole and lets the meal name truncate
+            instead — but only down to the point where the actions themselves
+            fit. `max-w-full` + `flex-wrap` is that floor: past it the kcal
+            total drops under the icons rather than off the card. */}
+        <div className="ml-auto flex max-w-full shrink-0 flex-wrap items-center justify-end gap-sm">
           {canPaste && (
             <button
               onClick={onPaste}

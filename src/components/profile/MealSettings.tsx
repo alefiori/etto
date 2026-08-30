@@ -118,7 +118,10 @@ export function MealSettings() {
 
       <p className="font-body-md text-sm text-on-surface-variant">{t('meals.nameHint')}</p>
 
-      <form className="flex items-center gap-sm" onSubmit={handleAdd}>
+      {/* Wraps: at 200% text the field's own minimum and a labelled Add button
+          do not share a 320px phone, and the button is `shrink-0` so one of
+          them had to leave the card. A second row costs nothing here. */}
+      <form className="flex flex-wrap items-center gap-sm" onSubmit={handleAdd}>
         <input
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
@@ -126,7 +129,7 @@ export function MealSettings() {
           disabled={atLimit || adding}
           placeholder={t('meals.namePlaceholder')}
           aria-label={t('meals.newMealLabel')}
-          className={inputClass}
+          className={`min-w-[8rem] flex-1 ${inputClass}`}
         />
         <button
           type="submit"

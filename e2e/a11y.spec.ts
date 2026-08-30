@@ -15,6 +15,18 @@ import { test, expect, seedSession, seedPro, USER_ID, type Store } from './fixtu
 
 const PHONE = { width: 390, height: 844 }
 
+/**
+ * The narrowest viewport the app has to hold, which is not a phone model.
+ *
+ * Android's *Display size* raises the screen density without changing the
+ * panel, so the WebView's viewport shrinks in CSS pixels — a 360dp phone at the
+ * largest display size lands near 320. It is also the width WCAG 1.4.10 names,
+ * so one number covers both. Paired with 200% text it is the worst case the
+ * layout is asked for, and the one a low-vision reader is most likely to be in:
+ * display size and font size are separate settings, and they turn up both.
+ */
+const NARROW_PHONE = { width: 320, height: 640 }
+
 function todayISO(): string {
   const d = new Date()
   const m = String(d.getMonth() + 1).padStart(2, '0')
@@ -273,6 +285,65 @@ test.describe('text scaling', () => {
       expect(tooWide, 'content extends past the viewport').toEqual([])
 
       await page.screenshot({ path: `test-results/a11y-200-${route.slice(1)}.png` })
+    })
+  }
+
+  /**
+   * Both Android settings at once, on every route.
+   *
+   * The 390px sweep above misses this: the failure is a control whose own
+   * minimum width is larger than the lane, which only bites once the lane is
+   * narrow *and* the text is large. It also does not show up as a scrollbar —
+   * the app shell is `overflow: hidden`, so anything past the edge is cut off
+   * rather than scrolled to, which is the worse half of 1.4.10.
+   *
+   * Decoration that an ancestor deliberately clips (the blurred blobs on the
+   * calorie and water cards sit outside their card on purpose) is not a
+   * failure, so the sweep walks up to `main` and skips anything already inside
+   * an `overflow` that is not `visible`.
+   */
+  for (const [route, landmark] of [
+    ['/', 'Calories'],
+    ['/targets', 'Weekly Planner'],
+    ['/foods', 'My Foods'],
+    ['/profile', 'Profile'],
+  ] as const) {
+    test(`${route} reflows at 320px with 200% text`, async ({ page, store }) => {
+      seedDay(store)
+      await seedSession(page)
+      await page.setViewportSize(NARROW_PHONE)
+      await page.goto(route)
+      await expect(page.getByRole('heading', { name: landmark }).first()).toBeVisible()
+      await setTextScale(page, 2)
+
+      const overflow = await page.evaluate(() => {
+        const el = document.scrollingElement!
+        return el.scrollWidth - el.clientWidth
+      })
+      expect(overflow, 'the page scrolls horizontally').toBeLessThanOrEqual(1)
+
+      const cutOff = await page.evaluate(() => {
+        const vw = document.documentElement.clientWidth
+        const main = document.querySelector('main')!
+        const clipped = (el: Element) => {
+          let parent = el.parentElement
+          while (parent && parent !== main) {
+            if (getComputedStyle(parent).overflowX !== 'visible') return true
+            parent = parent.parentElement
+          }
+          return false
+        }
+        return Array.from(main.querySelectorAll('*'))
+          .filter((el) => {
+            const r = el.getBoundingClientRect()
+            return r.width > 0 && (r.right > vw + 1 || r.left < -1) && !clipped(el)
+          })
+          .slice(0, 5)
+          .map((el) => `${el.tagName}.${(el.className || '').toString().slice(0, 60)}`)
+      })
+      expect(cutOff, 'content is cut off by the viewport edge').toEqual([])
+
+      await page.screenshot({ path: `test-results/a11y-narrow-${route.slice(1) || 'dashboard'}.png` })
     })
   }
 

@@ -325,7 +325,12 @@ export function WeightCard() {
           <div
             role="group"
             aria-label={t('weight.rangeAria')}
-            className={`flex gap-1 rounded-full glass-chip p-1 ${chartReady ? '' : 'opacity-45'}`}
+            // `flex-1` alone cannot shrink these below their own labels, so at
+            // 200% text on a narrow phone the last range ran past the card.
+            // Wrapping with a basis is the same answer the appearance picker in
+            // Profile reached, `rounded-2xl` included: a wrapped row of pills
+            // inside a pill reads as a mistake.
+            className={`flex flex-wrap gap-1 rounded-2xl glass-chip p-1 ${chartReady ? '' : 'opacity-45'}`}
           >
             {RANGES.map((r) => (
               <button
@@ -334,7 +339,7 @@ export function WeightCard() {
                 aria-pressed={rangeDays === r.days}
                 disabled={!chartReady}
                 onClick={() => setRangeDays(r.days)}
-                className={`flex-1 rounded-full px-3 py-1.5 font-label-md text-label-md transition-colors disabled:cursor-not-allowed ${
+                className={`min-w-0 flex-1 basis-[4.5rem] rounded-full px-3 py-1.5 font-label-md text-label-md transition-colors disabled:cursor-not-allowed ${
                   rangeDays === r.days
                     ? 'bg-primary text-on-primary'
                     : 'text-on-surface-variant enabled:hover:bg-(--glass-chip-hover)'

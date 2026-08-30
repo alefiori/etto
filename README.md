@@ -990,7 +990,12 @@ the scale now, up to the 200% WCAG asks for:
 
 `e2e/a11y.spec.ts` holds this down: every route is driven at 100%, 150% and
 200% and asserted to reflow without a horizontal scrollbar and without any
-element crossing the viewport edge.
+element crossing the viewport edge. It repeats the sweep at 320px, which is
+what Android's *Display size* leaves of a 360dp phone at its largest setting —
+and the width WCAG 1.4.10 names. Both settings at once is the case that finds
+controls whose own minimum width is wider than the lane, and it fails silently
+rather than loudly: the app shell is `overflow: hidden`, so anything past the
+edge is cut off rather than scrolled to.
 
 **Keyboard and focus.** [`useFocusTrap`](src/hooks/useFocusTrap.ts) confines Tab
 to the open overlay and returns focus to whatever opened it —
