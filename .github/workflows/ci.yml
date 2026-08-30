@@ -276,6 +276,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # This job used to get by on `npx` alone, from the runner's preinstalled
+      # Node. It needs a real toolchain for two reasons: pnpm is not preinstalled
+      # on GitHub runners, and the reference-food import below is a project
+      # script that imports @supabase/supabase-js, so it needs node_modules.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Deploy database migrations and the food-search Edge Function
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -289,7 +303,9 @@ jobs:
             exit 0
           fi
 
-          # The CLI is preinstalled on GitHub-hosted runners; fall back to pnpm dlx.
+          # The CLI is not currently preinstalled on GitHub-hosted runners, so in
+          # practice this resolves to the fallback; the check stays in case it
+          # comes back, since a preinstalled binary starts faster than a fetch.
           SUPABASE="supabase"
           if ! command -v supabase >/dev/null 2>&1; then SUPABASE="pnpm dlx supabase"; fi
 
