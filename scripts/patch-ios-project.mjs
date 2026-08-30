@@ -87,7 +87,7 @@ export const EXTERNAL_PURCHASE_REGIONS = [
  * above covers the listing, and this string is one sentence seen once.
  */
 export const CAMERA_USAGE =
-  'MacroTrack uses the camera to scan the barcode on a food package so it can ' +
+  'Etto uses the camera to scan the barcode on a food package so it can ' +
   'look up its nutrition values. Images are read on your device and are never ' +
   'stored or uploaded.'
 
@@ -418,7 +418,7 @@ if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop()
   const externalPurchase =
     linkFlag === '1' || linkFlag === 'true'
       ? {
-          url: `${(process.env.VITE_SITE_URL ?? 'https://macros-track.netlify.app').replace(/\/+$/, '')}/?checkout=pro`,
+          url: `${(process.env.VITE_SITE_URL ?? 'https://etto.fitness').replace(/\/+$/, '')}/?checkout=pro`,
           regions: EXTERNAL_PURCHASE_REGIONS,
         }
       : null

@@ -1,7 +1,7 @@
-# MacroTrack
+# Etto
 
-[![CI](https://github.com/alefiori/macro-track/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alefiori/macro-track/actions/workflows/ci.yml)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/711ad0e3-f068-4066-8538-38bab13b2bab/deploy-status)](https://app.netlify.com/sites/macros-track/deploys)
+[![CI](https://github.com/alefiori/etto/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alefiori/etto/actions/workflows/ci.yml)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/711ad0e3-f068-4066-8538-38bab13b2bab/deploy-status)](https://app.netlify.com/sites/etto/deploys)
 
 A responsive, installable daily macros tracker built with **React + Vite +
 TypeScript**, **Tailwind CSS**, and **Supabase** (Postgres + Auth). Set
@@ -227,8 +227,8 @@ Then fill in `.env` with your project's values:
 ```
 VITE_SUPABASE_URL=https://your-project-ref.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-public-key
-VITE_SITE_URL=https://macros-track.netlify.app
-VITE_SUPPORT_EMAIL=support@your-domain.example
+VITE_SITE_URL=https://etto.fitness
+VITE_SUPPORT_EMAIL=support@etto.fitness
 ```
 
 The last two feed the legal documents. `scripts/build-legal.mjs` renders
@@ -417,7 +417,7 @@ if a Capacitor upgrade reshapes what it patches:
   respectively; the generated projects are gitignored.
 - **Pro needs its store-side accounts filled in.** The code is done — see
   [Pro subscription](#pro-subscription) — but three products
-  (`macrotrack_pro_monthly` / `_yearly` / `_lifetime`) have to exist in App Store
+  (`etto_pro_monthly` / `_yearly` / `_lifetime`) have to exist in App Store
   Connect, the Play Console and RevenueCat Web Billing, be attached to a `pro`
   entitlement in RevenueCat and offered through its **current** offering, and the
   three publishable SDK keys have to be set. Unset, the paywall reports purchases

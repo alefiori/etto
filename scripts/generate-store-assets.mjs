@@ -82,11 +82,18 @@ export function featureGraphicSvg({ tagline = 'Track your macros, every day' } =
     edge. Pinning trades a little glyph distortion for an asset that is the same
     everywhere and always fits inside Play's crop margins.
   -->
-  <text x="400" y="242" fill="${BRAND.onViolet}"
+  <!--
+    "Etto" is four glyphs where "MacroTrack" was ten, so the wordmark is set
+    larger rather than stretched across the old 500px slot: pinning four letters
+    to that width would smear them. 300 is close to the natural width of Manrope
+    ExtraBold at this size, which keeps lengthAdjust honest, and the two lines
+    are set from a shared left edge so the lockup still reads as one block.
+  -->
+  <text x="400" y="252" fill="${BRAND.onViolet}"
     font-family="Manrope, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
-    font-size="86" font-weight="800" letter-spacing="-2"
-    textLength="500" lengthAdjust="spacingAndGlyphs">MacroTrack</text>
-  <text x="404" y="308" fill="${BRAND.onViolet}" opacity="0.82"
+    font-size="150" font-weight="800" letter-spacing="-4"
+    textLength="300" lengthAdjust="spacingAndGlyphs">Etto</text>
+  <text x="404" y="322" fill="${BRAND.onViolet}" opacity="0.82"
     font-family="Manrope, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
     font-size="38" font-weight="500"
     textLength="470" lengthAdjust="spacingAndGlyphs">${tagline}</text>

@@ -102,7 +102,7 @@ export async function collectExport(): Promise<ExportBundle> {
 export function buildExportJson(bundle: ExportBundle): string {
   return JSON.stringify(
     {
-      app: 'MacroTrack',
+      app: 'Etto',
       schema: 1,
       exportedAt: bundle.exportedAt,
       units: {
@@ -197,14 +197,14 @@ export function buildFoodLogCsv(bundle: ExportBundle): string {
   return rows.join('\r\n') + '\r\n'
 }
 
-/** `macrotrack-export-2026-08-12.json` — sortable, and obvious a year later. */
+/** `etto-export-2026-08-12.json` — sortable, and obvious a year later. */
 export function exportFilename(format: ExportFormat, at = new Date()): string {
   const iso = `${at.getFullYear()}-${String(at.getMonth() + 1).padStart(2, '0')}-${String(
     at.getDate(),
   ).padStart(2, '0')}`
   return format === 'csv'
-    ? `macrotrack-food-log-${iso}.csv`
-    : `macrotrack-export-${iso}.json`
+    ? `etto-food-log-${iso}.csv`
+    : `etto-export-${iso}.json`
 }
 
 const MIME: Record<ExportFormat, string> = {

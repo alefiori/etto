@@ -65,11 +65,26 @@ export function detectBrowserLocale(): Locale {
  * what makes the device language the first-run default (see
  * {@link initialLocale}), and it must stay empty for the device to keep winning.
  */
-const LOCALE_STORAGE_KEY = 'macrotrack.locale'
+const LOCALE_STORAGE_KEY = 'etto.locale'
+
+/**
+ * The key this choice lived under before the rename to Etto. Read once as a
+ * fallback and migrated forward on first access, so an existing native-app
+ * install keeps its language. Web visitors arrive on a fresh origin without it.
+ */
+const LEGACY_LOCALE_STORAGE_KEY = 'macrotrack.locale'
 
 export function getStoredLocale(): Locale | null {
   try {
-    const stored = localStorage.getItem(LOCALE_STORAGE_KEY)
+    let stored = localStorage.getItem(LOCALE_STORAGE_KEY)
+    if (stored === null) {
+      const legacy = localStorage.getItem(LEGACY_LOCALE_STORAGE_KEY)
+      if (legacy !== null) {
+        localStorage.setItem(LOCALE_STORAGE_KEY, legacy)
+        localStorage.removeItem(LEGACY_LOCALE_STORAGE_KEY)
+        stored = legacy
+      }
+    }
     return stored && isLocale(stored) ? stored : null
   } catch {
     return null // Storage can be unavailable (private mode, blocked cookies).

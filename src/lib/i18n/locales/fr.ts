@@ -318,7 +318,7 @@ export const fr: Translation = {
   about: {
     title: 'À propos et mentions légales',
     disclaimer:
-      'MacroTrack est un outil de suivi, pas un avis médical. Les objectifs et les estimations sont calculés à partir de ce que vous saisissez et peuvent être erronés. Consultez un médecin ou un diététicien avant de modifier votre alimentation.',
+      'Etto est un outil de suivi, pas un avis médical. Les objectifs et les estimations sont calculés à partir de ce que vous saisissez et peuvent être erronés. Consultez un médecin ou un diététicien avant de modifier votre alimentation.',
     support: 'Contacter l’assistance',
     version: 'Version {version}',
   },
@@ -412,7 +412,7 @@ export const fr: Translation = {
     remindersEvery: 'Fréquence',
     remindersPerDayOne: '1 rappel par jour',
     remindersPerDayOther: '{count} rappels par jour',
-    remindersDenied: 'Les notifications de MacroTrack sont désactivées. Autorisez-les dans les réglages de votre appareil pour recevoir les rappels.',
+    remindersDenied: 'Les notifications de Etto sont désactivées. Autorisez-les dans les réglages de votre appareil pour recevoir les rappels.',
     remindersMobileOnly: 'Les rappels arrivent dans les applications iOS et Android — un onglet de navigateur ne peut pas se réveiller seul. Vos réglages d’ici s’y appliquent.',
     couldNotSaveReminders: 'Impossible d’enregistrer les rappels. Veuillez réessayer.',
   },
@@ -446,7 +446,7 @@ export const fr: Translation = {
     disclaimer: 'Estimations uniquement — ceci n’est pas un avis médical.',
   },
   paywall: {
-    title: 'MacroTrack Pro',
+    title: 'Etto Pro',
     subtitle: 'Des objectifs qui apprennent de vous, les tendances derrière, et tout ce que vous suivez au-delà des aliments.',
     featureAdaptive: 'Objectifs adaptatifs qui s’ajustent à ce que vous dépensez vraiment',
     featureWeight: 'Suivi du poids, courbe de tendance et historique complet',

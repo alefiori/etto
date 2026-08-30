@@ -9,11 +9,11 @@ describe('MAX_TEXT_ZOOM', () => {
 
 describe('packageOf', () => {
   it('reads the package from a Java source', () => {
-    expect(packageOf('package app.macrotrack;\n\npublic class MainActivity {}')).toBe('app.macrotrack')
+    expect(packageOf('package fitness.etto;\n\npublic class MainActivity {}')).toBe('fitness.etto')
   })
 
   it('reads the package from a Kotlin source (no semicolon)', () => {
-    expect(packageOf('package app.macrotrack\n\nclass MainActivity')).toBe('app.macrotrack')
+    expect(packageOf('package fitness.etto\n\nclass MainActivity')).toBe('fitness.etto')
   })
 
   it('returns null when there is no package line', () => {
@@ -22,10 +22,10 @@ describe('packageOf', () => {
 })
 
 describe('javaSource', () => {
-  const src = javaSource('app.macrotrack')
+  const src = javaSource('fitness.etto')
 
   it('keeps the original package', () => {
-    expect(src).toContain('package app.macrotrack;')
+    expect(src).toContain('package fitness.etto;')
   })
 
   it('extends BridgeActivity and imports it', () => {
@@ -45,11 +45,11 @@ describe('javaSource', () => {
 })
 
 describe('kotlinSource', () => {
-  const src = kotlinSource('app.macrotrack')
+  const src = kotlinSource('fitness.etto')
 
   it('keeps the package without a semicolon', () => {
-    expect(src).toContain('package app.macrotrack\n')
-    expect(src).not.toContain('package app.macrotrack;')
+    expect(src).toContain('package fitness.etto\n')
+    expect(src).not.toContain('package fitness.etto;')
   })
 
   it('clamps the WebView text zoom rather than pinning it', () => {

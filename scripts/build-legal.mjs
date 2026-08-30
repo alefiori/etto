@@ -34,7 +34,7 @@ const OUT_DIR = 'public/legal'
 
 /** Kept in sync with PLACEHOLDER_EMAIL in src/lib/legal.ts. */
 export const PLACEHOLDER_EMAIL = 'support@example.invalid'
-export const DEFAULT_SITE_URL = 'https://macros-track.netlify.app'
+export const DEFAULT_SITE_URL = 'https://etto.fitness'
 
 /** The documents to render: source fragment -> output file, plus its metadata. */
 export const DOCUMENTS = [
@@ -42,13 +42,13 @@ export const DOCUMENTS = [
     src: 'privacy.html',
     out: 'privacy.html',
     title: 'Privacy Policy',
-    description: 'What MacroTrack stores, why, who else processes it, and how to erase it.',
+    description: 'What Etto stores, why, who else processes it, and how to erase it.',
   },
   {
     src: 'terms.html',
     out: 'terms.html',
     title: 'Terms of Use',
-    description: 'The terms governing use of MacroTrack, including MacroTrack Pro subscriptions.',
+    description: 'The terms governing use of Etto, including Etto Pro subscriptions.',
   },
 ]
 

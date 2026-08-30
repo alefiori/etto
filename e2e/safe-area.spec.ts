@@ -67,10 +67,10 @@ test.describe('safe areas on a notched phone', () => {
     // navigation landmarks were already competing in the landmark list.
     const topBar = page
       .locator('header')
-      .filter({ has: page.getByRole('heading', { name: 'MacroTrack' }) })
+      .filter({ has: page.getByRole('heading', { name: 'Etto' }) })
     await expectBelowNotch(topBar.getByRole('link'), 'the top bar profile button')
     await expectBelowNotch(
-      page.getByRole('heading', { name: 'MacroTrack' }),
+      page.getByRole('heading', { name: 'Etto' }),
       'the top bar wordmark',
     )
   })

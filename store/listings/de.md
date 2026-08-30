@@ -9,7 +9,7 @@ langes Feld wird beim Upload abgelehnt, nicht erst im Review.
 
 ## App name [30]
 
-MacroTrack
+Etto
 
 ## Subtitle — App Store [30]
 
@@ -30,7 +30,7 @@ makro,makros,kalorien,zähler,ernährung,eiweiß,protein,kohlenhydrate,diät,tag
 
 ## Full description [4000]
 
-MacroTrack ist ein Makronährstoff-Tracker für alle, die schon wissen, was sie
+Etto ist ein Makronährstoff-Tracker für alle, die schon wissen, was sie
 essen wollen, und ihre Zahlen einfach treffen möchten, ohne sich mit einer App
 zu streiten.
 
@@ -38,13 +38,13 @@ zu streiten.
 Konto — bis du deine Daten auf einem zweiten Gerät haben willst.
 
 **Ziele, die zu deiner Woche passen**
-Die meisten Apps geben ein einziges Tagesziel. MacroTrack gibt sieben: Stelle
+Die meisten Apps geben ein einziges Tagesziel. Etto gibt sieben: Stelle
 Kohlenhydrate, Eiweiß und Fett für jeden Wochentag ein, damit ein Trainingstag
 und ein Ruhetag nicht dieselbe Zahl sind. Und wenn doch, kopierst du einen Tag
 auf die ganze Woche.
 
 **Erfassen, das nicht bremst**
-Suche in deinen eigenen Lebensmitteln, in denen anderer MacroTrack-Nutzer, in
+Suche in deinen eigenen Lebensmitteln, in denen anderer Etto-Nutzer, in
 nationalen Nährwerttabellen und in zwei kostenlosen Datenbanken — Open Food Facts
 und USDA FoodData Central — in einer einzigen Liste, jedes Ergebnis mit seiner
 Herkunft gekennzeichnet. Oder scanne den Barcode auf der Packung und überspringe die Suche
@@ -85,7 +85,7 @@ Portugiesisch und Niederländisch — folgt deiner Gerätesprache, bis du eine
 wählst. Helles und dunkles Design, das ebenfalls dem Gerät folgt. Ein echtes
 Tablet-Layout statt eines vergrößerten Handys.
 
-**MacroTrack Pro (optional)**
+**Etto Pro (optional)**
 Erfassen, Barcode-Scanner, eigene und geteilte Lebensmittel, Mahlzeiten,
 Wochenziele und alle sieben Sprachen sind kostenlos, ganz ohne Konto. Pro ergänzt
 das, was darauf aufbaut: Gewicht und Wasser, Trink-Erinnerungen, einen Export von
@@ -101,7 +101,7 @@ sie in den Kontoeinstellungen deines Stores.
 
 ---
 
-MacroTrack ist ein Tracking-Werkzeug und keine medizinische Beratung. Ziele und
+Etto ist ein Tracking-Werkzeug und keine medizinische Beratung. Ziele und
 Schätzungen werden aus deinen Eingaben berechnet und können falsch sein. Sprich
 mit einer Ärztin oder einer Ernährungsberatung, bevor du deine Ernährung
 umstellst.

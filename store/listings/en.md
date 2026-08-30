@@ -12,7 +12,7 @@ commit, and not before.
 
 ## App name [30]
 
-MacroTrack
+Etto
 
 ## Subtitle — App Store [30]
 
@@ -33,19 +33,19 @@ macro,macros,calorie,counter,nutrition,protein,carbs,diet,food,diary,barcode,wei
 
 ## Full description [4000]
 
-MacroTrack is a daily macronutrient tracker for people who already know what
+Etto is a daily macronutrient tracker for people who already know what
 they want to eat and just want to hit their numbers without a fight.
 
 Open it and start logging. No sign-up wall, no onboarding questionnaire, no
 account required until you want your data on a second device.
 
 **Targets that match your week**
-Most trackers give you one daily goal. MacroTrack gives you seven — set carbs,
+Most trackers give you one daily goal. Etto gives you seven — set carbs,
 protein and fats for each weekday, so a training day and a rest day are not the
 same number. Copy one day across the whole week when they are.
 
 **Logging that gets out of the way**
-Search your own foods, foods shared by other MacroTrack users, national
+Search your own foods, foods shared by other Etto users, national
 food-composition tables and two free nutrition databases — Open Food Facts and
 USDA FoodData Central — in one list, each result tagged with where it came from. Or scan the barcode on the
 package and skip the search entirely.
@@ -84,7 +84,7 @@ Available in English, Italian, French, Spanish, German, Portuguese and Dutch —
 following your device language until you pick one. Light and dark themes, also
 following your device. A real tablet layout rather than a stretched phone one.
 
-**MacroTrack Pro (optional)**
+**Etto Pro (optional)**
 Logging, barcode scanning, custom and community foods, meals, weekly targets and
 all seven languages are free, with no account needed. Pro adds the tracking built
 on top of them: weight and water, hydration reminders, an export of everything
@@ -99,7 +99,7 @@ in your store account settings.
 
 ---
 
-MacroTrack is a tracking tool, not medical advice. Targets and estimates are
+Etto is a tracking tool, not medical advice. Targets and estimates are
 calculated from what you enter and can be wrong. Talk to a doctor or dietitian
 before changing your diet.
 

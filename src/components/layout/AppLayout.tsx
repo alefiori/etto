@@ -50,7 +50,7 @@ function Sidebar() {
           <Icon name="track_changes" fill />
         </div>
         <div>
-          <h1 className="font-headline-md text-headline-md font-bold text-primary">MacroTrack</h1>
+          <h1 className="font-headline-md text-headline-md font-bold text-primary">Etto</h1>
           <p className="font-label-md text-label-md font-normal text-on-surface-variant">
             {t('nav.healthCompanion')}
           </p>
@@ -172,7 +172,7 @@ function NavRail() {
   return (
     // Same 80px lane as before, floated off every edge and capped into a pill.
     <aside className="fixed left-[calc(--spacing(3)+(var(--spacing-safe-left)))] top-[calc(--spacing(3)+(var(--spacing-safe-top)))] bottom-[calc(--spacing(3)+(var(--spacing-safe-bottom)))] z-30 hidden w-[80px] shrink-0 flex-col items-center gap-1 rounded-[40px] py-3 md:flex lg:hidden glass-chrome">
-      <NavLink to="/" aria-label="MacroTrack" className="mb-1">
+      <NavLink to="/" aria-label="Etto" className="mb-1">
         <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-primary-tint/[0.14] text-primary">
           <Icon name="track_changes" fill className="text-[1.25rem]" />
         </div>
@@ -253,7 +253,7 @@ function TopAppBar({ barRef }: { barRef: React.Ref<HTMLElement> }) {
         }}
       />
       <div className="relative flex items-center justify-between px-container-margin-mobile py-md pt-[calc(var(--spacing-md)+(var(--spacing-safe-top)))]">
-        <h1 className="font-headline-md text-headline-md font-bold text-primary">MacroTrack</h1>
+        <h1 className="font-headline-md text-headline-md font-bold text-primary">Etto</h1>
         <NavLink
           to="/profile"
           aria-label={t('nav.profile')}

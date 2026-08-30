@@ -99,7 +99,7 @@ export function seedPro(store: Store, overrides: Row = {}) {
   store.subscriptions.push({
     user_id: USER_ID,
     entitlement: 'pro',
-    product_id: 'macrotrack_pro_yearly',
+    product_id: 'etto_pro_yearly',
     store: 'app_store',
     period_type: 'normal',
     original_transaction_id: 'txn-1',

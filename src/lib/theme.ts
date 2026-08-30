@@ -29,11 +29,27 @@ export function isThemePreference(value: string): value is ThemePreference {
  * Kept in sync with the inline bootstrap script in index.html, which reads this
  * same key before React mounts to avoid a flash of the wrong theme.
  */
-const THEME_STORAGE_KEY = 'macrotrack.theme'
+const THEME_STORAGE_KEY = 'etto.theme'
+
+/**
+ * The key this preference lived under before the rename to Etto. Read once as a
+ * fallback and migrated forward on first access, so an existing native-app
+ * install keeps its theme. Web visitors arrive on a fresh origin and never have
+ * it. Mirrored by the inline bootstrap script in index.html.
+ */
+const LEGACY_THEME_STORAGE_KEY = 'macrotrack.theme'
 
 export function getStoredTheme(): ThemePreference | null {
   try {
-    const stored = localStorage.getItem(THEME_STORAGE_KEY)
+    let stored = localStorage.getItem(THEME_STORAGE_KEY)
+    if (stored === null) {
+      const legacy = localStorage.getItem(LEGACY_THEME_STORAGE_KEY)
+      if (legacy !== null) {
+        localStorage.setItem(THEME_STORAGE_KEY, legacy)
+        localStorage.removeItem(LEGACY_THEME_STORAGE_KEY)
+        stored = legacy
+      }
+    }
     return stored && isThemePreference(stored) ? stored : null
   } catch {
     return null // Storage can be unavailable (private mode, blocked cookies).

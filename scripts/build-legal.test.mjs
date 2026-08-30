@@ -11,7 +11,7 @@ import {
   strictFailures,
 } from './build-legal.mjs'
 
-const VALUES = { SITE_URL: 'https://macrotrack.test', SUPPORT_EMAIL: 'hi@macrotrack.test' }
+const VALUES = { SITE_URL: 'https://etto.test', SUPPORT_EMAIL: 'hi@etto.test' }
 
 describe('resolveValues', () => {
   it('falls back to the placeholder contact and the default origin', () => {
@@ -24,16 +24,16 @@ describe('resolveValues', () => {
   it('takes the configured values', () => {
     expect(
       resolveValues({
-        VITE_SITE_URL: 'https://macrotrack.test',
-        VITE_SUPPORT_EMAIL: 'hi@macrotrack.test',
+        VITE_SITE_URL: 'https://etto.test',
+        VITE_SUPPORT_EMAIL: 'hi@etto.test',
       }),
     ).toEqual(VALUES)
   })
 
   it('strips a trailing slash so URLs do not double up', () => {
     // `https://site//legal/terms.html` resolves but reads as broken in a listing.
-    expect(resolveValues({ VITE_SITE_URL: 'https://macrotrack.test//' }).SITE_URL).toBe(
-      'https://macrotrack.test',
+    expect(resolveValues({ VITE_SITE_URL: 'https://etto.test//' }).SITE_URL).toBe(
+      'https://etto.test',
     )
   })
 })
@@ -41,7 +41,7 @@ describe('resolveValues', () => {
 describe('substitute', () => {
   it('replaces every occurrence of a token', () => {
     expect(substitute('{{SUPPORT_EMAIL}} and {{SUPPORT_EMAIL}}', VALUES)).toBe(
-      'hi@macrotrack.test and hi@macrotrack.test',
+      'hi@etto.test and hi@etto.test',
     )
   })
 
@@ -83,13 +83,13 @@ describe('the rendered documents', () => {
       })
 
       it('carries the configured contact and origin', () => {
-        expect(html).toContain('hi@macrotrack.test')
-        expect(html).toContain('https://macrotrack.test')
+        expect(html).toContain('hi@etto.test')
+        expect(html).toContain('https://etto.test')
       })
 
       it('is a complete standalone page with the document title', () => {
         expect(html.startsWith('<!doctype html>')).toBe(true)
-        expect(html).toContain(`<title>${doc.title} — MacroTrack</title>`)
+        expect(html).toContain(`<title>${doc.title} — Etto</title>`)
         expect(html).toContain('</html>')
       })
 
@@ -103,7 +103,7 @@ describe('the rendered documents', () => {
         // stylesheet, font or script is one more thing that can fail.
         expect(html).not.toMatch(/<script/i)
         expect(html).not.toMatch(/<link[^>]+stylesheet/i)
-        expect(html).not.toMatch(/https?:\/\/(?!macrotrack\.test)/)
+        expect(html).not.toMatch(/https?:\/\/(?!etto\.test)/)
       })
     })
   }

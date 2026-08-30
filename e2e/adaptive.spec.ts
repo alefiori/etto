@@ -216,7 +216,7 @@ test.describe('adaptive targets behind the paywall', () => {
   })
 
   test('a lifetime purchase with no expiry does unlock it', async ({ page, store }) => {
-    seedPro(store, { expires_at: null, product_id: 'macrotrack_pro_lifetime' })
+    seedPro(store, { expires_at: null, product_id: 'etto_pro_lifetime' })
     await seedSession(page)
     await page.goto('/targets')
 
@@ -229,7 +229,7 @@ test.describe('adaptive targets behind the paywall', () => {
 
     await page.getByRole('button', { name: 'See Pro' }).click()
 
-    await expect(page.getByRole('heading', { name: 'MacroTrack Pro' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Etto Pro' })).toBeVisible()
     await expect(page.getByText('€24.99/year')).toBeVisible()
     // Both stores require the renewal terms on the paywall itself.
     await expect(page.getByText(/Subscriptions renew automatically/)).toBeVisible()

@@ -91,8 +91,17 @@ describe('stored locale', () => {
   })
 
   it('ignores a stored value that is not a supported locale', () => {
-    localStorage.setItem('macrotrack.locale', 'xx')
+    localStorage.setItem('etto.locale', 'xx')
     expect(getStoredLocale()).toBeNull()
+  })
+
+  // Renamed from `macrotrack.locale` when the app became Etto: a native install
+  // must keep its language on the first launch of the new build.
+  it('migrates a choice left under the pre-rename key', () => {
+    localStorage.setItem('macrotrack.locale', 'de')
+    expect(getStoredLocale()).toBe('de')
+    expect(localStorage.getItem('etto.locale')).toBe('de')
+    expect(localStorage.getItem('macrotrack.locale')).toBeNull()
   })
 })
 

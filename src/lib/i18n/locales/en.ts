@@ -326,7 +326,7 @@ export const en = {
   about: {
     title: 'About & legal',
     disclaimer:
-      'MacroTrack is a tracking tool, not medical advice. Targets and estimates are calculated from what you enter and can be wrong. Talk to a doctor or dietitian before changing your diet.',
+      'Etto is a tracking tool, not medical advice. Targets and estimates are calculated from what you enter and can be wrong. Talk to a doctor or dietitian before changing your diet.',
     support: 'Contact support',
     version: 'Version {version}',
   },
@@ -420,7 +420,7 @@ export const en = {
     remindersEvery: 'How often',
     remindersPerDayOne: '1 reminder a day',
     remindersPerDayOther: '{count} reminders a day',
-    remindersDenied: 'Notifications are switched off for MacroTrack. Allow them in your device settings to be reminded.',
+    remindersDenied: 'Notifications are switched off for Etto. Allow them in your device settings to be reminded.',
     remindersMobileOnly: 'Reminders arrive in the iOS and Android apps — a browser tab can’t wake itself up. What you set here applies there.',
     couldNotSaveReminders: 'Could not save your reminder settings. Please try again.',
   },
@@ -454,7 +454,7 @@ export const en = {
     disclaimer: 'Estimates only — this is not medical advice.',
   },
   paywall: {
-    title: 'MacroTrack Pro',
+    title: 'Etto Pro',
     subtitle: 'Targets that learn from you, the trends behind them, and everything you track beyond food.',
     featureAdaptive: 'Adaptive targets that adjust to what you actually burn',
     featureWeight: 'Weight tracking, the smoothed trend and full history',

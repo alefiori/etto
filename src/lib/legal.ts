@@ -24,7 +24,7 @@
 /** Fallback used by dev and CI builds, where the real values aren't configured. */
 const PLACEHOLDER_EMAIL = 'support@example.invalid'
 
-export const SITE_URL = (import.meta.env.VITE_SITE_URL ?? 'https://macros-track.netlify.app')
+export const SITE_URL = (import.meta.env.VITE_SITE_URL ?? 'https://etto.fitness')
   .toString()
   .replace(/\/+$/, '')
 

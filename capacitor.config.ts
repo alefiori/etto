@@ -8,8 +8,8 @@ import { KeyboardResize } from '@capacitor/keyboard'
  * `webDir` must be set: Vite emits to dist/, Capacitor defaults to www/.
  */
 const config: CapacitorConfig = {
-  appId: 'app.macrotrack',
-  appName: 'MacroTrack',
+  appId: 'fitness.etto',
+  appName: 'Etto',
   webDir: 'dist',
   // The PWA manifest's orientation/theme are inert natively; the theme is set
   // via @capacitor/status-bar at runtime.

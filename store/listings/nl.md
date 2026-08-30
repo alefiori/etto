@@ -9,7 +9,7 @@ wordt bij het uploaden geweigerd, niet pas bij de review.
 
 ## App name [30]
 
-MacroTrack
+Etto
 
 ## Subtitle — App Store [30]
 
@@ -30,19 +30,19 @@ macro,macros,calorie,teller,voeding,eiwit,koolhydraten,dieet,eten,dagboek,barcod
 
 ## Full description [4000]
 
-MacroTrack is een macronutriëntentracker voor wie al weet wat hij wil eten en
+Etto is een macronutriëntentracker voor wie al weet wat hij wil eten en
 gewoon zijn cijfers wil halen zonder met een app te vechten.
 
 Openen en beginnen. Geen verplichte registratie, geen vragenlijst vooraf, geen
 account tot je je gegevens op een tweede apparaat wilt.
 
 **Doelen die bij je week passen**
-De meeste apps geven één dagdoel. MacroTrack geeft er zeven: stel koolhydraten,
+De meeste apps geven één dagdoel. Etto geeft er zeven: stel koolhydraten,
 eiwitten en vetten per weekdag in, zodat een trainingsdag en een rustdag niet
 hetzelfde getal zijn. En als dat wel zo is, kopieer je één dag naar de hele week.
 
 **Invoeren dat niet in de weg zit**
-Zoek in je eigen voeding, in die van andere MacroTrack-gebruikers, in nationale
+Zoek in je eigen voeding, in die van andere Etto-gebruikers, in nationale
 voedingswaardetabellen en in twee gratis databases — Open Food Facts en USDA
 FoodData Central — in één lijst, met bij elk resultaat waar het vandaan komt. Of scan de barcode op de
 verpakking en sla het zoeken helemaal over.
@@ -82,7 +82,7 @@ Nederlands — volgt je apparaattaal tot je er een kiest. Lichte en donkere
 thema's, die het apparaat ook volgen. Een echte tabletindeling, geen uitgerekte
 telefoon.
 
-**MacroTrack Pro (optioneel)**
+**Etto Pro (optioneel)**
 Noteren, scannen, eigen en gedeelde voedingsmiddelen, maaltijden, weekdoelen en
 alle zeven talen zijn gratis, zonder account. Pro voegt toe wat daarop voortbouwt:
 gewicht en water, hydratatieherinneringen, een export van alles wat je hebt
@@ -98,7 +98,7 @@ de accountinstellingen van je store.
 
 ---
 
-MacroTrack is een registratiehulpmiddel, geen medisch advies. Doelen en
+Etto is een registratiehulpmiddel, geen medisch advies. Doelen en
 schattingen worden berekend uit wat je invult en kunnen onjuist zijn. Overleg met
 een arts of diëtist voordat je je voeding verandert.
 

@@ -77,7 +77,7 @@
   <!-- text-anchor rather than the textLength pinning the old layout used:
        centring holds whatever width the rasterizer's fallback font produces,
        so nothing has to be distorted to stay in place. -->
-  <text x="1366" y="1560" text-anchor="middle" font-family="Manrope, -apple-system, Roboto, 'Helvetica Neue', sans-serif" font-size="124" font-weight="800" letter-spacing="-4" fill="#14141C">MacroTrack</text>
+  <text x="1366" y="1560" text-anchor="middle" font-family="Manrope, -apple-system, Roboto, 'Helvetica Neue', sans-serif" font-size="124" font-weight="800" letter-spacing="-4" fill="#14141C">Etto</text>
   <text x="1366" y="1648" text-anchor="middle" font-family="Manrope, -apple-system, Roboto, 'Helvetica Neue', sans-serif" font-size="52" font-weight="400" fill="#5A5A68">Track your macros, reach your goals.</text>
 
   <rect x="1216" y="1734" width="300" height="10" rx="5" fill="#DCDCE8"></rect>

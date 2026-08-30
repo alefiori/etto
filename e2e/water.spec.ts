@@ -218,6 +218,6 @@ test.describe('hydration behind the paywall', () => {
 
     await page.getByRole('button', { name: 'See Pro' }).first().click()
 
-    await expect(page.getByRole('heading', { name: 'MacroTrack Pro', level: 2 })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Etto Pro', level: 2 })).toBeVisible()
   })
 })

@@ -318,7 +318,7 @@ export const pt: Translation = {
   about: {
     title: 'Sobre e informação legal',
     disclaimer:
-      'O MacroTrack é uma ferramenta de registo, não aconselhamento médico. Os objetivos e as estimativas são calculados a partir do que introduz e podem estar errados. Fale com um médico ou nutricionista antes de mudar a sua alimentação.',
+      'O Etto é uma ferramenta de registo, não aconselhamento médico. Os objetivos e as estimativas são calculados a partir do que introduz e podem estar errados. Fale com um médico ou nutricionista antes de mudar a sua alimentação.',
     support: 'Contactar o apoio',
     version: 'Versão {version}',
   },
@@ -412,7 +412,7 @@ export const pt: Translation = {
     remindersEvery: 'Com que frequência',
     remindersPerDayOne: '1 lembrete por dia',
     remindersPerDayOther: '{count} lembretes por dia',
-    remindersDenied: 'As notificações do MacroTrack estão desativadas. Permita-as nas definições do dispositivo para receber lembretes.',
+    remindersDenied: 'As notificações do Etto estão desativadas. Permita-as nas definições do dispositivo para receber lembretes.',
     remindersMobileOnly: 'Os lembretes chegam nas apps iOS e Android — um separador do navegador não se consegue acordar sozinho. O que definir aqui aplica-se lá.',
     couldNotSaveReminders: 'Não foi possível guardar os lembretes. Tente novamente.',
   },
@@ -446,7 +446,7 @@ export const pt: Translation = {
     disclaimer: 'Apenas estimativas — isto não é aconselhamento médico.',
   },
   paywall: {
-    title: 'MacroTrack Pro',
+    title: 'Etto Pro',
     subtitle: 'Objetivos que aprendem consigo, as tendências por trás e tudo o que regista para além da comida.',
     featureAdaptive: 'Objetivos adaptativos que se ajustam ao que gasta mesmo',
     featureWeight: 'Registo do peso, tendência e histórico completo',

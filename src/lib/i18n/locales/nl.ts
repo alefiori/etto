@@ -318,7 +318,7 @@ export const nl: Translation = {
   about: {
     title: 'Over & juridisch',
     disclaimer:
-      'MacroTrack is een registratiehulpmiddel, geen medisch advies. Doelen en schattingen worden berekend uit wat je invult en kunnen onjuist zijn. Overleg met een arts of diëtist voordat je je voeding verandert.',
+      'Etto is een registratiehulpmiddel, geen medisch advies. Doelen en schattingen worden berekend uit wat je invult en kunnen onjuist zijn. Overleg met een arts of diëtist voordat je je voeding verandert.',
     support: 'Contact met support',
     version: 'Versie {version}',
   },
@@ -412,7 +412,7 @@ export const nl: Translation = {
     remindersEvery: 'Hoe vaak',
     remindersPerDayOne: '1 herinnering per dag',
     remindersPerDayOther: '{count} herinneringen per dag',
-    remindersDenied: 'Meldingen voor MacroTrack staan uit. Sta ze toe in je apparaatinstellingen om herinneringen te ontvangen.',
+    remindersDenied: 'Meldingen voor Etto staan uit. Sta ze toe in je apparaatinstellingen om herinneringen te ontvangen.',
     remindersMobileOnly: 'Herinneringen komen in de iOS- en Android-apps — een browsertabblad kan zichzelf niet wekken. Wat je hier instelt, geldt daar.',
     couldNotSaveReminders: 'Herinneringen konden niet worden opgeslagen. Probeer het opnieuw.',
   },
@@ -446,7 +446,7 @@ export const nl: Translation = {
     disclaimer: 'Alleen schattingen — dit is geen medisch advies.',
   },
   paywall: {
-    title: 'MacroTrack Pro',
+    title: 'Etto Pro',
     subtitle: 'Doelen die van je leren, de trends erachter, en alles wat je naast eten bijhoudt.',
     featureAdaptive: 'Adaptieve doelen die zich aanpassen aan wat je echt verbruikt',
     featureWeight: 'Gewicht bijhouden, trendlijn en volledige geschiedenis',

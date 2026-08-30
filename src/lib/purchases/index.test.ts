@@ -77,14 +77,14 @@ describe('defaultOffers', () => {
 describe('plan configuration', () => {
   it('names the three products every store is configured with', () => {
     expect(PLANS.map((p) => p.productId)).toEqual([
-      'macrotrack_pro_monthly',
-      'macrotrack_pro_yearly',
-      'macrotrack_pro_lifetime',
+      'etto_pro_monthly',
+      'etto_pro_yearly',
+      'etto_pro_lifetime',
     ])
   })
 
   it('resolves a product id from a plan id', () => {
-    expect(productIdFor('yearly')).toBe('macrotrack_pro_yearly')
+    expect(productIdFor('yearly')).toBe('etto_pro_yearly')
   })
 
   it('gates on the entitlement id the webhook defaults to', () => {

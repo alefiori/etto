@@ -318,7 +318,7 @@ export const de: Translation = {
   about: {
     title: 'Über die App & Rechtliches',
     disclaimer:
-      'MacroTrack ist ein Tracking-Werkzeug und keine medizinische Beratung. Ziele und Schätzungen werden aus deinen Eingaben berechnet und können falsch sein. Sprich mit einer Ärztin oder einer Ernährungsberatung, bevor du deine Ernährung umstellst.',
+      'Etto ist ein Tracking-Werkzeug und keine medizinische Beratung. Ziele und Schätzungen werden aus deinen Eingaben berechnet und können falsch sein. Sprich mit einer Ärztin oder einer Ernährungsberatung, bevor du deine Ernährung umstellst.',
     support: 'Support kontaktieren',
     version: 'Version {version}',
   },
@@ -412,7 +412,7 @@ export const de: Translation = {
     remindersEvery: 'Wie oft',
     remindersPerDayOne: '1 Erinnerung pro Tag',
     remindersPerDayOther: '{count} Erinnerungen pro Tag',
-    remindersDenied: 'Benachrichtigungen für MacroTrack sind ausgeschaltet. Erlaube sie in den Geräteeinstellungen, um erinnert zu werden.',
+    remindersDenied: 'Benachrichtigungen für Etto sind ausgeschaltet. Erlaube sie in den Geräteeinstellungen, um erinnert zu werden.',
     remindersMobileOnly: 'Erinnerungen kommen in den iOS- und Android-Apps — ein Browser-Tab kann sich nicht selbst aufwecken. Was du hier einstellst, gilt auch dort.',
     couldNotSaveReminders: 'Erinnerungen konnten nicht gespeichert werden. Bitte versuche es erneut.',
   },
@@ -446,7 +446,7 @@ export const de: Translation = {
     disclaimer: 'Nur Schätzungen — dies ist keine medizinische Beratung.',
   },
   paywall: {
-    title: 'MacroTrack Pro',
+    title: 'Etto Pro',
     subtitle: 'Ziele, die von dir lernen, die Trends dahinter — und alles, was du neben dem Essen verfolgst.',
     featureAdaptive: 'Adaptive Ziele, die sich an deinen echten Verbrauch anpassen',
     featureWeight: 'Gewicht erfassen, Trendlinie und vollständiger Verlauf',

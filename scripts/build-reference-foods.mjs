@@ -44,7 +44,7 @@ const CREA_VERSION = 'crea-2019'
 // Identifies the project and a contact, the same courtesy the Edge Function
 // extends to Open Food Facts.
 const USER_AGENT =
-  'MacroTrack/0.1 (daily macros tracker; +https://github.com/alefiori/macro-track; alefiori97@gmail.com)'
+  'Etto/0.1 (daily macros tracker; +https://github.com/alefiori/etto; alefiori97@gmail.com)'
 
 const sha256 = (buf) => createHash('sha256').update(buf).digest('hex')
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))

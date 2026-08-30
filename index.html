@@ -6,14 +6,23 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <title>MacroTrack — Daily Macros Tracker</title>
+    <!--
+      Title and description are kept in step with the PWA manifest in
+      vite.config.ts and with store/listings/en.md: the description is that
+      file's Play short description verbatim, so the web page, the install
+      prompt and the store listing say the same thing.
+    -->
+    <title>Etto — Daily Macro Tracker</title>
 
     <!-- PWA / installability -->
-    <meta name="description" content="Track your daily calories and macronutrients." />
+    <meta
+      name="description"
+      content="Track carbs, protein and fats against goals you set for each day of the week."
+    />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="MacroTrack" />
+    <meta name="apple-mobile-web-app-title" content="Etto" />
     <!-- Fonts: Manrope + Material Symbols Outlined (as in the Stitch export),
          self-hosted from /public/fonts. They must not come from a CDN: Icon.tsx
          renders Material Symbols as a *ligature*, so if that font fails to load
@@ -51,12 +60,14 @@
       deliberately tiny and duplicated rather than imported — it mirrors
       getStoredTheme/detectDeviceTheme/applyTheme in src/lib/theme.ts, including
       the storage key, and those are the source of truth for everything after
-      this moment.
+      this moment. The legacy `macrotrack.theme` fallback matches the one-time
+      migration in theme.ts; theme.ts rewrites it to `etto.theme` on boot.
     -->
     <script>
       ;(function () {
         try {
-          var stored = localStorage.getItem('macrotrack.theme')
+          var stored =
+            localStorage.getItem('etto.theme') || localStorage.getItem('macrotrack.theme')
           var dark =
             stored === 'dark' ||
             (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)

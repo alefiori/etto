@@ -17,7 +17,7 @@ const TEMPLATE_PLIST = `<?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>MacroTrack</string>
+	<string>Etto</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 </dict>
@@ -63,7 +63,7 @@ const TEMPLATE_PBXPROJ = `// !$*UTF8*$!
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
-				PRODUCT_BUNDLE_IDENTIFIER = app.macrotrack;
+				PRODUCT_BUNDLE_IDENTIFIER = fitness.etto;
 			};
 			name = Debug;
 		};
@@ -72,7 +72,7 @@ const TEMPLATE_PBXPROJ = `// !$*UTF8*$!
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
-				PRODUCT_BUNDLE_IDENTIFIER = app.macrotrack;
+				PRODUCT_BUNDLE_IDENTIFIER = fitness.etto;
 			};
 			name = Release;
 		};
@@ -243,7 +243,7 @@ describe('patchSigning', () => {
   it('leaves the rest of the build settings alone', () => {
     const { pbxproj } = patchSigning(TEMPLATE_PBXPROJ, TEAM)
     expect(pbxproj).toMatch(/CODE_SIGN_STYLE = Automatic;/)
-    expect(pbxproj).toMatch(/PRODUCT_BUNDLE_IDENTIFIER = app\.macrotrack;/)
+    expect(pbxproj).toMatch(/PRODUCT_BUNDLE_IDENTIFIER = fitness\.etto;/)
   })
 
   it('reports zero when the template stops declaring the key', () => {

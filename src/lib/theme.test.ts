@@ -54,7 +54,7 @@ describe('preference storage', () => {
     storeTheme('dark')
     storeTheme('system')
     expect(getStoredTheme()).toBeNull()
-    expect(localStorage.getItem('macrotrack.theme')).toBeNull()
+    expect(localStorage.getItem('etto.theme')).toBeNull()
   })
 
   it('clearing is the same as choosing system', () => {
@@ -64,8 +64,24 @@ describe('preference storage', () => {
   })
 
   it('ignores a value that is not a preference', () => {
-    localStorage.setItem('macrotrack.theme', 'sepia')
+    localStorage.setItem('etto.theme', 'sepia')
     expect(getStoredTheme()).toBeNull()
+  })
+
+  // Renamed from `macrotrack.theme` when the app became Etto. A native install
+  // carrying the old key must not lose its theme on first launch of the new
+  // build.
+  it('migrates a value left under the pre-rename key', () => {
+    localStorage.setItem('macrotrack.theme', 'dark')
+    expect(getStoredTheme()).toBe('dark')
+    expect(localStorage.getItem('etto.theme')).toBe('dark')
+    expect(localStorage.getItem('macrotrack.theme')).toBeNull()
+  })
+
+  it('prefers the current key over a stale pre-rename one', () => {
+    localStorage.setItem('macrotrack.theme', 'dark')
+    localStorage.setItem('etto.theme', 'light')
+    expect(getStoredTheme()).toBe('light')
   })
 
   it('recognises only the three preferences', () => {

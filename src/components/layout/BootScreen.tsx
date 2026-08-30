@@ -54,7 +54,7 @@ export function BootScreen({ label }: { label: string }) {
 
       <div className="flex flex-col items-center gap-1.5 text-center">
         <h1 className="font-headline-lg text-[2.125rem] font-bold leading-9 tracking-[-0.03em] text-on-surface">
-          MacroTrack
+          Etto
         </h1>
         {/* Its own line rather than the drawer's "Health Companion": that
             string is a label for a nav pane that is already on screen, and this

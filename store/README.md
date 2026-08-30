@@ -65,7 +65,7 @@ Also true, and asked in both forms:
 
 ### Health apps declaration (Play)
 
-MacroTrack is a **health and fitness** app that handles user-entered dietary and
+Etto is a **health and fitness** app that handles user-entered dietary and
 body-measurement data. It is:
 
 - **not** a medical device, and makes no diagnostic or treatment claims;
@@ -86,12 +86,12 @@ Families" programme.
 
 ### App Review notes (Apple) — paste into the submission
 
-> MacroTrack opens as a guest: an anonymous account is created automatically on
+> Etto opens as a guest: an anonymous account is created automatically on
 > first launch, so no demo credentials are needed. Every feature except
 > purchases is reachable immediately.
 >
 > To review the paywall, open Weekly Targets and tap "See Pro" on the Adaptive
-> targets card, or Profile → MacroTrack Pro. Pro unlocks four things: adaptive
+> targets card, or Profile → Etto Pro. Pro unlocks four things: adaptive
 > targets (Weekly Targets), the weight trend chart and its 30/90/365-day history
 > (Dashboard → Weight), hydration reminders (Profile → Hydration reminders,
 > which asks for notification permission when switched on), and data export
@@ -100,7 +100,7 @@ Families" programme.
 > free and needs no purchase.
 >
 > Restore purchases is available without a subscription, at Profile →
-> MacroTrack Pro and on the paywall itself.
+> Etto Pro and on the paywall itself.
 >
 > The same subscription can also be bought on our website, and the app honours a
 > subscription bought there (Guideline 3.1.3(b)). Purchases made *inside* the app
@@ -130,8 +130,8 @@ Guideline 2.1 rejection.
       one is ever pulled, its line comes out of `FEATURE_KEYS` in
       `src/components/paywall/PaywallModal.tsx` first.
 - [ ] The three products exist and are **approved** in App Store Connect and the
-      Play Console: `macrotrack_pro_monthly`, `macrotrack_pro_yearly`,
-      `macrotrack_pro_lifetime`. Apple will not review a build whose IAPs are
+      Play Console: `etto_pro_monthly`, `etto_pro_yearly`,
+      `etto_pro_lifetime`. Apple will not review a build whose IAPs are
       still in "Missing Metadata".
 - [ ] In RevenueCat: all three attached to an entitlement named exactly `pro`,
       offered through the **current** offering, and the webhook pointed at the
@@ -150,7 +150,7 @@ Guideline 2.1 rejection.
       declaration key names against Apple's current documentation each time —
       this is the fastest-moving corner of the guidelines.
 - [ ] A sandbox purchase, a **restore** on a second install, and an expiry
-      tested on real devices. Restore is at Profile → MacroTrack Pro as well as
+      tested on real devices. Restore is at Profile → Etto Pro as well as
       on the paywall; Apple rejects builds where it is missing or buried.
 - [ ] Play Console → App content → **Notifications**: the app posts local
       hydration reminders only (no push, no FCM). Android 13+ asks for

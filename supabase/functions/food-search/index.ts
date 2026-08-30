@@ -55,7 +55,7 @@ const USDA_SEARCH_URL = 'https://api.nal.usda.gov/fdc/v1/foods/search'
 // OFF blocks/deprioritizes generic User-Agents and asks that heavier callers
 // identify a real contact, so keep this pointed at the actual project + email.
 const USER_AGENT =
-  'MacroTrack/0.1 (daily macros tracker; +https://github.com/alefiori/macro-track; alefiori97@gmail.com)'
+  'Etto/0.1 (daily macros tracker; +https://github.com/alefiori/etto; alefiori97@gmail.com)'
 const DEFAULT_LANG = 'en'
 const PAGE_SIZE = '20'
 const USDA_API_KEY = Deno.env.get('USDA_API_KEY') || 'DEMO_KEY'

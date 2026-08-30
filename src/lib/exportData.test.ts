@@ -156,7 +156,7 @@ describe('buildFoodLogCsv', () => {
 describe('buildExportJson', () => {
   it('carries a header naming the app, schema and units', () => {
     const parsed = JSON.parse(buildExportJson(bundle()))
-    expect(parsed.app).toBe('MacroTrack')
+    expect(parsed.app).toBe('Etto')
     expect(parsed.schema).toBe(1)
     expect(parsed.exportedAt).toBe('2026-08-12T09:00:00.000Z')
     // Numbers with no stated unit are not portable data.
@@ -194,12 +194,12 @@ describe('buildExportJson', () => {
 describe('exportFilename', () => {
   it('is dated and sortable', () => {
     const at = new Date(2026, 7, 12)
-    expect(exportFilename('json', at)).toBe('macrotrack-export-2026-08-12.json')
-    expect(exportFilename('csv', at)).toBe('macrotrack-food-log-2026-08-12.csv')
+    expect(exportFilename('json', at)).toBe('etto-export-2026-08-12.json')
+    expect(exportFilename('csv', at)).toBe('etto-food-log-2026-08-12.csv')
   })
 
   it('zero-pads a single-digit month and day', () => {
-    expect(exportFilename('json', new Date(2026, 0, 3))).toBe('macrotrack-export-2026-01-03.json')
+    expect(exportFilename('json', new Date(2026, 0, 3))).toBe('etto-export-2026-01-03.json')
   })
 })
 
@@ -211,6 +211,6 @@ describe('buildExportFile', () => {
 
     const json = buildExportFile(bundle(), 'json')
     expect(json.mimeType).toBe('application/json')
-    expect(JSON.parse(json.contents).app).toBe('MacroTrack')
+    expect(JSON.parse(json.contents).app).toBe('Etto')
   })
 })

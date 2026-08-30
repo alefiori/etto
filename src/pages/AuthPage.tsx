@@ -141,7 +141,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
               <Icon name="donut_small" fill className="text-[2rem] text-primary" />
             </div>
             <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-primary md:font-headline-lg md:text-headline-lg">
-              MacroTrack
+              Etto
             </h1>
             <p className="font-body-lg text-body-lg text-on-surface-variant">
               {t('auth.tagline')}

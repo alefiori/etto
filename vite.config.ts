@@ -87,9 +87,12 @@ export default defineConfig(({ mode }) => ({
         config: true,
       },
       manifest: {
-        name: 'MacroTrack — Daily Macros Tracker',
-        short_name: 'MacroTrack',
-        description: 'Track your daily calories and macronutrients.',
+        // Kept in step with index.html's <title> and meta description, and with
+        // store/listings/en.md — the description is that file's Play short
+        // description verbatim, so all three surfaces say the same thing.
+        name: 'Etto — Daily Macro Tracker',
+        short_name: 'Etto',
+        description: 'Track carbs, protein and fats against goals you set for each day of the week.',
         theme_color: '#6e56f8',
         background_color: '#f7f7fb',
         display: 'standalone',

@@ -265,7 +265,7 @@ jobs:
             <key>signingStyle</key><string>manual</string>
             <key>provisioningProfiles</key>
             <dict>
-              <key>app.macrotrack</key><string>${PROFILE_NAME}</string>
+              <key>fitness.etto</key><string>${PROFILE_NAME}</string>
             </dict>
           </dict>
           </plist>

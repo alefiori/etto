@@ -26,7 +26,7 @@ test.describe('the subscription card', () => {
     await expect(page.getByText('You’re on the free plan.')).toBeVisible()
     await page.getByRole('button', { name: 'See Pro' }).first().click()
     // By level: the card's own heading carries the same words as the paywall's.
-    await expect(page.getByRole('heading', { name: 'MacroTrack Pro', level: 2 })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Etto Pro', level: 2 })).toBeVisible()
     await expect(page.getByText('€24.99/year')).toBeVisible()
   })
 
@@ -39,7 +39,7 @@ test.describe('the subscription card', () => {
   })
 
   test('reads a null expiry as the lifetime unlock, not as long expired', async ({ page, store }) => {
-    seedPro(store, { expires_at: null, product_id: 'macrotrack_pro_lifetime' })
+    seedPro(store, { expires_at: null, product_id: 'etto_pro_lifetime' })
     await seedSession(page)
     await page.goto('/profile')
 
@@ -74,18 +74,18 @@ test.describe('the paywall on the web', () => {
     await seedSession(page)
     await page.goto('/?checkout=pro')
 
-    await expect(page.getByRole('heading', { name: 'MacroTrack Pro', level: 2 })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Etto Pro', level: 2 })).toBeVisible()
   })
 
   test('strips the parameter so a refresh does not reopen it', async ({ page }) => {
     await seedSession(page)
     await page.goto('/?checkout=pro')
-    await expect(page.getByRole('heading', { name: 'MacroTrack Pro', level: 2 })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Etto Pro', level: 2 })).toBeVisible()
 
     await expect.poll(() => new URL(page.url()).search).toBe('')
 
     await page.reload()
-    await expect(page.getByRole('heading', { name: 'MacroTrack Pro', level: 2 })).toHaveCount(0)
+    await expect(page.getByRole('heading', { name: 'Etto Pro', level: 2 })).toHaveCount(0)
   })
 
   test('says purchases need the mobile apps while Web Billing is unconfigured', async ({
@@ -239,7 +239,7 @@ test.describe('data export', () => {
     await page.getByRole('button', { name: /Food log \(CSV\)/ }).click()
     const file = await download
 
-    expect(file.suggestedFilename()).toMatch(/^macrotrack-food-log-\d{4}-\d{2}-\d{2}\.csv$/)
+    expect(file.suggestedFilename()).toMatch(/^etto-food-log-\d{4}-\d{2}-\d{2}\.csv$/)
     await expect(page.getByText('Downloaded.')).toBeVisible()
   })
 
@@ -289,8 +289,8 @@ test.describe('data export', () => {
       })).toString('utf8'),
     )
 
-    expect(file.suggestedFilename()).toMatch(/^macrotrack-export-\d{4}-\d{2}-\d{2}\.json$/)
-    expect(json.app).toBe('MacroTrack')
+    expect(file.suggestedFilename()).toMatch(/^etto-export-\d{4}-\d{2}-\d{2}\.json$/)
+    expect(json.app).toBe('Etto')
     expect(json.foodLogs).toHaveLength(1)
     expect(json.weightLogs).toHaveLength(1)
     expect(json.waterLogs).toHaveLength(1)

@@ -37,9 +37,9 @@ export interface Plan {
  * regionally-correct strings, and what a build with no key configured shows.
  */
 export const PLANS: Plan[] = [
-  { id: 'monthly', productId: 'macrotrack_pro_monthly', price: '€3.99' },
-  { id: 'yearly', productId: 'macrotrack_pro_yearly', price: '€24.99' },
-  { id: 'lifetime', productId: 'macrotrack_pro_lifetime', price: '€49.99' },
+  { id: 'monthly', productId: 'etto_pro_monthly', price: '€3.99' },
+  { id: 'yearly', productId: 'etto_pro_yearly', price: '€24.99' },
+  { id: 'lifetime', productId: 'etto_pro_lifetime', price: '€49.99' },
 ]
 
 /** An introductory offer or free trial a backend says this user is eligible for. */

@@ -318,7 +318,7 @@ export const it: Translation = {
   about: {
     title: 'Informazioni e note legali',
     disclaimer:
-      'MacroTrack è uno strumento di monitoraggio, non un consiglio medico. Obiettivi e stime sono calcolati da ciò che inserisci e possono essere errati. Consulta un medico o un dietista prima di cambiare la tua alimentazione.',
+      'Etto è uno strumento di monitoraggio, non un consiglio medico. Obiettivi e stime sono calcolati da ciò che inserisci e possono essere errati. Consulta un medico o un dietista prima di cambiare la tua alimentazione.',
     support: 'Contatta l’assistenza',
     version: 'Versione {version}',
   },
@@ -412,7 +412,7 @@ export const it: Translation = {
     remindersEvery: 'Ogni quanto',
     remindersPerDayOne: '1 promemoria al giorno',
     remindersPerDayOther: '{count} promemoria al giorno',
-    remindersDenied: 'Le notifiche di MacroTrack sono disattivate. Attivale nelle impostazioni del dispositivo per ricevere i promemoria.',
+    remindersDenied: 'Le notifiche di Etto sono disattivate. Attivale nelle impostazioni del dispositivo per ricevere i promemoria.',
     remindersMobileOnly: 'I promemoria arrivano nelle app iOS e Android — una scheda del browser non può svegliarsi da sola. Le impostazioni salvate qui valgono anche là.',
     couldNotSaveReminders: 'Impossibile salvare i promemoria. Riprova.',
   },
@@ -446,7 +446,7 @@ export const it: Translation = {
     disclaimer: 'Solo stime — non sono un consiglio medico.',
   },
   paywall: {
-    title: 'MacroTrack Pro',
+    title: 'Etto Pro',
     subtitle: 'Obiettivi che imparano da te, le tendenze che ci stanno dietro e tutto quello che segui oltre al cibo.',
     featureAdaptive: 'Obiettivi adattivi che si regolano su quanto consumi davvero',
     featureWeight: 'Monitoraggio del peso, andamento e storico completo',

@@ -39,7 +39,7 @@ function row(overrides: Partial<Subscription> = {}): Subscription {
   return {
     user_id: 'u1',
     entitlement: 'pro',
-    product_id: 'macrotrack_pro_yearly',
+    product_id: 'etto_pro_yearly',
     store: 'app_store',
     period_type: 'normal',
     original_transaction_id: 'txn-1',

@@ -59,7 +59,7 @@ test.describe('iPad portrait', () => {
 
   test('shows the navigation rail instead of stretched phone chrome', async ({ page }) => {
     await page.goto('/')
-    await expect(page.getByRole('link', { name: 'MacroTrack' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Etto' })).toBeVisible()
 
     // 80px rail, not the 280px drawer and not the phone layout.
     expect(await visibleChromeWidth(page)).toBeCloseTo(80, 0)

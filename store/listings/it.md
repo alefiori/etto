@@ -9,7 +9,7 @@ troppo lungo viene rifiutato al caricamento, non in revisione.
 
 ## App name [30]
 
-MacroTrack
+Etto
 
 ## Subtitle — App Store [30]
 
@@ -30,7 +30,7 @@ macro,macros,calorie,contacalorie,nutrizione,proteine,carboidrati,dieta,cibo,dia
 
 ## Full description [4000]
 
-MacroTrack è un contatore di macronutrienti per chi sa già cosa vuole mangiare
+Etto è un contatore di macronutrienti per chi sa già cosa vuole mangiare
 e vuole solo centrare i propri numeri senza combattere con l'app.
 
 Aprila e inizia a registrare. Nessuna registrazione obbligatoria, nessun
@@ -38,7 +38,7 @@ questionario iniziale, nessun account finché non vuoi i tuoi dati su un secondo
 dispositivo.
 
 **Obiettivi che seguono la tua settimana**
-Quasi tutte le app danno un solo obiettivo giornaliero. MacroTrack ne dà sette:
+Quasi tutte le app danno un solo obiettivo giornaliero. Etto ne dà sette:
 imposta carboidrati, proteine e grassi per ogni giorno, così un giorno di
 allenamento e uno di riposo non sono lo stesso numero. Quando invece lo sono,
 copia un giorno su tutta la settimana.
@@ -86,7 +86,7 @@ olandese — segue la lingua del dispositivo finché non ne scegli una. Tema
 chiaro e scuro, anche questi seguono il dispositivo. Un vero layout per tablet,
 non un telefono ingrandito.
 
-**MacroTrack Pro (facoltativo)**
+**Etto Pro (facoltativo)**
 Registrazione, scanner, alimenti personalizzati e della community, pasti,
 obiettivi settimanali e tutte e sette le lingue sono gratis, senza bisogno di un
 account. Pro aggiunge quello che ci si costruisce sopra: peso e acqua, promemoria
@@ -102,7 +102,7 @@ disdetta; gestiscili o annullali nelle impostazioni del tuo account dello store.
 
 ---
 
-MacroTrack è uno strumento di monitoraggio, non un consiglio medico. Obiettivi e
+Etto è uno strumento di monitoraggio, non un consiglio medico. Obiettivi e
 stime sono calcolati da ciò che inserisci e possono essere errati. Consulta un
 medico o un dietista prima di cambiare la tua alimentazione.
 

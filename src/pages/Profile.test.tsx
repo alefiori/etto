@@ -161,7 +161,7 @@ describe('Profile page', () => {
 
     expect(screen.getByRole('radio', { name: 'Dark' })).toBeChecked()
     expect(document.documentElement).toHaveClass('dark')
-    expect(localStorage.getItem('macrotrack.theme')).toBe('dark')
+    expect(localStorage.getItem('etto.theme')).toBe('dark')
   })
 
   it('reports a failed appearance save', async () => {

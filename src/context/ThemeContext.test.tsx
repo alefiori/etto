@@ -90,7 +90,7 @@ describe('ThemeProvider', () => {
   })
 
   it('starts from a choice made on a previous visit', () => {
-    localStorage.setItem('macrotrack.theme', 'dark')
+    localStorage.setItem('etto.theme', 'dark')
     renderProvider()
     expect(state()).toBe('dark/dark')
     expect(isDark()).toBe(true)
@@ -103,7 +103,7 @@ describe('ThemeProvider', () => {
 
     expect(state()).toBe('dark/dark')
     expect(isDark()).toBe(true)
-    expect(localStorage.getItem('macrotrack.theme')).toBe('dark')
+    expect(localStorage.getItem('etto.theme')).toBe('dark')
   })
 
   it('keeps the native status bar in step with the resolved theme', async () => {
@@ -144,7 +144,7 @@ describe('ThemeProvider', () => {
 
     await waitFor(() => expect(state()).toBe('system/light'))
     expect(isDark()).toBe(false)
-    expect(localStorage.getItem('macrotrack.theme')).toBeNull()
+    expect(localStorage.getItem('etto.theme')).toBeNull()
     expect(screen.getByTestId('failure')).toHaveTextContent('offline')
   })
 
@@ -152,13 +152,13 @@ describe('ThemeProvider', () => {
     h.profile = { theme: 'dark' }
     renderProvider()
     await waitFor(() => expect(state()).toBe('dark/dark'))
-    expect(localStorage.getItem('macrotrack.theme')).toBe('dark')
+    expect(localStorage.getItem('etto.theme')).toBe('dark')
   })
 
   // A NULL column is "this account has no preference", which must not stamp on
   // a choice the user made in this browser before signing in.
   it('leaves a local choice alone when the account has none', async () => {
-    localStorage.setItem('macrotrack.theme', 'dark')
+    localStorage.setItem('etto.theme', 'dark')
     h.profile = { theme: null }
     renderProvider()
     await waitFor(() => expect(state()).toBe('dark/dark'))
