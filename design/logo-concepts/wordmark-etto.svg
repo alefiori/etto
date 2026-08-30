@@ -3,10 +3,10 @@
   <!-- Custom letterforms, not set type: a monolinear geometric "Etto" with
        rounded terminals that echo the icon's stroke. Two moves make it the
        brand's own:
-         1. the two t's share one continuous crossbar (a ligature) so the word
-            reads as a single locked unit;
-         2. the 'o' carries a small gap at the lower right, the same aperture as
-            the Aperture-E / Portion marks.
+         1. each t carries its own crossbar with a ~24px gap centred between
+            them — close enough to rhyme, apart enough that "tt" never reads
+            as "H" (a single shared bar did: the wordmark rendered "EHO");
+         2. the 'o' opens with a small gap at the bottom.
        The E's three arms can optionally take the macro triad
        (#CF9B6C / #7BA7C4 / #C98A97) instead of sage — see the commented arms.
        Baseline y=165, cap height 130, stroke ~24. -->
@@ -22,10 +22,11 @@
     <rect x="24" y="141" width="104" height="24" rx="6" fill="#C98A97"></rect>
     -->
 
-    <!-- t t : two stems, one shared crossbar -->
+    <!-- t t : two stems, a crossbar on each with a ~24px gap centred at x=233 -->
     <rect x="176" y="18" width="24" height="147" rx="12"></rect>
     <rect x="266" y="18" width="24" height="147" rx="12"></rect>
-    <rect x="150" y="70" width="166" height="22" rx="11"></rect>
+    <rect x="152" y="70" width="69" height="22" rx="11"></rect>
+    <rect x="245" y="70" width="69" height="22" rx="11"></rect>
   </g>
 
   <!-- o, with the aperture gap at the bottom -->

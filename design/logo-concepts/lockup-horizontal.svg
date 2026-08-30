@@ -37,7 +37,8 @@
     <rect x="24" y="141" width="104" height="24" rx="6"></rect>
     <rect x="176" y="18" width="24" height="147" rx="12"></rect>
     <rect x="266" y="18" width="24" height="147" rx="12"></rect>
-    <rect x="150" y="70" width="166" height="22" rx="11"></rect>
+    <rect x="152" y="70" width="69" height="22" rx="11"></rect>
+    <rect x="245" y="70" width="69" height="22" rx="11"></rect>
     <circle cx="408" cy="100" r="63" fill="none" stroke="#2F3624" stroke-width="24"
             stroke-linecap="round" stroke-dasharray="330 66" stroke-dashoffset="-132"></circle>
   </g>

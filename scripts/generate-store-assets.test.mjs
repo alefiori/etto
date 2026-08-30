@@ -43,16 +43,18 @@ describe('featureGraphicSvg', () => {
   })
 
   it('carries the app name and the given tagline', () => {
-    expect(svg).toContain('>Etto</text>')
+    // The wordmark is shapes now, not <text>; the name lives in the <title>.
+    expect(svg).toContain('<title>Etto —')
     expect(featureGraphicSvg({ tagline: 'A given line' })).toContain('>A given line</text>')
   })
 
-  it('pins both lines to a width near their natural one', () => {
-    // textLength is what makes the render font-independent; a value far from
-    // the text's natural width is what makes it look stretched. Four glyphs at
-    // 150px do not belong in the 500px slot ten glyphs at 86px used to fill.
+  it('pins the tagline to a width near its natural one', () => {
+    // textLength is what makes the tagline render font-independent; the wordmark
+    // needs no such pin because it is drawn as shapes. So exactly one pinned
+    // line, its width in the ballpark of the slot it has to fit.
     const pinned = [...svg.matchAll(/textLength="(\d+)"/g)].map((m) => Number(m[1]))
-    expect(pinned).toHaveLength(2)
-    expect(pinned[0]).toBeLessThan(400)
+    expect(pinned).toHaveLength(1)
+    expect(pinned[0]).toBeGreaterThan(200)
+    expect(pinned[0]).toBeLessThan(600)
   })
 })
