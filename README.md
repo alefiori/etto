@@ -239,6 +239,12 @@ values, so the published documents and the in-app links can't disagree.
 and the support address in both store listings — so a release build refuses to
 render without it (`build-legal --strict`).
 
+It also has to **receive** mail, which is a separate problem from sending it:
+the Resend setup below is send-only, and a privacy contact that bounces is a
+GDPR problem as well as a rejected submission. Point the address at a real
+mailbox — Cloudflare Email Routing forwards it for free — before publishing a
+build that advertises it.
+
 No food-API keys live here — they're function secrets (see step 4), kept out of
 the client bundle. `.env` is gitignored — never commit secrets. The anon key is
 safe to ship in a client bundle; RLS is what protects your data.
@@ -445,6 +451,29 @@ if a Capacitor upgrade reshapes what it patches:
   [`supabase/config.toml`](supabase/config.toml) only configures a local
   `supabase start`; with them off in production the app falls back to a sign-in
   screen and a reviewer with no demo account meets a login wall.
+- **Auth email needs a real SMTP sender.** Supabase's built-in one is rate
+  limited to a couple of messages an hour and sends from a `supabase.io`
+  address, so in production a confirmation or password reset either never
+  arrives or lands in spam — and a store reviewer who cannot confirm an account
+  never reaches the app. Etto sends through Resend. Verify `etto.fitness` at
+  [resend.com/domains](https://resend.com/domains), add the DKIM and SPF records
+  it returns to the domain's DNS (Netlify DNS holds the zone), then fill in
+  **Authentication → SMTP Settings** on the production project:
+
+  ```
+  Host: smtp.resend.com   Port: 465   User: resend
+  Pass: <Resend API key>  Sender: noreply@etto.fitness   Sender name: Etto
+  ```
+
+  Use a **sending-scope** key, not a full-access one: it cannot manage domains
+  or read your account, which is what you want sitting in a dashboard field.
+  This is the one place the key belongs — the app itself sends no mail, so it
+  does not go in `.env`, Netlify, or GitHub secrets.
+
+  Then raise the limit under **Authentication → Rate Limits**. Supabase keeps
+  its *own* auth email cap — 30 an hour — after custom SMTP is configured, and
+  it is not obvious that a stalled signup burst is that and not Resend. Add a
+  `_dmarc` TXT record at `p=none` once DKIM and SPF verify.
 
 Everything else a submission is refused for — the legal documents, in-app
 account deletion, the camera usage string, the privacy manifest, version numbers
