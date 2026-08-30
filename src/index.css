@@ -654,13 +654,21 @@
   #root {
     height: 100%;
   }
-  /* The OS font-size (accessibility) setting is honoured, not suppressed.
-     This used to read `text-size-adjust: 100%`, with `setTextZoom(100)` in the
-     Android shell behind it, because a larger system font overflowed chrome
-     built out of fixed pixel heights. The chrome is measured now (see
-     useChromeMetrics) and the type scale is in rem, so the scale can be let
-     through — which is what WCAG 1.4.4 asks for and what a low-vision reader
-     has already asked their phone for. See src/lib/textScale.ts. */
+  /* The OS font-size (accessibility) setting is honoured — by the app, not by
+     the engine. `none` reads like a refusal and is the opposite: it turns off
+     Chromium's *automatic* adjustment, which inflates font sizes during layout
+     and nothing else. Left on, a rem padding, a measured chrome height and a
+     ring's stroke would all stay at 1x while the text inside them grew, and the
+     inflation tapers above 16px so body copy and a headline would scale by
+     different amounts. lib/textScale.ts measures the same setting off a probe
+     that opts back in, and writes one number to the root font size instead, so
+     type and the rem layout move together — which is what WCAG 1.4.4 asks for
+     and what e2e/a11y.spec.ts drives at 150% and 200%.
+
+     This used to be `text-size-adjust: 100%` with `setTextZoom(100)` in the
+     Android shell behind it, which really was a refusal: nothing scaled at all,
+     because chrome built out of fixed pixel heights overflowed. The chrome is
+     measured now (see useChromeMetrics) and the type scale is in rem. */
   html {
     -webkit-text-size-adjust: none;
     text-size-adjust: none;

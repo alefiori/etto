@@ -6,9 +6,10 @@ import { initTextScale } from './lib/textScale'
 import './index.css'
 
 // Before the first render, so the app lays out at the reader's text size rather
-// than laying out at 1× and reflowing. Synchronous and cheap — it measures one
-// throwaway span. A no-op anywhere but iOS, where it is the only way a WebView
-// can learn the Dynamic Type setting. See lib/textScale.ts.
+// than laying out at 1× and reflowing. Synchronous and cheap — it measures a
+// few throwaway spans. A no-op on the web, where `rem` already follows the
+// browser's default-font setting; on iOS and Android it is the only way a
+// WebView learns the OS setting at all. See lib/textScale.ts.
 initTextScale()
 
 // No-op on the web; sets up the status bar, keyboard, hardware back button and

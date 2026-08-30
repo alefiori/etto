@@ -965,12 +965,20 @@ the scale now, up to the 200% WCAG asks for:
 
 - The type scale in [`src/index.css`](src/index.css) is in `rem`, so a browser's
   default-font setting, Android's font scale and iOS Dynamic Type all move it.
-- [`src/lib/textScale.ts`](src/lib/textScale.ts) supplies the one platform that
-  needs help. WKWebView ignores Dynamic Type, so the scale is measured off an
-  `-apple-system-body` probe and written to the root font size. It also detects
-  the *rendered* scale off a second probe, which is the only way to see
-  Android's `textZoom` — that multiplies font sizes at layout without changing
-  any style value.
+- [`src/lib/textScale.ts`](src/lib/textScale.ts) supplies the two platforms that
+  need help. WKWebView ignores Dynamic Type, so the scale is measured off an
+  `-apple-system-body` probe and written to the root font size. Android's font
+  scale arrives as WebView's `textZoom`, which Chromium implements as the
+  text-autosizing factor — and `text-size-adjust: none` on `html` turns that
+  off. That declaration stays, deliberately: the automatic adjustment inflates
+  font sizes and nothing else, so `rem` paddings, the measured chrome and the
+  rings would all stay at 1× under grown text, and it tapers above 16px so a
+  headline and a paragraph would scale by different amounts. Instead a third
+  probe opts *back into* the adjustment, off-screen, and the factor it renders
+  at is applied to the root font size — the same one number as iOS, moving type
+  and layout together. A fourth reading, the scale the document is *already*
+  rendering at, is the guard that keeps the app from scaling on top of an engine
+  that scaled first.
 - [`src/hooks/useChromeMetrics.ts`](src/hooks/useChromeMetrics.ts) measures the
   top bar and tab bar with a `ResizeObserver` and publishes their real heights,
   which the content lane reserves. Chrome that holds text is not a fixed height
