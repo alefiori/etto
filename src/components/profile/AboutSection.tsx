@@ -1,5 +1,6 @@
 import { useI18n } from '@/context/I18nContext'
 import { Icon } from '@/components/ui/Icon'
+import { SettingsIcon } from '@/components/profile/SettingsIcon'
 import { PRIVACY_URL, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL } from '@/lib/legal'
 
 /**
@@ -25,7 +26,7 @@ export function AboutSection() {
   return (
     <div className="flex flex-col gap-sm">
       <div className="flex items-center gap-2">
-        <Icon name="info" className="text-[1.25rem] text-on-surface-variant" />
+        <SettingsIcon name="info" />
         <h3 className="font-label-md text-label-md text-on-surface">{t('about.title')}</h3>
       </div>
 

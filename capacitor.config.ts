@@ -20,7 +20,11 @@ const config: CapacitorConfig = {
   // template already ships all four orientations under
   // UISupportedInterfaceOrientations~ipad and TARGETED_DEVICE_FAMILY = "1,2";
   // scripts/verify-ipad.mjs asserts both, since ios/ is regenerated each build.
-  backgroundColor: '#f7f7fb',
+  // Grove's light ground, matching CHROME_COLOR in src/lib/theme.ts and the
+  // PWA manifest's background_color in vite.config.ts. It is what the OS paints
+  // behind the WebView before the first frame; the old violet-white here was
+  // left over from the previous palette and flashed on every cold start.
+  backgroundColor: '#f4f6ee',
   ios: {
     // Keeps the WebView from bouncing past the fixed header and bottom nav;
     // <main> scrolls internally instead.
@@ -37,7 +41,7 @@ const config: CapacitorConfig = {
   plugins: {
     SplashScreen: {
       launchAutoHide: false, // hidden from main.tsx once React has painted
-      backgroundColor: '#f7f7fb',
+      backgroundColor: '#f4f6ee',
     },
     Keyboard: {
       // Resize the WebView rather than the body, which is what the
@@ -51,7 +55,7 @@ const config: CapacitorConfig = {
       // vector drawable written into the regenerated android/ project by
       // scripts/patch-android-notification-icon.mjs. iOS ignores both keys.
       smallIcon: 'ic_stat_water_drop',
-      iconColor: '#6750A4',
+      iconColor: '#5c8466',
     },
   },
 }

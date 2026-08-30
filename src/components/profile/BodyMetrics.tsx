@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useProfile } from '@/context/ProfileContext'
 import { useI18n } from '@/context/I18nContext'
 import { Icon } from '@/components/ui/Icon'
+import { SettingsIcon } from '@/components/profile/SettingsIcon'
 import { Spinner } from '@/components/ui/Spinner'
 import { cmToFeetInches, feetInchesToCm, weightUnit } from '@/lib/units'
 import type { ActivityLevel, GoalDirection, Sex, UnitSystem } from '@/lib/database.types'
@@ -64,7 +65,7 @@ export function BodyMetrics() {
   return (
     <div className="flex flex-col gap-sm">
       <div className="flex items-center gap-2">
-        <Icon name="accessibility_new" className="text-[1.25rem] text-on-surface-variant" />
+        <SettingsIcon name="accessibility_new" />
         <h3 className="font-label-md text-label-md text-on-surface">{t('body.title')}</h3>
         {saving && <Spinner className="h-4 w-4 text-primary" />}
       </div>

@@ -17,12 +17,19 @@ The app is a **PWA** (installable, works offline via a precached shell), is full
 **localized into 7 languages**, and lets you **try it instantly as a guest**
 before creating an account.
 
-The UI is **Liquid Glass**: a violet system tint, floating chrome, and content
-that scrolls underneath translucent, specular-edged lenses. Its information
-architecture and layout still come from the Google Stitch export in
-[`design/stitch_macrotrack_health_dashboard/`](design/stitch_macrotrack_health_dashboard/) —
-typography, spacing and the four destinations are unchanged — but the material
-and the palette are not; see [Theming](#theming).
+The UI is **Grove**: a sage accent on a warm oat-green ground, solid tonal cards
+with soft warm-tinted shadows, floating chrome, and Figtree under an Instrument
+Serif display face. It replaces the violet Liquid Glass the app shipped with —
+translucent, specular-edged lenses over a blurred backdrop — which is why the
+`.glass*` classes are still named for a material that is no longer there; see
+[Theming](#theming). The direction is drawn in
+[`.design-canvas/`](.design-canvas) (artboards for each screen in both schemes)
+against the token spec in [`design/grove-tokens.html`](design/grove-tokens.html),
+with the brief in
+[`design/grove-implementation-prompt.md`](design/grove-implementation-prompt.md).
+The information architecture underneath it is still the Google Stitch export in
+[`design/stitch_macrotrack_health_dashboard/`](design/stitch_macrotrack_health_dashboard/):
+the spacing scale and the four destinations are unchanged.
 
 ## Features
 
@@ -875,44 +882,40 @@ Three things can't ride on a Tailwind class and are handled explicitly:
   `shadow-card` is a variable too — dark deepens it and drops the bottom
   highlight, because a bright lower edge at night reads as a seam between two
   panels rather than as the underside of one.
-- **The glass itself.** A lens is a translucent fill, a specular rim and a blur
-  of whatever is behind it, so it can't be a Tailwind color: `bg-x/50` would
-  multiply the baked-in alpha rather than replace it, and the rim is an inset
-  shadow, not a border. A handful of classes in `src/index.css` cover every
-  surface — `.glass` (cards), `.glass-chrome` (the floating bars), `.glass-sheet`
-  (modals and bottom sheets), `.glass-menu` (the long-press menu), `.glass-row`
-  (a lens inside a lens) and `.glass-field` (inputs) — composed with the usual
-  utilities for radius, padding and layout.
+- **The surfaces.** A `.glass*` class is a fill, a hairline border and a shadow
+  together, which is more than a Tailwind color can be: `bg-x/50` would multiply
+  a baked-in alpha rather than replace it. A handful of classes in
+  `src/index.css` cover every one — `.glass` (cards), `.glass-chrome` (the
+  floating bars), `.glass-sheet` (modals and bottom sheets), `.glass-menu` (the
+  long-press menu), `.glass-row` (a card inside a card), `.glass-field` (inputs)
+  and `.glass-chip` (neutral pills) — composed with the usual utilities for
+  radius, padding and layout. **The name is historical.** Under Grove they are
+  opaque tonal fills: `--glass-blur` is `none`, `--glass-rim` is empty, and the
+  only `backdrop-filter` left in the stylesheet is the 3px on `.glass-scrim`
+  behind a sheet. Nothing in the app is translucent any more, so none of the
+  containing-block hazards a blur used to create apply — see the note below.
 - **`.grad-primary`, not `bg-primary`,** for large filled actions. `--primary`
-  names the *accent* in both schemes, and in dark it is a light violet that
-  cannot carry white type; the CTAs run on a gradient that can. Compact filled
-  controls (a selected pill, a toggle) still use `bg-primary text-on-primary`,
-  which is why `--on-primary` is white in light and near-black in dark.
+  names the *accent* in both schemes, and in dark it is a light sage that cannot
+  carry white type; the CTAs run on a gradient that can. Compact filled controls
+  (a selected pill, a toggle) still use `bg-primary text-on-primary`, which is
+  why `--on-primary` is white in light and near-black in dark.
 
-⚠️ **`backdrop-filter` makes an element a containing block for `position: fixed`
-descendants**, not just a stacking context. A meal card holds food rows, and a
-food row holds a `fixed inset-0` entry sheet — put the filter on the card and
-that sheet is laid out *inside the card* and painted at the card's depth, which
-made its Save button unclickable. `.glass` therefore keeps its fill, rim and blur
-on a `::before` layer at `z-index: -1`, leaving the card an ordinary
-`position: relative` box, and anything added to it must stay on the
-pseudo-element.
+ℹ️ **Historical, and worth keeping historical.** `backdrop-filter` makes an
+element a containing block for `position: fixed` descendants, not just a
+stacking context. A meal card holds food rows, and a food row holds a
+`fixed inset-0` entry sheet — put the filter on the card and that sheet is laid
+out *inside the card* and painted at the card's depth, which made its Save
+button unclickable. On top of that, **Chromium does not render
+`backdrop-filter` on a `z-index: -1` pseudo-element at all** (the dodge `.glass`
+used to sidestep the first problem), so a surface built that way was glass on
+iOS and a flat tinted panel in every Android WebView. Grove settled both by
+having no blur to place: the surfaces are opaque, and `.glass` is an ordinary
+`position: relative` box with a background on the element itself. Reintroducing
+a blur anywhere means reintroducing both problems, in that order.
 
-That dodge has a price: **Chromium does not render `backdrop-filter` on a
-`z-index: -1` pseudo-element at all** — it samples an empty backdrop and
-composites as if no filter were asked for, so such a surface is glass on iOS
-(WebKit) and a flat tinted panel in every Android WebView. It goes unnoticed over
-the aurora, since a blurred gradient is the same gradient, and shows immediately
-over the app's own content. So the surfaces that sit over content —
-`.glass-chrome`, `.glass-sheet`, `.glass-menu` — carry the filter on the element
-itself and blur on both platforms. That is only safe because none of them
-contains a `fixed inset-0` overlay: the bars *are* the fixed elements, and every
-sheet and dialog is the sole child of its own scrim. **Adding a fixed overlay
-inside one of those three means portalling it out**, not nesting it.
-
-Also, on those three the cast shadow and the specular rim are one `box-shadow` in
-the class, so don't add a `shadow-*` utility alongside them — it replaces the rim
-rather than joining it.
+On `.glass-chrome`, `.glass-sheet` and `.glass-menu` the cast shadow and the rim
+slot are one `box-shadow` in the class, so don't add a `shadow-*` utility
+alongside them — it replaces the pair rather than joining it.
 
 **The default is the device scheme**, exactly like the language:
 `profiles.theme` is NULL until someone picks one, and NULL resolves against

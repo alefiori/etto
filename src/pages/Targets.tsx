@@ -364,15 +364,30 @@ export default function Targets() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-sm">
+                  {/* Labelled rows, not labels stacked over full-width fields:
+                      three of those made a day card read as a form, and seven
+                      form cards read as a chore. A dot, a name and a small
+                      right-aligned number box is the shape of a setting, which
+                      is what these are.
+
+                      `flex-wrap` is what keeps that from being a phone-only
+                      layout. The box is a fixed 6rem, so the row folds back to
+                      label-over-field exactly where it stops fitting — in the
+                      seven-across desktop grid, where a column is narrower than
+                      a phone, and at a large text size anywhere. No breakpoint
+                      names those cases, because the widths are what decide. */}
+                  <div className="flex flex-col">
                     {MACROS.map((m) => (
-                      <div key={m.key} className="flex flex-col gap-xs">
+                      <div
+                        key={m.key}
+                        className="flex flex-wrap items-center justify-between gap-x-sm gap-y-xs border-b border-outline-variant/20 py-sm first:pt-0 last:border-b-0 last:pb-0"
+                      >
                         <label
                           htmlFor={`target-${dow}-${m.key}`}
-                          className="flex items-center gap-xs font-label-md text-label-md text-on-surface-variant"
+                          className="flex min-w-0 items-center gap-xs font-label-md text-label-md text-on-surface-variant"
                         >
                           <span
-                            className="h-2 w-2 rounded-full"
+                            className="h-2 w-2 shrink-0 rounded-full"
                             style={{ backgroundColor: m.color }}
                           />
                           {t('targets.macroLabel', { macro: t(`macro.${m.key}`) })}
@@ -391,7 +406,7 @@ export default function Targets() {
                           // colour back over the glass, so seven of these read
                           // as holes punched through the card. Same field as
                           // everywhere else now.
-                          className="min-h-2xl w-full rounded-[16px] glass-field px-md text-right font-body-md text-body-md text-on-surface outline-hidden transition-all placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+                          className="min-h-2xl w-[6rem] max-w-full shrink-0 rounded-[16px] glass-field px-md text-right font-body-md text-body-md font-semibold text-on-surface outline-hidden transition-all placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
                         />
                       </div>
                     ))}

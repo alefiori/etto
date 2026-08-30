@@ -5,7 +5,7 @@ import { useEntitlement } from '@/context/EntitlementContext'
 import { useAppShell } from '@/context/AppShellContext'
 import { ProGate } from '@/components/paywall/ProGate'
 import { ProBadge } from '@/components/paywall/ProBadge'
-import { Icon } from '@/components/ui/Icon'
+import { SettingsIcon } from '@/components/profile/SettingsIcon'
 import { Spinner } from '@/components/ui/Spinner'
 import { volumeForDisplay, volumeToMl, volumeUnit } from '@/lib/water'
 
@@ -79,7 +79,7 @@ export function WaterSettings() {
   return (
     <div className="flex flex-col gap-sm">
       <div className="flex flex-wrap items-center gap-2">
-        <Icon name="water_drop" className="text-[1.25rem] text-on-surface-variant" />
+        <SettingsIcon name="water_drop" />
         <label htmlFor="water-goal" className="font-label-md text-label-md text-on-surface">
           {t('water.goalSettingLabel', { unit })}
         </label>

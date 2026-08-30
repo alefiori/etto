@@ -10,6 +10,7 @@ import { THEME_PREFERENCES, type ThemePreference } from '@/lib/theme'
 import { radioTabIndex, useRadioGroupKeys } from '@/hooks/useRadioGroupKeys'
 import type { TranslationKey } from '@/lib/i18n'
 import { Icon } from '@/components/ui/Icon'
+import { SettingsIcon } from '@/components/profile/SettingsIcon'
 import { Spinner } from '@/components/ui/Spinner'
 import { MealSettings } from '@/components/profile/MealSettings'
 import { BodyMetrics } from '@/components/profile/BodyMetrics'
@@ -93,6 +94,19 @@ export default function Profile() {
         {t('profile.title')}
       </h2>
 
+      {/* Four cards, not one long one with ten rules through it.
+          Identity, then the preferences, then Pro, then what the app owes you
+          about your data — and the two account actions loose at the bottom,
+          where a destructive control has nothing above it to be mistaken for.
+          The rules stay *inside* each card, dividing rows of the same kind;
+          what they cannot do is tell "Meals" from "Etto Pro", which is what the
+          card boundaries are for.
+
+          What the artboard also draws, and this does not, is each setting as a
+          row with its value and a trailing chevron. That is a different app:
+          these sections are edited in place, so a chevron would promise a
+          screen that does not exist. Reaching it means a sub-route (or a sheet)
+          per setting, which is feature work and not a reskin. */}
       <div className="flex flex-col gap-lg rounded-lens p-lg glass">
         <div className="flex items-center gap-md">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-container text-on-primary-container">
@@ -111,16 +125,16 @@ export default function Profile() {
             </p>
           </div>
         </div>
+      </div>
 
-        <hr className="border-surface-container-highest" />
-
+      <div className="flex flex-col gap-lg rounded-lens p-lg glass">
         {/* Appearance. "System" is the absence of a choice, not a third scheme:
             picking it clears the stored preference so the app goes back to
             following prefers-color-scheme — the same shape as the language
             setting below, which treats a null column the same way. */}
         <div className="flex flex-col gap-sm">
           <div className="flex items-center gap-2">
-            <Icon name="light_mode" className="text-[1.25rem] text-on-surface-variant" />
+            <SettingsIcon name="light_mode" />
             <span className="font-label-md text-label-md text-on-surface">
               {t('profile.appearanceLabel')}
             </span>
@@ -169,7 +183,7 @@ export default function Profile() {
         {/* App + food database language (single preference) */}
         <div className="flex flex-col gap-sm">
           <div className="flex items-center gap-2">
-            <Icon name="translate" className="text-[1.25rem] text-on-surface-variant" />
+            <SettingsIcon name="translate" />
             <label
               htmlFor="locale"
               className="font-label-md text-label-md text-on-surface"
@@ -235,16 +249,14 @@ export default function Profile() {
 
         {/* Meals: names, how many there are, and their order */}
         <MealSettings />
+      </div>
 
-        <hr className="border-surface-container-highest" />
+      {/* Subscription status, restore, and the store's own manage link. Above
+          the export because a lapsed subscriber looking for either one is
+          really looking for this. It brings its own tinted card. */}
+      <ProSubscription />
 
-        {/* Subscription status, restore, and the store's own manage link. Above
-            the export because a lapsed subscriber looking for either one is
-            really looking for this. */}
-        <ProSubscription />
-
-        <hr className="border-surface-container-highest" />
-
+      <div className="flex flex-col gap-lg rounded-lens p-lg glass">
         {/* Take everything with you — Pro */}
         <DataExport />
 
@@ -260,44 +272,43 @@ export default function Profile() {
         {/* Terms, Privacy Policy, support contact and the health disclaimer —
             all four are store submission requirements, not garnish. */}
         <AboutSection />
-
-        <hr className="border-surface-container-highest" />
-
-        {/* A guest has no account to sign out of — the useful action is signing
-            into an existing one (which opens over the guest session). Real
-            accounts keep the sign-out, which now returns to guest mode. */}
-        {isAnonymous ? (
-          <button
-            onClick={() => navigate('/signin')}
-            className="flex min-h-2xl items-center justify-center gap-sm rounded-full font-label-md text-label-md text-on-surface transition-all hover:brightness-[1.06] glass-field active:scale-95"
-          >
-            <Icon name="login" className="text-[1.25rem]" />
-            {t('auth.signInAction')}
-          </button>
-        ) : (
-          <button
-            onClick={handleSignOut}
-            disabled={busy}
-            className="flex min-h-2xl items-center justify-center gap-sm rounded-full bg-error-container font-label-md text-label-md text-on-error-container transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
-          >
-            {busy ? <Spinner className="h-4 w-4" /> : <Icon name="logout" className="text-[1.25rem]" />}
-            {t('profile.signOut')}
-          </button>
-        )}
-
-        {/* Apple 5.1.1(v): an app that creates accounts must delete them from
-            inside the app. Registered accounts only — a guest never created
-            one, has no credentials to revoke and nothing to sign back into, so
-            the section (and its rule) are dropped rather than left showing an
-            irreversible button for an account that does not exist yet. Last on
-            the page, behind a confirmation, as its destructiveness deserves. */}
-        {!isAnonymous && (
-          <>
-            <hr className="border-surface-container-highest" />
-            <DeleteAccount />
-          </>
-        )}
       </div>
+
+      {/* A guest has no account to sign out of — the useful action is signing
+          into an existing one (which opens over the guest session). Real
+          accounts keep the sign-out, which now returns to guest mode.
+
+          Neutral, where it used to be an error-container red. Signing out
+          destroys nothing — it drops back to the guest session the app opens
+          with — and now that deleting the account sits directly underneath it,
+          two red buttons in a column left the one that is irreversible looking
+          like the one that is not. */}
+      {isAnonymous ? (
+        <button
+          onClick={() => navigate('/signin')}
+          className="flex min-h-2xl items-center justify-center gap-sm rounded-full font-label-md text-label-md text-on-surface transition-all hover:brightness-[1.06] glass-field active:scale-95"
+        >
+          <Icon name="login" className="text-[1.25rem]" />
+          {t('auth.signInAction')}
+        </button>
+      ) : (
+        <button
+          onClick={handleSignOut}
+          disabled={busy}
+          className="flex min-h-2xl items-center justify-center gap-sm rounded-full font-label-md text-label-md text-on-surface transition-all hover:brightness-[1.06] glass-field active:scale-95 disabled:opacity-60"
+        >
+          {busy ? <Spinner className="h-4 w-4" /> : <Icon name="logout" className="text-[1.25rem]" />}
+          {t('profile.signOut')}
+        </button>
+      )}
+
+      {/* Apple 5.1.1(v): an app that creates accounts must delete them from
+          inside the app. Registered accounts only — a guest never created one,
+          has no credentials to revoke and nothing to sign back into, so the
+          section is dropped rather than left showing an irreversible button for
+          an account that does not exist yet. Last on the page, outside every
+          card and behind a confirmation, as its destructiveness deserves. */}
+      <DeleteAccount />
     </div>
   )
 }

@@ -5,6 +5,7 @@ import { useAppShell } from '@/context/AppShellContext'
 import { ProGate } from '@/components/paywall/ProGate'
 import { ProBadge } from '@/components/paywall/ProBadge'
 import { Icon } from '@/components/ui/Icon'
+import { SettingsIcon } from '@/components/profile/SettingsIcon'
 import { Spinner } from '@/components/ui/Spinner'
 import { buildExportFile, collectExport, deliverExport, type ExportFormat } from '@/lib/exportData'
 
@@ -64,7 +65,7 @@ export function DataExport() {
   return (
     <div className="flex flex-col gap-sm">
       <div className="flex flex-wrap items-center gap-2">
-        <Icon name="download" className="text-[1.25rem] text-on-surface-variant" />
+        <SettingsIcon name="download" />
         <h3 className="font-label-md text-label-md text-on-surface">{t('export.title')}</h3>
         <ProBadge />
       </div>

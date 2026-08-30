@@ -139,6 +139,11 @@ export default function MyFoods() {
 
   return (
     <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-lg px-container-margin-mobile py-lg md:px-container-margin-desktop md:py-xl">
+      {/* The create button sits under the title at phone width rather than
+          beside it: it is the page's one primary action, and a pill tucked into
+          the top-right of a header reads as a secondary control. Full width is
+          also what stops it competing with the title for a line. From `sm` up
+          there is room for both, and the header goes back to a row. */}
       <div className="flex flex-col justify-between gap-md sm:flex-row sm:items-end">
         <div>
           <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface md:font-headline-lg md:text-headline-lg">
@@ -151,7 +156,7 @@ export default function MyFoods() {
         <button
           type="button"
           onClick={() => openCustomFood()}
-          className="settle flex min-h-2xl items-center justify-center gap-sm rounded-full px-lg font-label-md text-label-md hover:brightness-105 active:scale-95 grad-primary"
+          className="settle flex min-h-2xl w-full shrink-0 items-center justify-center gap-sm rounded-full px-lg font-label-md text-label-md hover:brightness-105 active:scale-95 grad-primary sm:w-auto"
         >
           <Icon name="add" />
           {t('myFoods.createCustomFood')}
@@ -177,11 +182,13 @@ export default function MyFoods() {
       </div>
 
       {/* Not a segmented control: the three are a filter on one list, so the
-          selected chip is a tinted accent pill and the rest are the neutral
-          lens, the same pair the nav uses for selected and unselected. They sit
-          outside the search lens rather than inside it — the field filters by
-          name, these filter by where a food came from, and stacking them in one
-          box reads as one compound control. */}
+          selected chip is a filled sage pill and the rest are the neutral lens.
+          Filled rather than tinted, which is what it used to be: a wash of the
+          accent behind accent-coloured text was the quietest state on the page,
+          and the one thing on it that has to be readable at a glance is which
+          filter is on. They sit outside the search lens rather than inside it —
+          the field filters by name, these filter by where a food came from, and
+          stacking them in one box reads as one compound control. */}
       <div
         role="group"
         aria-label={t('myFoods.sourceFilterAria')}
@@ -195,7 +202,7 @@ export default function MyFoods() {
             onClick={() => setSource(f.value)}
             className={`settle rounded-full border px-4 py-1.5 font-label-md text-label-md active:scale-95 ${
               source === f.value
-                ? 'border-primary/25 bg-primary-tint/[0.14] text-primary'
+                ? 'border-primary bg-primary text-on-primary'
                 : 'border-(--glass-row-border) text-on-surface-variant hover:text-on-surface glass-row'
             }`}
           >

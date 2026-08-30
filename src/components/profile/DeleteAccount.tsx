@@ -64,7 +64,12 @@ export function DeleteAccount() {
   return (
     <div className="flex flex-col gap-sm">
       <div className="flex items-center gap-2">
-        <Icon name="delete_forever" className="text-[1.25rem] text-error" />
+        <span
+          aria-hidden="true"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[0.75rem] bg-error-container/50 text-error"
+        >
+          <Icon name="delete_forever" style={{ fontSize: '1.125rem' }} />
+        </span>
         <h3 className="font-label-md text-label-md text-on-surface">
           {t('profile.deleteAccount')}
         </h3>

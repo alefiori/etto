@@ -6,6 +6,7 @@ import { useAppShell } from '@/context/AppShellContext'
 import { ProGate } from '@/components/paywall/ProGate'
 import { ProBadge } from '@/components/paywall/ProBadge'
 import { Icon } from '@/components/ui/Icon'
+import { SettingsIcon } from '@/components/profile/SettingsIcon'
 import { Spinner } from '@/components/ui/Spinner'
 import { Toggle } from '@/components/ui/Toggle'
 import { radioTabIndex, useRadioGroupKeys } from '@/hooks/useRadioGroupKeys'
@@ -115,7 +116,7 @@ export function HydrationReminders() {
       <div className="flex items-start justify-between gap-md">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <Icon name="notifications_active" className="text-[1.25rem] text-on-surface-variant" />
+            <SettingsIcon name="notifications_active" />
             <span className="font-label-md text-label-md text-on-surface">
               {t('water.remindersLabel')}
             </span>

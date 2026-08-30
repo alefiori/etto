@@ -1,5 +1,6 @@
 import { useI18n } from '@/context/I18nContext'
 import { Icon } from '@/components/ui/Icon'
+import { SettingsIcon } from '@/components/profile/SettingsIcon'
 import { SOURCE_ATTRIBUTION } from '@/lib/foodSources'
 
 /**
@@ -20,7 +21,7 @@ export function DataSources() {
   return (
     <div className="flex flex-col gap-sm">
       <div className="flex items-center gap-2">
-        <Icon name="table_view" className="text-[1.25rem] text-on-surface-variant" />
+        <SettingsIcon name="table_view" />
         <h3 className="font-label-md text-label-md text-on-surface">{t('dataSources.title')}</h3>
       </div>
 

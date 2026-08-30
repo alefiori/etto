@@ -79,13 +79,25 @@ export function ProSubscription() {
         })
 
   return (
-    <div className="flex flex-col gap-sm">
-      <div className="flex items-center gap-2">
-        <Icon
-          name="workspace_premium"
-          className={`text-[1.25rem] ${isPro ? 'text-primary' : 'text-on-surface-variant'}`}
-        />
-        <h3 className="font-label-md text-label-md text-on-surface">{t('paywall.title')}</h3>
+    /* Its own highlighted card, not a section between two rules like the rest
+       of the page. Pro is the only thing here that is bought rather than set,
+       and the only one whose state can change without the user touching it —
+       a renewal, a lapse, a billing problem. A sage-tinted card is what makes
+       it findable in one glance on a page of nine grey sections, which is what
+       somebody arriving to fix their billing is doing. */
+    <section className="flex flex-col gap-sm rounded-lens border border-primary/25 bg-primary-tint/[0.10] p-lg dark:border-primary/40 dark:bg-primary-tint/[0.14]">
+      <div className="flex items-center gap-sm">
+        {/* Filled, where every other section leads with a tinted tile: the one
+            badge on the page that is a status and not a category. */}
+        <span
+          aria-hidden="true"
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
+            isPro ? 'text-on-primary grad-primary' : 'glass-chip text-on-surface-variant'
+          }`}
+        >
+          <Icon name="workspace_premium" style={{ fontSize: '1.125rem' }} fill={isPro} />
+        </span>
+        <h3 className="font-headline-md text-headline-md text-on-surface">{t('paywall.title')}</h3>
       </div>
 
       <p className="font-body-md text-body-md text-on-surface">{status}</p>
@@ -142,6 +154,6 @@ export function ProSubscription() {
           {t('paywall.restore')}
         </button>
       </div>
-    </div>
+    </section>
   )
 }
