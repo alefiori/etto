@@ -5,14 +5,14 @@
        pwa-assets.config.ts points the generated <link rel="icon"> here. -->
   <defs>
     <linearGradient id="fav" x1="12" y1="0" x2="52" y2="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#8B72FF"></stop>
-      <stop offset="1" stop-color="#5B3FE0"></stop>
+      <stop offset="0" stop-color="#5C8466"></stop>
+      <stop offset="1" stop-color="#47694F"></stop>
     </linearGradient>
   </defs>
   <rect width="64" height="64" rx="15" fill="url(#fav)"></rect>
   <g fill="none" stroke-linecap="round" transform="rotate(-90 32 32)">
     <circle cx="32" cy="32" r="19" stroke="#ffffff" stroke-opacity=".24" stroke-width="9"></circle>
-    <circle cx="32" cy="32" r="19" stroke="#FF9F0A" stroke-width="9" stroke-dasharray="119.4" stroke-dashoffset="30"></circle>
+    <circle cx="32" cy="32" r="19" stroke="#CF9B6C" stroke-width="9" stroke-dasharray="119.4" stroke-dashoffset="30"></circle>
   </g>
-  <circle cx="32" cy="32" r="6.5" fill="#0A84FF"></circle>
+  <circle cx="32" cy="32" r="6.5" fill="#7BA7C4"></circle>
 </svg>

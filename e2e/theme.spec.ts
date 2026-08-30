@@ -13,7 +13,7 @@ test.describe('appearance', () => {
 
       await expect(page.locator(html)).toHaveClass(/dark/)
       // The browser-chrome color follows the app's chrome, not the page.
-      await expect(page.locator('#app-theme-color')).toHaveAttribute('content', '#0c0c14')
+      await expect(page.locator('#app-theme-color')).toHaveAttribute('content', '#14180f')
     })
 
     test('is already dark on the very first paint, before React mounts', async ({ page }) => {
@@ -32,7 +32,7 @@ test.describe('appearance', () => {
       await page.getByRole('radio', { name: 'Light' }).click()
 
       await expect(page.locator(html)).not.toHaveClass(/dark/)
-      await expect(page.locator('#app-theme-color')).toHaveAttribute('content', '#f7f7fb')
+      await expect(page.locator('#app-theme-color')).toHaveAttribute('content', '#f4f6ee')
       expect(store.profiles.find((p) => p['id'] === USER_ID)).toMatchObject({ theme: 'light' })
 
       // And it sticks across a reload, even though the device still says dark.

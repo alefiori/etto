@@ -70,9 +70,9 @@
   --color-water-tint: rgb(var(--water-tint));
 
   --radius-2xl: 1.5rem;
-  --radius-row: 18px;
-  --radius-lens: 28px;
-  --radius-chrome: 33px;
+  --radius-row: 16px;
+  --radius-lens: 26px;
+  --radius-chrome: 30px;
 
   /* The spacing scale.
    *
@@ -130,14 +130,19 @@
   );
   --spacing-container-margin-desktop: 40px;
 
-  --font-sans: Manrope, system-ui, sans-serif;
-  --font-body-lg: Manrope;
-  --font-body-md: Manrope;
-  --font-headline-lg: Manrope;
-  --font-headline-lg-mobile: Manrope;
-  --font-headline-md: Manrope;
-  --font-label-md: Manrope;
-  --font-data-display: Manrope;
+  /* Figtree for UI text, Instrument Serif for the two headline-lg roles (the
+     "Today" greeting and page titles). Manrope stays as the first fallback so
+     a failed Figtree load still degrades to a deliberate-looking face before
+     system-ui. See the @font-face block in @layer utilities. */
+  --font-sans: 'Figtree', 'Manrope', system-ui, sans-serif;
+  --font-display: 'Instrument Serif', 'Newsreader', Georgia, serif;
+  --font-body-lg: var(--font-sans);
+  --font-body-md: var(--font-sans);
+  --font-headline-lg: var(--font-display);
+  --font-headline-lg-mobile: var(--font-display);
+  --font-headline-md: var(--font-sans);
+  --font-label-md: var(--font-sans);
+  --font-data-display: var(--font-sans);
 
   /* The type scale, in rem rather than px.
    *
@@ -162,15 +167,17 @@
   --text-label-md--font-weight: 600;
   --text-headline-md: 1.25rem;
   --text-headline-md--line-height: 1.75rem;
-  --text-headline-md--font-weight: 600;
-  --text-headline-lg-mobile: 1.5rem;
+  /* Figtree 700 for section titles. */
+  --text-headline-md--font-weight: 700;
+  /* Instrument Serif has one weight (400) and wants no negative tracking. */
+  --text-headline-lg-mobile: 1.75rem;
   --text-headline-lg-mobile--line-height: 2rem;
-  --text-headline-lg-mobile--letter-spacing: -0.01em;
-  --text-headline-lg-mobile--font-weight: 700;
-  --text-headline-lg: 2rem;
+  --text-headline-lg-mobile--letter-spacing: 0;
+  --text-headline-lg-mobile--font-weight: 400;
+  --text-headline-lg: 2.25rem;
   --text-headline-lg--line-height: 2.5rem;
-  --text-headline-lg--letter-spacing: -0.02em;
-  --text-headline-lg--font-weight: 700;
+  --text-headline-lg--letter-spacing: 0;
+  --text-headline-lg--font-weight: 400;
   --text-data-display: 2.5rem;
   --text-data-display--line-height: 3rem;
   --text-data-display--letter-spacing: -0.03em;
@@ -205,147 +212,61 @@
 }
 
 /* ---------------------------------------------------------------------------
- * The glass lenses.
+ * The surface classes.
  *
  * A handful of classes cover every surface in the app, and they compose with the
  * existing Tailwind utilities rather than replacing them: a card is
- * `glass rounded-[28px] p-lg`, so radius, padding and layout stay where they
- * were and only the *material* moves here. Each is a single class because the
- * fill, the rim, the blur and the two inset highlights are one physical thing —
- * split across four utilities they drift apart the first time one is edited.
+ * `glass rounded-[26px] p-lg`, so radius, padding and layout stay where they
+ * were and only the *material* moves here. Grove's material is a plain solid
+ * fill — an opaque background, a hairline border and a soft cast shadow. The
+ * translucency, the backdrop blur and the specular rim the old liquid-glass
+ * carried are all gone: `--glass-*` are opaque fills now, `--glass-blur` is
+ * `none`, `--glass-rim` is empty (kept only so `box-shadow: var(--glass-rim)`
+ * stays valid where it is still written).
  *
- * `position: relative` on the blurred classes is load-bearing: several cards
- * float a blurred colour blob inside themselves, and on `glass` it also anchors
- * the `::before` described next.
- *
- * WHY THE CARD — AND ONLY THE CARD — BLURS ON A PSEUDO-ELEMENT
- *
- * `backdrop-filter` does two things beyond blurring. It makes the element a
- * stacking context, and — the expensive one — a *containing block for fixed
- * descendants*. A meal card holds food rows, and a food row holds the entry
- * sheet and the delete dialog, each of them `position: fixed; inset: 0`. Put
- * the filter on the card and those overlays stop being page-level: they get
- * laid out inside the card's box and painted at the card's depth, so a sheet
- * lands inside its own meal and the meal below it draws on top of the Save
- * button. That is not a styling nit — the dialog becomes unclickable. The same
- * card is also what a long press lifts a row out of, to `z-60` above a
- * full-screen scrim: give the card a stacking context and the row can no longer
- * climb past the tab bar, whatever z-index it asks for.
- *
- * Moving the fill, the rim and the filter onto a `::before` fixes both at the
- * root: the pseudo-element has no descendants to capture, and the card itself
- * goes back to being an ordinary `position: relative` box with no stacking
- * context. `z-index: -1` puts the layer behind the card's content but still in
- * front of the page, and `border-radius: inherit` keeps it in the same shape.
- *
- * The consequence to remember on `glass`: `--shadow-*` carries only the cast
- * shadow there. The specular rim is `--glass-rim` and lives on the
- * pseudo-element, because an inset shadow on the card would paint *under* the
- * fill layer and vanish. The other lenses carry both in one `box-shadow`, so a
- * `shadow-*` utility on the same element would replace the rim rather than sit
- * beside it — none of them is written with one.
- *
- * WHAT THE PSEUDO-ELEMENT COSTS: NO BLUR IN CHROMIUM
- *
- * A `backdrop-filter` on a `z-index: -1` pseudo-element blurs nothing in
- * Chromium — it samples an empty backdrop and composites as if the filter were
- * not there. WebKit renders it, which is why a card looks like glass on iOS and
- * like a plain tinted panel on Android, where every WebView is Chromium. A real
- * `z-index: -1` child element behaves the same way; what the filter needs is to
- * be on the element that paints it, or on a layer that is not stacked behind its
- * own parent.
- *
- * On a card this is invisible: a card sits over the aurora, and blurring a
- * smooth gradient returns the same gradient. It shows the moment a lens covers
- * the app's own content — a menu over the list it was opened from, a tab bar
- * with that list scrolling under it — so every lens that does carries its filter
- * on the element instead, which each of them can afford for a reason the card
- * cannot: nothing `position: fixed` lives inside any of them.
- *
- * `-WEBKIT-BACKDROP-FILTER` GOES FIRST, ALWAYS
- *
- * Chromium does not implement the prefixed property at all — `CSS.supports` on
- * `-webkit-backdrop-filter` is false there, and a rule carrying only that one
- * composites as if no filter had been asked for. WebKit needs it. So both have
- * to survive to the bundle, and the order is what decides whether they do: the
- * build targets Safari 14, where the standard property does not exist, so the
- * minifier treats the pair as one property and keeps whichever comes last.
- * Written standard-first, the standard one is dropped and the CSS blurs on iOS
- * and nowhere else — which is exactly what shipped. Prefixed first, standard
- * last, everywhere below.
+ * `position: relative` stays on most of these: several cards float an
+ * absolutely-positioned colour blob inside themselves, and the menu and sheet
+ * anchor their own decoration. With no filter and no transform, a settled card
+ * is an ordinary `position: relative` box — it is *not* a containing block for
+ * the `position: fixed` sheets and dialogs that meal cards and food rows open,
+ * which is what keeps those page-level. The one remaining hazard is `transform`
+ * on a still-animating card; that note lives with the motion rules below.
  * ------------------------------------------------------------------------- */
 
 @utility glass {
-  position: relative;
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    box-shadow: var(--glass-rim);
-  }
+  position: relative; /* cards anchor absolutely-positioned decoration */
+  background: var(--color-surface-bright);
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-card);
-  &::before {
-    background: var(--glass-bg);
-    -webkit-backdrop-filter: var(--glass-blur);
-    backdrop-filter: var(--glass-blur);
-  }
 }
 
 @utility glass-chrome {
-  /* Floating chrome: the rail, the drawer, the tab bar. Blurs harder and casts
-     further than a card because content passes *under* it — which also makes it
-     the surface where the pseudo-element's missing blur showed most, since a
-     list scrolling beneath the tab bar stayed sharp and legible through it.
-
-     On the element, like `glass-menu` and for the same reason: all three bars
-     hold nothing but their own links and buttons, so there is no fixed
-     descendant to capture, and each is already `position: fixed` with a
-     `z-index`, so none of them gains a stacking context it did not have. */
+  /* Floating chrome: the rail, the drawer, the tab bar. Content passes *under*
+     it, so the fill has to be fully opaque — a solid colour now, where the old
+     glass leaned on a backdrop blur to keep a scrolling list legible through
+     it. Casts further than a card. */
   position: relative;
   background: var(--glass-chrome-bg);
-  -webkit-backdrop-filter: var(--glass-chrome-blur);
-  backdrop-filter: var(--glass-chrome-blur);
   border: 1px solid var(--glass-chrome-border);
   box-shadow: var(--shadow-bottomnav), var(--glass-rim);
 }
 
 @utility glass-sheet {
-  /* Sheets and full-screen modals. On the element for the same reason as the
-     two above: a sheet's panel holds only its own content — the overlays that
-     could have been a problem (the confirm dialog, the custom-food sheet, the
-     entry sheet) are all opened from rows and pages, never from inside a panel,
-     and the one full-bleed thing that is (the barcode scanner) is `absolute`
-     against a panel that was already `position: relative`.
-
-     Nearly opaque, so the blur here is worth little on its own; it is the
-     saturation travelling with it that keeps the panel from going grey. */
+  /* Sheets and full-screen modals. A solid opaque panel — it covers the page
+     rather than sitting in it. `position: relative` so the one full-bleed child
+     that needs it (the barcode scanner, `absolute`) has something to anchor to. */
   position: relative;
   background: var(--glass-sheet-bg);
-  -webkit-backdrop-filter: blur(36px) saturate(190%);
-  backdrop-filter: blur(36px) saturate(190%);
   border: 1px solid var(--glass-sheet-border);
   box-shadow: var(--shadow-sheet), var(--glass-rim);
 }
 
 @utility glass-menu {
-  /* The lens for a floating menu — today the one a long press opens on a food
-     row. The same material as `glass`, on the element rather than on a
-     `::before`, because it is the lens with the least forgiving backdrop of any
-     here: what sits behind it is the list of rows it was opened from, and
-     unblurred at `--glass-bg` those rows read straight through the menu (see the
-     Chromium note above — that is what Android showed and iOS did not).
-
-     Safe here for the reason it is not safe on a card: a menu is a leaf. It
-     holds nothing but its own items, so becoming a containing block for fixed
-     descendants captures nothing, and it is already `position: absolute` with a
-     `z-index`, so it is already a stacking context. */
+  /* The floating menu a long press opens on a food row. It covers the list of
+     rows it was opened from, so — like the chrome — it has to be a fully opaque
+     fill; the old glass held a backdrop blur here for the same reason. */
   position: relative;
   background: var(--glass-bg);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-card-hover), var(--glass-rim);
 }
@@ -397,10 +318,12 @@
  * the web a service worker cached it; inside a Capacitor WebView no service
  * worker registers at all, so an offline first launch hit exactly that.
  *
- * Both are subsets rather than the full families — the icon font carries only
+ * All are subsets rather than the full families — the icon font carries only
  * the ~55 glyphs this app uses (57KB, against ~3.6MB for the whole set), and
- * Manrope carries latin + latin-ext, which covers all 7 supported languages.
- * Manrope is a variable font, so one file serves every weight.
+ * Figtree / Manrope / Instrument Serif carry latin + latin-ext (Instrument
+ * Serif latin only — it is display-size headings, not body), which covers all
+ * 7 supported languages. Figtree and Manrope are variable, so one file each
+ * serves every weight; Instrument Serif ships a single weight by design.
  *
  * font-display: block on the icon font is deliberate: swap would show the
  * ligature text for the fallback period, which is the very failure being fixed.
@@ -430,6 +353,42 @@
   }
 
   @font-face {
+    font-family: 'Figtree';
+    font-style: normal;
+    font-weight: 300 900;
+    font-display: swap;
+    src: url('/fonts/figtree-latin-ext.woff2') format('woff2');
+    unicode-range:
+      U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+      U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+      U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  }
+
+  @font-face {
+    font-family: 'Figtree';
+    font-style: normal;
+    font-weight: 300 900;
+    font-display: swap;
+    src: url('/fonts/figtree-latin.woff2') format('woff2');
+    unicode-range:
+      U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+      U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+      U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  @font-face {
+    font-family: 'Instrument Serif';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/instrument-serif-latin.woff2') format('woff2');
+    unicode-range:
+      U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+      U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+      U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  @font-face {
     font-family: 'Material Symbols Outlined';
     font-style: normal;
     font-weight: 100 700;
@@ -452,252 +411,207 @@
    * definition identical in both schemes, so they stay literal in the config
    * and are absent here.
    * ---------------------------------------------------------------------- */
+  /* -----------------------------------------------------------------------
+   * GROVE — light.
+   *
+   * Sage accent on a warm oat-green ground. The lenses are gone: `--glass-*`
+   * still exists so nothing that references it breaks, but every value is now
+   * an opaque fill, `--glass-blur` is `none`, and `--glass-rim` is empty. See
+   * design/grove-tokens.html for the derivation and the AA contrast checks.
+   * -------------------------------------------------------------------- */
   :root {
-    --background: 247 247 251;
-    --surface: 247 247 251;
-    --surface-bright: 255 255 255;
-    --surface-dim: 224 224 234;
+    --background: 242 244 236;
+    --surface: 242 244 236;
+    --surface-bright: 251 252 247;
+    --surface-dim: 228 232 221;
     --surface-container-lowest: 255 255 255;
-    --surface-container-low: 247 247 251;
-    --surface-container: 240 240 246;
-    --surface-container-high: 232 232 240;
-    --surface-container-highest: 224 224 234;
-    --surface-variant: 232 232 240;
-    --surface-tint: 110 86 248;
-    --on-background: 20 20 28;
-    --on-surface: 20 20 28;
-    --on-surface-variant: 90 90 104;
-    --outline: 138 138 152;
-    --outline-variant: 214 214 226;
-    /* The system tint. It names the *accent* — nav selection, links, ring
-       strokes, the violet in a label — not a fill: filled primary surfaces use
-       the `.grad-primary` lens below, whose gradient is what gives a button its
-       depth. `--primary` alone as a background would be a flat slab of the one
-       colour the glass is meant to refract. */
-    --primary: 110 86 248;
+    --surface-container-low: 247 248 242;
+    --surface-container: 238 241 230;
+    --surface-container-high: 231 235 223;
+    --surface-container-highest: 223 228 214;
+    --surface-variant: 231 235 223;
+    --surface-tint: 79 116 88;
+    --on-background: 47 58 50;
+    --on-surface: 47 58 50;
+    --on-surface-variant: 92 107 94;
+    /* Placeholder / disabled only — clears the 3:1 non-text bar, not 4.5:1. */
+    --outline: 124 138 121;
+    --outline-variant: 211 219 203;
+    /* The accent: nav selection, links, ring strokes, the sage in a label.
+       Filled primary surfaces run on `.grad-primary` below, not on this. */
+    --primary: 79 116 88;
     --on-primary: 255 255 255;
-    --primary-container: 91 63 224;
+    --primary-container: 63 95 73;
     --on-primary-container: 255 255 255;
-    /* Hover state for filled primary surfaces. Light darkens the fill; dark
-       dims it instead, because darkening a light-on-dark accent would send it
-       towards the page rather than away from it. */
-    --primary-hover: 91 68 224;
-    /* Base for the low-opacity primary washes behind `text-primary` (selected
-       rows, active nav, tinted buttons). It is its own token because the tint
-       has to move the *opposite* way from the fill it sits under: light tints
-       towards the deeper primary-container, dark towards the bright primary,
-       so the wash always lifts off the page rather than sinking into it. */
-    --primary-tint: 110 86 248;
-    --secondary: 90 90 104;
+    --primary-hover: 63 95 73;
+    /* Base for the low-opacity washes behind `text-primary`. */
+    --primary-tint: 92 132 102;
+    --secondary: 92 107 94;
     --on-secondary: 255 255 255;
-    --secondary-container: 232 232 240;
-    --on-secondary-container: 59 59 72;
-    --tertiary: 85 92 110;
+    --secondary-container: 231 235 223;
+    --on-secondary-container: 60 72 62;
+    --tertiary: 88 110 96;
     --on-tertiary: 255 255 255;
-    --tertiary-container: 224 218 255;
-    --on-tertiary-container: 45 30 110;
-    --error: 199 20 48;
+    --tertiary-container: 219 231 220;
+    --on-tertiary-container: 32 60 42;
+    --error: 176 32 31;
     --on-error: 255 255 255;
-    --error-container: 255 226 232;
-    --on-error-container: 176 0 48;
-    --inverse-surface: 30 30 42;
-    --inverse-on-surface: 242 242 247;
-    --inverse-primary: 167 148 255;
+    --error-container: 250 226 224;
+    --on-error-container: 130 20 20;
+    --inverse-surface: 47 58 50;
+    --inverse-on-surface: 240 243 235;
+    --inverse-primary: 143 184 150;
 
     /* Macro + hydration accents. `-text` is the variant that clears WCAG AA as
-       small text on the theme's card surface; the bare token is graphics-only
-       (rings, dots) and `-tint` is the chip wash behind the text variant. */
-    --carbs: 255 159 10;
-    --carbs-text: 154 91 0;
-    --carbs-tint: 251 235 214;
-    --protein: 10 132 255;
-    --protein-text: 0 86 179;
-    --protein-tint: 216 233 253;
-    --fats: 255 55 95;
-    --fats-text: 176 0 48;
-    --fats-tint: 251 225 232;
-    --water: 50 173 230;
-    --water-text: 11 127 168;
-    --water-tint: 220 242 253;
-    /* Every progress ring runs on the same neutral track. The tinted tracks
-       this replaces read as a second, dimmer arc of the same accent — at a low
-       fill the ring then looked fuller than it was, which is the one thing a
-       progress ring must not do. */
-    --ring-track: 229 229 236;
-    /* "Moving the way you asked for". Only the weight trend uses it, and only
-       when the profile states a goal to be on track with — it is not a generic
-       positive, and nothing should read it as one. */
-    --success: 34 160 107;
-    /* Weight trend line, and the fill of the raw weigh-in dots behind it. */
-    --trend: 110 86 248;
-    --trend-dot: 255 255 255;
+       small text on the card surface; the bare token is graphics-only (rings,
+       dots) and `-tint` is the chip wash behind the text variant. */
+    --carbs: 207 155 108;
+    --carbs-text: 138 90 44;
+    --carbs-tint: 240 232 223;
+    --protein: 123 167 196;
+    --protein-text: 63 111 140;
+    --protein-tint: 226 236 241;
+    --fats: 201 138 151;
+    --fats-text: 156 74 88;
+    --fats-tint: 242 227 230;
+    --water: 90 167 196;
+    --water-text: 44 118 144;
+    --water-tint: 223 238 243;
+    --ring-track: 228 232 221;
+    /* "Moving the way you asked for" — the weight trend only. */
+    --success: 38 121 79;
+    --trend: 111 154 120;
+    --trend-dot: 251 252 247;
 
     /* -----------------------------------------------------------------------
-     * Glass.
-     *
-     * A lens is a translucent fill, a specular rim, and a blur that samples
-     * whatever scrolls beneath — so unlike every token above, these are whole
-     * colour values with alpha baked in, not channel triples. They cannot be
-     * Tailwind colours: `bg-x/50` would multiply the alpha rather than replace
-     * it, and the rim is an inset shadow, not a border colour.
-     *
-     * `-chrome` is the floating bars, which sit over content rather than in it
-     * and so blur harder and cast further. `-row` is a lens *inside* a lens
-     * (a food row in a meal card) and deliberately carries no blur of its own:
-     * stacked backdrop filters cost a full-screen composite each and resolve to
-     * the same image, since the parent has already flattened what's behind.
+     * Material. No translucency, no blur, no specular rim — the `--glass-*`
+     * names are kept so the `@utility` classes still resolve; the values are
+     * just opaque fills now. `--glass-blur` / `-chrome-blur` are `none`.
      * -------------------------------------------------------------------- */
-    --glass-bg: rgba(255, 255, 255, 0.55);
-    --glass-border: rgba(255, 255, 255, 0.8);
-    --glass-blur: blur(26px) saturate(180%);
-    --glass-chrome-bg: rgba(255, 255, 255, 0.58);
-    --glass-chrome-border: rgba(255, 255, 255, 0.8);
-    --glass-chrome-blur: blur(30px) saturate(190%);
-    /* Sheets and full-screen modals. Near opaque, unlike every other lens
-       here: a sheet *covers* the page rather than sitting in it, and at card
-       opacity the dashboard stayed legible straight through the dialog that
-       had replaced it — the ghosted macro rings behind an empty search field
-       read as a rendering fault, not as material. What is left of the glass at
-       this alpha is the blur's warmth and the saturation, not see-through. */
-    --glass-sheet-bg: rgba(255, 255, 255, 0.95);
-    --glass-sheet-border: rgba(255, 255, 255, 0.85);
-    --glass-row-bg: rgba(255, 255, 255, 0.5);
-    --glass-row-border: rgba(255, 255, 255, 0.6);
-    --glass-field-bg: rgba(255, 255, 255, 0.68);
-    --glass-field-border: rgba(255, 255, 255, 0.85);
-    /* The neutral pill — secondary toolbar buttons, segmented tracks. */
-    --glass-chip: rgba(120, 120, 140, 0.12);
-    --glass-chip-hover: rgba(120, 120, 140, 0.2);
-    /* The scrim a sheet or dialog lays over the page. */
-    --glass-scrim: rgba(30, 30, 50, 0.28);
+    --glass-bg: #fbfcf7;
+    --glass-border: #e4e8dd;
+    --glass-blur: none;
+    --glass-chrome-bg: #fbfcf7;
+    --glass-chrome-border: #e4e8dd;
+    --glass-chrome-blur: none;
+    --glass-sheet-bg: #fbfcf7;
+    --glass-sheet-border: #e4e8dd;
+    --glass-row-bg: transparent;
+    --glass-row-border: #eef1e6;
+    --glass-field-bg: #f4f6ee;
+    --glass-field-border: #e4e8dd;
+    --glass-chip: #eef1e6;
+    --glass-chip-hover: #e4e8dd;
+    --glass-scrim: rgba(30, 38, 28, 0.4);
 
-    /* The page ground: a soft aurora the lenses have something to refract.
-       Flat paint under glass shows nothing through it, which is the whole
-       point of the material — so the background is doing structural work here,
-       not decoration. */
-    --aurora:
-      radial-gradient(760px 560px at 12% 4%, #cfe0ff 0%, rgba(207, 224, 255, 0) 62%),
-      radial-gradient(680px 520px at 88% 10%, #ffd9e8 0%, rgba(255, 217, 232, 0) 60%),
-      radial-gradient(900px 700px at 62% 100%, #ddf3e4 0%, rgba(221, 243, 228, 0) 62%),
-      linear-gradient(180deg, #f7f7fb 0%, #ededf4 100%);
+    /* The page ground: near-flat, a whisper of vertical shift. */
+    --aurora: linear-gradient(180deg, #f4f6ee 0%, #eef1e5 100%);
 
-    /* Elevation. Not a color triple, so these are whole shadow values. Each
-       pairs a cast shadow with the inset hairlines that make an edge look
-       lit — a lens without a specular rim reads as a hole, not as glass. */
-    --shadow-card: 0 16px 36px rgba(20, 20, 45, 0.1);
-    --shadow-card-hover: 0 22px 48px rgba(20, 20, 45, 0.16);
-    --shadow-sidebar: 0 18px 40px rgba(20, 20, 45, 0.12);
-    --shadow-bottomnav: 0 18px 40px rgba(20, 20, 45, 0.18);
-    --shadow-sheet: 0 -20px 60px rgba(20, 20, 45, 0.22);
-    /* The specular rim, split out of the cast shadow above because it is
-       painted on the blurred fill layer rather than on the element (see the
-       `.glass::before` note). A lit top lip and a fainter bounce along the
-       bottom: that pair is most of what makes an edge read as thick. */
-    --glass-rim: inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 0 rgba(255, 255, 255, 0.4);
-    /* The violet CTA lifts on its own colour, not on black: a neutral shadow
-       under a saturated fill greys the edge it is meant to separate. */
-    --shadow-accent: 0 12px 26px rgba(91, 63, 224, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-    --grad-primary: linear-gradient(160deg, #8b72ff, #5b3fe0);
-    --scrollbar-thumb: #c2c2d2;
+    /* Elevation. Warm-tinted toward the ground; no inset rim pair. */
+    --shadow-card: 0 14px 34px rgba(55, 66, 52, 0.07);
+    --shadow-card-hover: 0 20px 44px rgba(55, 66, 52, 0.12);
+    --shadow-sidebar: 0 16px 40px rgba(55, 66, 52, 0.1);
+    --shadow-bottomnav: 0 16px 36px rgba(55, 66, 52, 0.14);
+    --shadow-sheet: 0 -18px 50px rgba(30, 38, 28, 0.18);
+    /* Kept as a name so `box-shadow: var(--glass-rim)` stays valid. */
+    --glass-rim: 0 0 transparent;
+    --shadow-accent: 0 12px 26px rgba(79, 116, 88, 0.3);
+    --grad-primary: linear-gradient(155deg, #557d5f, #47694f);
+    --scrollbar-thumb: #c3ccb9;
   }
 
+  /* GROVE — dark. A warm near-black ground with cards a step lighter; the
+     accent and every macro `-text` are lifted to clear AA on the dark card. */
   .dark {
-    --background: 12 12 20;
-    --surface: 12 12 20;
-    --surface-bright: 30 30 42;
-    --surface-dim: 8 8 13;
-    --surface-container-lowest: 22 22 32;
-    --surface-container-low: 26 26 38;
-    --surface-container: 34 34 46;
-    --surface-container-high: 45 45 60;
-    --surface-container-highest: 56 56 72;
-    --surface-variant: 45 45 60;
-    --surface-tint: 167 148 255;
-    --on-background: 242 242 247;
-    --on-surface: 242 242 247;
-    --on-surface-variant: 154 154 172;
-    --outline: 130 130 154;
-    --outline-variant: 58 58 74;
-    --primary: 167 148 255;
-    /* Deep violet, not white: `--primary` is a light accent in this scheme, so
-       a compact filled control (`bg-primary text-on-primary` — a selected pill,
-       a toggle) needs dark type on it. The large CTAs don't use this pair at
-       all; they run on the gradient below, which carries its own white. */
-    --on-primary: 27 18 64;
-    --primary-container: 110 86 248;
+    --background: 18 21 14;
+    --surface: 18 21 14;
+    --surface-bright: 30 35 24;
+    --surface-dim: 13 16 10;
+    --surface-container-lowest: 23 27 18;
+    --surface-container-low: 26 31 20;
+    --surface-container: 23 27 18;
+    --surface-container-high: 38 44 30;
+    --surface-container-highest: 47 54 36;
+    --surface-variant: 42 49 32;
+    --surface-tint: 143 184 150;
+    --on-background: 231 236 224;
+    --on-surface: 231 236 224;
+    --on-surface-variant: 154 168 150;
+    --outline: 108 122 104;
+    --outline-variant: 58 66 48;
+    --primary: 143 184 150;
+    /* Dark ink, not white: `--primary` is a light accent here, so a compact
+       filled control (`bg-primary text-on-primary` — a pill, a toggle) needs
+       dark type. The large CTAs run on the gradient below with their own ink. */
+    --on-primary: 18 21 14;
+    --primary-container: 79 116 88;
     --on-primary-container: 255 255 255;
-    --primary-hover: 139 114 255;
-    --primary-tint: 167 148 255;
-    --secondary: 154 154 172;
-    --on-secondary: 20 20 28;
-    --secondary-container: 45 45 60;
-    --on-secondary-container: 213 213 224;
-    --tertiary: 192 192 208;
-    --on-tertiary: 20 20 28;
-    --tertiary-container: 61 55 96;
-    --on-tertiary-container: 224 218 255;
-    --error: 255 107 138;
-    --on-error: 60 0 16;
-    --error-container: 82 16 34;
-    --on-error-container: 255 190 202;
-    --inverse-surface: 242 242 247;
-    --inverse-on-surface: 20 20 28;
-    --inverse-primary: 110 86 248;
+    --primary-hover: 163 201 169;
+    --primary-tint: 143 184 150;
+    --secondary: 154 168 150;
+    --on-secondary: 18 21 14;
+    --secondary-container: 42 49 32;
+    --on-secondary-container: 208 218 202;
+    --tertiary: 176 200 182;
+    --on-tertiary: 18 21 14;
+    --tertiary-container: 47 60 46;
+    --on-tertiary-container: 214 232 216;
+    --error: 255 139 134;
+    --on-error: 60 6 6;
+    --error-container: 74 18 18;
+    --on-error-container: 255 200 197;
+    --inverse-surface: 231 236 224;
+    --inverse-on-surface: 30 35 24;
+    --inverse-primary: 79 116 88;
 
-    --carbs: 255 179 64;
-    --carbs-text: 255 206 122;
-    --carbs-tint: 74 60 49;
-    --protein: 77 162 255;
-    --protein-text: 143 198 255;
-    --protein-tint: 42 57 84;
-    --fats: 255 107 138;
-    --fats-text: 255 163 182;
-    --fats-tint: 74 47 63;
-    --water: 100 210 255;
-    --water-text: 100 210 255;
-    --water-tint: 45 62 79;
-    --ring-track: 56 56 67;
-    --success: 48 209 88;
-    --trend: 167 148 255;
-    --trend-dot: 18 18 28;
+    --carbs: 224 172 125;
+    --carbs-text: 232 189 147;
+    --carbs-tint: 51 41 31;
+    --protein: 143 184 212;
+    --protein-text: 169 207 230;
+    --protein-tint: 34 48 58;
+    --fats: 217 155 166;
+    --fats-text: 231 173 184;
+    --fats-tint: 54 35 41;
+    --water: 111 188 214;
+    --water-text: 143 201 222;
+    --water-tint: 35 51 58;
+    --ring-track: 47 54 36;
+    --success: 108 201 143;
+    --trend: 143 184 150;
+    --trend-dot: 30 35 24;
 
-    /* Night glass is the same construction with the light source moved: the
-       fill darkens towards the page instead of away from it, and the specular
-       rim thins to a single top hairline — a bright bottom edge in the dark
-       reads as a seam rather than as a lit lip. */
-    --glass-bg: rgba(38, 38, 52, 0.5);
-    --glass-border: rgba(255, 255, 255, 0.12);
-    --glass-blur: blur(26px) saturate(170%);
-    --glass-chrome-bg: rgba(38, 38, 52, 0.62);
-    --glass-chrome-border: rgba(255, 255, 255, 0.14);
-    --glass-chrome-blur: blur(30px) saturate(180%);
-    --glass-sheet-bg: rgba(26, 26, 38, 0.94);
-    --glass-sheet-border: rgba(255, 255, 255, 0.14);
-    --glass-row-bg: rgba(255, 255, 255, 0.05);
-    --glass-row-border: rgba(255, 255, 255, 0.07);
-    --glass-field-bg: rgba(255, 255, 255, 0.07);
-    --glass-field-border: rgba(255, 255, 255, 0.12);
-    --glass-chip: rgba(255, 255, 255, 0.09);
-    --glass-chip-hover: rgba(255, 255, 255, 0.16);
-    --glass-scrim: rgba(4, 4, 8, 0.5);
+    /* Material — opaque, no blur, no rim (see the light block). */
+    --glass-bg: #1e2318;
+    --glass-border: #2a3222;
+    --glass-blur: none;
+    --glass-chrome-bg: #1e2318;
+    --glass-chrome-border: #2a3222;
+    --glass-chrome-blur: none;
+    --glass-sheet-bg: #1a1f14;
+    --glass-sheet-border: #2f3826;
+    --glass-row-bg: transparent;
+    --glass-row-border: #2a3222;
+    --glass-field-bg: #171b12;
+    --glass-field-border: #2f3826;
+    --glass-chip: #14180f;
+    --glass-chip-hover: #242a1c;
+    --glass-scrim: rgba(4, 6, 3, 0.55);
 
-    --aurora:
-      radial-gradient(760px 600px at 10% 0%, rgba(91, 63, 224, 0.55) 0%, rgba(91, 63, 224, 0) 62%),
-      radial-gradient(700px 560px at 92% 8%, rgba(255, 55, 95, 0.32) 0%, rgba(255, 55, 95, 0) 60%),
-      radial-gradient(900px 700px at 60% 104%, rgba(10, 132, 255, 0.34) 0%, rgba(10, 132, 255, 0) 62%),
-      linear-gradient(180deg, #0c0c14, #08080d);
+    --aurora: linear-gradient(180deg, #14180f 0%, #101309 100%);
 
-    --shadow-card: 0 16px 36px rgba(0, 0, 0, 0.42);
+    --shadow-card: 0 16px 34px rgba(0, 0, 0, 0.42);
     --shadow-card-hover: 0 22px 48px rgba(0, 0, 0, 0.5);
     --shadow-sidebar: 0 18px 40px rgba(0, 0, 0, 0.5);
-    --shadow-bottomnav: 0 18px 40px rgba(0, 0, 0, 0.55);
+    --shadow-bottomnav: 0 16px 36px rgba(0, 0, 0, 0.5);
     --shadow-sheet: 0 -20px 60px rgba(0, 0, 0, 0.6);
-    /* Top lip only. A bright bottom edge on a dark page reads as a seam
-       between two panels rather than as the underside of one. */
-    --glass-rim: inset 0 1px 0 rgba(255, 255, 255, 0.16);
-    --shadow-accent: 0 14px 30px rgba(110, 86, 248, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-    --grad-primary: linear-gradient(160deg, #9c89ff, #5b3fe0);
-    --scrollbar-thumb: #3a3a4a;
+    --glass-rim: 0 0 transparent;
+    --shadow-accent: 0 14px 30px rgba(0, 0, 0, 0.5);
+    /* Deep sage in dark so the utility's white label keeps AA — `--primary`
+       itself is the light accent and only carries dark type when it is a
+       flat fill (`bg-primary text-on-primary`). */
+    --grad-primary: linear-gradient(155deg, #4f7458, #3f5f49);
+    --scrollbar-thumb: #39412f;
   }
 
   /* -------------------------------------------------------------------------
@@ -837,25 +751,6 @@
   }
 }
 
-/* Without a backdrop filter the fills are simply see-through, and text lands on
-   whatever the aurora happens to be doing behind it. Every lens goes near
-   opaque instead — the material is gone either way, but the contrast survives.
-   Firefox honoured this until 103; some Android WebViews still do. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  :root {
-    --glass-bg: rgba(255, 255, 255, 0.94);
-    --glass-chrome-bg: rgba(255, 255, 255, 0.96);
-    --glass-sheet-bg: rgb(255, 255, 255);
-  }
-  .dark {
-    --glass-bg: rgb(30, 30, 42);
-    --glass-chrome-bg: rgb(34, 34, 46);
-    --glass-sheet-bg: rgb(26, 26, 38);
-  }
-  .glass-scrim {
-    background: rgba(20, 20, 32, 0.55);
-  }
-}
 
 /* Material Symbols Outlined — variation settings (from the Stitch export) */
 .material-symbols-outlined {
@@ -980,10 +875,11 @@ input[type='number'] {
  * `backwards` holds the *first* keyframe through the animation's delay and then
  * hands the property back to the base style the moment the animation ends —
  * so a card that has finished rising carries no transform at all. That matters
- * for the same reason `backdrop-filter` was moved off the cards (see the note
- * on `.glass::before`): a transform makes an element a containing block for its
+ * because a transform makes an element a containing block for its
  * fixed-position descendants, and a meal card holds food rows whose entry sheet
- * and delete dialog are `position: fixed; inset: 0`. With `forwards` the
+ * and delete dialog are `position: fixed; inset: 0`. (This is the last of the
+ * containing-block hazards the solid surfaces left behind — the old glass had
+ * the same problem via `backdrop-filter`, which is gone now.) With `forwards` the
  * finished transform would sit there permanently and those dialogs would be
  * laid out inside a meal card. With `backwards` the only exposure is the 650ms
  * of the entrance itself — and `.animate-rise-in-place` below removes even

@@ -41,7 +41,7 @@ export function BootScreen({ label }: { label: string }) {
         width={132}
         height={132}
         className="h-[132px] w-[132px] animate-float rounded-[31px] dark:hidden"
-        style={{ boxShadow: '0 26px 60px rgba(91, 63, 224, 0.4)' }}
+        style={{ boxShadow: '0 26px 60px rgba(79, 116, 88, 0.35)' }}
       />
       <img
         src="/icon-dark.svg"
@@ -49,7 +49,7 @@ export function BootScreen({ label }: { label: string }) {
         width={132}
         height={132}
         className="hidden h-[132px] w-[132px] animate-float rounded-[31px] dark:block"
-        style={{ boxShadow: '0 26px 64px rgba(110, 86, 248, 0.55)' }}
+        style={{ boxShadow: '0 26px 64px rgba(143, 184, 150, 0.4)' }}
       />
 
       <div className="flex flex-col items-center gap-1.5 text-center">

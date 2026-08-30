@@ -8,8 +8,8 @@
        stroke-dasharray/offset pairs stay comparable with public/icon.svg. -->
   <defs>
     <linearGradient id="tile" x1="192" y1="0" x2="832" y2="1024" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#8B72FF"></stop>
-      <stop offset="1" stop-color="#5B3FE0"></stop>
+      <stop offset="0" stop-color="#5C8466"></stop>
+      <stop offset="1" stop-color="#47694F"></stop>
     </linearGradient>
     <linearGradient id="specular" x1="512" y1="32" x2="512" y2="480" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#ffffff" stop-opacity=".42"></stop>
@@ -22,13 +22,13 @@
   <g transform="scale(2)">
     <g fill="none" stroke-linecap="round" transform="rotate(-90 256 256)">
       <circle cx="256" cy="256" r="150" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="150" stroke="#FF9F0A" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
+      <circle cx="256" cy="256" r="150" stroke="#CF9B6C" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
 
       <circle cx="256" cy="256" r="106" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="106" stroke="#0A84FF" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
+      <circle cx="256" cy="256" r="106" stroke="#7BA7C4" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
 
       <circle cx="256" cy="256" r="62" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="62" stroke="#FF375F" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
+      <circle cx="256" cy="256" r="62" stroke="#C98A97" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
     </g>
   </g>
 

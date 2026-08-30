@@ -110,8 +110,8 @@ export function watchDeviceTheme(onChange: (theme: ResolvedTheme) => void): () =
  * of the aurora, and that is what these match.
  */
 export const CHROME_COLOR: Record<ResolvedTheme, string> = {
-  light: '#f7f7fb',
-  dark: '#0c0c14',
+  light: '#f4f6ee',
+  dark: '#14180f',
 }
 
 /** The theme currently on the document, whoever put it there. */

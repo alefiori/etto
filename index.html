@@ -23,13 +23,15 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Etto" />
-    <!-- Fonts: Manrope + Material Symbols Outlined (as in the Stitch export),
-         self-hosted from /public/fonts. They must not come from a CDN: Icon.tsx
-         renders Material Symbols as a *ligature*, so if that font fails to load
-         every icon in the app renders as the literal word "dashboard", "close",
-         "barcode_scanner". In a Capacitor WebView the service worker that used
-         to cache it never registers, which makes an offline first launch
-         exactly that failure. See src/index.css for the @font-face rules. -->
+    <!-- Fonts: Figtree (UI text) + Instrument Serif (headline-lg) + Material
+         Symbols Outlined, self-hosted from /public/fonts. They must not come
+         from a CDN: Icon.tsx renders Material Symbols as a *ligature*, so if
+         that font fails to load every icon in the app renders as the literal
+         word "dashboard", "close", "barcode_scanner". In a Capacitor WebView
+         the service worker that used to cache it never registers, which makes
+         an offline first launch exactly that failure. Manrope is kept as the
+         first fallback face (see --font-sans) but is not preloaded. See
+         src/index.css for the @font-face rules. -->
     <link
       rel="preload"
       href="/fonts/material-symbols-outlined.woff2"
@@ -37,7 +39,14 @@
       type="font/woff2"
       crossorigin
     />
-    <link rel="preload" href="/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/figtree-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link
+      rel="preload"
+      href="/fonts/instrument-serif-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
 
     <!--
       Live browser-chrome color, rewritten by src/lib/theme.ts whenever the
@@ -50,7 +59,7 @@
       document — but everything that writes it must target the id, or it would
       be a coin flip which of the two it found.
     -->
-    <meta id="app-theme-color" name="theme-color" content="#f7f7fb" />
+    <meta id="app-theme-color" name="theme-color" content="#f4f6ee" />
     <!--
       Theme, before the first paint.
 
@@ -75,7 +84,7 @@
           document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
           document
             .getElementById('app-theme-color')
-            .setAttribute('content', dark ? '#0c0c14' : '#f7f7fb')
+            .setAttribute('content', dark ? '#14180f' : '#f4f6ee')
         } catch (e) {
           /* No storage or no matchMedia: light, which is the markup default. */
         }

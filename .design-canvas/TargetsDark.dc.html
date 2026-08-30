@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #14180f; }
+    a { color: #8fb896; } a:hover { color: #a9cab0; }
+
+    .scr { width: 390px; min-height: 1180px; position: relative; background: #14180f;
+      font-family: "Figtree", system-ui, sans-serif; color: #e7ece0; -webkit-font-smoothing: antialiased;
+      padding: 8px 18px 140px; }
+    .card { background: #1e2318; border-radius: 26px; padding: 22px; box-shadow: 0 16px 34px rgba(0,0,0,.42); }
+    .card + .card { margin-top: 14px; }
+    .ic { width: 22px; height: 22px; display: block; }
+
+    .bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 4px 16px; }
+    .word { font-size: 19px; font-weight: 700; letter-spacing: -.01em; color: #c9d8c6; }
+    .avatar { width: 38px; height: 38px; border-radius: 999px; background: #24301f; color: #8fb896;
+      display: flex; align-items: center; justify-content: center; }
+
+    .head { padding: 4px 4px 14px; }
+    .ptitle { font-family: "Instrument Serif", Georgia, serif; font-size: 34px; line-height: 1.05; color: #d3e0cf; }
+    .psub { margin-top: 4px; font-size: 13px; color: #8f9c8a; }
+    .saved { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 12px; font-weight: 600; color: #8fb896; }
+
+    .adapt-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .adapt-title { font-size: 16px; font-weight: 700; color: #d3e0cf; }
+    .adapt-body { margin-top: 6px; font-size: 13px; line-height: 1.5; color: #8f9c8a; }
+    .toggle { width: 46px; height: 27px; border-radius: 999px; background: #2c3324; position: relative; flex: none; }
+    .toggle i { position: absolute; top: 3px; left: 3px; width: 21px; height: 21px; border-radius: 999px; background: #59654f; }
+    .suggest { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 14px; padding: 12px 14px; background: #14180f; border-radius: 16px; font-size: 13px; font-weight: 600; color: #cdd8c8; }
+    .sdot { width: 7px; height: 7px; border-radius: 999px; }
+    .applybtn { margin-top: 14px; width: 100%; text-align: center; font-size: 13px; font-weight: 600;
+      color: #14180f; background: #8fb896; border-radius: 999px; padding: 12px; }
+
+    .daycard { margin-top: 14px; }
+    .dayhead { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #2a3222; }
+    .dayname { font-size: 18px; font-weight: 700; color: #d3e0cf; }
+    .dayname.wknd { color: #6c7a68; }
+    .copybtn { color: #59654f; }
+    .mi { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid #232a1c; }
+    .mi:last-of-type { border-bottom: 0; }
+    .mi-label { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 600; color: #9aa896; }
+    .mi-label .d { width: 8px; height: 8px; border-radius: 999px; flex: none; }
+    .mi-box { width: 96px; height: 44px; border: 1px solid #2f3826; background: #171b12; border-radius: 14px;
+      display: flex; align-items: center; justify-content: flex-end; padding: 0 14px; font-size: 15px; font-weight: 700; color: #d3e0cf; }
+    .daytotal { margin-top: 14px; text-align: center; background: #14180f; border-radius: 16px; padding: 12px; }
+    .daytotal .k { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #6c7a68; }
+    .daytotal .v { font-size: 22px; font-weight: 700; color: #d3e0cf; margin-top: 2px; }
+
+    .tabs { position: absolute; left: 18px; right: 18px; bottom: 16px; background: #1e2318; border-radius: 30px;
+      box-shadow: 0 16px 36px rgba(0,0,0,.5); display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; }
+    .tab { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; color: #7c8a78; }
+    .tab.on { color: #8fb896; }
+    .tabph { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 999px; }
+    .tab.on .tabph { background: #24301f; }
+    .tabadd { width: 48px; height: 48px; border-radius: 999px; background: #8fb896; color: #14180f;
+      display: flex; align-items: center; justify-content: center; }
+  </style>
+</helmet>
+
+<div class="scr">
+
+  <div class="bar">
+    <div class="word">Etto</div>
+    <div class="avatar"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c0-4 3.5-6 7.5-6s7.5 2 7.5 6"/></svg></div>
+  </div>
+
+  <div class="head">
+    <div class="ptitle">Weekly targets</div>
+    <div class="psub">A macro goal for each day of the week.</div>
+    <div class="saved">
+      <svg class="ic" style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.6-1.6A3.6 3.6 0 0 0 6.5 18Z"/><path d="M9.5 12.5l2 2 3.5-4"/></svg>
+      All changes saved
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="adapt-top">
+      <div>
+        <div class="adapt-title">Adaptive targets</div>
+        <div class="adapt-body">Let Etto tune your macros from your weigh-ins and stated goal, then keep them updated week to week.</div>
+      </div>
+      <div class="toggle"><i></i></div>
+    </div>
+    <div class="suggest">
+      <span class="sdot" style="background:#e0ac7d;"></span> 228 C
+      <span class="sdot" style="background:#8fb8d4;margin-left:6px;"></span> 150 P
+      <span class="sdot" style="background:#d99ba6;margin-left:6px;"></span> 66 F
+      <span style="color:#6c7a68;margin-left:2px;">·</span> 2,106 kcal
+    </div>
+    <div class="applybtn">Apply to every day</div>
+  </div>
+
+  <div class="card daycard">
+    <div class="dayhead"><div class="dayname">Monday</div><div class="copybtn"><svg class="ic" style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg></div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#e0ac7d;"></span>Carbs (g)</div><div class="mi-box">240</div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#8fb8d4;"></span>Protein (g)</div><div class="mi-box">150</div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#d99ba6;"></span>Fat (g)</div><div class="mi-box">70</div></div>
+    <div class="daytotal"><div class="k">Total</div><div class="v">2,190 kcal</div></div>
+  </div>
+
+  <div class="card daycard">
+    <div class="dayhead"><div class="dayname">Tuesday</div><div class="copybtn"><svg class="ic" style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg></div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#e0ac7d;"></span>Carbs (g)</div><div class="mi-box">240</div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#8fb8d4;"></span>Protein (g)</div><div class="mi-box">150</div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#d99ba6;"></span>Fat (g)</div><div class="mi-box">70</div></div>
+    <div class="daytotal"><div class="k">Total</div><div class="v">2,190 kcal</div></div>
+  </div>
+
+  <div class="card daycard">
+    <div class="dayhead"><div class="dayname">Wednesday</div><div class="copybtn"><svg class="ic" style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg></div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#e0ac7d;"></span>Carbs (g)</div><div class="mi-box">240</div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#8fb8d4;"></span>Protein (g)</div><div class="mi-box">150</div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#d99ba6;"></span>Fat (g)</div><div class="mi-box">70</div></div>
+    <div class="daytotal"><div class="k">Total</div><div class="v">2,190 kcal</div></div>
+  </div>
+
+  <div class="card daycard">
+    <div class="dayhead"><div class="dayname">Thursday</div><div class="copybtn"><svg class="ic" style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg></div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#e0ac7d;"></span>Carbs (g)</div><div class="mi-box">240</div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#8fb8d4;"></span>Protein (g)</div><div class="mi-box">150</div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#d99ba6;"></span>Fat (g)</div><div class="mi-box">70</div></div>
+    <div class="daytotal"><div class="k">Total</div><div class="v">2,190 kcal</div></div>
+  </div>
+
+  <div class="card daycard">
+    <div class="dayhead"><div class="dayname">Friday</div><div class="copybtn"><svg class="ic" style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg></div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#e0ac7d;"></span>Carbs (g)</div><div class="mi-box">240</div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#8fb8d4;"></span>Protein (g)</div><div class="mi-box">150</div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#d99ba6;"></span>Fat (g)</div><div class="mi-box">70</div></div>
+    <div class="daytotal"><div class="k">Total</div><div class="v">2,190 kcal</div></div>
+  </div>
+
+  <div class="card daycard">
+    <div class="dayhead"><div class="dayname wknd">Saturday</div><div class="copybtn"><svg class="ic" style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg></div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#e0ac7d;"></span>Carbs (g)</div><div class="mi-box">200</div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#8fb8d4;"></span>Protein (g)</div><div class="mi-box">140</div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#d99ba6;"></span>Fat (g)</div><div class="mi-box">65</div></div>
+    <div class="daytotal"><div class="k">Total</div><div class="v">1,945 kcal</div></div>
+  </div>
+
+  <div class="card daycard">
+    <div class="dayhead"><div class="dayname wknd">Sunday</div><div class="copybtn"><svg class="ic" style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg></div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#e0ac7d;"></span>Carbs (g)</div><div class="mi-box">210</div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#8fb8d4;"></span>Protein (g)</div><div class="mi-box">140</div></div>
+    <div class="mi"><div class="mi-label"><span class="d" style="background:#d99ba6;"></span>Fat (g)</div><div class="mi-box">68</div></div>
+    <div class="daytotal"><div class="k">Total</div><div class="v">2,012 kcal</div></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab"><span class="tabph"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Day</div>
+    <div class="tab on"><span class="tabph"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4.5" width="18" height="16.5" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg></span>Targets</div>
+    <div class="tabadd"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg></div>
+    <div class="tab"><span class="tabph"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 11h14a7 7 0 0 1-14 0Z"/><path d="M12 3v4M9 3.5v3M15 3.5v3"/></svg></span>Foods</div>
+    <div class="tab"><span class="tabph"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c0-4 3.5-6 7.5-6s7.5 2 7.5 6"/></svg></span>Profile</div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

@@ -17,20 +17,20 @@ export default defineConfig({
     ...minimal2023Preset,
     // Maskable + apple icons get a solid background matching the brand so the
     // SVG's transparent corners don't show through on iOS/Android launchers.
-    // Flat violet rather than the tile's gradient: this only ever shows in the
+    // Flat sage rather than the tile's gradient: this only ever shows in the
     // few pixels outside the artwork, where a second gradient would band
     // against the first.
     maskable: {
       ...minimal2023Preset.maskable,
       resizeOptions: {
-        background: '#6e56f8',
+        background: '#5c8466',
         fit: 'contain',
       },
     },
     apple: {
       ...minimal2023Preset.apple,
       resizeOptions: {
-        background: '#6e56f8',
+        background: '#5c8466',
         fit: 'contain',
       },
     },

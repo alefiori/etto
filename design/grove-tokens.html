@@ -1,0 +1,792 @@
+<title>Grove Tokens</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Instrument+Serif&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --ground: #f2f4ec;
+    --surface: #fbfcf7;
+    --raised: #eef1e6;
+    --ink: #2f3a32;
+    --muted: #5c6b5e;
+    --faint: #8a9887;
+    --accent: #4f7458;
+    --accent-soft: #5c8466;
+    --hairline: #e4e8dd;
+    --code-bg: #eef1e6;
+    --code-ink: #384a3d;
+    --good: #26794f;
+    --warn: #8a5a2c;
+    --bad: #9c4a58;
+    --shadow: 0 14px 34px rgba(55, 66, 52, 0.07);
+    --shadow-soft: 0 8px 20px rgba(55, 66, 52, 0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #12150e;
+      --surface: #1e2318;
+      --raised: #171b12;
+      --ink: #e7ece0;
+      --muted: #9aa896;
+      --faint: #6c7a68;
+      --accent: #8fb896;
+      --accent-soft: #a3c9a9;
+      --hairline: #2a3222;
+      --code-bg: #14180f;
+      --code-ink: #c7d3c2;
+      --good: #6cc98f;
+      --warn: #e8bd93;
+      --bad: #e7adb8;
+      --shadow: 0 16px 34px rgba(0, 0, 0, 0.42);
+      --shadow-soft: 0 10px 24px rgba(0, 0, 0, 0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #12150e;
+    --surface: #1e2318;
+    --raised: #171b12;
+    --ink: #e7ece0;
+    --muted: #9aa896;
+    --faint: #6c7a68;
+    --accent: #8fb896;
+    --accent-soft: #a3c9a9;
+    --hairline: #2a3222;
+    --code-bg: #14180f;
+    --code-ink: #c7d3c2;
+    --good: #6cc98f;
+    --warn: #e8bd93;
+    --bad: #e7adb8;
+    --shadow: 0 16px 34px rgba(0, 0, 0, 0.42);
+    --shadow-soft: 0 10px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Figtree", system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---- top bar ---- */
+  .topbar {
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--ground) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 56px; padding-top: 8px; padding-bottom: 8px; }
+  .topbar .mark { font-family: "Instrument Serif", Georgia, serif; font-size: 22px; color: var(--accent); flex: none; }
+  .topnav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+  .topnav::-webkit-scrollbar { display: none; }
+  .topnav a {
+    font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap;
+    color: var(--muted); text-decoration: none; padding: 6px 10px; border-radius: 999px;
+  }
+  .topnav a:hover { color: var(--accent); background: var(--raised); }
+  .topnav a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---- hero ---- */
+  header.hero { padding: 72px 0 44px; border-bottom: 1px solid var(--hairline); }
+  .hero h1 {
+    font-family: "Instrument Serif", Georgia, serif; font-weight: 400;
+    font-size: clamp(52px, 12vw, 88px); line-height: .98; margin: 0 0 18px;
+    color: var(--accent); text-wrap: balance;
+  }
+  .hero .lede { font-size: 19px; color: var(--ink); max-width: 60ch; margin: 0 0 22px; }
+  .hero .meta { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    font-size: 12px; font-weight: 600; letter-spacing: .03em;
+    padding: 5px 12px; border-radius: 999px; background: var(--raised); color: var(--muted);
+  }
+  .tag.on { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+
+  /* ---- sections ---- */
+  section { padding: 56px 0; border-bottom: 1px solid var(--hairline); }
+  section:last-of-type { border-bottom: 0; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 10px;
+  }
+  h2 {
+    font-family: "Instrument Serif", Georgia, serif; font-weight: 400;
+    font-size: clamp(30px, 6vw, 42px); line-height: 1.08; margin: 0 0 14px; text-wrap: balance;
+  }
+  h3 {
+    font-size: 15px; font-weight: 700; letter-spacing: .01em; margin: 32px 0 12px;
+    color: var(--ink);
+  }
+  p { margin: 0 0 16px; max-width: 68ch; }
+  p .em { color: var(--accent); font-weight: 600; }
+  ul.notes { margin: 0 0 16px; padding: 0; list-style: none; max-width: 68ch; }
+  ul.notes li { position: relative; padding-left: 20px; margin-bottom: 9px; }
+  ul.notes li::before {
+    content: ""; position: absolute; left: 2px; top: 10px; width: 6px; height: 6px;
+    border-radius: 2px; background: var(--accent);
+  }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 32px; max-width: 68ch; }
+  .split h3 { margin-top: 8px; }
+  @media (max-width: 620px) { .split { grid-template-columns: 1fr; } }
+
+  /* ---- token table ---- */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--hairline); border-radius: 14px; box-shadow: var(--shadow-soft); }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; background: var(--surface); }
+  caption { text-align: left; padding: 14px 16px 0; font-weight: 600; color: var(--muted); font-size: 13px; }
+  thead th {
+    text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--faint); padding: 12px 14px; border-bottom: 1px solid var(--hairline); white-space: nowrap;
+  }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid var(--hairline); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr.grouprow td {
+    background: var(--raised); font-weight: 700; font-size: 11px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--muted); padding: 8px 14px;
+  }
+  .sw { display: block; width: 26px; height: 26px; border-radius: 7px; border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent); }
+  tbody[data-surface] td:first-child { width: 40px; }
+  .cellrole { display: flex; align-items: center; gap: 10px; }
+  .cellrole span:empty { display: none; }
+  .cellrole b { font-weight: 600; }
+  .cellrole small { display: block; color: var(--faint); font-weight: 400; font-size: 11.5px; }
+  code, .mono {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12.5px; color: var(--code-ink);
+  }
+  td .maps { color: var(--muted); }
+  .badge {
+    display: inline-block; font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 500;
+    padding: 3px 8px; border-radius: 6px; white-space: nowrap;
+  }
+  .badge.pass { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
+  .badge.large { background: color-mix(in srgb, var(--warn) 20%, transparent); color: var(--warn); }
+  .badge.fail { background: color-mix(in srgb, var(--bad) 20%, transparent); color: var(--bad); }
+  .badge.na { background: var(--raised); color: var(--faint); }
+
+  /* ---- type specimen ---- */
+  .specimen { display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--hairline);
+    border-radius: 14px; padding: 24px; background: var(--surface); box-shadow: var(--shadow-soft); margin-bottom: 20px; }
+  .specimen > div { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 10px 0; border-bottom: 1px dashed var(--hairline); }
+  .specimen > div:last-child { border-bottom: 0; }
+  .specimen .k { flex: none; width: 128px; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--faint); letter-spacing: .04em; }
+  .sp-display-lg { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; font-size: 36px; }
+  .sp-display-md { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; font-size: 28px; }
+  .sp-headline { font-weight: 700; font-size: 20px; }
+  .sp-body { font-weight: 400; font-size: 16px; }
+  .sp-label { font-weight: 600; font-size: 14px; letter-spacing: .05em; text-transform: uppercase; }
+  .sp-data { font-weight: 700; font-size: 34px; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+
+  /* ---- code block ---- */
+  .codecard { border: 1px solid var(--hairline); border-radius: 14px; overflow: hidden; background: var(--code-bg); box-shadow: var(--shadow-soft); }
+  .codecard .bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--hairline); }
+  .codecard .bar span { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); }
+  .copybtn {
+    font-family: "Figtree", sans-serif; font-size: 12px; font-weight: 600; cursor: pointer;
+    border: 1px solid var(--hairline); background: var(--surface); color: var(--ink);
+    padding: 6px 12px; border-radius: 999px;
+  }
+  .copybtn:hover { border-color: var(--accent); color: var(--accent); }
+  .copybtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  pre { margin: 0; padding: 18px; overflow-x: auto; }
+  pre code { color: var(--code-ink); font-size: 12px; line-height: 1.7; white-space: pre; }
+  .tok-c { color: var(--faint); font-style: italic; }
+  .tok-p { color: var(--accent); }
+
+  footer { padding: 40px 0 64px; color: var(--muted); font-size: 13px; }
+  footer a { color: var(--accent); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    header.hero, section { animation: rise .5s ease backwards; }
+    section:nth-of-type(2) { animation-delay: .04s; }
+    @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+  }
+</style>
+
+<div class="topbar">
+  <div class="wrap">
+    <span class="mark">Grove</span>
+    <nav class="topnav">
+      <a href="#changes">Changes</a>
+      <a href="#light">Light</a>
+      <a href="#dark">Dark</a>
+      <a href="#surfaces">Surfaces</a>
+      <a href="#type">Type</a>
+      <a href="#geometry">Geometry</a>
+      <a href="#paste">Paste</a>
+    </nav>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Grove</h1>
+    <p class="lede">The token set for Etto's Grove direction, mapped onto the custom properties already in <code>src/index.css</code>. Every text colour here is checked against the surface it sits on for WCAG&nbsp;AA.</p>
+    <div class="meta">
+      <span class="tag on">Spec — not wired up yet</span>
+      <span class="tag">Contrast verified in-page</span>
+      <span class="tag">Tailwind v4 · CSS custom properties</span>
+    </div>
+  </div>
+</header>
+
+<section id="changes">
+  <div class="wrap">
+    <p class="eyebrow">01 — Scope</p>
+    <h2>What Grove changes, and what it leaves alone</h2>
+    <p>Grove is a palette-and-material change, not a structural one. It swaps the translucent lenses for solid tonal cards, moves the accent from violet to sage, adds a serif display face for two roles, and defines a matching night palette. The spacing scale, the rem-based type scale, and the component structure are untouched — so the accessibility text-scaling path keeps working as-is.</p>
+    <div class="split">
+      <div>
+        <h3>Changes</h3>
+        <ul class="notes">
+          <li>Accent hue: violet → sage green</li>
+          <li>Material: <code>glass</code> lenses → solid cards; aurora → near-flat ground</li>
+          <li>Body face: Manrope → Figtree</li>
+          <li>New <code>--font-display</code> (Instrument Serif) for the two <code>headline-lg</code> roles only</li>
+          <li>Macro accents re-tuned to clay / sky / rose; every <code>-text</code> variant re-derived for AA</li>
+          <li>Shadows lose the inset specular rim; warm-tinted, softer</li>
+          <li>Full dark palette redefined (not inverted)</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Unchanged</h3>
+        <ul class="notes">
+          <li>The <code>--spacing-*</code> scale (4 / 8 grid)</li>
+          <li>The rem type scale and every drawn size</li>
+          <li>Component markup and layout breakpoints</li>
+          <li>Safe-area and chrome-metric tokens</li>
+          <li>Motion tokens and curves</li>
+          <li>Radii, give or take 2px (see Geometry)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="light">
+  <div class="wrap">
+    <p class="eyebrow">02 — Palette</p>
+    <h2>Light</h2>
+    <p>Values are given as hex for reading and as the space-separated RGB triple the file actually stores (so <code>bg-primary/10</code> keeps working). The <span class="em">contrast</span> column is measured against <code>surface-bright</code> <code>#fbfcf7</code> — the card colour — for anything used as text or an icon. Graphics-only tokens (ring strokes, dots) carry no text and are marked accordingly.</p>
+    <div class="tablewrap">
+      <table>
+        <caption>Grove · light · <code>:root</code></caption>
+        <thead>
+          <tr><th>Swatch</th><th>Role</th><th>Hex</th><th>RGB triple</th><th>Maps to</th><th>On card</th></tr>
+        </thead>
+        <tbody data-surface="#fbfcf7">
+          <tr class="grouprow"><td colspan="6">Ground &amp; surfaces</td></tr>
+          <tr data-hex="#f2f4ec" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Page ground</b><small>the app shell / body</small></div></td><td><code>#f2f4ec</code></td><td><code>242 244 236</code></td><td class="maps"><code>--background</code>, <code>--surface</code></td><td></td></tr>
+          <tr data-hex="#fbfcf7" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Card</b><small>every raised surface</small></div></td><td><code>#fbfcf7</code></td><td><code>251 252 247</code></td><td class="maps"><code>--surface-bright</code></td><td></td></tr>
+          <tr data-hex="#eef1e6" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Sunken</b><small>chip track, inset wells</small></div></td><td><code>#eef1e6</code></td><td><code>238 241 230</code></td><td class="maps"><code>--surface-container</code></td><td></td></tr>
+          <tr data-hex="#dfe4d6" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Sunken, deep</b></div></td><td><code>#dfe4d6</code></td><td><code>223 228 214</code></td><td class="maps"><code>--surface-container-highest</code></td><td></td></tr>
+          <tr data-hex="#2f3a32"><td></td><td class="cellrole"><span></span><div><b>Ink</b><small>headings &amp; primary text</small></div></td><td><code>#2f3a32</code></td><td><code>47 58 50</code></td><td class="maps"><code>--on-surface</code>, <code>--on-background</code></td><td></td></tr>
+          <tr data-hex="#5c6b5e"><td></td><td class="cellrole"><span></span><div><b>Muted ink</b><small>secondary text, captions</small></div></td><td><code>#5c6b5e</code></td><td><code>92 107 94</code></td><td class="maps"><code>--on-surface-variant</code></td><td></td></tr>
+          <tr data-hex="#7c8a79"><td></td><td class="cellrole"><span></span><div><b>Faint</b><small>placeholder, disabled — large / non-text bar only</small></div></td><td><code>#7c8a79</code></td><td><code>124 138 121</code></td><td class="maps"><code>--outline</code></td><td></td></tr>
+          <tr data-hex="#d3dbcb" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Hairline</b><small>dividers, card borders</small></div></td><td><code>#d3dbcb</code></td><td><code>211 219 203</code></td><td class="maps"><code>--outline-variant</code></td><td></td></tr>
+
+          <tr class="grouprow"><td colspan="6">Accent — sage</td></tr>
+          <tr data-hex="#4f7458"><td></td><td class="cellrole"><span></span><div><b>Primary</b><small>links, active nav, ring strokes, accent text</small></div></td><td><code>#4f7458</code></td><td><code>79 116 88</code></td><td class="maps"><code>--primary</code></td><td></td></tr>
+          <tr data-hex="#5c8466" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Primary tint base</b><small>low-opacity washes behind accent text</small></div></td><td><code>#5c8466</code></td><td><code>92 132 102</code></td><td class="maps"><code>--primary-tint</code></td><td></td></tr>
+          <tr data-hex="#3f5f49"><td></td><td class="cellrole"><span></span><div><b>Primary container</b><small>compact filled controls (<code>text-on-primary</code>)</small></div></td><td><code>#3f5f49</code></td><td><code>63 95 73</code></td><td class="maps"><code>--primary-container</code>, <code>--primary-hover</code></td><td></td></tr>
+          <tr data-hex="#557d5f" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>CTA gradient — top</b><small>white text: 4.7 AA</small></div></td><td><code>#557d5f</code></td><td><code>—</code></td><td class="maps"><code>--grad-primary</code></td><td></td></tr>
+          <tr data-hex="#47694f" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>CTA gradient — bottom</b><small>white text: 6.2 AA</small></div></td><td><code>#47694f</code></td><td><code>—</code></td><td class="maps"><code>--grad-primary</code></td><td></td></tr>
+
+          <tr class="grouprow"><td colspan="6">Macros &amp; hydration</td></tr>
+          <tr data-hex="#cf9b6c" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Carbs — graphic</b><small>ring, dot</small></div></td><td><code>#cf9b6c</code></td><td><code>207 155 108</code></td><td class="maps"><code>--carbs</code></td><td></td></tr>
+          <tr data-hex="#8a5a2c"><td></td><td class="cellrole"><span></span><div><b>Carbs — text</b><small>chip label, "g left"</small></div></td><td><code>#8a5a2c</code></td><td><code>138 90 44</code></td><td class="maps"><code>--carbs-text</code></td><td></td></tr>
+          <tr data-hex="#f0e8df" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Carbs — tint</b></div></td><td><code>#f0e8df</code></td><td><code>240 232 223</code></td><td class="maps"><code>--carbs-tint</code></td><td></td></tr>
+          <tr data-hex="#7ba7c4" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Protein — graphic</b></div></td><td><code>#7ba7c4</code></td><td><code>123 167 196</code></td><td class="maps"><code>--protein</code></td><td></td></tr>
+          <tr data-hex="#3f6f8c"><td></td><td class="cellrole"><span></span><div><b>Protein — text</b></div></td><td><code>#3f6f8c</code></td><td><code>63 111 140</code></td><td class="maps"><code>--protein-text</code></td><td></td></tr>
+          <tr data-hex="#e2ecf1" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Protein — tint</b></div></td><td><code>#e2ecf1</code></td><td><code>226 236 241</code></td><td class="maps"><code>--protein-tint</code></td><td></td></tr>
+          <tr data-hex="#c98a97" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Fat — graphic</b></div></td><td><code>#c98a97</code></td><td><code>201 138 151</code></td><td class="maps"><code>--fats</code></td><td></td></tr>
+          <tr data-hex="#9c4a58"><td></td><td class="cellrole"><span></span><div><b>Fat — text</b></div></td><td><code>#9c4a58</code></td><td><code>156 74 88</code></td><td class="maps"><code>--fats-text</code></td><td></td></tr>
+          <tr data-hex="#f2e3e6" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Fat — tint</b></div></td><td><code>#f2e3e6</code></td><td><code>242 227 230</code></td><td class="maps"><code>--fats-tint</code></td><td></td></tr>
+          <tr data-hex="#5aa7c4" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Water — graphic</b></div></td><td><code>#5aa7c4</code></td><td><code>90 167 196</code></td><td class="maps"><code>--water</code></td><td></td></tr>
+          <tr data-hex="#2c7690"><td></td><td class="cellrole"><span></span><div><b>Water — text</b></div></td><td><code>#2c7690</code></td><td><code>44 118 144</code></td><td class="maps"><code>--water-text</code></td><td></td></tr>
+          <tr data-hex="#dfeef3" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Water — tint</b></div></td><td><code>#dfeef3</code></td><td><code>223 238 243</code></td><td class="maps"><code>--water-tint</code></td><td></td></tr>
+
+          <tr class="grouprow"><td colspan="6">Signals</td></tr>
+          <tr data-hex="#26794f"><td></td><td class="cellrole"><span></span><div><b>Success</b><small>"moving the way you asked" — trend text &amp; line</small></div></td><td><code>#26794f</code></td><td><code>38 121 79</code></td><td class="maps"><code>--success</code></td><td></td></tr>
+          <tr data-hex="#b0201f"><td></td><td class="cellrole"><span></span><div><b>Error</b></div></td><td><code>#b0201f</code></td><td><code>176 32 31</code></td><td class="maps"><code>--error</code></td><td></td></tr>
+          <tr data-hex="#e4e8dd" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Ring track</b><small>neutral, under every progress ring</small></div></td><td><code>#e4e8dd</code></td><td><code>228 232 221</code></td><td class="maps"><code>--ring-track</code></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="dark">
+  <div class="wrap">
+    <p class="eyebrow">03 — Palette</p>
+    <h2>Dark</h2>
+    <p>A warm near-black ground with raised cards a step lighter — not an inversion. The accent and every macro <span class="em">-text</span> variant are lifted so they clear AA on the dark card <code>#1e2318</code>; the graphic hues brighten just enough that a 8px ring still reads.</p>
+    <div class="tablewrap">
+      <table>
+        <caption>Grove · dark · <code>.dark</code></caption>
+        <thead>
+          <tr><th>Swatch</th><th>Role</th><th>Hex</th><th>RGB triple</th><th>Maps to</th><th>On card</th></tr>
+        </thead>
+        <tbody data-surface="#1e2318">
+          <tr class="grouprow"><td colspan="6">Ground &amp; surfaces</td></tr>
+          <tr data-hex="#12150e" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Page ground</b></div></td><td><code>#12150e</code></td><td><code>18 21 14</code></td><td class="maps"><code>--background</code>, <code>--surface</code></td><td></td></tr>
+          <tr data-hex="#1e2318" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Card</b></div></td><td><code>#1e2318</code></td><td><code>30 35 24</code></td><td class="maps"><code>--surface-bright</code></td><td></td></tr>
+          <tr data-hex="#171b12" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Sunken</b><small>chip track, inset wells</small></div></td><td><code>#171b12</code></td><td><code>23 27 18</code></td><td class="maps"><code>--surface-container</code></td><td></td></tr>
+          <tr data-hex="#2f3624" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Sunken, raised</b></div></td><td><code>#2f3624</code></td><td><code>47 54 36</code></td><td class="maps"><code>--surface-container-highest</code></td><td></td></tr>
+          <tr data-hex="#e7ece0"><td></td><td class="cellrole"><span></span><div><b>Ink</b></div></td><td><code>#e7ece0</code></td><td><code>231 236 224</code></td><td class="maps"><code>--on-surface</code>, <code>--on-background</code></td><td></td></tr>
+          <tr data-hex="#9aa896"><td></td><td class="cellrole"><span></span><div><b>Muted ink</b></div></td><td><code>#9aa896</code></td><td><code>154 168 150</code></td><td class="maps"><code>--on-surface-variant</code></td><td></td></tr>
+          <tr data-hex="#6c7a68"><td></td><td class="cellrole"><span></span><div><b>Faint</b></div></td><td><code>#6c7a68</code></td><td><code>108 122 104</code></td><td class="maps"><code>--outline</code></td><td></td></tr>
+          <tr data-hex="#3a4230" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Hairline</b></div></td><td><code>#3a4230</code></td><td><code>58 66 48</code></td><td class="maps"><code>--outline-variant</code></td><td></td></tr>
+
+          <tr class="grouprow"><td colspan="6">Accent — sage</td></tr>
+          <tr data-hex="#8fb896"><td></td><td class="cellrole"><span></span><div><b>Primary</b><small>light accent — carries dark text when filled</small></div></td><td><code>#8fb896</code></td><td><code>143 184 150</code></td><td class="maps"><code>--primary</code>, <code>--primary-tint</code></td><td></td></tr>
+          <tr data-hex="#12150e" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>On primary</b><small>dark ink for <code>bg-primary</code> pills / toggles</small></div></td><td><code>#12150e</code></td><td><code>18 21 14</code></td><td class="maps"><code>--on-primary</code></td><td></td></tr>
+          <tr data-hex="#4f7458" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Primary container</b></div></td><td><code>#4f7458</code></td><td><code>79 116 88</code></td><td class="maps"><code>--primary-container</code></td><td></td></tr>
+          <tr data-hex="#a3c9a9"><td></td><td class="cellrole"><span></span><div><b>Primary hover</b></div></td><td><code>#a3c9a9</code></td><td><code>163 201 169</code></td><td class="maps"><code>--primary-hover</code></td><td></td></tr>
+
+          <tr class="grouprow"><td colspan="6">Macros &amp; hydration</td></tr>
+          <tr data-hex="#e0ac7d" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Carbs — graphic</b></div></td><td><code>#e0ac7d</code></td><td><code>224 172 125</code></td><td class="maps"><code>--carbs</code></td><td></td></tr>
+          <tr data-hex="#e8bd93"><td></td><td class="cellrole"><span></span><div><b>Carbs — text</b></div></td><td><code>#e8bd93</code></td><td><code>232 189 147</code></td><td class="maps"><code>--carbs-text</code></td><td></td></tr>
+          <tr data-hex="#33291f" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Carbs — tint</b></div></td><td><code>#33291f</code></td><td><code>51 41 31</code></td><td class="maps"><code>--carbs-tint</code></td><td></td></tr>
+          <tr data-hex="#8fb8d4" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Protein — graphic</b></div></td><td><code>#8fb8d4</code></td><td><code>143 184 212</code></td><td class="maps"><code>--protein</code></td><td></td></tr>
+          <tr data-hex="#a9cfe6"><td></td><td class="cellrole"><span></span><div><b>Protein — text</b></div></td><td><code>#a9cfe6</code></td><td><code>169 207 230</code></td><td class="maps"><code>--protein-text</code></td><td></td></tr>
+          <tr data-hex="#22303a" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Protein — tint</b></div></td><td><code>#22303a</code></td><td><code>34 48 58</code></td><td class="maps"><code>--protein-tint</code></td><td></td></tr>
+          <tr data-hex="#d99ba6" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Fat — graphic</b></div></td><td><code>#d99ba6</code></td><td><code>217 155 166</code></td><td class="maps"><code>--fats</code></td><td></td></tr>
+          <tr data-hex="#e7adb8"><td></td><td class="cellrole"><span></span><div><b>Fat — text</b></div></td><td><code>#e7adb8</code></td><td><code>231 173 184</code></td><td class="maps"><code>--fats-text</code></td><td></td></tr>
+          <tr data-hex="#362329" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Fat — tint</b></div></td><td><code>#362329</code></td><td><code>54 35 41</code></td><td class="maps"><code>--fats-tint</code></td><td></td></tr>
+          <tr data-hex="#6fbcd6" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Water — graphic</b></div></td><td><code>#6fbcd6</code></td><td><code>111 188 214</code></td><td class="maps"><code>--water</code></td><td></td></tr>
+          <tr data-hex="#8fc9de"><td></td><td class="cellrole"><span></span><div><b>Water — text</b></div></td><td><code>#8fc9de</code></td><td><code>143 201 222</code></td><td class="maps"><code>--water-text</code></td><td></td></tr>
+          <tr data-hex="#23333a" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Water — tint</b></div></td><td><code>#23333a</code></td><td><code>35 51 58</code></td><td class="maps"><code>--water-tint</code></td><td></td></tr>
+
+          <tr class="grouprow"><td colspan="6">Signals</td></tr>
+          <tr data-hex="#6cc98f"><td></td><td class="cellrole"><span></span><div><b>Success</b></div></td><td><code>#6cc98f</code></td><td><code>108 201 143</code></td><td class="maps"><code>--success</code></td><td></td></tr>
+          <tr data-hex="#ff8b86"><td></td><td class="cellrole"><span></span><div><b>Error</b></div></td><td><code>#ff8b86</code></td><td><code>255 139 134</code></td><td class="maps"><code>--error</code></td><td></td></tr>
+          <tr data-hex="#2f3624" data-role="graphic"><td></td><td class="cellrole"><span></span><div><b>Ring track</b></div></td><td><code>#2f3624</code></td><td><code>47 54 36</code></td><td class="maps"><code>--ring-track</code></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="surfaces">
+  <div class="wrap">
+    <p class="eyebrow">04 — Material</p>
+    <h2>The glass rewrite</h2>
+    <p>Grove has no translucency, no backdrop blur, and no specular rim — so the <code>@utility</code> lens classes collapse to solid fills and the <code>glass-*</code> variable set gets much shorter. The structural comments in <code>src/index.css</code> about why the blur lives on a pseudo-element stop applying; the <code>::before</code> can go.</p>
+
+    <div class="split">
+      <div>
+        <h3>Was</h3>
+        <ul class="notes">
+          <li><code>glass</code>: <code>::before</code> with <code>backdrop-filter</code>, <code>--glass-bg</code> at 0.55 alpha, <code>--glass-rim</code> inset highlights</li>
+          <li><code>--aurora</code>: four radial gradients + a linear</li>
+          <li><code>glass-chrome / -sheet / -menu</code>: heavier blur, saturate(180–190%)</li>
+          <li>9 <code>--glass-*</code> colour values per theme</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Now</h3>
+        <ul class="notes">
+          <li><code>glass</code>: <code>background: var(--color-surface-bright)</code>, 1px hairline border, <code>--shadow-card</code>. No pseudo-element.</li>
+          <li><code>--aurora</code>: a 2-stop vertical gradient, barely there</li>
+          <li><code>glass-chrome / -sheet</code>: same solid fill, just a stronger shadow</li>
+          <li><code>--glass-rim</code>: <code>0 0 transparent</code> — kept as a name so nothing that references it breaks</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tablewrap" style="margin-top:8px">
+      <table>
+        <caption>Material tokens</caption>
+        <thead><tr><th>Token</th><th>Light</th><th>Dark</th></tr></thead>
+        <tbody>
+          <tr><td class="maps"><code>--aurora</code></td><td><code>linear-gradient(180deg,#f4f6ee,#eef1e5)</code></td><td><code>linear-gradient(180deg,#14180f,#101309)</code></td></tr>
+          <tr><td class="maps"><code>--glass-border</code></td><td><code>#e4e8dd</code></td><td><code>#2a3222</code></td></tr>
+          <tr><td class="maps"><code>--glass-chrome-bg</code></td><td><code>#fbfcf7</code></td><td><code>#1e2318</code></td></tr>
+          <tr><td class="maps"><code>--glass-sheet-bg</code></td><td><code>#fbfcf7</code></td><td><code>#1a1f14</code></td></tr>
+          <tr><td class="maps"><code>--glass-row-bg</code></td><td><code>transparent</code></td><td><code>transparent</code></td></tr>
+          <tr><td class="maps"><code>--glass-row-border</code></td><td><code>#eef1e6</code></td><td><code>#2a3222</code></td></tr>
+          <tr><td class="maps"><code>--glass-field-bg</code></td><td><code>#f4f6ee</code></td><td><code>#171b12</code></td></tr>
+          <tr><td class="maps"><code>--glass-field-border</code></td><td><code>#e4e8dd</code></td><td><code>#2f3826</code></td></tr>
+          <tr><td class="maps"><code>--glass-chip</code></td><td><code>#eef1e6</code></td><td><code>#14180f</code></td></tr>
+          <tr><td class="maps"><code>--glass-chip-hover</code></td><td><code>#e4e8dd</code></td><td><code>#242a1c</code></td></tr>
+          <tr><td class="maps"><code>--glass-scrim</code></td><td><code>rgba(30,38,28,.40)</code></td><td><code>rgba(4,6,3,.55)</code></td></tr>
+          <tr><td class="maps"><code>--glass-rim</code></td><td><code>0 0 transparent</code></td><td><code>0 0 transparent</code></td></tr>
+          <tr><td class="maps"><code>--shadow-card</code></td><td><code>0 14px 34px rgba(55,66,52,.07)</code></td><td><code>0 16px 34px rgba(0,0,0,.42)</code></td></tr>
+          <tr><td class="maps"><code>--shadow-bottomnav</code></td><td><code>0 16px 36px rgba(55,66,52,.14)</code></td><td><code>0 16px 36px rgba(0,0,0,.5)</code></td></tr>
+          <tr><td class="maps"><code>--shadow-accent</code></td><td><code>0 12px 26px rgba(79,116,88,.30)</code></td><td><code>0 14px 30px rgba(0,0,0,.5)</code></td></tr>
+          <tr><td class="maps"><code>--grad-primary</code></td><td><code>linear-gradient(155deg,#557d5f,#47694f)</code></td><td><code>linear-gradient(155deg,#8fb896,#6f9a78)</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:20px"><span class="em">Dark CTA note:</span> in dark the gradient runs light→mid sage and the label is <code>--on-primary</code> <code>#12150e</code>, not white — dark text on <code>#6f9a78</code> is 6.0 AA, white would be 3.2 and fail.</p>
+  </div>
+</section>
+
+<section id="type">
+  <div class="wrap">
+    <p class="eyebrow">05 — Type</p>
+    <h2>Two faces, one scale</h2>
+    <p><span class="em">Figtree</span> replaces Manrope as the UI face — a humanist variable sans with a close x-height, so the rem scale and every drawn size carry over unchanged. <span class="em">Instrument Serif</span> is added as <code>--font-display</code> and used in exactly two places: the <code>headline-lg</code> and <code>headline-lg-mobile</code> roles — the "Today" greeting and the page titles. It has a single weight, so those two roles drop their <code>font-weight</code> and their negative tracking (a serif at display size wants neither).</p>
+
+    <div class="specimen">
+      <div><span class="k">display / lg</span><span class="sp-display-lg">Today — Saturday</span></div>
+      <div><span class="k">display / lg-mobile</span><span class="sp-display-md">Weekly targets</span></div>
+      <div><span class="k">headline-md · 700</span><span class="sp-headline">Breakfast</span></div>
+      <div><span class="k">body-md · 400</span><span class="sp-body">Greek yogurt, plain — 200&nbsp;g</span></div>
+      <div><span class="k">label-md · 600</span><span class="sp-label">60 g left</span></div>
+      <div><span class="k">data-display · 700</span><span class="sp-data">1,540</span></div>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Face assignments — <code>@theme</code></caption>
+        <thead><tr><th>Token</th><th>Grove value</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td class="maps"><code>--font-sans</code></td><td><code>"Figtree", "Manrope", system-ui, sans-serif</code></td><td>Manrope kept as first fallback</td></tr>
+          <tr><td class="maps"><code>--font-display</code> <em>(new)</em></td><td><code>"Instrument Serif", "Newsreader", Georgia, serif</code></td><td>new token</td></tr>
+          <tr><td class="maps"><code>--font-headline-lg</code></td><td><code>var(--font-display)</code></td><td>was Manrope</td></tr>
+          <tr><td class="maps"><code>--font-headline-lg-mobile</code></td><td><code>var(--font-display)</code></td><td>was Manrope</td></tr>
+          <tr><td class="maps"><code>--text-headline-lg</code></td><td><code>2.25rem</code> / lh <code>2.5rem</code> / ls <code>0</code> / wght <code>400</code></td><td>size +0.25rem, tracking neutralised</td></tr>
+          <tr><td class="maps"><code>--text-headline-lg-mobile</code></td><td><code>1.75rem</code> / lh <code>2rem</code> / ls <code>0</code> / wght <code>400</code></td><td>size +0.25rem</td></tr>
+          <tr><td class="maps"><code>--text-headline-md--font-weight</code></td><td><code>700</code></td><td>was 600 — Figtree 700 for section titles</td></tr>
+          <tr><td class="maps"><code>--text-data-display</code></td><td>unchanged — stays <code>--font-sans</code>, <code>tabular-nums</code></td><td>numbers stay sans</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:20px"><span class="em">Self-hosting:</span> both faces should be bundled the way Manrope already is — subset <code>.woff2</code> in <code>public/fonts/</code> with a <code>@font-face</code> block and <code>font-display: swap</code>. Figtree ships a single variable file (weights 300–900); Instrument Serif is one static weight. Google Fonts is fine for this spec page and for prototyping, not for the shipped app.</p>
+  </div>
+</section>
+
+<section id="geometry">
+  <div class="wrap">
+    <p class="eyebrow">06 — Geometry</p>
+    <h2>Radii, spacing, shadows</h2>
+    <div class="split">
+      <div>
+        <h3>Radii — small changes</h3>
+        <ul class="notes">
+          <li><code>--radius-lens</code>: 28px → <span class="em">26px</span></li>
+          <li><code>--radius-row</code>: 18px → <span class="em">16px</span></li>
+          <li><code>--radius-chrome</code>: 33px → <span class="em">30px</span></li>
+          <li><code>--radius-2xl</code>: unchanged (1.5rem)</li>
+          <li>Pills stay <code>999px</code></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Spacing — no change</h3>
+        <ul class="notes">
+          <li>The whole <code>--spacing-*</code> scale is untouched</li>
+          <li>Card padding stays <code>--spacing-lg</code> (24px) — Grove mocks at 22px, round to the grid</li>
+          <li>Section gap stays <code>--spacing-lg</code></li>
+        </ul>
+      </div>
+    </div>
+    <h3>Shadows — warm-tinted, no rim</h3>
+    <p>Every shadow loses its <code>inset … rgba(255,255,255,…)</code> highlight pair (that was the glass rim). Light-theme shadows tint toward the ground with <code>rgba(55,66,52,…)</code> instead of blue-black; dark-theme shadows go to near-opaque black. Values in the Material table above.</p>
+  </div>
+</section>
+
+<section id="paste">
+  <div class="wrap">
+    <p class="eyebrow">07 — Handoff</p>
+    <h2>Paste-ready</h2>
+    <p>The <code>:root</code> and <code>.dark</code> colour blocks, plus the <code>@theme</code> and <code>@utility</code> overrides. Drop these over the matching blocks in <code>src/index.css</code>; keep the Material-3 <em>fixed</em> roles and the motion / safe-area tokens as they are.</p>
+    <div class="codecard">
+      <div class="bar"><span>src/index.css — colour tokens</span><button class="copybtn" data-copy="code-root">Copy</button></div>
+<pre><code id="code-root">:root {
+  <span class="tok-c">/* ground &amp; surfaces */</span>
+  <span class="tok-p">--background</span>: 242 244 236;
+  <span class="tok-p">--surface</span>: 242 244 236;
+  <span class="tok-p">--surface-bright</span>: 251 252 247;
+  <span class="tok-p">--surface-dim</span>: 228 232 221;
+  <span class="tok-p">--surface-container-lowest</span>: 255 255 255;
+  <span class="tok-p">--surface-container-low</span>: 247 248 242;
+  <span class="tok-p">--surface-container</span>: 238 241 230;
+  <span class="tok-p">--surface-container-high</span>: 231 235 223;
+  <span class="tok-p">--surface-container-highest</span>: 223 228 214;
+  <span class="tok-p">--surface-variant</span>: 231 235 223;
+  <span class="tok-p">--surface-tint</span>: 79 116 88;
+  <span class="tok-p">--on-background</span>: 47 58 50;
+  <span class="tok-p">--on-surface</span>: 47 58 50;
+  <span class="tok-p">--on-surface-variant</span>: 92 107 94;
+  <span class="tok-p">--outline</span>: 124 138 121;
+  <span class="tok-p">--outline-variant</span>: 211 219 203;
+
+  <span class="tok-c">/* accent — sage */</span>
+  <span class="tok-p">--primary</span>: 79 116 88;
+  <span class="tok-p">--on-primary</span>: 255 255 255;
+  <span class="tok-p">--primary-container</span>: 63 95 73;
+  <span class="tok-p">--on-primary-container</span>: 255 255 255;
+  <span class="tok-p">--primary-hover</span>: 63 95 73;
+  <span class="tok-p">--primary-tint</span>: 92 132 102;
+
+  <span class="tok-p">--secondary</span>: 92 107 94;
+  <span class="tok-p">--on-secondary</span>: 255 255 255;
+  <span class="tok-p">--secondary-container</span>: 231 235 223;
+  <span class="tok-p">--on-secondary-container</span>: 60 72 62;
+  <span class="tok-p">--tertiary</span>: 88 110 96;
+  <span class="tok-p">--on-tertiary</span>: 255 255 255;
+  <span class="tok-p">--tertiary-container</span>: 219 231 220;
+  <span class="tok-p">--on-tertiary-container</span>: 32 60 42;
+
+  <span class="tok-p">--error</span>: 176 32 31;
+  <span class="tok-p">--on-error</span>: 255 255 255;
+  <span class="tok-p">--error-container</span>: 250 226 224;
+  <span class="tok-p">--on-error-container</span>: 130 20 20;
+
+  <span class="tok-p">--inverse-surface</span>: 47 58 50;
+  <span class="tok-p">--inverse-on-surface</span>: 240 243 235;
+  <span class="tok-p">--inverse-primary</span>: 143 184 150;
+
+  <span class="tok-c">/* macros + hydration */</span>
+  <span class="tok-p">--carbs</span>: 207 155 108;
+  <span class="tok-p">--carbs-text</span>: 138 90 44;
+  <span class="tok-p">--carbs-tint</span>: 240 232 223;
+  <span class="tok-p">--protein</span>: 123 167 196;
+  <span class="tok-p">--protein-text</span>: 63 111 140;
+  <span class="tok-p">--protein-tint</span>: 226 236 241;
+  <span class="tok-p">--fats</span>: 201 138 151;
+  <span class="tok-p">--fats-text</span>: 156 74 88;
+  <span class="tok-p">--fats-tint</span>: 242 227 230;
+  <span class="tok-p">--water</span>: 90 167 196;
+  <span class="tok-p">--water-text</span>: 44 118 144;
+  <span class="tok-p">--water-tint</span>: 223 238 243;
+
+  <span class="tok-p">--ring-track</span>: 228 232 221;
+  <span class="tok-p">--success</span>: 38 121 79;
+  <span class="tok-p">--trend</span>: 111 154 120;
+  <span class="tok-p">--trend-dot</span>: 251 252 247;
+
+  <span class="tok-c">/* material — solid, no blur, no rim */</span>
+  <span class="tok-p">--glass-bg</span>: #fbfcf7;
+  <span class="tok-p">--glass-border</span>: #e4e8dd;
+  <span class="tok-p">--glass-blur</span>: none;
+  <span class="tok-p">--glass-chrome-bg</span>: #fbfcf7;
+  <span class="tok-p">--glass-chrome-border</span>: #e4e8dd;
+  <span class="tok-p">--glass-chrome-blur</span>: none;
+  <span class="tok-p">--glass-sheet-bg</span>: #fbfcf7;
+  <span class="tok-p">--glass-sheet-border</span>: #e4e8dd;
+  <span class="tok-p">--glass-row-bg</span>: transparent;
+  <span class="tok-p">--glass-row-border</span>: #eef1e6;
+  <span class="tok-p">--glass-field-bg</span>: #f4f6ee;
+  <span class="tok-p">--glass-field-border</span>: #e4e8dd;
+  <span class="tok-p">--glass-chip</span>: #eef1e6;
+  <span class="tok-p">--glass-chip-hover</span>: #e4e8dd;
+  <span class="tok-p">--glass-scrim</span>: rgba(30, 38, 28, 0.40);
+
+  <span class="tok-p">--aurora</span>: linear-gradient(180deg, #f4f6ee 0%, #eef1e5 100%);
+
+  <span class="tok-p">--shadow-card</span>: 0 14px 34px rgba(55, 66, 52, 0.07);
+  <span class="tok-p">--shadow-card-hover</span>: 0 20px 44px rgba(55, 66, 52, 0.12);
+  <span class="tok-p">--shadow-sidebar</span>: 0 16px 40px rgba(55, 66, 52, 0.10);
+  <span class="tok-p">--shadow-bottomnav</span>: 0 16px 36px rgba(55, 66, 52, 0.14);
+  <span class="tok-p">--shadow-sheet</span>: 0 -18px 50px rgba(30, 38, 28, 0.18);
+  <span class="tok-p">--glass-rim</span>: 0 0 transparent;
+  <span class="tok-p">--shadow-accent</span>: 0 12px 26px rgba(79, 116, 88, 0.30);
+  <span class="tok-p">--grad-primary</span>: linear-gradient(155deg, #557d5f, #47694f);
+  <span class="tok-p">--scrollbar-thumb</span>: #c3ccb9;
+}
+
+.dark {
+  <span class="tok-p">--background</span>: 18 21 14;
+  <span class="tok-p">--surface</span>: 18 21 14;
+  <span class="tok-p">--surface-bright</span>: 30 35 24;
+  <span class="tok-p">--surface-dim</span>: 13 16 10;
+  <span class="tok-p">--surface-container-lowest</span>: 23 27 18;
+  <span class="tok-p">--surface-container-low</span>: 26 31 20;
+  <span class="tok-p">--surface-container</span>: 23 27 18;
+  <span class="tok-p">--surface-container-high</span>: 38 44 30;
+  <span class="tok-p">--surface-container-highest</span>: 47 54 36;
+  <span class="tok-p">--surface-variant</span>: 42 49 32;
+  <span class="tok-p">--surface-tint</span>: 143 184 150;
+  <span class="tok-p">--on-background</span>: 231 236 224;
+  <span class="tok-p">--on-surface</span>: 231 236 224;
+  <span class="tok-p">--on-surface-variant</span>: 154 168 150;
+  <span class="tok-p">--outline</span>: 108 122 104;
+  <span class="tok-p">--outline-variant</span>: 58 66 48;
+
+  <span class="tok-p">--primary</span>: 143 184 150;
+  <span class="tok-p">--on-primary</span>: 18 21 14;
+  <span class="tok-p">--primary-container</span>: 79 116 88;
+  <span class="tok-p">--on-primary-container</span>: 255 255 255;
+  <span class="tok-p">--primary-hover</span>: 163 201 169;
+  <span class="tok-p">--primary-tint</span>: 143 184 150;
+
+  <span class="tok-p">--secondary</span>: 154 168 150;
+  <span class="tok-p">--on-secondary</span>: 18 21 14;
+  <span class="tok-p">--secondary-container</span>: 42 49 32;
+  <span class="tok-p">--on-secondary-container</span>: 208 218 202;
+  <span class="tok-p">--tertiary</span>: 176 200 182;
+  <span class="tok-p">--on-tertiary</span>: 18 21 14;
+  <span class="tok-p">--tertiary-container</span>: 47 60 46;
+  <span class="tok-p">--on-tertiary-container</span>: 214 232 216;
+
+  <span class="tok-p">--error</span>: 255 139 134;
+  <span class="tok-p">--on-error</span>: 60 6 6;
+  <span class="tok-p">--error-container</span>: 74 18 18;
+  <span class="tok-p">--on-error-container</span>: 255 200 197;
+
+  <span class="tok-p">--inverse-surface</span>: 231 236 224;
+  <span class="tok-p">--inverse-on-surface</span>: 30 35 24;
+  <span class="tok-p">--inverse-primary</span>: 79 116 88;
+
+  <span class="tok-p">--carbs</span>: 224 172 125;
+  <span class="tok-p">--carbs-text</span>: 232 189 147;
+  <span class="tok-p">--carbs-tint</span>: 51 41 31;
+  <span class="tok-p">--protein</span>: 143 184 212;
+  <span class="tok-p">--protein-text</span>: 169 207 230;
+  <span class="tok-p">--protein-tint</span>: 34 48 58;
+  <span class="tok-p">--fats</span>: 217 155 166;
+  <span class="tok-p">--fats-text</span>: 231 173 184;
+  <span class="tok-p">--fats-tint</span>: 54 35 41;
+  <span class="tok-p">--water</span>: 111 188 214;
+  <span class="tok-p">--water-text</span>: 143 201 222;
+  <span class="tok-p">--water-tint</span>: 35 51 58;
+
+  <span class="tok-p">--ring-track</span>: 47 54 36;
+  <span class="tok-p">--success</span>: 108 201 143;
+  <span class="tok-p">--trend</span>: 143 184 150;
+  <span class="tok-p">--trend-dot</span>: 30 35 24;
+
+  <span class="tok-p">--glass-bg</span>: #1e2318;
+  <span class="tok-p">--glass-border</span>: #2a3222;
+  <span class="tok-p">--glass-blur</span>: none;
+  <span class="tok-p">--glass-chrome-bg</span>: #1e2318;
+  <span class="tok-p">--glass-chrome-border</span>: #2a3222;
+  <span class="tok-p">--glass-chrome-blur</span>: none;
+  <span class="tok-p">--glass-sheet-bg</span>: #1a1f14;
+  <span class="tok-p">--glass-sheet-border</span>: #2f3826;
+  <span class="tok-p">--glass-row-bg</span>: transparent;
+  <span class="tok-p">--glass-row-border</span>: #2a3222;
+  <span class="tok-p">--glass-field-bg</span>: #171b12;
+  <span class="tok-p">--glass-field-border</span>: #2f3826;
+  <span class="tok-p">--glass-chip</span>: #14180f;
+  <span class="tok-p">--glass-chip-hover</span>: #242a1c;
+  <span class="tok-p">--glass-scrim</span>: rgba(4, 6, 3, 0.55);
+
+  <span class="tok-p">--aurora</span>: linear-gradient(180deg, #14180f 0%, #101309 100%);
+
+  <span class="tok-p">--shadow-card</span>: 0 16px 34px rgba(0, 0, 0, 0.42);
+  <span class="tok-p">--shadow-card-hover</span>: 0 22px 48px rgba(0, 0, 0, 0.5);
+  <span class="tok-p">--shadow-sidebar</span>: 0 18px 40px rgba(0, 0, 0, 0.5);
+  <span class="tok-p">--shadow-bottomnav</span>: 0 16px 36px rgba(0, 0, 0, 0.5);
+  <span class="tok-p">--shadow-sheet</span>: 0 -20px 60px rgba(0, 0, 0, 0.6);
+  <span class="tok-p">--glass-rim</span>: 0 0 transparent;
+  <span class="tok-p">--shadow-accent</span>: 0 14px 30px rgba(0, 0, 0, 0.5);
+  <span class="tok-p">--grad-primary</span>: linear-gradient(155deg, #8fb896, #6f9a78);
+  <span class="tok-p">--scrollbar-thumb</span>: #39412f;
+}</code></pre>
+    </div>
+
+    <div class="codecard" style="margin-top:20px">
+      <div class="bar"><span>src/index.css — @theme + @utility</span><button class="copybtn" data-copy="code-theme">Copy</button></div>
+<pre><code id="code-theme"><span class="tok-c">/* @theme — faces, display token, radii */</span>
+<span class="tok-p">--font-sans</span>: "Figtree", "Manrope", system-ui, sans-serif;
+<span class="tok-p">--font-display</span>: "Instrument Serif", "Newsreader", Georgia, serif;
+<span class="tok-p">--font-body-lg</span>: "Figtree";
+<span class="tok-p">--font-body-md</span>: "Figtree";
+<span class="tok-p">--font-headline-md</span>: "Figtree";
+<span class="tok-p">--font-headline-lg</span>: var(--font-display);
+<span class="tok-p">--font-headline-lg-mobile</span>: var(--font-display);
+<span class="tok-p">--font-label-md</span>: "Figtree";
+<span class="tok-p">--font-data-display</span>: "Figtree";
+
+<span class="tok-p">--text-headline-lg</span>: 2.25rem;
+<span class="tok-p">--text-headline-lg--line-height</span>: 2.5rem;
+<span class="tok-p">--text-headline-lg--letter-spacing</span>: 0;
+<span class="tok-p">--text-headline-lg--font-weight</span>: 400;
+<span class="tok-p">--text-headline-lg-mobile</span>: 1.75rem;
+<span class="tok-p">--text-headline-lg-mobile--line-height</span>: 2rem;
+<span class="tok-p">--text-headline-lg-mobile--letter-spacing</span>: 0;
+<span class="tok-p">--text-headline-lg-mobile--font-weight</span>: 400;
+<span class="tok-p">--text-headline-md--font-weight</span>: 700;
+
+<span class="tok-p">--radius-row</span>: 16px;
+<span class="tok-p">--radius-lens</span>: 26px;
+<span class="tok-p">--radius-chrome</span>: 30px;
+
+<span class="tok-c">/* @utility glass — was a ::before with backdrop-filter + rim */</span>
+@utility glass {
+  position: relative;
+  background: var(--color-surface-bright);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-card);
+}
+<span class="tok-c">/* glass-chrome / glass-sheet / glass-menu: same solid fill,
+   drop -webkit-backdrop-filter / backdrop-filter, keep the shadow.
+   glass-row / glass-field / glass-chip already read the vars above. */</span></code></pre>
+    </div>
+    <p style="margin-top:20px" id="toast-anchor"><span class="em">Also in <code>index.css</code>, outside the token blocks:</span> the <code>.glass::before</code> rule and its long comment can be deleted; <code>.macro-ring</code> transition stays; the <code>@supports not (backdrop-filter…)</code> fallback block becomes dead code (no blur to fall back from) and can go; <code>body</code> keeps <code>background-image: var(--aurora)</code>.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Grove token spec for Etto · companion to the <a href="https://claude.ai/code/artifact/1244fa48-5c54-49c1-b165-6fec36de9533">screen canvas</a>. Contrast ratios computed in-page with the WCAG 2.1 relative-luminance formula against <code>surface-bright</code>.
+  </div>
+</footer>
+
+<div id="toast" role="status" aria-live="polite" style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(12px);opacity:0;transition:opacity .2s,transform .2s;background:var(--ink);color:var(--ground);font-size:13px;font-weight:600;padding:9px 18px;border-radius:999px;pointer-events:none;z-index:50;">Copied</div>
+
+<script>
+  (function () {
+    function chan(c) { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+    function lum(hex) {
+      var m = hex.replace('#', '');
+      var r = parseInt(m.substr(0, 2), 16), g = parseInt(m.substr(2, 2), 16), b = parseInt(m.substr(4, 2), 16);
+      return 0.2126 * chan(r) + 0.7152 * chan(g) + 0.0722 * chan(b);
+    }
+    function ratio(a, b) {
+      var l1 = lum(a), l2 = lum(b);
+      return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+    }
+    document.querySelectorAll('tbody[data-surface]').forEach(function (body) {
+      var surf = body.getAttribute('data-surface');
+      body.querySelectorAll('tr[data-hex]').forEach(function (tr) {
+        var hex = tr.getAttribute('data-hex');
+        var swCell = tr.querySelector('td:first-child');
+        if (swCell) { swCell.innerHTML = '<span class="sw" style="background:' + hex + '"></span>'; }
+        var cell = tr.querySelector('td:last-child');
+        if (!cell) return;
+        if (tr.getAttribute('data-role') === 'graphic') {
+          cell.innerHTML = '<span class="badge na">graphic</span>';
+          return;
+        }
+        var r = ratio(hex, surf);
+        var txt = r.toFixed(1) + ':1';
+        var cls = 'fail', tag = 'fail';
+        if (r >= 4.5) { cls = 'pass'; tag = 'AA'; }
+        else if (r >= 3) { cls = 'large'; tag = 'AA large'; }
+        cell.innerHTML = '<span class="badge ' + cls + '">' + txt + '  ' + tag + '</span>';
+      });
+    });
+
+    var toast = document.getElementById('toast'), t;
+    function ping() {
+      toast.style.opacity = '1'; toast.style.transform = 'translateX(-50%) translateY(0)';
+      clearTimeout(t); t = setTimeout(function () {
+        toast.style.opacity = '0'; toast.style.transform = 'translateX(-50%) translateY(12px)';
+      }, 1400);
+    }
+    document.querySelectorAll('.copybtn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var el = document.getElementById(btn.getAttribute('data-copy'));
+        var text = el.innerText;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(ping, function () { select(el); });
+        } else { select(el); }
+      });
+    });
+    function select(el) {
+      var range = document.createRange(); range.selectNodeContents(el);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range); ping();
+    }
+  })();
+</script>

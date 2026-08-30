@@ -1,0 +1,35 @@
+{
+  "pages": [
+    { "id": "page-1", "name": "Core screens" },
+    { "id": "page-2", "name": "Add & Pro" },
+    { "id": "page-3", "name": "Dark mode" },
+    { "id": "page-4", "name": "Onboarding" }
+  ],
+  "artboards": [
+    { "file": "Main.dc.html", "page": "page-1", "x": 0, "y": 0, "w": 390, "h": 2240, "title": "Dashboard" },
+    { "file": "Targets.dc.html", "page": "page-1", "x": 480, "y": 0, "w": 390, "h": 2960, "title": "Weekly Targets" },
+    { "file": "MyFoods.dc.html", "page": "page-1", "x": 960, "y": 0, "w": 390, "h": 1160, "title": "My Foods" },
+    { "file": "Profile.dc.html", "page": "page-1", "x": 1440, "y": 0, "w": 390, "h": 1440, "title": "Profile" },
+
+    { "file": "AddSearch.dc.html", "page": "page-2", "x": 0, "y": 0, "w": 390, "h": 1280, "title": "Add Food · Search" },
+    { "file": "AddBarcode.dc.html", "page": "page-2", "x": 480, "y": 0, "w": 390, "h": 900, "title": "Add Food · Scan" },
+    { "file": "CustomFood.dc.html", "page": "page-2", "x": 960, "y": 0, "w": 390, "h": 1200, "title": "Custom Food" },
+    { "file": "Paywall.dc.html", "page": "page-2", "x": 1440, "y": 0, "w": 390, "h": 1260, "title": "Pro Paywall" },
+    { "file": "FreeDashboard.dc.html", "page": "page-2", "x": 1920, "y": 0, "w": 390, "h": 1560, "title": "Dashboard · Free user" },
+
+    { "file": "DashboardDark.dc.html", "page": "page-3", "x": 0, "y": 0, "w": 390, "h": 2240, "title": "Dashboard" },
+    { "file": "TargetsDark.dc.html", "page": "page-3", "x": 480, "y": 0, "w": 390, "h": 2960, "title": "Weekly Targets" },
+    { "file": "MyFoodsDark.dc.html", "page": "page-3", "x": 960, "y": 0, "w": 390, "h": 1160, "title": "My Foods" },
+    { "file": "ProfileDark.dc.html", "page": "page-3", "x": 1440, "y": 0, "w": 390, "h": 1440, "title": "Profile" },
+
+    { "file": "SignIn.dc.html", "page": "page-4", "x": 0, "y": 0, "w": 390, "h": 900, "title": "Sign in" },
+    { "file": "FirstRunTargets.dc.html", "page": "page-4", "x": 480, "y": 0, "w": 390, "h": 920, "title": "Onboarding · Targets" }
+  ],
+  "annotations": [
+    { "id": "grove-core", "page": "page-1", "x": 0, "y": -168, "w": 470, "text": "GROVE — the four core screens\nOat-green ground, sage accent, Figtree with an Instrument Serif display face. Rounded 26px cards, soft shadows, thick soft rings. Static mockups with sample data; copy and AA-contrast tuning still a pass away." },
+    { "id": "grove-addpro", "page": "page-2", "x": 0, "y": -168, "w": 470, "text": "ADD FOOD & PRO\nThe logging flow (search → scan → custom food), the Pro paywall, and how the Dashboard reads for a free user — Water and Weight locked, everything else open. [PRICE] placeholders on the paywall are for you to fill." },
+    { "id": "grove-dark", "page": "page-3", "x": 0, "y": -168, "w": 470, "text": "DARK MODE\nGrove's night palette: warm near-black ground (#14180f), raised cards (#1e2318), lightened sage and macro accents so the rings still read. Same layouts as the light core screens." },
+    { "id": "grove-onboard", "page": "page-4", "x": 0, "y": -168, "w": 470, "text": "ONBOARDING\nSign-in (email + guest), and the last onboarding step — accepting or hand-setting the calculated targets before landing on the Dashboard." }
+  ],
+  "launch": { "view": "canvas", "page": "page-2" }
+}

@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #eef1e6; }
+    a { color: #5c8466; } a:hover { color: #48694f; }
+
+    .scr { width: 390px; min-height: 844px; position: relative; background: #eef1e6;
+      font-family: "Figtree", system-ui, sans-serif; color: #37423a; -webkit-font-smoothing: antialiased;
+      padding: 72px 26px 40px; display: flex; flex-direction: column; }
+    .ic { width: 22px; height: 22px; display: block; }
+
+    .brand { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 36px; }
+    .mark { width: 60px; height: 60px; border-radius: 20px; background: #5c8466; color: #fbfcf7;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+    .bname { font-family: "Instrument Serif", Georgia, serif; font-size: 40px; line-height: 1; color: #3f5a46; }
+    .btag { margin-top: 8px; font-size: 14px; color: #7b8a7d; }
+
+    .field { margin-bottom: 14px; }
+    .flabel { font-size: 12px; font-weight: 600; color: #6a7a6d; margin-bottom: 7px; display: block; }
+    .fbox { width: 100%; height: 50px; border: 1px solid #e4e8dd; background: #fbfcf7; border-radius: 16px;
+      display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font-size: 15px; color: #37423a; }
+    .fbox.ph { color: #9aa79b; }
+
+    .forgot { text-align: right; font-size: 12px; font-weight: 600; color: #5c8466; margin: 2px 0 20px; }
+
+    .primary { width: 100%; text-align: center; font-size: 15px; font-weight: 700;
+      color: #fbfcf7; background: #5c8466; border-radius: 999px; padding: 16px; }
+    .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: #b3bdb0; font-size: 12px; font-weight: 600; }
+    .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #dbe1d4; }
+    .guest { width: 100%; text-align: center; font-size: 14px; font-weight: 600; color: #6a7a6d;
+      background: #fbfcf7; border: 1px solid #e4e8dd; border-radius: 999px; padding: 15px; }
+
+    .swap { margin-top: auto; padding-top: 28px; text-align: center; font-size: 13px; color: #7b8a7d; }
+    .swap b { color: #5c8466; font-weight: 700; }
+  </style>
+</helmet>
+
+<div class="scr">
+  <div class="brand">
+    <div class="mark"><svg class="ic" style="width:28px;height:28px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></div>
+    <div class="bname">Etto</div>
+    <div class="btag">Precise tracking, without the clutter.</div>
+  </div>
+
+  <div class="field">
+    <label class="flabel">Email</label>
+    <div class="fbox">sam@example.com</div>
+  </div>
+  <div class="field">
+    <label class="flabel">Password</label>
+    <div class="fbox ph">
+      ••••••••••
+      <svg class="ic" style="width:18px;height:18px;color:#b3bdb0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+    </div>
+  </div>
+  <div class="forgot">Forgot password?</div>
+
+  <div class="primary">Sign in</div>
+
+  <div class="divider">or</div>
+
+  <div class="guest">Keep exploring as a guest</div>
+
+  <div class="swap">New to Etto?  <b>Create an account</b></div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0f120c; }
+    a { color: #8fb896; } a:hover { color: #a9cab0; }
+
+    .scr { width: 390px; min-height: 780px; position: relative; background: #12150e;
+      font-family: "Figtree", system-ui, sans-serif; color: #e7ece0; -webkit-font-smoothing: antialiased;
+      padding: 14px 18px 22px; }
+    .ic { width: 22px; height: 22px; display: block; }
+
+    .chead { display: flex; align-items: center; justify-content: space-between; }
+    .ctitle { font-size: 17px; font-weight: 700; }
+    .icbtn { width: 36px; height: 36px; border-radius: 999px; background: rgba(255,255,255,.08); color: #e7ece0;
+      display: flex; align-items: center; justify-content: center; }
+
+    .view { margin-top: 16px; position: relative; height: 420px; border-radius: 24px; overflow: hidden;
+      background: linear-gradient(160deg, #26301f, #171c12 60%, #0f120c); }
+    .grain { position: absolute; inset: 0; opacity: .5;
+      background:
+        radial-gradient(120px 120px at 30% 35%, rgba(143,184,150,.16), transparent 70%),
+        radial-gradient(160px 160px at 78% 68%, rgba(120,193,220,.10), transparent 70%); }
+    .reticle { position: absolute; left: 44px; right: 44px; top: 130px; height: 160px; }
+    .corner { position: absolute; width: 30px; height: 30px; border: 3px solid #8fb896; }
+    .corner.tl { top: 0; left: 0; border-right: 0; border-bottom: 0; border-radius: 10px 0 0 0; }
+    .corner.tr { top: 0; right: 0; border-left: 0; border-bottom: 0; border-radius: 0 10px 0 0; }
+    .corner.bl { bottom: 0; left: 0; border-right: 0; border-top: 0; border-radius: 0 0 0 10px; }
+    .corner.br { bottom: 0; right: 0; border-left: 0; border-top: 0; border-radius: 0 0 10px 0; }
+    .scanline { position: absolute; left: 6px; right: 6px; top: 50%; height: 2px; background: #8fb896; box-shadow: 0 0 12px #8fb896; }
+    .hint { position: absolute; left: 0; right: 0; bottom: 86px; text-align: center; font-size: 13px; font-weight: 500; color: rgba(231,236,224,.8); }
+    .torch { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%);
+      width: 52px; height: 52px; border-radius: 999px; background: rgba(255,255,255,.12); color: #e7ece0;
+      display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.16); }
+
+    .result { margin-top: 18px; background: #1e2318; border: 1px solid #2c3422; border-radius: 22px; padding: 18px; }
+    .rlab { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #8fb896; }
+    .rrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
+    .rname { font-size: 16px; font-weight: 700; color: #e7ece0; }
+    .rmeta { font-size: 12px; color: #8f9c8a; margin-top: 3px; }
+    .rk { font-size: 20px; font-weight: 700; color: #e7ece0; }
+    .radd { margin-top: 16px; width: 100%; text-align: center; font-size: 14px; font-weight: 600;
+      color: #12150e; background: #8fb896; border-radius: 999px; padding: 13px; }
+
+    .cancel { margin-top: 16px; text-align: center; font-size: 13px; font-weight: 600; color: #8f9c8a; }
+  </style>
+</helmet>
+
+<div class="scr">
+  <div class="chead">
+    <div class="ctitle">Scan a barcode</div>
+    <div class="icbtn"><svg class="ic" style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+  </div>
+
+  <div class="view">
+    <div class="grain"></div>
+    <div class="reticle">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <div class="scanline"></div>
+    </div>
+    <div class="hint">Line the barcode up inside the frame</div>
+    <div class="torch"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 2h10l-1 6H8L7 2ZM8 8h8v3a4 4 0 0 1-8 0V8ZM12 15v7"/></svg></div>
+  </div>
+
+  <div class="result">
+    <div class="rlab">Found</div>
+    <div class="rrow">
+      <div>
+        <div class="rname">Oat milk, barista edition</div>
+        <div class="rmeta">Oatly · 200 ml · C 7 · P 1 · F 3</div>
+      </div>
+      <div class="rk">120</div>
+    </div>
+    <div class="radd">Add to lunch</div>
+  </div>
+
+  <div class="cancel">Enter code by hand instead</div>
+</div>
+</x-dc>
+</body>
+</html>

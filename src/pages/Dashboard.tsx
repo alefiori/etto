@@ -462,7 +462,7 @@ export default function Dashboard() {
             >
               {/* The one solid surface on the page, and deliberately so: every
                   other card is a lens, and calories is the reading the day is
-                  actually judged on. It is the violet gradient rather than a
+                  actually judged on. It is the sage gradient rather than a
                   flat fill for the same reason the CTAs are — and it carries a
                   real ring now, where it used to draw a static decorative
                   circle and put the progress nowhere. */}
@@ -501,18 +501,28 @@ export default function Dashboard() {
                     className="aspect-square w-full max-w-[10.75rem]"
                   >
                     <span className="block font-data-display text-data-display leading-none">
-                      {Math.round(consumedKcal).toLocaleString()}
+                      {remainingKcal.toLocaleString()}
                     </span>
                     <span className="mt-1 block font-label-md text-label-md uppercase tracking-widest opacity-80">
-                      {t('dashboard.consumed')}
+                      {t('dashboard.remainingLabel')}
                     </span>
                   </ProgressRing>
                 </div>
+                {/* Goal · Eaten · Left — the ring already leads with what is
+                    left, and this strip carries the two figures it is derived
+                    from beside it. All three reuse existing keys. */}
                 <div className="relative z-10 flex items-center justify-between rounded-[20px] border border-white/25 bg-white/16 p-md backdrop-blur-xs">
                   <div className="text-center">
                     <span className="block text-sm opacity-85">{t('dashboard.goal')}</span>
                     <span className="font-label-md text-label-md">
                       {Math.round(goalKcal).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="h-8 w-px bg-white/30" />
+                  <div className="text-center">
+                    <span className="block text-sm opacity-85">{t('dashboard.consumed')}</span>
+                    <span className="font-label-md text-label-md">
+                      {Math.round(consumedKcal).toLocaleString()}
                     </span>
                   </div>
                   <div className="h-8 w-px bg-white/30" />

@@ -6,13 +6,13 @@
   <g transform="scale(2)">
     <g fill="none" stroke-linecap="round" transform="rotate(-90 256 256)">
       <circle cx="256" cy="256" r="150" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="150" stroke="#FF9F0A" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
+      <circle cx="256" cy="256" r="150" stroke="#CF9B6C" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
 
       <circle cx="256" cy="256" r="106" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="106" stroke="#0A84FF" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
+      <circle cx="256" cy="256" r="106" stroke="#7BA7C4" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
 
       <circle cx="256" cy="256" r="62" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="62" stroke="#FF375F" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
+      <circle cx="256" cy="256" r="62" stroke="#C98A97" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
     </g>
   </g>
 </svg>

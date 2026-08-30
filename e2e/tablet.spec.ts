@@ -33,12 +33,11 @@ test.describe('phone width', () => {
     // carry their own.
     await expect(page.locator('button[aria-label="Add Food"]:visible')).toHaveCount(1)
 
-    // The tab bar is chrome content scrolls *under*, so its blur is the whole
-    // reason the list stays readable against it, and the standard property is
-    // the one that has to arrive: Chromium — every Android WebView — does not
-    // implement `-webkit-backdrop-filter`, and the minifier will drop the
-    // standard declaration if a rule writes it before the prefixed one.
-    await expect(page.locator('nav.glass-chrome')).toHaveCSS('backdrop-filter', /blur/)
+    // The tab bar is chrome content scrolls *under*, so it has to be an opaque
+    // surface or the list reads straight through it. Grove dropped the backdrop
+    // blur the old glass used for this; the fill is a solid colour now, so an
+    // opaque `background-color` (`rgb(...)`, no alpha) is what proves the cover.
+    await expect(page.locator('nav.glass-chrome')).toHaveCSS('background-color', /^rgb\(/)
   })
 
   test('keeps the phone chrome behind the custom food sheet', async ({ page }) => {

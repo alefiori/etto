@@ -1,0 +1,301 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #14180f; }
+    a { color: #8fb896; } a:hover { color: #a9cab0; }
+
+    .scr { width: 390px; min-height: 1180px; position: relative; background: #14180f;
+      font-family: "Figtree", system-ui, sans-serif; color: #e7ece0; -webkit-font-smoothing: antialiased;
+      padding: 8px 18px 140px; }
+    .card { background: #1e2318; border-radius: 26px; padding: 22px; box-shadow: 0 16px 34px rgba(0,0,0,.42); }
+    .card + .card { margin-top: 16px; }
+    .lab { font-size: 12px; font-weight: 600; letter-spacing: .03em; color: #8f9c8a; }
+    .ic { width: 22px; height: 22px; display: block; }
+
+    .bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 4px 16px; }
+    .word { font-size: 19px; font-weight: 700; letter-spacing: -.01em; color: #c9d8c6; }
+    .avatar { width: 38px; height: 38px; border-radius: 999px; background: #24301f; color: #8fb896;
+      display: flex; align-items: center; justify-content: center; }
+
+    .greetcard { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .today { font-family: "Instrument Serif", Georgia, serif; font-size: 36px; line-height: 1; color: #d3e0cf; }
+    .subdate { margin-top: 6px; font-size: 13px; color: #8f9c8a; }
+    .stepper { display: flex; align-items: center; gap: 4px; background: #14180f; border-radius: 999px; padding: 4px; }
+    .stepbtn { width: 32px; height: 32px; border-radius: 999px; background: #262c1e; color: #8fb896;
+      display: flex; align-items: center; justify-content: center; }
+    .stepnow { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: #8fb896; padding: 0 6px; }
+
+    .herowrap { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .ring { position: relative; }
+    .ring .cap { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .kcal { font-size: 42px; font-weight: 700; letter-spacing: -.02em; color: #e7ece0; }
+    .kcalgoal { font-size: 12px; color: #8f9c8a; margin-top: 3px; }
+    .pill { margin-top: 16px; background: #24301f; color: #a9cab0; border-radius: 999px; padding: 8px 18px; font-size: 13px; font-weight: 600; }
+    .split { display: flex; align-items: center; gap: 0; margin-top: 16px; width: 100%; border-top: 1px solid #2a3222; padding-top: 14px; }
+    .split > div { flex: 1; text-align: center; }
+    .split .k { font-size: 11px; color: #6c7a68; font-weight: 600; }
+    .split .v { font-size: 15px; font-weight: 700; color: #cdd8c8; margin-top: 2px; }
+    .split .bar-sep { flex: 0 0 1px; align-self: stretch; background: #2a3222; }
+
+    .macros3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+    .m3 { display: flex; flex-direction: column; align-items: center; gap: 9px; }
+    .m3ring { position: relative; width: 74px; height: 74px; }
+    .m3cap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+    .m3name { font-size: 12px; font-weight: 600; color: #8f9c8a; }
+    .m3sub { font-size: 11px; color: #6c7a68; margin-top: 1px; }
+    .m3left { font-size: 11px; font-weight: 700; margin-top: 5px; border-radius: 999px; padding: 3px 9px; }
+
+    .mealhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .mealname { font-size: 17px; font-weight: 700; color: #d3e0cf; display: flex; align-items: center; min-width: 0; }
+    .mealicon { width: 34px; height: 34px; border-radius: 999px; background: #24301f; color: #8fb896;
+      display: flex; align-items: center; justify-content: center; margin-right: 10px; flex: none; }
+    .mealright { display: flex; align-items: center; gap: 10px; flex: none; }
+    .mealkcal { font-size: 12px; color: #8f9c8a; font-weight: 600; }
+    .miconbtn { color: #59654f; }
+    .food { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #2a3222; }
+    .food:last-of-type { border-bottom: 0; }
+    .foodleft { display: flex; align-items: center; min-width: 0; }
+    .fdot { width: 8px; height: 8px; border-radius: 999px; margin-right: 12px; flex: none; }
+    .foodname { font-size: 15px; font-weight: 500; color: #e2e8dc; }
+    .foodamt { font-size: 12px; color: #6c7a68; margin-top: 1px; }
+    .foodkcal { font-size: 14px; font-weight: 600; color: #cdd8c8; flex: none; padding-left: 10px; }
+    .addfood { margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;
+      font-size: 13px; font-weight: 600; color: #8fb896; background: #24301f; border-radius: 16px; padding: 12px; }
+
+    .empty { text-align: center; padding: 14px 0 2px; }
+    .emptyill { width: 54px; height: 54px; border-radius: 999px; background: #24301f; color: #6f8a72;
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+    .empty p { margin: 0 0 14px; font-size: 14px; color: #8f9c8a; }
+    .emptybtn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600;
+      color: #14180f; background: #8fb896; border-radius: 999px; padding: 11px 22px; }
+
+    .prochip { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700;
+      letter-spacing: .06em; color: #d8b878; background: #38311f; border-radius: 999px; padding: 3px 9px; }
+
+    .watercard { display: flex; align-items: center; gap: 18px; }
+    .wcap { flex: 1; min-width: 0; }
+    .waternum { font-size: 24px; font-weight: 700; color: #d3e0cf; }
+    .waternum span { font-size: 13px; color: #8f9c8a; font-weight: 500; }
+    .wchips { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .wchip { font-size: 12px; font-weight: 600; color: #8fc9de; background: #22303a; border-radius: 999px; padding: 8px 14px; }
+    .wundo { font-size: 12px; font-weight: 600; color: #6c7a68; display: inline-flex; align-items: center; gap: 5px; padding: 8px 6px; }
+
+    .weightrow { display: flex; align-items: flex-start; justify-content: space-between; }
+    .wt-latest-k { font-size: 11px; font-weight: 600; color: #6c7a68; }
+    .wt-latest-v { font-size: 17px; font-weight: 700; color: #d3e0cf; }
+    .wt-trend { display: flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 12px; font-weight: 600; color: #a9cab0; }
+    .wt-trend .win { color: #6c7a68; }
+    .ranges { display: flex; gap: 5px; background: #14180f; border-radius: 999px; padding: 4px; margin-top: 14px; }
+    .range { flex: 1; text-align: center; font-size: 12px; font-weight: 600; color: #8f9c8a; padding: 6px 0; border-radius: 999px; }
+    .range.on { background: #8fb896; color: #14180f; }
+
+    .tabs { position: absolute; left: 18px; right: 18px; bottom: 16px; background: #1e2318; border-radius: 30px;
+      box-shadow: 0 16px 36px rgba(0,0,0,.5); display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; }
+    .tab { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; color: #7c8a78; }
+    .tab.on { color: #8fb896; }
+    .tabph { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 999px; }
+    .tab.on .tabph { background: #24301f; }
+    .tabadd { width: 48px; height: 48px; border-radius: 999px; background: #8fb896; color: #14180f;
+      display: flex; align-items: center; justify-content: center; }
+  </style>
+</helmet>
+
+<div class="scr">
+
+  <div class="bar">
+    <div class="word">Etto</div>
+    <div class="avatar"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c0-4 3.5-6 7.5-6s7.5 2 7.5 6"/></svg></div>
+  </div>
+
+  <div class="card greetcard">
+    <div>
+      <div class="today">Today</div>
+      <div class="subdate">Saturday, 30 August</div>
+    </div>
+    <div class="stepper">
+      <div class="stepbtn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="stepnow">Today</div>
+      <div class="stepbtn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6l6 6-6 6"/></svg></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="herowrap">
+      <div class="lab" style="margin-bottom:16px;">Calories left today</div>
+      <div class="ring" style="width:176px;height:176px;">
+        <svg width="176" height="176" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="#2c3324" stroke-width="12"/>
+          <circle cx="60" cy="60" r="52" fill="none" stroke="#7fae86" stroke-width="12" stroke-linecap="round"
+            stroke-dasharray="326.73" stroke-dashoffset="98" transform="rotate(-90 60 60)"/>
+        </svg>
+        <div class="cap">
+          <div class="kcal">660</div>
+          <div class="kcalgoal">1,540 eaten</div>
+        </div>
+      </div>
+      <div class="pill">70% of your goal — nicely paced</div>
+      <div class="split">
+        <div><div class="k">Goal</div><div class="v">2,200</div></div>
+        <div class="bar-sep"></div>
+        <div><div class="k">Eaten</div><div class="v">1,540</div></div>
+        <div class="bar-sep"></div>
+        <div><div class="k">Left</div><div class="v">660</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="lab" style="margin-bottom:16px;">Macronutrients</div>
+    <div class="macros3">
+      <div class="m3">
+        <div class="m3ring">
+          <svg width="74" height="74" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#3a3227" stroke-width="8"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#e0ac7d" stroke-width="8" stroke-linecap="round" stroke-dasharray="201.06" stroke-dashoffset="50.3" transform="rotate(-90 40 40)"/>
+          </svg>
+          <div class="m3cap" style="color:#e8bd93;">75%</div>
+        </div>
+        <div style="text-align:center;"><div class="m3name">Carbs</div><div class="m3sub">180 / 240 g</div></div>
+        <div class="m3left" style="color:#e8bd93;background:#33291f;">60 g left</div>
+      </div>
+      <div class="m3">
+        <div class="m3ring">
+          <svg width="74" height="74" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#26333d" stroke-width="8"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#8fb8d4" stroke-width="8" stroke-linecap="round" stroke-dasharray="201.06" stroke-dashoffset="53.6" transform="rotate(-90 40 40)"/>
+          </svg>
+          <div class="m3cap" style="color:#a9cfe6;">73%</div>
+        </div>
+        <div style="text-align:center;"><div class="m3name">Protein</div><div class="m3sub">110 / 150 g</div></div>
+        <div class="m3left" style="color:#a9cfe6;background:#22303a;">40 g left</div>
+      </div>
+      <div class="m3">
+        <div class="m3ring">
+          <svg width="74" height="74" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#3a2b2f" stroke-width="8"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#d99ba6" stroke-width="8" stroke-linecap="round" stroke-dasharray="201.06" stroke-dashoffset="51.7" transform="rotate(-90 40 40)"/>
+          </svg>
+          <div class="m3cap" style="color:#e7adb8;">74%</div>
+        </div>
+        <div style="text-align:center;"><div class="m3name">Fat</div><div class="m3sub">52 / 70 g</div></div>
+        <div class="m3left" style="color:#e7adb8;background:#362329;">18 g left</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="mealhead">
+      <div class="mealname">
+        <span class="mealicon"><svg class="ic" style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v7a3 3 0 0 0 6 0V3M9 10v11M18 3c-1.7 0-3 2.7-3 6s1.3 4 3 4 3-2 3-5-1.3-5-3-5ZM18 15v6"/></svg></span>
+        Breakfast
+      </div>
+      <div class="mealright">
+        <span class="miconbtn"><svg class="ic" style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg></span>
+        <span class="mealkcal">226 kcal</span>
+      </div>
+    </div>
+    <div class="food">
+      <div class="foodleft"><span class="fdot" style="background:#e0ac7d;"></span><div><div class="foodname">Greek yogurt, plain</div><div class="foodamt">200 g</div></div></div>
+      <div class="foodkcal">180</div>
+    </div>
+    <div class="food">
+      <div class="foodleft"><span class="fdot" style="background:#8fb8d4;"></span><div><div class="foodname">Blueberries</div><div class="foodamt">80 g</div></div></div>
+      <div class="foodkcal">46</div>
+    </div>
+    <div class="addfood">
+      <svg class="ic" style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 5v14M5 12h14"/></svg>
+      Add to breakfast
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="mealhead">
+      <div class="mealname" style="color:#6c7a68;">
+        <span class="mealicon" style="background:#14180f;color:#6c7a68;"><svg class="ic" style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 11h16a8 8 0 0 1-16 0Z"/><path d="M12 3v3"/></svg></span>
+        Lunch
+      </div>
+      <div class="mealright"><span class="mealkcal">0 kcal</span></div>
+    </div>
+    <div class="empty">
+      <div class="emptyill"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 11h16a8 8 0 0 1-16 0Z"/><path d="M12 3v3"/></svg></div>
+      <p>Nothing logged yet.</p>
+      <div class="emptybtn"><svg class="ic" style="width:15px;height:15px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Add lunch</div>
+    </div>
+  </div>
+
+  <div class="card watercard">
+    <div class="ring" style="width:78px;height:78px;flex:none;">
+      <svg width="78" height="78" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="32" fill="none" stroke="#253a41" stroke-width="8"/>
+        <circle cx="40" cy="40" r="32" fill="none" stroke="#6fbcd6" stroke-width="8" stroke-linecap="round" stroke-dasharray="201.06" stroke-dashoffset="88.5" transform="rotate(-90 40 40)"/>
+      </svg>
+      <div class="cap" style="font-size:13px;font-weight:700;color:#8fc9de;">56%</div>
+    </div>
+    <div class="wcap">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="waternum">1.4 <span>/ 2.5 L</span></span>
+        <span class="prochip">PRO</span>
+      </div>
+      <div class="wchips">
+        <div class="wchip">+250</div>
+        <div class="wchip">+500</div>
+        <div class="wchip">+1 L</div>
+        <div class="wundo"><svg class="ic" style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9h7a5 5 0 1 1 0 10H7M4 9l3-3M4 9l3 3"/></svg>Undo</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="weightrow">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="mealicon"><svg class="ic" style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 7h14l-1.5 13H6.5L5 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></span>
+        <span style="font-size:17px;font-weight:700;color:#d3e0cf;">Weight</span>
+        <span class="prochip">PRO</span>
+      </div>
+      <div style="text-align:right;">
+        <div class="wt-latest-k">Latest</div>
+        <div class="wt-latest-v">74.6 kg</div>
+      </div>
+    </div>
+
+    <svg width="100%" height="96" viewBox="0 0 300 96" preserveAspectRatio="none" style="margin-top:14px;overflow:visible;">
+      <polyline points="6,30 54,26 102,40 150,34 198,52 246,46 292,62" fill="none" stroke="#7fae86" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <g fill="#1e2318" stroke="#8aa38f" stroke-width="2">
+        <circle cx="6" cy="24" r="3.5"/><circle cx="54" cy="34" r="3.5"/><circle cx="102" cy="30" r="3.5"/>
+        <circle cx="150" cy="44" r="3.5"/><circle cx="198" cy="42" r="3.5"/><circle cx="246" cy="56" r="3.5"/><circle cx="292" cy="58" r="3.5"/>
+      </g>
+    </svg>
+
+    <div class="wt-trend">
+      <svg class="ic" style="width:15px;height:15px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l7 8 7-8"/></svg>
+      Down 0.3 kg a week
+      <span class="win">· 90 days</span>
+    </div>
+    <div class="ranges">
+      <div class="range">30d</div>
+      <div class="range on">90d</div>
+      <div class="range">1y</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab on"><span class="tabph"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Day</div>
+    <div class="tab"><span class="tabph"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4.5" width="18" height="16.5" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg></span>Targets</div>
+    <div class="tabadd"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg></div>
+    <div class="tab"><span class="tabph"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 11h14a7 7 0 0 1-14 0Z"/><path d="M12 3v4M9 3.5v3M15 3.5v3"/></svg></span>Foods</div>
+    <div class="tab"><span class="tabph"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c0-4 3.5-6 7.5-6s7.5 2 7.5 6"/></svg></span>Profile</div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>
