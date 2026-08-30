@@ -250,10 +250,42 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+# Branded Grove-styled, localised auth emails (en/it/fr/es/de/pt/nl).
+# Subjects and bodies below are GENERATED — edit supabase/templates/i18n.json
+# and run `node scripts/build-email-templates.mjs`, which rewrites the marked
+# block here and the six supabase/templates/*.html files.
+# Localisation keys off {{ .Data.locale }} (the user metadata the app writes at
+# sign-up, AuthContext.tsx); missing/unknown locale falls back to English.
+# `supabase config push` applies this to the linked project; the dashboard's
+# Authentication → Email Templates editor mirrors the same HTML.
+# Header art is <img>'d from https://etto.fitness/email/*.png — deploy
+# public/email/ (regenerate with `node scripts/build-email-assets.mjs`) before
+# these go live, or the logo shows as a broken image in delivered mail.
+# >>> BEGIN generated email templates
+[auth.email.template.confirmation]
+subject = '{{if eq .Data.locale "it"}}Conferma la tua email per Etto{{else if eq .Data.locale "fr"}}Confirmez votre e-mail pour Etto{{else if eq .Data.locale "es"}}Confirma tu correo electrónico para Etto{{else if eq .Data.locale "de"}}Bestätige deine E-Mail-Adresse für Etto{{else if eq .Data.locale "pt"}}Confirme o seu email para a Etto{{else if eq .Data.locale "nl"}}Bevestig je e-mailadres voor Etto{{else}}Confirm your email for Etto{{end}}'
+content_path = './supabase/templates/confirmation.html'
+
+[auth.email.template.invite]
+subject = '{{if eq .Data.locale "it"}}Sei stato invitato su Etto{{else if eq .Data.locale "fr"}}Vous êtes invité sur Etto{{else if eq .Data.locale "es"}}Te han invitado a Etto{{else if eq .Data.locale "de"}}Du wurdest zu Etto eingeladen{{else if eq .Data.locale "pt"}}Recebeu um convite para a Etto{{else if eq .Data.locale "nl"}}Je bent uitgenodigd voor Etto{{else}}You’re invited to Etto{{end}}'
+content_path = './supabase/templates/invite.html'
+
+[auth.email.template.magic_link]
+subject = '{{if eq .Data.locale "it"}}Il tuo link di accesso a Etto{{else if eq .Data.locale "fr"}}Votre lien de connexion Etto{{else if eq .Data.locale "es"}}Tu enlace de acceso a Etto{{else if eq .Data.locale "de"}}Dein Anmeldelink für Etto{{else if eq .Data.locale "pt"}}O seu link de acesso à Etto{{else if eq .Data.locale "nl"}}Je inloglink voor Etto{{else}}Your Etto sign-in link{{end}}'
+content_path = './supabase/templates/magic_link.html'
+
+[auth.email.template.email_change]
+subject = '{{if eq .Data.locale "it"}}Conferma il tuo nuovo indirizzo email per Etto{{else if eq .Data.locale "fr"}}Confirmez votre nouvelle adresse e-mail pour Etto{{else if eq .Data.locale "es"}}Confirma tu nuevo correo electrónico para Etto{{else if eq .Data.locale "de"}}Bestätige deine neue E-Mail-Adresse für Etto{{else if eq .Data.locale "pt"}}Confirme o seu novo email para a Etto{{else if eq .Data.locale "nl"}}Bevestig je nieuwe e-mailadres voor Etto{{else}}Confirm your new email for Etto{{end}}'
+content_path = './supabase/templates/email_change.html'
+
+[auth.email.template.recovery]
+subject = '{{if eq .Data.locale "it"}}Reimposta la password di Etto{{else if eq .Data.locale "fr"}}Réinitialisez votre mot de passe Etto{{else if eq .Data.locale "es"}}Restablece tu contraseña de Etto{{else if eq .Data.locale "de"}}Setze dein Etto-Passwort zurück{{else if eq .Data.locale "pt"}}Redefina a sua palavra-passe da Etto{{else if eq .Data.locale "nl"}}Stel je Etto-wachtwoord opnieuw in{{else}}Reset your Etto password{{end}}'
+content_path = './supabase/templates/recovery.html'
+
+[auth.email.template.reauthentication]
+subject = '{{if eq .Data.locale "it"}}Il tuo codice di verifica Etto{{else if eq .Data.locale "fr"}}Votre code de vérification Etto{{else if eq .Data.locale "es"}}Tu código de verificación de Etto{{else if eq .Data.locale "de"}}Dein Etto-Bestätigungscode{{else if eq .Data.locale "pt"}}O seu código de verificação da Etto{{else if eq .Data.locale "nl"}}Je Etto-verificatiecode{{else}}Your Etto verification code{{end}}'
+content_path = './supabase/templates/reauthentication.html'
+# <<< END generated email templates
 
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
