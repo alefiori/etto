@@ -187,7 +187,7 @@ def main() -> int:
 
     print(f"wrote {OUT} ({OUT.stat().st_size // 1024} KB)")
     print(f"wrote {MANIFEST.relative_to(ROOT)}")
-    print("Now run `npm run sync:native` (or `cap sync`) to copy it into ios/.")
+    print("Now run `pnpm run sync:native` (or `cap sync`) to copy it into ios/.")
     return 0
 
 

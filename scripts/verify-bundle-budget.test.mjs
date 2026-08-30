@@ -55,7 +55,7 @@ describe('the budget', () => {
     // Guards the guard: a budget set below the real figure would fail every
     // build, and one set far above it would never fail at all. Runs against the
     // last build's output when there is one, and skips when there is not —
-    // `npm test` must not depend on `npm run build` having been run.
+    // `pnpm test` must not depend on `pnpm run build` having been run.
     let html
     try {
       html = readFileSync('dist/index.html', 'utf8')

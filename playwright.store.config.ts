@@ -8,7 +8,7 @@ const baseURL = `http://localhost:${PORT}`
  *
  * These produce artifacts rather than assertions, take a different set of
  * viewports, and must not run in CI on every push. Keeping them out of
- * `testDir: './e2e'` is what stops `npm run e2e` picking them up.
+ * `testDir: './e2e'` is what stops `pnpm run e2e` picking them up.
  *
  * Each project is one required upload size, expressed as a CSS viewport times a
  * device scale factor, because that is what Playwright screenshots multiply to:
@@ -60,7 +60,7 @@ export default defineConfig({
     },
   })),
   webServer: {
-    command: 'npm run build -- --mode test && npm run preview -- --port 4173',
+    command: 'ppnpm run build:test && ppnpm run preview:test',
     url: baseURL,
     reuseExistingServer: true,
     timeout: 180_000,

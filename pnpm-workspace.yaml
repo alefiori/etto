@@ -1,0 +1,9 @@
+# pnpm settings live here rather than in package.json: pnpm 11 no longer reads
+# the `pnpm` field there.
+
+# pnpm runs no dependency install script unless it is allowed here. sharp
+# fetches/builds its native binary in a postinstall, and without it every
+# image-generating path fails at import: scripts/generate-native-icons.mjs,
+# scripts/generate-store-assets.mjs and @vite-pwa/assets-generator.
+allowBuilds:
+  sharp: true

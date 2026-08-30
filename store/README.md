@@ -22,12 +22,12 @@ copies are worse than none.
 ## Regenerating
 
 ```bash
-npm run store:assets        # marketing icon + feature graphic
-npm run store:screenshots   # all four device sizes, English
-STORE_LOCALE=it npm run store:screenshots   # …and again per language
+pnpm run store:assets        # marketing icon + feature graphic
+pnpm run store:screenshots   # all four device sizes, English
+STORE_LOCALE=it pnpm run store:screenshots   # …and again per language
 ```
 
-Screenshots need a Playwright browser (`npx playwright install chromium`). The
+Screenshots need a Playwright browser (`pnpm exec playwright install chromium`). The
 device sizes and why each exists are documented in `playwright.store.config.ts`
 — confirm them against what the stores currently ask for before an upload, since
 both change the required sizes from time to time.

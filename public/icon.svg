@@ -2,7 +2,7 @@
   <!-- The app icon, light. Source of truth for the PWA + native icon sets:
        public/ is the @vite-pwa/assets-generator input (pwa-assets.config.ts)
        and assets/ derives the full-bleed native variants from this artwork.
-       Regenerate the web PNGs with `npx pwa-assets-generator` after editing. -->
+       Regenerate the web PNGs with `pnpm exec pwa-assets-generator` after editing. -->
   <defs>
     <linearGradient id="tile" x1="96" y1="0" x2="416" y2="512" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#8B72FF"></stop>

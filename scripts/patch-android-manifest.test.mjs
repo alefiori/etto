@@ -6,7 +6,7 @@ import {
   withCameraPermission,
 } from './patch-android-manifest.mjs'
 
-/** Capacitor's stock template, which is what `npx cap add android` writes. */
+/** Capacitor's stock template, which is what `pnpm exec cap add android` writes. */
 const TEMPLATE = `<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 

@@ -14,9 +14,10 @@
  *                                         listing without one.
  *
  * Both are rendered from the same artwork under assets/ that the app icons come
- * from, so the listing and the installed icon cannot drift apart. sharp is
- * already present as a @capacitor/assets dependency, so this adds nothing to
- * the tree.
+ * from, so the listing and the installed icon cannot drift apart. sharp is a
+ * declared devDependency: the asset generators already pull the same version in,
+ * so this adds nothing to the tree, but pnpm resolves only what is declared and
+ * relying on their copy would break this script.
  *
  * The output is gitignored — it is derived, and regenerating takes a second.
  */

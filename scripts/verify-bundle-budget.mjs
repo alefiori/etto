@@ -18,7 +18,7 @@
  * are fetched only on the route that needs them. Keeping them out is what makes
  * the number here mean "time to first paint" rather than "total app size".
  *
- * Run after `npm run build`. A `--mode native` build emits the same index.html,
+ * Run after `pnpm run build`. A `--mode native` build emits the same index.html,
  * so it works there too.
  */
 
@@ -60,7 +60,7 @@ const kib = (bytes) => `${(bytes / 1024).toFixed(1)} KiB`
 
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop())) {
   if (!existsSync(HTML)) {
-    console.error(`verify-bundle-budget: no ${HTML} found — run \`npm run build\` first.`)
+    console.error(`verify-bundle-budget: no ${HTML} found — run \`pnpm run build\` first.`)
     process.exit(1)
   }
 

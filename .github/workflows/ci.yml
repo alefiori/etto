@@ -20,23 +20,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 26
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       # Errors fail the job; warnings do not. The React Compiler-era hook rules
       # are deliberately warnings — see the reasoning in eslint.config.js.
       - name: Run ESLint
-        run: npm run lint
+        run: pnpm run lint
 
       # The compiler is the other half of the static checks, and the build job
       # below only reaches it after bundling. Running it here fails faster.
       - name: Typecheck
-        run: npm run typecheck
+        run: pnpm run typecheck
 
   build:
     name: Build
@@ -44,29 +46,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 26
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
       # The billing SDK must not end up in the precached app shell — see
       # scripts/verify-precache.mjs. Deliberately its own step rather than tacked
-      # onto `build`: playwright.config.ts runs `npm run build -- --mode test`,
-      # and npm appends that flag to the end of the script.
+      # onto `build`: the E2E job builds through `build:test`, which must stay a
+      # plain production build plus .env.test, not one with extra steps folded in.
       - name: Verify the precached shell
-        run: npm run verify:precache
+        run: pnpm run verify:precache
 
       # `chunkSizeWarningLimit` is raised past the billing SDK, so the per-chunk
       # warning no longer holds the line on what a first paint costs. This does
       # — see scripts/verify-bundle-budget.mjs.
       - name: Verify the first-paint budget
-        run: npm run verify:budget
+        run: pnpm run verify:budget
 
   unit:
     name: Unit tests
@@ -74,16 +78,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 26
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run unit tests with coverage
-        run: npm run test:coverage
+        run: pnpm run test:coverage
 
       # An <Icon name="..."> whose glyph was never subsetted into
       # public/fonts/material-symbols-outlined.woff2 renders as the literal word
@@ -108,21 +114,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 26
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       # GitHub runners have no pre-installed browser, so download the one this
       # @playwright/test version expects (do NOT set PW_EXECUTABLE_PATH here).
       - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Run Playwright E2E tests
-        run: npm run e2e
+        run: pnpm run e2e
 
       - name: Upload Playwright report
         if: failure()
@@ -138,10 +146,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 26
-          cache: npm
+          cache: pnpm
 
       # Capacitor 8 ships AGP 8.13 on Gradle 8.14, which wants JDK 21.
       - uses: actions/setup-java@v4
@@ -152,7 +162,7 @@ jobs:
       # Cached separately rather than via setup-java's `cache: gradle`, which
       # builds its key by hashing **/*.gradle* — files that do not exist yet at
       # that point, because android/ is generated further down. It fails the job
-      # outright rather than just missing the cache. Keyed on package-lock
+      # outright rather than just missing the cache. Keyed on pnpm-lock.yaml
       # instead: the Capacitor version pins the AGP, Gradle and plugin versions
       # that decide what gets downloaded.
       - name: Cache Gradle dependencies
@@ -161,11 +171,11 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          key: gradle-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: gradle-${{ runner.os }}-
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       # Placeholders only. The bundle inlines these at build time and the app
       # throws without them, but this job verifies the native project compiles
@@ -175,15 +185,15 @@ jobs:
         env:
           VITE_SUPABASE_URL: https://ci.supabase.co
           VITE_SUPABASE_ANON_KEY: ci-anon-key
-        run: npm run build:native
+        run: pnpm run build:native
 
       # ios/ and android/ are gitignored, so the projects are generated fresh
       # each run. That also means this job validates capacitor.config.ts and the
       # installed plugin set, not just the Gradle build.
       - name: Generate the Android project
         run: |
-          npx cap add android
-          npx cap sync android
+          pnpm exec cap add android
+          pnpm exec cap sync android
           node scripts/patch-android-webview.mjs
           node scripts/patch-android-notification-icon.mjs
           node scripts/generate-native-icons.mjs
@@ -212,24 +222,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 26
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build the native web bundle
         env:
           VITE_SUPABASE_URL: https://ci.supabase.co
           VITE_SUPABASE_ANON_KEY: ci-anon-key
-        run: npm run build:native
+        run: pnpm run build:native
 
       - name: Generate the iOS project
         run: |
-          npx cap add ios
-          npx cap sync ios
+          pnpm exec cap add ios
+          pnpm exec cap sync ios
           node scripts/generate-native-icons.mjs
           # Camera usage string, CFBundleLocalizations and the privacy manifest.
           # ios/ is regenerated here, so none of it can be a checked-in edit.
@@ -240,7 +252,7 @@ jobs:
       # gives us for free, so a template change in a future upgrade fails here
       # instead of silently shipping an iPhone-only app.
       - name: Verify the iPad configuration
-        run: npm run verify:ipad
+        run: pnpm run verify:ipad
 
       # Compile only. Signing needs an Apple Developer account, so this proves
       # the project builds without needing any secret; the release workflow does
@@ -277,9 +289,9 @@ jobs:
             exit 0
           fi
 
-          # The CLI is preinstalled on GitHub-hosted runners; fall back to npx.
+          # The CLI is preinstalled on GitHub-hosted runners; fall back to pnpm dlx.
           SUPABASE="supabase"
-          if ! command -v supabase >/dev/null 2>&1; then SUPABASE="npx --yes supabase"; fi
+          if ! command -v supabase >/dev/null 2>&1; then SUPABASE="pnpm dlx supabase"; fi
 
           echo "Linking project $SUPABASE_PROJECT_REF ..."
           $SUPABASE link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"

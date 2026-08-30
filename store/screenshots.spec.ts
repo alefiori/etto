@@ -5,9 +5,9 @@ import { seedShowcase } from './seed'
 /**
  * Store listing screenshots.
  *
- * Not part of `npm run e2e` — this has its own config
+ * Not part of `pnpm run e2e` — this has its own config
  * (playwright.store.config.ts) because it asserts nothing and exists to emit
- * PNGs. Run it with `npm run store:screenshots`.
+ * PNGs. Run it with `pnpm run store:screenshots`.
  *
  * Why generate them rather than take them by hand on a device: the listing
  * needs the same screens at four exact pixel sizes, in up to seven languages,

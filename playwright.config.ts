@@ -27,9 +27,11 @@ export default defineConfig({
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
-    // `npm run build -- --mode test` appends the flag to the end of the script,
-    // i.e. `tsc -b && vite build --mode test`, so .env.test is baked in.
-    command: 'npm run build -- --mode test && npm run preview -- --port 4173',
+    // A dedicated script rather than `pnpm run build -- --mode test`: pnpm
+    // forwards the `--` to the script, and `vite build -- --mode test` silently
+    // drops the flag, producing a production build against the real Supabase
+    // host. build:test bakes .env.test in with no separator to get wrong.
+    command: 'pnpm run build:test && pnpm run preview:test',
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,

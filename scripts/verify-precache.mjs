@@ -16,7 +16,7 @@
  * — the `purchases-web` code-splitting group in vite.config.ts — rather than one
  * Rolldown derived from the SDK's entry module, but the two still have to be
  * changed together, and nothing in the build fails if they drift. Run after
- * `npm run build`; a no-op with a clear message when there is no service worker to
+ * `pnpm run build`; a no-op with a clear message when there is no service worker to
  * inspect (a `--mode native` build skips the PWA plugin entirely).
  */
 

@@ -9,7 +9,7 @@
 # and so no .xcworkspace — CocoaPods is what generates that file. Capacitor 6
 # produced the CocoaPods layout instead. ios/ is gitignored and regenerated on
 # every build, so a tree that has not been rebuilt since the upgrade still holds
-# a workspace while CI, starting from `npm ci`, gets the SPM project.
+# a workspace while CI, starting from `pnpm install`, gets the SPM project.
 #
 # Hardcoding either one is what broke CI: the workflow asked for a workspace,
 # generation quietly produced a project, and the run failed two steps later with
@@ -33,6 +33,6 @@ elif [ -d "$PROJECT" ]; then
   printf -- '-project %s' "$PROJECT"
 else
   echo "xcode-target: neither $WORKSPACE nor $PROJECT exists." >&2
-  echo "The iOS project was not generated — run \`npx cap add ios\` first." >&2
+  echo "The iOS project was not generated — run \`pnpm exec cap add ios\` first." >&2
   exit 1
 fi
