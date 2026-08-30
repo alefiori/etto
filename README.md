@@ -1079,8 +1079,8 @@ re-apply what the Capacitor template doesn't carry: `generate-native-icons.mjs`
 renders the app icons from [`assets/`](assets/) with `@capacitor/assets` — the
 same rings/brand as the web [`public/icon.svg`](public/icon.svg), as a full-bleed
 `icon-only.svg` for iOS and `icon-foreground`/`icon-background.svg` for the
-Android adaptive icon, plus `splash[-dark].svg` (the icon on the app's aurora
-ground) for the launch screen; `patch-android-webview.mjs` clamps the Android
+Android adaptive icon, plus `splash[-dark].svg` (the icon over a flat
+`CHROME_COLOR` ground) for the launch screen; `patch-android-webview.mjs` clamps the Android
 WebView text zoom to 200% (it is honoured below that — see
 [Accessibility](#accessibility)); and `verify-ipad.mjs` asserts the iPad
 invariants.
@@ -1096,7 +1096,26 @@ and each has a different job:
 | --- | --- | --- |
 | `public/icon.svg` | PWA + apple-touch PNGs, and the `assets/` native variants | The full 512 artwork |
 | `public/favicon.svg` | the `<link rel="icon">` the generator emits | Three concentric rings turn to mush in a 16px tab, so this drops to one ring and a solid centre |
-| `public/icon-dark.svg` | `assets/splash-dark.svg` | Neither vite-pwa nor `@capacitor/assets` has a dark-icon slot, so nothing generates from it yet — keep it in step with `icon.svg` anyway |
+| `public/icon-dark.svg` | the dark launch screen's tile | Neither vite-pwa nor `@capacitor/assets` has a dark-icon slot, so nothing generates from it yet — keep it in step with `icon.svg` anyway |
+
+The two launch screens are **generated**, not hand-authored:
+[`scripts/build-splash.py`](scripts/build-splash.py) writes `assets/splash.svg`
+and `assets/splash-dark.svg`, and needs `pip install fonttools brotli` like the
+icon-font subsetter below. The reason is the type. These files are rasterized by
+sharp, outside a browser, on whatever machine runs the build — so a
+`font-family="Figtree"` resolves to whatever fontconfig offers, which is Figtree
+on no machine. The old pair worked around that by centring the text so a
+fallback of any width stayed put, which kept the layout and lost the brand: the
+first frame of the app, set in Helvetica. The script outlines the wordmark and
+the tagline from the same self-hosted subsets in
+[`public/fonts/`](public/fonts/) that the app renders in, so there is no font to
+resolve and the launch screen matches the first painted frame. Re-run it after
+changing the wordmark, the tagline, or either subset.
+
+⚠️ **No CSS custom property may be named in a comment in those files.** XML
+forbids a double hyphen inside a comment, so one `--aurora` makes the SVG
+unparseable — which sharp reports as `Input buffer has corrupt header`, several
+steps from the cause.
 
 ### The icon font
 
