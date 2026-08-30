@@ -41,6 +41,19 @@ export const BRAND = {
 }
 
 /**
+ * What `flatten()` composites under each asset.
+ *
+ * Both artworks are full-bleed opaque today, so nothing shows through — but
+ * this is the colour a hole would expose, and it used to name a teal the brand
+ * dropped when it went violet. A missing key is not an error to sharp: it reads
+ * `undefined` as "no background given" and quietly composites against black, so
+ * the bug would only ever have surfaced as a black edge on a store asset nobody
+ * opens again. The deep end of the gradient, so white text and the light rings
+ * stay legible against it.
+ */
+export const FLATTEN_BACKGROUND = BRAND.violetDeep
+
+/**
  * The Play feature graphic.
  *
  * Deliberately not a screenshot collage: at 1024×500, scaled down to a few
@@ -81,13 +94,12 @@ export function featureGraphicSvg({ tagline = 'Track your macros, every day' } =
     installed — which is every CI machine — and the wordmark runs off the right
     edge. Pinning trades a little glyph distortion for an asset that is the same
     everywhere and always fits inside Play's crop margins.
-  -->
-  <!--
+
+    How much distortion depends on picking a width near the text's natural one.
     "Etto" is four glyphs where "MacroTrack" was ten, so the wordmark is set
-    larger rather than stretched across the old 500px slot: pinning four letters
-    to that width would smear them. 300 is close to the natural width of Manrope
-    ExtraBold at this size, which keeps lengthAdjust honest, and the two lines
-    are set from a shared left edge so the lockup still reads as one block.
+    larger rather than stretched across the old 500px slot — pinning four
+    letters to that width would smear them. Both lines share a left edge so the
+    lockup still reads as one block.
   -->
   <text x="400" y="252" fill="${BRAND.onViolet}"
     font-family="Manrope, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
@@ -111,11 +123,11 @@ if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop()
 
   mkdirSync(OUT_DIR, { recursive: true })
 
-  // flatten() drops the alpha channel against the brand teal. App Store Connect
-  // rejects an icon that has one at all, even if it is fully opaque.
+  // flatten() drops the alpha channel against FLATTEN_BACKGROUND. App Store
+  // Connect rejects an icon that has one at all, even if it is fully opaque.
   await sharp(readFileSync(ICON_SRC))
     .resize(1024, 1024)
-    .flatten({ background: BRAND.teal })
+    .flatten({ background: FLATTEN_BACKGROUND })
     .png({ compressionLevel: 9 })
     .toFile(join(OUT_DIR, 'marketing-icon-1024.png'))
 
@@ -123,7 +135,7 @@ if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop()
   writeFileSync(join(OUT_DIR, 'feature-graphic-1024x500.svg'), featureSvg)
   await sharp(Buffer.from(featureSvg))
     .resize(1024, 500)
-    .flatten({ background: BRAND.teal })
+    .flatten({ background: FLATTEN_BACKGROUND })
     .png({ compressionLevel: 9 })
     .toFile(join(OUT_DIR, 'feature-graphic-1024x500.png'))
 
