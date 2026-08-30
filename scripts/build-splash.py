@@ -89,14 +89,18 @@ def outline(font_path: Path, text: str, size: float, weight: float | None = None
 # parsed out of those files: a launch screen that silently followed an icon edit
 # is worse than one that visibly needs regenerating.
 ICON_LIGHT = """    <rect width="512" height="512" rx="120" fill="url(#tile)"/>
-    <g clip-path="url(#tileClip)" transform="rotate(-90 256 256)">
-      <g fill="none" stroke-linecap="round">
-        <circle cx="256" cy="256" r="150" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"/>
-        <circle cx="256" cy="256" r="150" stroke="#CF9B6C" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"/>
-        <circle cx="256" cy="256" r="106" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"/>
-        <circle cx="256" cy="256" r="106" stroke="#7BA7C4" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"/>
-        <circle cx="256" cy="256" r="62" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"/>
-        <circle cx="256" cy="256" r="62" stroke="#C98A97" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"/>
+    <g clip-path="url(#tileClip)" fill="none" stroke-linecap="round" stroke-width="30">
+      <g transform="rotate(-95 256 256)">
+        <circle cx="256" cy="256" r="176" stroke="#ffffff" stroke-opacity=".16"/>
+        <circle cx="256" cy="256" r="176" stroke="#CF9B6C" stroke-dasharray="730 376"/>
+      </g>
+      <g transform="rotate(-20 256 256)">
+        <circle cx="256" cy="256" r="120" stroke="#ffffff" stroke-opacity=".16"/>
+        <circle cx="256" cy="256" r="120" stroke="#7BA7C4" stroke-dasharray="407 347"/>
+      </g>
+      <g transform="rotate(60 256 256)">
+        <circle cx="256" cy="256" r="72" stroke="#ffffff" stroke-opacity=".16"/>
+        <circle cx="256" cy="256" r="72" stroke="#C98A97" stroke-dasharray="344 109"/>
       </g>
     </g>
     <g clip-path="url(#tileClip)">
@@ -109,14 +113,18 @@ ICON_DARK = """    <rect width="512" height="512" rx="120" fill="#14180F"/>
       <rect width="512" height="512" fill="url(#tile)" opacity=".9"/>
       <rect width="512" height="512" fill="url(#glow)"/>
     </g>
-    <g clip-path="url(#tileClip)" transform="rotate(-90 256 256)">
-      <g fill="none" stroke-linecap="round">
-        <circle cx="256" cy="256" r="150" stroke="#14180F" stroke-opacity=".32" stroke-width="34"/>
-        <circle cx="256" cy="256" r="150" stroke="#E0AC7D" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"/>
-        <circle cx="256" cy="256" r="106" stroke="#14180F" stroke-opacity=".32" stroke-width="34"/>
-        <circle cx="256" cy="256" r="106" stroke="#8FB8D4" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"/>
-        <circle cx="256" cy="256" r="62" stroke="#14180F" stroke-opacity=".32" stroke-width="34"/>
-        <circle cx="256" cy="256" r="62" stroke="#D99BA6" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"/>
+    <g clip-path="url(#tileClip)" fill="none" stroke-linecap="round" stroke-width="30">
+      <g transform="rotate(-95 256 256)">
+        <circle cx="256" cy="256" r="176" stroke="#14180F" stroke-opacity=".32"/>
+        <circle cx="256" cy="256" r="176" stroke="#E0AC7D" stroke-dasharray="730 376"/>
+      </g>
+      <g transform="rotate(-20 256 256)">
+        <circle cx="256" cy="256" r="120" stroke="#14180F" stroke-opacity=".32"/>
+        <circle cx="256" cy="256" r="120" stroke="#8FB8D4" stroke-dasharray="407 347"/>
+      </g>
+      <g transform="rotate(60 256 256)">
+        <circle cx="256" cy="256" r="72" stroke="#14180F" stroke-opacity=".32"/>
+        <circle cx="256" cy="256" r="72" stroke="#D99BA6" stroke-dasharray="344 109"/>
       </g>
     </g>
     <g clip-path="url(#tileClip)">

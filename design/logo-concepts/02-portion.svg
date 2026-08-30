@@ -1,0 +1,24 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t">
+  <title id="t">Etto — Portion concept</title>
+  <!-- Concept 2 "Portion": one ring split into three arc segments sized like a
+       real macro split (carbs 42 / protein 33 / fat 25), separated by even
+       gaps, open at the centre. A doughnut chart at rest — solid, calm, and
+       unmistakably about the three macros. r150, stroke 46, butt caps, group
+       rotated so the first segment starts at 12 o'clock. -->
+  <defs>
+    <linearGradient id="tile" x1="96" y1="0" x2="416" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5C8466"></stop>
+      <stop offset="1" stop-color="#47694F"></stop>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="120" fill="url(#tile)"></rect>
+
+  <g fill="none" stroke-width="46" transform="rotate(-90 256 256)">
+    <circle cx="256" cy="256" r="150" stroke="#CF9B6C" stroke-dasharray="373 570" stroke-dashoffset="0"></circle>
+    <circle cx="256" cy="256" r="150" stroke="#7BA7C4" stroke-dasharray="293 650" stroke-dashoffset="-391"></circle>
+    <circle cx="256" cy="256" r="150" stroke="#C98A97" stroke-dasharray="222 721" stroke-dashoffset="-702"></circle>
+  </g>
+
+  <rect x="1.5" y="1.5" width="509" height="509" rx="118.5" fill="none" stroke="#ffffff" stroke-opacity=".35" stroke-width="3"></rect>
+</svg>

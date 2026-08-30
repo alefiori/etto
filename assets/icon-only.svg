@@ -4,8 +4,8 @@
        iOS/Android apply their own mask. A rim baked in here would be clipped
        into a broken arc by whatever shape the launcher chooses.
 
-       Rings are the 512-space artwork scaled x2 rather than re-derived, so the
-       stroke-dasharray/offset pairs stay comparable with public/icon.svg. -->
+       Rings are the 512-space "Meridian" artwork scaled x2 rather than
+       re-derived, so the dash pairs stay comparable with public/icon.svg. -->
   <defs>
     <linearGradient id="tile" x1="192" y1="0" x2="832" y2="1024" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#5C8466"></stop>
@@ -20,15 +20,19 @@
   <rect width="1024" height="1024" fill="url(#tile)"></rect>
 
   <g transform="scale(2)">
-    <g fill="none" stroke-linecap="round" transform="rotate(-90 256 256)">
-      <circle cx="256" cy="256" r="150" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="150" stroke="#CF9B6C" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
-
-      <circle cx="256" cy="256" r="106" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="106" stroke="#7BA7C4" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
-
-      <circle cx="256" cy="256" r="62" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="62" stroke="#C98A97" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
+    <g fill="none" stroke-linecap="round" stroke-width="30">
+      <g transform="rotate(-95 256 256)">
+        <circle cx="256" cy="256" r="176" stroke="#ffffff" stroke-opacity=".16"></circle>
+        <circle cx="256" cy="256" r="176" stroke="#CF9B6C" stroke-dasharray="730 376"></circle>
+      </g>
+      <g transform="rotate(-20 256 256)">
+        <circle cx="256" cy="256" r="120" stroke="#ffffff" stroke-opacity=".16"></circle>
+        <circle cx="256" cy="256" r="120" stroke="#7BA7C4" stroke-dasharray="407 347"></circle>
+      </g>
+      <g transform="rotate(60 256 256)">
+        <circle cx="256" cy="256" r="72" stroke="#ffffff" stroke-opacity=".16"></circle>
+        <circle cx="256" cy="256" r="72" stroke="#C98A97" stroke-dasharray="344 109"></circle>
+      </g>
     </g>
   </g>
 

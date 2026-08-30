@@ -1,0 +1,26 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t">
+  <title id="t">Etto — Sprout concept</title>
+  <!-- Concept 5 "Sprout": the ring opens at the top and a two-leaf sprout rises
+       through the gap. Ties straight to the "Grove" design language — growth,
+       nourishment, a daily habit taking root. Warmest of the five, least
+       literally about macros. -->
+  <defs>
+    <linearGradient id="tile" x1="96" y1="0" x2="416" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5C8466"></stop>
+      <stop offset="1" stop-color="#47694F"></stop>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="120" fill="url(#tile)"></rect>
+
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#EAF2EA" stroke-width="34"
+          stroke-linecap="round" stroke-dasharray="807 136" stroke-dashoffset="-775"></circle>
+
+  <g fill="#ffffff">
+    <rect x="250" y="150" width="12" height="112" rx="6"></rect>
+    <ellipse cx="288" cy="150" rx="20" ry="45" transform="rotate(34 288 150)"></ellipse>
+    <ellipse cx="224" cy="150" rx="20" ry="45" transform="rotate(-34 224 150)" opacity=".85"></ellipse>
+  </g>
+
+  <rect x="1.5" y="1.5" width="509" height="509" rx="118.5" fill="none" stroke="#ffffff" stroke-opacity=".35" stroke-width="3"></rect>
+</svg>
