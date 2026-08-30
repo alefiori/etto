@@ -15,11 +15,14 @@
 //   SUPABASE_ACCESS_TOKEN=sbp_xxx node scripts/push-auth-emails.mjs [--dry-run]
 //
 //   --dry-run   print what would change, send nothing
-//   --project-ref <ref>   override target project (default: macro-track prod)
+//   --project-ref <ref>   target project; else $SUPABASE_PROJECT_REF, else prod
 //
 // SUPABASE_ACCESS_TOKEN is a personal access token — it starts with `sbp_`, NOT
 // the `sb_publishable_…` anon key. Get one at
 // https://supabase.com/dashboard/account/tokens
+//
+// CI runs this on every push to main (the supabase-deploy job in ci.yml); the
+// PATCH is idempotent, so re-sending unchanged templates is a no-op.
 
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -43,7 +46,7 @@ const TEMPLATES = KEYS.map((key) => {
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
 const refFlag = args.indexOf('--project-ref');
-const ref = refFlag !== -1 ? args[refFlag + 1] : DEFAULT_REF;
+const ref = refFlag !== -1 ? args[refFlag + 1] : process.env.SUPABASE_PROJECT_REF || DEFAULT_REF;
 const token = process.env.SUPABASE_ACCESS_TOKEN;
 
 if (!token && !dryRun) {
