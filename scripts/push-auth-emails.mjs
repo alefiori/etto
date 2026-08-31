@@ -87,4 +87,25 @@ if (!res.ok) {
   process.exit(1);
 }
 
-console.log('\nDone — auth email templates updated. Send a test from Authentication → Email Templates to verify.');
+// The PATCH answers 2xx even when it quietly persists nothing — e.g. the token
+// or ref points at a project whose auth config this call can't touch — so read
+// the config back and assert every field we sent actually landed. A green CI
+// step has to mean the templates are live.
+const check = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+if (!check.ok) {
+  console.error(`\nVerify GET failed: ${check.status} ${check.statusText}`);
+  console.error(await check.text());
+  process.exit(1);
+}
+const live = await check.json();
+const norm = (s) => (s ?? '').replace(/\r\n/g, '\n');
+const drift = Object.keys(body).filter((field) => norm(live[field]) !== norm(body[field]));
+if (drift.length) {
+  console.error(`\nPushed OK (${res.status}) but ${drift.length} field(s) did not persist on ${ref}:`);
+  for (const field of drift) console.error(`  ${field}`);
+  console.error('Check that SUPABASE_PROJECT_REF / SUPABASE_ACCESS_TOKEN target this project.');
+  process.exit(1);
+}
+
+console.log(`\nDone — ${Object.keys(body).length} auth email fields pushed to ${ref} and verified live.`);
+console.log('Send a test from Authentication → Email Templates to eyeball the rendering.');
