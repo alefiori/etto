@@ -22,6 +22,20 @@ export const en = {
     refreshing: 'Refreshing…',
     refreshed: 'Updated',
   },
+  errors: {
+    boundaryTitle: 'Something went wrong',
+    boundaryBody: 'The app hit an unexpected problem. Reloading usually fixes it.',
+    reload: 'Reload',
+    emailSupport: 'Email support',
+    chunkTitle: 'A newer version is available',
+    chunkBody: 'Reload to pick it up.',
+    bootFailed: 'Couldn’t reach Etto. Check your connection and try again.',
+    retry: 'Try again',
+  },
+  offline: {
+    banner: 'You’re offline. Changes won’t be saved until you reconnect.',
+    back: 'Back online',
+  },
   nav: {
     dashboard: 'Dashboard',
     weeklyTargets: 'Weekly Targets',
@@ -183,6 +197,15 @@ export const en = {
     linkSent: 'If an account exists for {email}, a reset link is on its way.',
     backToSignIn: 'Back to sign in',
     sendResetLink: 'Send reset link',
+  },
+  resetPassword: {
+    title: 'Choose a new password',
+    newPassword: 'New password',
+    confirmNewPassword: 'Confirm new password',
+    submit: 'Save new password',
+    tooShort: 'Use at least 8 characters',
+    expired: 'This reset link has expired. Request a new one.',
+    success: 'Password updated. You’re signed in.',
   },
   myFoods: {
     title: 'My Foods',

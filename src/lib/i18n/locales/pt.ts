@@ -17,6 +17,20 @@ export const pt: Translation = {
     refreshing: 'A atualizar…',
     refreshed: 'Atualizado',
   },
+  errors: {
+    boundaryTitle: 'Algo correu mal',
+    boundaryBody: 'A app teve um problema inesperado. Recarregar costuma resolver.',
+    reload: 'Recarregar',
+    emailSupport: 'Contactar o suporte',
+    chunkTitle: 'Está disponível uma versão mais recente',
+    chunkBody: 'Recarrega para a obter.',
+    bootFailed: 'Não foi possível ligar ao Etto. Verifica a tua ligação e tenta novamente.',
+    retry: 'Tentar novamente',
+  },
+  offline: {
+    banner: 'Estás offline. As alterações não serão guardadas até voltares a ligar-te.',
+    back: 'De novo online',
+  },
   nav: {
     dashboard: 'Painel',
     weeklyTargets: 'Objetivos Semanais',
@@ -178,6 +192,15 @@ export const pt: Translation = {
     linkSent: 'Se existir uma conta para {email}, uma ligação de reposição está a caminho.',
     backToSignIn: 'Voltar ao início de sessão',
     sendResetLink: 'Enviar ligação de reposição',
+  },
+  resetPassword: {
+    title: 'Escolhe uma nova palavra-passe',
+    newPassword: 'Nova palavra-passe',
+    confirmNewPassword: 'Confirma a nova palavra-passe',
+    submit: 'Guardar nova palavra-passe',
+    tooShort: 'Usa pelo menos 8 caracteres',
+    expired: 'Esta ligação de reposição expirou. Pede uma nova.',
+    success: 'Palavra-passe atualizada. Sessão iniciada.',
   },
   myFoods: {
     title: 'Os Meus Alimentos',

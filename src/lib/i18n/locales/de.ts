@@ -17,6 +17,20 @@ export const de: Translation = {
     refreshing: 'Wird aktualisiert…',
     refreshed: 'Aktualisiert',
   },
+  errors: {
+    boundaryTitle: 'Etwas ist schiefgelaufen',
+    boundaryBody: 'In der App ist ein unerwartetes Problem aufgetreten. Ein Neuladen behebt das meist.',
+    reload: 'Neu laden',
+    emailSupport: 'Support kontaktieren',
+    chunkTitle: 'Eine neuere Version ist verfügbar',
+    chunkBody: 'Zum Aktualisieren neu laden.',
+    bootFailed: 'Etto konnte nicht erreicht werden. Verbindung prüfen und erneut versuchen.',
+    retry: 'Erneut versuchen',
+  },
+  offline: {
+    banner: 'Du bist offline. Änderungen werden erst nach der Wiederverbindung gespeichert.',
+    back: 'Wieder online',
+  },
   nav: {
     dashboard: 'Übersicht',
     weeklyTargets: 'Wochenziele',
@@ -178,6 +192,15 @@ export const de: Translation = {
     linkSent: 'Falls ein Konto für {email} existiert, ist ein Link zum Zurücksetzen unterwegs.',
     backToSignIn: 'Zurück zur Anmeldung',
     sendResetLink: 'Link zum Zurücksetzen senden',
+  },
+  resetPassword: {
+    title: 'Neues Passwort wählen',
+    newPassword: 'Neues Passwort',
+    confirmNewPassword: 'Neues Passwort bestätigen',
+    submit: 'Neues Passwort speichern',
+    tooShort: 'Mindestens 8 Zeichen verwenden',
+    expired: 'Dieser Link zum Zurücksetzen ist abgelaufen. Fordere einen neuen an.',
+    success: 'Passwort aktualisiert. Du bist angemeldet.',
   },
   myFoods: {
     title: 'Meine Lebensmittel',

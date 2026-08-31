@@ -17,6 +17,20 @@ export const nl: Translation = {
     refreshing: 'Vernieuwen…',
     refreshed: 'Bijgewerkt',
   },
+  errors: {
+    boundaryTitle: 'Er ging iets mis',
+    boundaryBody: 'De app kreeg een onverwacht probleem. Opnieuw laden lost dit meestal op.',
+    reload: 'Opnieuw laden',
+    emailSupport: 'Mail de support',
+    chunkTitle: 'Er is een nieuwere versie beschikbaar',
+    chunkBody: 'Laad opnieuw om die op te halen.',
+    bootFailed: 'Kon Etto niet bereiken. Controleer je verbinding en probeer opnieuw.',
+    retry: 'Opnieuw proberen',
+  },
+  offline: {
+    banner: 'Je bent offline. Wijzigingen worden niet opgeslagen totdat je weer verbonden bent.',
+    back: 'Weer online',
+  },
   nav: {
     dashboard: 'Dashboard',
     weeklyTargets: 'Weekdoelen',
@@ -178,6 +192,15 @@ export const nl: Translation = {
     linkSent: 'Als er een account bestaat voor {email}, is er een resetlink onderweg.',
     backToSignIn: 'Terug naar aanmelden',
     sendResetLink: 'Resetlink versturen',
+  },
+  resetPassword: {
+    title: 'Kies een nieuw wachtwoord',
+    newPassword: 'Nieuw wachtwoord',
+    confirmNewPassword: 'Bevestig nieuw wachtwoord',
+    submit: 'Nieuw wachtwoord opslaan',
+    tooShort: 'Gebruik minstens 8 tekens',
+    expired: 'Deze resetlink is verlopen. Vraag een nieuwe aan.',
+    success: 'Wachtwoord bijgewerkt. Je bent ingelogd.',
   },
   myFoods: {
     title: 'Mijn voedingsmiddelen',

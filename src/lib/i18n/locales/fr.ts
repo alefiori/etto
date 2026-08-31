@@ -17,6 +17,20 @@ export const fr: Translation = {
     refreshing: 'Actualisation…',
     refreshed: 'Actualisé',
   },
+  errors: {
+    boundaryTitle: 'Un problème est survenu',
+    boundaryBody: 'L’application a rencontré un problème inattendu. Recharger résout généralement le souci.',
+    reload: 'Recharger',
+    emailSupport: 'Contacter le support',
+    chunkTitle: 'Une nouvelle version est disponible',
+    chunkBody: 'Recharger pour la récupérer.',
+    bootFailed: 'Impossible de joindre Etto. Vérifiez votre connexion et réessayez.',
+    retry: 'Réessayer',
+  },
+  offline: {
+    banner: 'Vous êtes hors ligne. Les modifications ne seront pas enregistrées tant que vous n’êtes pas reconnecté.',
+    back: 'De nouveau en ligne',
+  },
   nav: {
     dashboard: 'Tableau de bord',
     weeklyTargets: 'Objectifs hebdomadaires',
@@ -178,6 +192,15 @@ export const fr: Translation = {
     linkSent: 'Si un compte existe pour {email}, un lien de réinitialisation est en route.',
     backToSignIn: 'Retour à la connexion',
     sendResetLink: 'Envoyer le lien de réinitialisation',
+  },
+  resetPassword: {
+    title: 'Choisissez un nouveau mot de passe',
+    newPassword: 'Nouveau mot de passe',
+    confirmNewPassword: 'Confirmez le nouveau mot de passe',
+    submit: 'Enregistrer le nouveau mot de passe',
+    tooShort: 'Utilisez au moins 8 caractères',
+    expired: 'Ce lien de réinitialisation a expiré. Demandez-en un nouveau.',
+    success: 'Mot de passe mis à jour. Vous êtes connecté.',
   },
   myFoods: {
     title: 'Mes aliments',

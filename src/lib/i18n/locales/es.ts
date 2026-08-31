@@ -17,6 +17,20 @@ export const es: Translation = {
     refreshing: 'Actualizando…',
     refreshed: 'Actualizado',
   },
+  errors: {
+    boundaryTitle: 'Algo salió mal',
+    boundaryBody: 'La app tuvo un problema inesperado. Recargar suele solucionarlo.',
+    reload: 'Recargar',
+    emailSupport: 'Escribir a soporte',
+    chunkTitle: 'Hay una versión más reciente disponible',
+    chunkBody: 'Recarga para obtenerla.',
+    bootFailed: 'No se pudo conectar con Etto. Comprueba tu conexión e inténtalo de nuevo.',
+    retry: 'Reintentar',
+  },
+  offline: {
+    banner: 'Estás sin conexión. Los cambios no se guardarán hasta que vuelvas a conectarte.',
+    back: 'De nuevo en línea',
+  },
   nav: {
     dashboard: 'Panel',
     weeklyTargets: 'Objetivos semanales',
@@ -178,6 +192,15 @@ export const es: Translation = {
     linkSent: 'Si existe una cuenta para {email}, el enlace de restablecimiento está en camino.',
     backToSignIn: 'Volver a iniciar sesión',
     sendResetLink: 'Enviar enlace de restablecimiento',
+  },
+  resetPassword: {
+    title: 'Elige una nueva contraseña',
+    newPassword: 'Nueva contraseña',
+    confirmNewPassword: 'Confirma la nueva contraseña',
+    submit: 'Guardar nueva contraseña',
+    tooShort: 'Usa al menos 8 caracteres',
+    expired: 'Este enlace de restablecimiento ha caducado. Solicita uno nuevo.',
+    success: 'Contraseña actualizada. Has iniciado sesión.',
   },
   myFoods: {
     title: 'Mis alimentos',

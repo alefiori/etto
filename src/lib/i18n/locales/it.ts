@@ -17,6 +17,20 @@ export const it: Translation = {
     refreshing: 'Aggiornamento…',
     refreshed: 'Aggiornato',
   },
+  errors: {
+    boundaryTitle: 'Qualcosa è andato storto',
+    boundaryBody: 'L’app ha riscontrato un problema imprevisto. Ricaricare di solito risolve.',
+    reload: 'Ricarica',
+    emailSupport: 'Scrivi al supporto',
+    chunkTitle: 'È disponibile una versione più recente',
+    chunkBody: 'Ricarica per aggiornare.',
+    bootFailed: 'Impossibile raggiungere Etto. Controlla la connessione e riprova.',
+    retry: 'Riprova',
+  },
+  offline: {
+    banner: 'Sei offline. Le modifiche non saranno salvate finché non ti riconnetti.',
+    back: 'Di nuovo online',
+  },
   nav: {
     dashboard: 'Dashboard',
     weeklyTargets: 'Obiettivi settimanali',
@@ -178,6 +192,15 @@ export const it: Translation = {
     linkSent: 'Se esiste un account per {email}, un link per reimpostare la password è in arrivo.',
     backToSignIn: 'Torna all’accesso',
     sendResetLink: 'Invia link di reimpostazione',
+  },
+  resetPassword: {
+    title: 'Scegli una nuova password',
+    newPassword: 'Nuova password',
+    confirmNewPassword: 'Conferma la nuova password',
+    submit: 'Salva la nuova password',
+    tooShort: 'Usa almeno 8 caratteri',
+    expired: 'Questo link di reimpostazione è scaduto. Richiedine uno nuovo.',
+    success: 'Password aggiornata. Hai effettuato l’accesso.',
   },
   myFoods: {
     title: 'I miei alimenti',
