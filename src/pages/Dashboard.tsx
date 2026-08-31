@@ -684,9 +684,13 @@ function MealCard({
             <Icon name="restaurant" />
           </div>
           <p className="text-sm text-on-surface-variant">{t('dashboard.noItemsLogged')}</p>
+          {/* Solid, not a tint. This is the only thing on an empty meal card
+              and the artboard fills it — a tinted pill under a grey
+              illustration on an already-dashed card was three shades of
+              nothing. */}
           <button
             onClick={onAdd}
-            className="mt-2 rounded-full bg-primary-tint/[0.14] px-4 py-2 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/25"
+            className="mt-2 min-h-2xl rounded-full bg-primary px-5 py-2 font-label-md text-label-md text-on-primary transition-opacity hover:opacity-90"
           >
             {t('dashboard.addMeal', { meal: label })}
           </button>
