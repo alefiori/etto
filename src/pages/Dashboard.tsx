@@ -402,17 +402,19 @@ export default function Dashboard() {
                       so it gets the accent chip rather than sitting as plain
                       caption text under the ring. */}
                   <p
-                    className="relative mt-3 whitespace-nowrap rounded-full px-2.5 py-1 text-center font-label-md text-xs md:px-3.5 md:text-label-md"
+                    className="relative mt-3 rounded-full px-2.5 py-1 text-center font-label-md text-xs md:px-3.5 md:text-label-md"
                     style={{ backgroundColor: m.tint, color: m.textColor }}
                   >
-                    {/* "41g remaining" wraps to two lines in a chip this
-                        narrow, and in the longer languages to three. The bare
-                        figure is the same reading — the ring above it already
-                        says which macro, and what the number means. */}
-                    <span className="md:hidden">{round(remaining(tgt, c), 0)}g</span>
-                    <span className="hidden md:inline">
-                      {t('dashboard.remaining', { value: round(remaining(tgt, c), 0) })}
-                    </span>
+                    {/* "N g left", at every width — the artboard's chip, and
+                        the word is what makes the number mean something to
+                        someone who has not read the ring behind it. It used to
+                        be a bare "41g" on phones because `dashboard.remaining`
+                        ("41g remaining") wrapped to three lines in the longer
+                        languages inside a chip this narrow. `macroLeft` is the
+                        short form for exactly this spot, and the chip wraps
+                        rather than clipping where a language still needs two
+                        lines. */}
+                    {t('dashboard.macroLeft', { value: round(remaining(tgt, c), 0) })}
                   </p>
                 </div>
               )
@@ -469,75 +471,81 @@ export default function Dashboard() {
               className="flex animate-rise flex-col gap-lg lg:col-span-1"
               style={{ animationDelay: '190ms' }}
             >
-              {/* The one solid surface on the page, and deliberately so: every
-                  other card is a lens, and calories is the reading the day is
-                  actually judged on. It is the sage gradient rather than a
-                  flat fill for the same reason the CTAs are — and it carries a
-                  real ring now, where it used to draw a static decorative
-                  circle and put the progress nowhere. */}
-              {/* `specular` is the sheen that travels across it every five
-                  seconds — the only looping decoration in the app, and it earns
-                  the exception by being on the one large tinted surface, where
-                  a static gradient otherwise reads as printed rather than lit.
-                  It needs the `relative overflow-hidden` this card already has,
-                  and paints under the contents, which all carry z-10. */}
-              <div className="relative overflow-hidden rounded-lens p-lg text-white shadow-accent grad-primary specular">
-                <div
-                  aria-hidden
-                  className="absolute -right-10 -top-14 h-[200px] w-[200px] animate-breathe-slow rounded-full bg-white/25 blur-[46px]"
-                />
-                <div className="relative z-10 mb-lg flex items-center justify-between">
-                  <h3 className="font-headline-md text-headline-md">{t('dashboard.calories')}</h3>
-                  {goalKcal > 0 && (
-                    <span className="rounded-full bg-white/20 px-2.5 py-1 font-label-md text-xs">
-                      {t('dashboard.percentOfGoal', {
-                        value: Math.round((consumedKcal / goalKcal) * 100),
-                      })}
-                    </span>
-                  )}
-                </div>
-                <div className="relative z-10 mb-lg flex flex-col items-center justify-center">
-                  <ProgressRing
-                    consumed={consumedKcal}
-                    target={goalKcal}
-                    color="rgba(255,255,255,.95)"
-                    trackColor="rgba(255,255,255,.22)"
-                    label={t('dashboard.calorieRingAria', {
-                      consumed: Math.round(consumedKcal).toLocaleString(),
-                      goal: Math.round(goalKcal).toLocaleString(),
-                      remaining: remainingKcal.toLocaleString(),
+              {/* A card like every other, not the one solid tinted slab it
+                  used to be. The slab was a violet-era decision carried into
+                  Grove unexamined: a full-bleed gradient with white type, a
+                  white-on-white ring, a breathing white blob and a looping
+                  sheen. Grove's artboard draws this as an ordinary card whose
+                  ring is the only saturated thing on it, and it is right —
+                  calories being the day's headline is a job for a big serif
+                  number and a sage arc, not for making one card louder than
+                  the page it sits on. It also unpicked a knot: the card was
+                  the only surface that hardcoded `text-white`, so it was what
+                  stopped the dark CTA gradient becoming the light sage the
+                  token spec asks for. */}
+              <div className="flex flex-col items-center rounded-lens p-lg glass">
+                <h3 className="mb-md self-start font-label-md text-label-md tracking-wide text-on-surface-variant">
+                  {t('dashboard.calories')}
+                </h3>
+
+                <ProgressRing
+                  consumed={consumedKcal}
+                  target={goalKcal}
+                  color="rgb(var(--primary))"
+                  trackColor={RING_TRACK}
+                  label={t('dashboard.calorieRingAria', {
+                    consumed: Math.round(consumedKcal).toLocaleString(),
+                    goal: Math.round(goalKcal).toLocaleString(),
+                    remaining: remainingKcal.toLocaleString(),
+                  })}
+                  className="aspect-square w-full max-w-[11rem]"
+                >
+                  <span className="block font-data-display text-data-display leading-none text-on-surface">
+                    {remainingKcal.toLocaleString()}
+                  </span>
+                  <span className="mt-1 block font-label-md text-label-md uppercase tracking-widest text-on-surface-variant">
+                    {t('dashboard.remainingLabel')}
+                  </span>
+                </ProgressRing>
+
+                {goalKcal > 0 && (
+                  <span className="mt-md rounded-full bg-primary-tint/[0.10] px-4 py-2 font-label-md text-label-md text-primary">
+                    {t('dashboard.percentOfGoal', {
+                      value: Math.round((consumedKcal / goalKcal) * 100),
                     })}
-                    className="aspect-square w-full max-w-[10.75rem]"
-                  >
-                    <span className="block font-data-display text-data-display leading-none">
-                      {remainingKcal.toLocaleString()}
-                    </span>
-                    <span className="mt-1 block font-label-md text-label-md uppercase tracking-widest opacity-80">
-                      {t('dashboard.remainingLabel')}
-                    </span>
-                  </ProgressRing>
-                </div>
+                  </span>
+                )}
+
                 {/* Goal · Eaten · Left — the ring already leads with what is
                     left, and this strip carries the two figures it is derived
-                    from beside it. All three reuse existing keys. */}
-                <div className="relative z-10 flex items-center justify-between rounded-[20px] border border-white/25 bg-white/16 p-md backdrop-blur-xs">
-                  <div className="text-center">
-                    <span className="block text-sm opacity-85">{t('dashboard.goal')}</span>
-                    <span className="font-label-md text-label-md">
+                    from beside it. All three reuse existing keys. Hairline
+                    separators rather than gaps: three equal cells under one
+                    rule read as one figure broken into parts, which is what
+                    they are. */}
+                <div className="stat-split mt-md w-full border-t border-outline-variant/20 pt-md">
+                  <div className="min-w-0 flex-1 text-center">
+                    <span className="block font-label-md text-label-md text-outline">
+                      {t('dashboard.goal')}
+                    </span>
+                    <span className="mt-0.5 block font-label-md text-body-md font-bold text-on-surface">
                       {Math.round(goalKcal).toLocaleString()}
                     </span>
                   </div>
-                  <div className="h-8 w-px bg-white/30" />
-                  <div className="text-center">
-                    <span className="block text-sm opacity-85">{t('dashboard.consumed')}</span>
-                    <span className="font-label-md text-label-md">
+                  <div className="stat-split-sep bg-outline-variant/20" />
+                  <div className="min-w-0 flex-1 text-center">
+                    <span className="block font-label-md text-label-md text-outline">
+                      {t('dashboard.consumed')}
+                    </span>
+                    <span className="mt-0.5 block font-label-md text-body-md font-bold text-on-surface">
                       {Math.round(consumedKcal).toLocaleString()}
                     </span>
                   </div>
-                  <div className="h-8 w-px bg-white/30" />
-                  <div className="text-center">
-                    <span className="block text-sm opacity-85">{t('dashboard.remainingLabel')}</span>
-                    <span className="font-label-md text-label-md">
+                  <div className="stat-split-sep bg-outline-variant/20" />
+                  <div className="min-w-0 flex-1 text-center">
+                    <span className="block font-label-md text-label-md text-outline">
+                      {t('dashboard.remainingLabel')}
+                    </span>
+                    <span className="mt-0.5 block font-label-md text-body-md font-bold text-on-surface">
                       {remainingKcal.toLocaleString()}
                     </span>
                   </div>
@@ -635,12 +643,20 @@ function MealCard({
               Three controls plus the calorie total left the meal's own name a
               sliver, and with a paste pending this header has exactly one job —
               which is also why the paste button can now afford its label at
-              phone width, where it used to be a bare unlabelled pill. */}
+              phone width, where it used to be a bare unlabelled pill.
+
+              `text-outline`, a step back from `on-surface-variant`: the
+              artboard draws these lighter than the meal's name and its total,
+              because they are the two things on the header nobody came for. It
+              draws them at #b3bdb0, which is 1.9:1 on a card and fails WCAG
+              1.4.11 for a control — the canvas says its contrast pass is still
+              to come. `--outline` is the lightest token that clears 3:1, so it
+              is where "lighter" stops. */}
           {!empty && !canPaste && (
             <div className="flex items-center gap-0.5">
               <button
                 onClick={onShare}
-                className="tap-target flex min-h-10 min-w-10 items-center justify-center p-2 rounded-full text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) hover:text-primary"
+                className="tap-target flex min-h-10 min-w-10 items-center justify-center p-2 rounded-full text-outline transition-colors hover:bg-(--glass-chip-hover) hover:text-primary"
                 aria-label={t('dashboard.shareMealAria', { meal: label })}
                 title={t('dashboard.shareMealAria', { meal: label })}
               >
@@ -648,7 +664,7 @@ function MealCard({
               </button>
               <button
                 onClick={onCopy}
-                className="tap-target flex min-h-10 min-w-10 items-center justify-center p-2 rounded-full text-on-surface-variant transition-colors hover:bg-(--glass-chip-hover) hover:text-primary"
+                className="tap-target flex min-h-10 min-w-10 items-center justify-center p-2 rounded-full text-outline transition-colors hover:bg-(--glass-chip-hover) hover:text-primary"
                 aria-label={t('dashboard.copyMealAria', { meal: label })}
                 title={t('dashboard.copyMealAria', { meal: label })}
               >
@@ -686,11 +702,16 @@ function MealCard({
               onNotice={onNotice}
             />
           ))}
+          {/* A filled sage-tinted bar, not a bare text link. It is the one
+              action on a meal card and it sits under a list of rows that are
+              themselves filled surfaces — transparent, it read as a caption
+              under the last row rather than as the thing to press. The
+              artboard fills it for the same reason. */}
           <button
             onClick={onAdd}
-            className="mt-sm flex w-full items-center justify-center gap-xs rounded-row py-2.5 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/12"
+            className="mt-sm flex min-h-2xl w-full items-center justify-center gap-xs rounded-row bg-primary-tint/[0.10] py-2.5 font-label-md text-label-md text-primary transition-colors hover:bg-primary-tint/20"
           >
-            <Icon name="add_circle" className="text-sm" /> {t('dashboard.addMealItem', { meal: label })}
+            <Icon name="add" className="text-[1.125rem]" /> {t('dashboard.addMealItem', { meal: label })}
           </button>
         </div>
       )}

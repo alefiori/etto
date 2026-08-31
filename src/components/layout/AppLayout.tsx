@@ -24,7 +24,11 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/', labelKey: 'nav.dashboard', shortKey: 'nav.dashboard', icon: 'dashboard' },
+  // `dashboardShort` is "Day", not a clipped "Dashboard": the tab bar labels at
+  // 10px and this destination is the single day the app opens on — which is
+  // also what its own date stepper says. The drawer and the rail, which have
+  // room, still say Dashboard.
+  { to: '/', labelKey: 'nav.dashboard', shortKey: 'nav.dashboardShort', icon: 'dashboard' },
   { to: '/targets', labelKey: 'nav.weeklyTargets', shortKey: 'nav.targetsShort', icon: 'calendar_month' },
   { to: '/foods', labelKey: 'nav.myFoods', shortKey: 'nav.foodsShort', icon: 'restaurant_menu' },
   { to: '/profile', labelKey: 'nav.profile', shortKey: 'nav.profile', icon: 'person' },
@@ -254,12 +258,16 @@ function TopAppBar({ barRef }: { barRef: React.Ref<HTMLElement> }) {
       />
       <div className="relative flex items-center justify-between px-container-margin-mobile py-md pt-[calc(var(--spacing-md)+(var(--spacing-safe-top)))]">
         <h1 className="font-headline-md text-headline-md font-bold text-primary">Etto</h1>
+        {/* A filled sage disc, not a bare glyph. It is the only control in the
+            top bar, and as an outline icon on the bar's own colour it read as
+            decoration next to the wordmark rather than as the way to the
+            account. `h-9 w-9` in rem so the disc grows with the glyph. */}
         <NavLink
           to="/profile"
           aria-label={t('nav.profile')}
-          className="tap-target settle flex items-center justify-center rounded-full p-2 text-on-surface-variant hover:bg-(--glass-chip) active:scale-95"
+          className="tap-target settle flex h-9 w-9 items-center justify-center rounded-full bg-primary-tint/[0.14] text-primary hover:bg-primary-tint/25 active:scale-95"
         >
-          <Icon name="account_circle" />
+          <Icon name="person" style={{ fontSize: '1.25rem' }} />
         </NavLink>
       </div>
     </header>
@@ -272,14 +280,17 @@ function TopAppBar({ barRef }: { barRef: React.Ref<HTMLElement> }) {
  * on how long its label translated to; the pill divides itself evenly instead,
  * which matters more now that it no longer spans the full width.
  *
- * The primary action rides *inside* the pill, at its right-hand end. It used to
- * be a free-floating button above the bar, which is what a bar welded to the
- * bottom edge needs — there is nowhere else for it to go. Once the bar became a
- * pill floating in the same layer, two floating objects a few pixels apart read
- * as chrome that failed to line up rather than as one control cluster, and the
- * button covered the top-right corner of whatever card sat under it. Inside, it
- * is the same lens as the rail's, which puts the action in the same place at
- * every window class: at the near end of the navigation, not beside it.
+ * The primary action rides *inside* the pill, at its centre — third of five,
+ * between Targets and Foods, which is where the Grove artboards put it. It used
+ * to be a free-floating button above the bar (what a bar welded to the bottom
+ * edge needs, since there is nowhere else for it to go), then a fifth item at
+ * the right-hand end. Centred, it is equidistant from either thumb rather than
+ * favouring a right hand, and it stops reading as a fifth destination that
+ * happens to be green.
+ *
+ * It stays a real `<button>` after the two `NavLink`s rather than being
+ * reordered visually, so the DOM order the keyboard and a screen reader walk is
+ * the order the eye sees: Day, Targets, Add, Foods, Profile.
  */
 function BottomNav({ barRef }: { barRef: React.Ref<HTMLElement> }) {
   const { openAddFood } = useAppShell()
@@ -288,41 +299,17 @@ function BottomNav({ barRef }: { barRef: React.Ref<HTMLElement> }) {
     <nav
       ref={barRef}
       aria-label={t('nav.primary')}
-      className="fixed bottom-chrome-inset left-4 right-4 z-50 flex items-center gap-1 rounded-chrome px-2 py-2 md:hidden glass-chrome"
+      className="fixed bottom-chrome-inset left-4 right-4 z-50 flex items-center gap-1 rounded-chrome px-2 py-2.5 md:hidden glass-chrome"
     >
-      {NAV_ITEMS.map((item) => (
-        <NavLink
-          key={item.to}
-          to={item.to}
-          end={item.to === '/'}
-          className={({ isActive }) =>
-            // No hover lift here: this bar only exists at phone width, where a
-            // hover state is a state a finger can't leave.
-            // `min-w-0` so the labels may truncate rather than force the row
-            // wider than the pill: at 320px (iPad Slide Over) the four tabs
-            // share ~214px once the action has taken its 52px, and the longest
-            // short label in German does not fit that unaided.
-            `settle flex min-w-0 flex-1 flex-col items-center justify-center rounded-[22px] py-1.5 active:scale-90 ${
-              isActive
-                ? 'bg-primary-tint/16 text-primary'
-                : 'text-on-surface-variant hover:bg-(--glass-chip)'
-            }`
-          }
-        >
-          {({ isActive }) => (
-            <>
-              <Icon name={item.icon} fill={isActive} />
-              <span className="chrome-label mt-0.5 w-full truncate px-0.5 text-center font-label-md tracking-normal">
-                {t(item.shortKey)}
-              </span>
-            </>
-          )}
-        </NavLink>
+      {NAV_ITEMS.slice(0, 2).map((item) => (
+        <Tab key={item.to} item={item} />
       ))}
 
       {/* `shrink-0` against the four `flex-1` tabs: the destinations divide
-          what is left, and the action keeps its 52px however long the labels
-          translate to. */}
+          what is left, and the action keeps its 48px however long the labels
+          translate to. 48px is a px literal, not `rem`, on purpose — it is
+          already at Android's 48dp floor, and growing it with the text size is
+          what would push the four destinations off a 320px screen at 200%. */}
       <button
         onClick={() => openAddFood()}
         aria-label={t('nav.addFood')}
@@ -331,11 +318,65 @@ function BottomNav({ barRef }: { barRef: React.Ref<HTMLElement> }) {
         // controls share it (drawer, rail, tab bar) with one visible per window
         // class. A stable hook is cheaper than the guesswork.
         data-testid="add-food-fab"
-        className="settle ml-1.5 flex min-h-[52px] min-w-[52px] shrink-0 items-center justify-center rounded-[19px] p-1.5 active:scale-95 grad-primary"
+        className="settle mx-1 flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-full bg-primary text-on-primary shadow-accent active:scale-95"
       >
         <Icon name="add" className="text-2xl" />
       </button>
+
+      {NAV_ITEMS.slice(2).map((item) => (
+        <Tab key={item.to} item={item} />
+      ))}
     </nav>
+  )
+}
+
+/**
+ * One destination in the tab bar: a tinted round pill behind the *icon*, with
+ * the label on the bar's own ground beneath it.
+ *
+ * The tint used to wrap icon and label together in one rounded rectangle. A
+ * pill behind the glyph alone is what the artboards draw, and it reads better
+ * for the reason it was drawn that way: the selected block was previously the
+ * widest, tallest thing in the bar and competed with the add button for the
+ * eye, where a 40px circle sits at the same weight as the four icons it is one
+ * of.
+ *
+ * `min-w-0` on the link so the labels may truncate rather than force the row
+ * wider than the pill: at 320px (an Android display-size setting, or iPad Slide
+ * Over) the four tabs share ~208px once the action has taken its 48px, and the
+ * longest short label in German does not fit that unaided. `.chrome-icon-pill`
+ * gives up its fixed 40px past the large-text threshold, where four 48px glyphs
+ * plus the action already need every pixel of that 208 — see index.css.
+ */
+function Tab({ item }: { item: NavItem }) {
+  const { t } = useI18n()
+  return (
+    <NavLink
+      to={item.to}
+      end={item.to === '/'}
+      className={({ isActive }) =>
+        // No hover lift here: this bar only exists at phone width, where a
+        // hover state is a state a finger can't leave.
+        `settle flex min-w-0 flex-1 flex-col items-center justify-center gap-1 active:scale-90 ${
+          isActive ? 'text-primary' : 'text-on-surface-variant'
+        }`
+      }
+    >
+      {({ isActive }) => (
+        <>
+          <span
+            className={`chrome-icon-pill ${
+              isActive ? 'bg-primary-tint/[0.10]' : 'hover:bg-(--glass-chip)'
+            }`}
+          >
+            <Icon name={item.icon} fill={isActive} />
+          </span>
+          <span className="chrome-label w-full truncate px-0.5 text-center font-label-md tracking-normal">
+            {t(item.shortKey)}
+          </span>
+        </>
+      )}
+    </NavLink>
   )
 }
 

@@ -325,12 +325,13 @@ export function WeightCard() {
           <div
             role="group"
             aria-label={t('weight.rangeAria')}
-            // `flex-1` alone cannot shrink these below their own labels, so at
-            // 200% text on a narrow phone the last range ran past the card.
-            // Wrapping with a basis is the same answer the appearance picker in
-            // Profile reached, `rounded-2xl` included: a wrapped row of pills
-            // inside a pill reads as a mistake.
-            className={`flex flex-wrap gap-1 rounded-2xl glass-chip p-1 ${chartReady ? '' : 'opacity-45'}`}
+            // A pill track, as the artboard draws it — `rounded-full` clamps to
+            // half the height, so the one row it normally is reads as a pill
+            // and the wrapped row it becomes at 200% on a narrow phone reads as
+            // a taller stadium. `flex-1` alone cannot shrink a button below its
+            // own label, which is what used to push the last range past the
+            // card, so they wrap on a basis instead.
+            className={`flex flex-wrap gap-1 rounded-full glass-chip p-1 ${chartReady ? '' : 'opacity-45'}`}
           >
             {RANGES.map((r) => (
               <button

@@ -291,10 +291,15 @@
 
 @utility grad-primary {
   /* The filled primary action. A gradient rather than a flat `bg-primary`
-     because `--primary` is the accent *text* colour in both schemes, and in
-     dark it is far too light to carry white type. */
+     because `--primary` is the accent *text* colour in both schemes, and a flat
+     fill of it is a shade off the CTA either scheme wants.
+
+     The label is `--on-primary`, not a hardcoded white. Light runs dark sage
+     under white; dark runs light sage under near-black, and white on it would
+     be 3.2 — a fail. One token covers both, and it is the same token every
+     compact filled control in the app already uses. */
   background-image: var(--grad-primary);
-  color: #fff;
+  color: rgb(var(--on-primary));
   box-shadow: var(--shadow-accent);
   &:disabled {
     box-shadow: none;
@@ -610,7 +615,13 @@
     /* Deep sage in dark so the utility's white label keeps AA — `--primary`
        itself is the light accent and only carries dark type when it is a
        flat fill (`bg-primary text-on-primary`). */
-    --grad-primary: linear-gradient(155deg, #4f7458, #3f5f49);
+    /* Light sage into mid sage, carrying *dark* text — not the dark-green pair
+       with white text this used to be. Grove's dark CTA is the brightest thing
+       on a near-black page, which is what makes a primary action findable
+       there; the old pair was darker than the card it sat on. Contrast goes up
+       either way: #12150e on #6f9a78 is 6.0, where white on #3f5f49 was 5.2.
+       See the dark CTA note in design/grove-tokens.html. */
+    --grad-primary: linear-gradient(155deg, #8fb896, #6f9a78);
     --scrollbar-thumb: #39412f;
   }
 
@@ -1080,6 +1091,65 @@ input[type='number'] {
   clip-path: inset(50%);
   white-space: nowrap;
   border-width: 0;
+}
+
+/* The round tint behind a tab bar destination's icon.
+ *
+ * 40px at the default root, in `rem` so it keeps its proportion to the 24px
+ * glyph inside it — a fixed 40px circle around a glyph the reader has scaled to
+ * 48px is not a circle any more, it is a clipped one.
+ *
+ * Past the large-text threshold it gives up the fixed size and becomes the tab
+ * itself. That is a width argument, not a taste one: on a 320px screen (an
+ * Android display-size setting, or iPad Slide Over) the bar has ~208px for four
+ * destinations once the add button has taken its 48, and at 200% the glyphs
+ * alone are 48px each. A 2.5rem box would be 80px and four of them cannot fit.
+ * The labels are already clipped by then, so the pill is the only thing left to
+ * carry the selection, and a rounded rect the width of the tab carries it. */
+.chrome-icon-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  transition: background-color var(--dur-settle) var(--ease-settle);
+}
+[data-text-scale='large'] .chrome-icon-pill {
+  width: 100%;
+  height: auto;
+  padding: 0.25rem 0;
+  border-radius: 1.25rem;
+}
+
+/* Three figures under one rule, divided by hairlines — the Goal · Eaten · Left
+ * strip on the calorie card.
+ *
+ * A row while the figures fit, a column once they don't. Three equal cells
+ * cannot shrink below a five-digit number, and at 200% text on a 320px screen
+ * three of those are wider than the card; `min-width: 0` would only move the
+ * failure from overflow to a clipped number. Turning the row on its side keeps
+ * every figure whole and costs two lines.
+ *
+ * Keyed on the text scale rather than a container query on purpose: the card is
+ * the same number of CSS pixels wide at 1x and at 2x — what changed is the type
+ * inside it, and `data-text-scale` is the only thing that says so. See
+ * lib/textScale.ts. */
+.stat-split {
+  display: flex;
+  align-items: stretch;
+}
+.stat-split > .stat-split-sep {
+  flex: 0 0 1px;
+  align-self: stretch;
+}
+[data-text-scale='large'] .stat-split {
+  flex-direction: column;
+  gap: 0.5rem;
+}
+[data-text-scale='large'] .stat-split > .stat-split-sep {
+  flex: 0 0 1px;
+  width: 100%;
 }
 
 /* Tap target — the hit area a finger needs, without the box a design wants.
