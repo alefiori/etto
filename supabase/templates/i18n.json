@@ -1,0 +1,409 @@
+{
+  "_comment": "Source strings for the Supabase auth emails. Edit here, then run `node scripts/build-email-templates.mjs` to regenerate the six *.html files and the marked block in supabase/config.toml. `en` is the fallback branch rendered when {{ .Data.locale }} is missing or unknown; every other locale must define the same keys. Values are plain text (no HTML). `{{ .Email }}` / `{{ .NewEmail }}` pass through verbatim. Do not use a straight apostrophe (') in `subject` values — TOML literal strings can't hold one; use the curly ’.",
+  "locales": ["en", "it", "fr", "es", "de", "pt", "nl"],
+
+  "common": {
+    "linkIntro": {
+      "en": "Or paste this link into your browser:",
+      "it": "Oppure incolla questo link nel browser:",
+      "fr": "Ou collez ce lien dans votre navigateur :",
+      "es": "O pega este enlace en tu navegador:",
+      "de": "Oder füge diesen Link in deinen Browser ein:",
+      "pt": "Ou cole este link no seu navegador:",
+      "nl": "Of plak deze link in je browser:"
+    },
+    "tagline": {
+      "en": "Track your macros, every day.",
+      "it": "Monitora i tuoi macro, ogni giorno.",
+      "fr": "Suivez vos macros, chaque jour.",
+      "es": "Controla tus macros, cada día.",
+      "de": "Verfolge deine Makros, jeden Tag.",
+      "pt": "Acompanhe os seus macros, todos os dias.",
+      "nl": "Houd elke dag je macro’s bij."
+    }
+  },
+
+  "confirmation": {
+    "subject": {
+      "en": "Confirm your email for Etto",
+      "it": "Conferma la tua email per Etto",
+      "fr": "Confirmez votre e-mail pour Etto",
+      "es": "Confirma tu correo electrónico para Etto",
+      "de": "Bestätige deine E-Mail-Adresse für Etto",
+      "pt": "Confirme o seu email para a Etto",
+      "nl": "Bevestig je e-mailadres voor Etto"
+    },
+    "preheader": {
+      "en": "Confirm your email address to finish setting up Etto.",
+      "it": "Conferma il tuo indirizzo email per completare la configurazione di Etto.",
+      "fr": "Confirmez votre adresse e-mail pour terminer la configuration d’Etto.",
+      "es": "Confirma tu dirección de correo para terminar de configurar Etto.",
+      "de": "Bestätige deine E-Mail-Adresse, um die Einrichtung von Etto abzuschließen.",
+      "pt": "Confirme o seu endereço de email para concluir a configuração da Etto.",
+      "nl": "Bevestig je e-mailadres om het instellen van Etto te voltooien."
+    },
+    "heading": {
+      "en": "Confirm your email",
+      "it": "Conferma la tua email",
+      "fr": "Confirmez votre e-mail",
+      "es": "Confirma tu correo",
+      "de": "Bestätige deine E-Mail",
+      "pt": "Confirme o seu email",
+      "nl": "Bevestig je e-mailadres"
+    },
+    "body": {
+      "en": "Thanks for signing up. Tap the button below to confirm this is your address and start tracking your macros.",
+      "it": "Grazie per esserti registrato. Tocca il pulsante qui sotto per confermare che questo indirizzo è tuo e iniziare a monitorare i tuoi macro.",
+      "fr": "Merci de votre inscription. Appuyez sur le bouton ci-dessous pour confirmer que cette adresse est la vôtre et commencer à suivre vos macros.",
+      "es": "Gracias por registrarte. Toca el botón de abajo para confirmar que esta es tu dirección y empezar a controlar tus macros.",
+      "de": "Danke für deine Registrierung. Tippe auf die Schaltfläche unten, um zu bestätigen, dass dies deine Adresse ist, und beginne, deine Makros zu verfolgen.",
+      "pt": "Obrigado por se registar. Toque no botão abaixo para confirmar que este endereço é seu e começar a acompanhar os seus macros.",
+      "nl": "Bedankt voor je aanmelding. Tik op de knop hieronder om te bevestigen dat dit jouw adres is en begin met het bijhouden van je macro’s."
+    },
+    "button": {
+      "en": "Confirm email",
+      "it": "Conferma email",
+      "fr": "Confirmer l’e-mail",
+      "es": "Confirmar correo",
+      "de": "E-Mail bestätigen",
+      "pt": "Confirmar email",
+      "nl": "E-mailadres bevestigen"
+    },
+    "codeLabel": {
+      "en": "Or enter this code",
+      "it": "Oppure inserisci questo codice",
+      "fr": "Ou saisissez ce code",
+      "es": "O introduce este código",
+      "de": "Oder gib diesen Code ein",
+      "pt": "Ou introduza este código",
+      "nl": "Of voer deze code in"
+    },
+    "footnote": {
+      "en": "This link and code expire in 1 hour. If you didn’t create an Etto account, you can safely ignore this email.",
+      "it": "Questo link e questo codice scadono tra 1 ora. Se non hai creato un account Etto, puoi ignorare questa email.",
+      "fr": "Ce lien et ce code expirent dans 1 heure. Si vous n’avez pas créé de compte Etto, vous pouvez ignorer cet e-mail.",
+      "es": "Este enlace y este código caducan en 1 hora. Si no has creado una cuenta de Etto, puedes ignorar este correo.",
+      "de": "Dieser Link und dieser Code laufen in 1 Stunde ab. Wenn du kein Etto-Konto erstellt hast, kannst du diese E-Mail ignorieren.",
+      "pt": "Este link e este código expiram dentro de 1 hora. Se não criou uma conta Etto, pode ignorar este email.",
+      "nl": "Deze link en code verlopen over 1 uur. Als je geen Etto-account hebt aangemaakt, kun je deze e-mail negeren."
+    }
+  },
+
+  "invite": {
+    "subject": {
+      "en": "You’re invited to Etto",
+      "it": "Sei stato invitato su Etto",
+      "fr": "Vous êtes invité sur Etto",
+      "es": "Te han invitado a Etto",
+      "de": "Du wurdest zu Etto eingeladen",
+      "pt": "Recebeu um convite para a Etto",
+      "nl": "Je bent uitgenodigd voor Etto"
+    },
+    "preheader": {
+      "en": "Accept your invitation and set up your Etto account.",
+      "it": "Accetta l’invito e configura il tuo account Etto.",
+      "fr": "Acceptez votre invitation et configurez votre compte Etto.",
+      "es": "Acepta tu invitación y configura tu cuenta de Etto.",
+      "de": "Nimm deine Einladung an und richte dein Etto-Konto ein.",
+      "pt": "Aceite o convite e configure a sua conta Etto.",
+      "nl": "Accepteer je uitnodiging en stel je Etto-account in."
+    },
+    "heading": {
+      "en": "You’ve been invited",
+      "it": "Hai ricevuto un invito",
+      "fr": "Vous avez été invité",
+      "es": "Te han invitado",
+      "de": "Du wurdest eingeladen",
+      "pt": "Recebeu um convite",
+      "nl": "Je bent uitgenodigd"
+    },
+    "body": {
+      "en": "You’ve been invited to create an account on Etto, a simple daily macro tracker. Accept the invitation below to choose a password and get started.",
+      "it": "Hai ricevuto un invito a creare un account su Etto, un semplice tracker giornaliero dei macro. Accetta l’invito qui sotto per scegliere una password e iniziare.",
+      "fr": "Vous avez été invité à créer un compte sur Etto, un outil simple de suivi quotidien des macros. Acceptez l’invitation ci-dessous pour choisir un mot de passe et commencer.",
+      "es": "Te han invitado a crear una cuenta en Etto, un sencillo registro diario de macros. Acepta la invitación de abajo para elegir una contraseña y empezar.",
+      "de": "Du wurdest eingeladen, ein Konto bei Etto zu erstellen, einem einfachen Tracker für deine täglichen Makros. Nimm die Einladung unten an, um ein Passwort festzulegen und loszulegen.",
+      "pt": "Recebeu um convite para criar uma conta na Etto, um registo diário de macros simples. Aceite o convite abaixo para escolher uma palavra-passe e começar.",
+      "nl": "Je bent uitgenodigd om een account aan te maken bij Etto, een eenvoudige dagelijkse macrotracker. Accepteer de uitnodiging hieronder om een wachtwoord te kiezen en te beginnen."
+    },
+    "button": {
+      "en": "Accept invitation",
+      "it": "Accetta l’invito",
+      "fr": "Accepter l’invitation",
+      "es": "Aceptar invitación",
+      "de": "Einladung annehmen",
+      "pt": "Aceitar convite",
+      "nl": "Uitnodiging accepteren"
+    },
+    "footnote": {
+      "en": "This invitation was sent to {{ .Email }}. If you weren’t expecting it, you can ignore this email — no account will be created.",
+      "it": "Questo invito è stato inviato a {{ .Email }}. Se non te lo aspettavi, puoi ignorare questa email: nessun account verrà creato.",
+      "fr": "Cette invitation a été envoyée à {{ .Email }}. Si vous ne l’attendiez pas, vous pouvez ignorer cet e-mail : aucun compte ne sera créé.",
+      "es": "Esta invitación se envió a {{ .Email }}. Si no la esperabas, puedes ignorar este correo: no se creará ninguna cuenta.",
+      "de": "Diese Einladung wurde an {{ .Email }} gesendet. Wenn du sie nicht erwartet hast, kannst du diese E-Mail ignorieren – es wird kein Konto erstellt.",
+      "pt": "Este convite foi enviado para {{ .Email }}. Se não estava à espera dele, pode ignorar este email: nenhuma conta será criada.",
+      "nl": "Deze uitnodiging is verzonden naar {{ .Email }}. Als je deze niet verwachtte, kun je deze e-mail negeren — er wordt geen account aangemaakt."
+    }
+  },
+
+  "magic_link": {
+    "subject": {
+      "en": "Your Etto sign-in link",
+      "it": "Il tuo link di accesso a Etto",
+      "fr": "Votre lien de connexion Etto",
+      "es": "Tu enlace de acceso a Etto",
+      "de": "Dein Anmeldelink für Etto",
+      "pt": "O seu link de acesso à Etto",
+      "nl": "Je inloglink voor Etto"
+    },
+    "preheader": {
+      "en": "Your one-time link to sign in to Etto.",
+      "it": "Il tuo link monouso per accedere a Etto.",
+      "fr": "Votre lien à usage unique pour vous connecter à Etto.",
+      "es": "Tu enlace de un solo uso para acceder a Etto.",
+      "de": "Dein Einmal-Link zur Anmeldung bei Etto.",
+      "pt": "O seu link de utilização única para aceder à Etto.",
+      "nl": "Je eenmalige link om in te loggen bij Etto."
+    },
+    "heading": {
+      "en": "Sign in to Etto",
+      "it": "Accedi a Etto",
+      "fr": "Connectez-vous à Etto",
+      "es": "Accede a Etto",
+      "de": "Bei Etto anmelden",
+      "pt": "Aceda à Etto",
+      "nl": "Inloggen bij Etto"
+    },
+    "body": {
+      "en": "Tap the button to sign in. This link works once and only on the device where you asked for it.",
+      "it": "Tocca il pulsante per accedere. Questo link funziona una sola volta e solo sul dispositivo da cui l’hai richiesto.",
+      "fr": "Appuyez sur le bouton pour vous connecter. Ce lien ne fonctionne qu’une fois et uniquement sur l’appareil depuis lequel vous l’avez demandé.",
+      "es": "Toca el botón para acceder. Este enlace funciona una sola vez y solo en el dispositivo desde el que lo solicitaste.",
+      "de": "Tippe auf die Schaltfläche, um dich anzumelden. Dieser Link funktioniert nur einmal und nur auf dem Gerät, auf dem du ihn angefordert hast.",
+      "pt": "Toque no botão para iniciar sessão. Este link funciona apenas uma vez e só no dispositivo a partir do qual o pediu.",
+      "nl": "Tik op de knop om in te loggen. Deze link werkt één keer en alleen op het apparaat waarop je hem hebt aangevraagd."
+    },
+    "button": {
+      "en": "Sign in",
+      "it": "Accedi",
+      "fr": "Se connecter",
+      "es": "Acceder",
+      "de": "Anmelden",
+      "pt": "Iniciar sessão",
+      "nl": "Inloggen"
+    },
+    "codeLabel": {
+      "en": "Or enter this code",
+      "it": "Oppure inserisci questo codice",
+      "fr": "Ou saisissez ce code",
+      "es": "O introduce este código",
+      "de": "Oder gib diesen Code ein",
+      "pt": "Ou introduza este código",
+      "nl": "Of voer deze code in"
+    },
+    "footnote": {
+      "en": "This link and code expire in 1 hour. If you didn’t try to sign in, you can ignore this email — your account is safe.",
+      "it": "Questo link e questo codice scadono tra 1 ora. Se non hai tentato di accedere, puoi ignorare questa email: il tuo account è al sicuro.",
+      "fr": "Ce lien et ce code expirent dans 1 heure. Si vous n’avez pas tenté de vous connecter, vous pouvez ignorer cet e-mail : votre compte est en sécurité.",
+      "es": "Este enlace y este código caducan en 1 hora. Si no intentaste acceder, puedes ignorar este correo: tu cuenta está a salvo.",
+      "de": "Dieser Link und dieser Code laufen in 1 Stunde ab. Wenn du nicht versucht hast, dich anzumelden, kannst du diese E-Mail ignorieren – dein Konto ist sicher.",
+      "pt": "Este link e este código expiram dentro de 1 hora. Se não tentou iniciar sessão, pode ignorar este email: a sua conta está segura.",
+      "nl": "Deze link en code verlopen over 1 uur. Als jij niet hebt geprobeerd in te loggen, kun je deze e-mail negeren — je account is veilig."
+    }
+  },
+
+  "email_change": {
+    "subject": {
+      "en": "Confirm your new email for Etto",
+      "it": "Conferma il tuo nuovo indirizzo email per Etto",
+      "fr": "Confirmez votre nouvelle adresse e-mail pour Etto",
+      "es": "Confirma tu nuevo correo electrónico para Etto",
+      "de": "Bestätige deine neue E-Mail-Adresse für Etto",
+      "pt": "Confirme o seu novo email para a Etto",
+      "nl": "Bevestig je nieuwe e-mailadres voor Etto"
+    },
+    "preheader": {
+      "en": "Confirm the new email address for your Etto account.",
+      "it": "Conferma il nuovo indirizzo email per il tuo account Etto.",
+      "fr": "Confirmez la nouvelle adresse e-mail de votre compte Etto.",
+      "es": "Confirma la nueva dirección de correo de tu cuenta de Etto.",
+      "de": "Bestätige die neue E-Mail-Adresse für dein Etto-Konto.",
+      "pt": "Confirme o novo endereço de email da sua conta Etto.",
+      "nl": "Bevestig het nieuwe e-mailadres voor je Etto-account."
+    },
+    "heading": {
+      "en": "Confirm your new email",
+      "it": "Conferma la tua nuova email",
+      "fr": "Confirmez votre nouvel e-mail",
+      "es": "Confirma tu nuevo correo",
+      "de": "Bestätige deine neue E-Mail",
+      "pt": "Confirme o seu novo email",
+      "nl": "Bevestig je nieuwe e-mailadres"
+    },
+    "body": {
+      "en": "We got a request to change the email address on your Etto account. Confirm the change to keep it:",
+      "it": "Abbiamo ricevuto una richiesta di modifica dell’indirizzo email del tuo account Etto. Conferma la modifica per applicarla:",
+      "fr": "Nous avons reçu une demande de changement de l’adresse e-mail de votre compte Etto. Confirmez le changement pour l’appliquer :",
+      "es": "Recibimos una solicitud para cambiar la dirección de correo de tu cuenta de Etto. Confirma el cambio para aplicarlo:",
+      "de": "Wir haben eine Anfrage erhalten, die E-Mail-Adresse deines Etto-Kontos zu ändern. Bestätige die Änderung, um sie zu übernehmen:",
+      "pt": "Recebemos um pedido para alterar o endereço de email da sua conta Etto. Confirme a alteração para a aplicar:",
+      "nl": "We hebben een verzoek ontvangen om het e-mailadres van je Etto-account te wijzigen. Bevestig de wijziging om deze door te voeren:"
+    },
+    "fromLabel": {
+      "en": "From", "it": "Da", "fr": "De", "es": "De", "de": "Von", "pt": "De", "nl": "Van"
+    },
+    "toLabel": {
+      "en": "To", "it": "A", "fr": "À", "es": "A", "de": "An", "pt": "Para", "nl": "Naar"
+    },
+    "button": {
+      "en": "Confirm change",
+      "it": "Conferma modifica",
+      "fr": "Confirmer le changement",
+      "es": "Confirmar cambio",
+      "de": "Änderung bestätigen",
+      "pt": "Confirmar alteração",
+      "nl": "Wijziging bevestigen"
+    },
+    "codeLabel": {
+      "en": "Or enter this code",
+      "it": "Oppure inserisci questo codice",
+      "fr": "Ou saisissez ce code",
+      "es": "O introduce este código",
+      "de": "Oder gib diesen Code ein",
+      "pt": "Ou introduza este código",
+      "nl": "Of voer deze code in"
+    },
+    "footnote": {
+      "en": "This link and code expire in 1 hour. If you didn’t ask to change your email, ignore this message and consider changing your password.",
+      "it": "Questo link e questo codice scadono tra 1 ora. Se non hai richiesto la modifica dell’email, ignora questo messaggio e valuta di cambiare la password.",
+      "fr": "Ce lien et ce code expirent dans 1 heure. Si vous n’avez pas demandé à changer votre e-mail, ignorez ce message et envisagez de modifier votre mot de passe.",
+      "es": "Este enlace y este código caducan en 1 hora. Si no solicitaste cambiar tu correo, ignora este mensaje y considera cambiar tu contraseña.",
+      "de": "Dieser Link und dieser Code laufen in 1 Stunde ab. Wenn du keine Änderung deiner E-Mail-Adresse angefordert hast, ignoriere diese Nachricht und ändere gegebenenfalls dein Passwort.",
+      "pt": "Este link e este código expiram dentro de 1 hora. Se não pediu para alterar o seu email, ignore esta mensagem e considere mudar a sua palavra-passe.",
+      "nl": "Deze link en code verlopen over 1 uur. Als jij niet hebt gevraagd om je e-mailadres te wijzigen, negeer dit bericht dan en overweeg je wachtwoord te wijzigen."
+    }
+  },
+
+  "recovery": {
+    "subject": {
+      "en": "Reset your Etto password",
+      "it": "Reimposta la password di Etto",
+      "fr": "Réinitialisez votre mot de passe Etto",
+      "es": "Restablece tu contraseña de Etto",
+      "de": "Setze dein Etto-Passwort zurück",
+      "pt": "Redefina a sua palavra-passe da Etto",
+      "nl": "Stel je Etto-wachtwoord opnieuw in"
+    },
+    "preheader": {
+      "en": "Reset the password for your Etto account.",
+      "it": "Reimposta la password del tuo account Etto.",
+      "fr": "Réinitialisez le mot de passe de votre compte Etto.",
+      "es": "Restablece la contraseña de tu cuenta de Etto.",
+      "de": "Setze das Passwort für dein Etto-Konto zurück.",
+      "pt": "Redefina a palavra-passe da sua conta Etto.",
+      "nl": "Stel het wachtwoord voor je Etto-account opnieuw in."
+    },
+    "heading": {
+      "en": "Reset your password",
+      "it": "Reimposta la password",
+      "fr": "Réinitialisez votre mot de passe",
+      "es": "Restablece tu contraseña",
+      "de": "Passwort zurücksetzen",
+      "pt": "Redefina a sua palavra-passe",
+      "nl": "Stel je wachtwoord opnieuw in"
+    },
+    "body": {
+      "en": "We got a request to reset the password on your Etto account. Tap the button to choose a new one.",
+      "it": "Abbiamo ricevuto una richiesta di reimpostazione della password del tuo account Etto. Tocca il pulsante per sceglierne una nuova.",
+      "fr": "Nous avons reçu une demande de réinitialisation du mot de passe de votre compte Etto. Appuyez sur le bouton pour en choisir un nouveau.",
+      "es": "Recibimos una solicitud para restablecer la contraseña de tu cuenta de Etto. Toca el botón para elegir una nueva.",
+      "de": "Wir haben eine Anfrage erhalten, das Passwort deines Etto-Kontos zurückzusetzen. Tippe auf die Schaltfläche, um ein neues zu wählen.",
+      "pt": "Recebemos um pedido para redefinir a palavra-passe da sua conta Etto. Toque no botão para escolher uma nova.",
+      "nl": "We hebben een verzoek ontvangen om het wachtwoord van je Etto-account opnieuw in te stellen. Tik op de knop om een nieuw wachtwoord te kiezen."
+    },
+    "button": {
+      "en": "Reset password",
+      "it": "Reimposta password",
+      "fr": "Réinitialiser le mot de passe",
+      "es": "Restablecer contraseña",
+      "de": "Passwort zurücksetzen",
+      "pt": "Redefinir palavra-passe",
+      "nl": "Wachtwoord opnieuw instellen"
+    },
+    "codeLabel": {
+      "en": "Or enter this code",
+      "it": "Oppure inserisci questo codice",
+      "fr": "Ou saisissez ce code",
+      "es": "O introduce este código",
+      "de": "Oder gib diesen Code ein",
+      "pt": "Ou introduza este código",
+      "nl": "Of voer deze code in"
+    },
+    "footnote": {
+      "en": "This link and code expire in 1 hour. If you didn’t request a reset, ignore this email — your current password still works.",
+      "it": "Questo link e questo codice scadono tra 1 ora. Se non hai richiesto la reimpostazione, ignora questa email: la tua password attuale è ancora valida.",
+      "fr": "Ce lien et ce code expirent dans 1 heure. Si vous n’avez pas demandé de réinitialisation, ignorez cet e-mail : votre mot de passe actuel reste valable.",
+      "es": "Este enlace y este código caducan en 1 hora. Si no solicitaste un restablecimiento, ignora este correo: tu contraseña actual sigue siendo válida.",
+      "de": "Dieser Link und dieser Code laufen in 1 Stunde ab. Wenn du kein Zurücksetzen angefordert hast, ignoriere diese E-Mail – dein aktuelles Passwort funktioniert weiterhin.",
+      "pt": "Este link e este código expiram dentro de 1 hora. Se não pediu uma redefinição, ignore este email: a sua palavra-passe atual continua a funcionar.",
+      "nl": "Deze link en code verlopen over 1 uur. Als jij geen reset hebt aangevraagd, negeer deze e-mail dan — je huidige wachtwoord werkt gewoon nog."
+    }
+  },
+
+  "reauthentication": {
+    "subject": {
+      "en": "Your Etto verification code",
+      "it": "Il tuo codice di verifica Etto",
+      "fr": "Votre code de vérification Etto",
+      "es": "Tu código de verificación de Etto",
+      "de": "Dein Etto-Bestätigungscode",
+      "pt": "O seu código de verificação da Etto",
+      "nl": "Je Etto-verificatiecode"
+    },
+    "preheader": {
+      "en": "Enter this code to confirm it’s you.",
+      "it": "Inserisci questo codice per confermare la tua identità.",
+      "fr": "Saisissez ce code pour confirmer que c’est bien vous.",
+      "es": "Introduce este código para confirmar que eres tú.",
+      "de": "Gib diesen Code ein, um zu bestätigen, dass du es bist.",
+      "pt": "Introduza este código para confirmar que é você.",
+      "nl": "Voer deze code in om te bevestigen dat jij het bent."
+    },
+    "heading": {
+      "en": "Confirm it’s you",
+      "it": "Conferma la tua identità",
+      "fr": "Confirmez que c’est vous",
+      "es": "Confirma que eres tú",
+      "de": "Bestätige, dass du es bist",
+      "pt": "Confirme que é você",
+      "nl": "Bevestig dat jij het bent"
+    },
+    "body": {
+      "en": "Enter this code in Etto to verify your identity before continuing with a sensitive change.",
+      "it": "Inserisci questo codice in Etto per verificare la tua identità prima di procedere con una modifica sensibile.",
+      "fr": "Saisissez ce code dans Etto pour vérifier votre identité avant de poursuivre une modification sensible.",
+      "es": "Introduce este código en Etto para verificar tu identidad antes de continuar con un cambio sensible.",
+      "de": "Gib diesen Code in Etto ein, um deine Identität zu bestätigen, bevor du eine sicherheitsrelevante Änderung fortsetzt.",
+      "pt": "Introduza este código na Etto para verificar a sua identidade antes de continuar com uma alteração sensível.",
+      "nl": "Voer deze code in Etto in om je identiteit te bevestigen voordat je doorgaat met een gevoelige wijziging."
+    },
+    "codeLabel": {
+      "en": "Verification code",
+      "it": "Codice di verifica",
+      "fr": "Code de vérification",
+      "es": "Código de verificación",
+      "de": "Bestätigungscode",
+      "pt": "Código de verificação",
+      "nl": "Verificatiecode"
+    },
+    "footnote": {
+      "en": "This code expires in 1 hour. If you didn’t start this, ignore this email and consider changing your password.",
+      "it": "Questo codice scade tra 1 ora. Se non hai avviato tu questa operazione, ignora questa email e valuta di cambiare la password.",
+      "fr": "Ce code expire dans 1 heure. Si vous n’êtes pas à l’origine de cette action, ignorez cet e-mail et envisagez de modifier votre mot de passe.",
+      "es": "Este código caduca en 1 hora. Si no iniciaste esta acción, ignora este correo y considera cambiar tu contraseña.",
+      "de": "Dieser Code läuft in 1 Stunde ab. Wenn du das nicht veranlasst hast, ignoriere diese E-Mail und ändere gegebenenfalls dein Passwort.",
+      "pt": "Este código expira dentro de 1 hora. Se não foi você a iniciar esta ação, ignore este email e considere mudar a sua palavra-passe.",
+      "nl": "Deze code verloopt over 1 uur. Als jij dit niet hebt gestart, negeer deze e-mail dan en overweeg je wachtwoord te wijzigen."
+    }
+  }
+}

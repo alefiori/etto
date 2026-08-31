@@ -1,0 +1,33 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t">
+  <title id="t">Etto — Meridian concept</title>
+  <!-- Concept 1 "Meridian": the three macro rings, refined. Wider radius
+       spread, thinner stroke, and each ring's gap rotated to its own angle so
+       the openings spiral instead of stacking. The proven, category-legible
+       mark for a macro tracker; closest to today's icon. -->
+  <defs>
+    <linearGradient id="tile" x1="96" y1="0" x2="416" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5C8466"></stop>
+      <stop offset="1" stop-color="#47694F"></stop>
+    </linearGradient>
+    <clipPath id="clip"><rect width="512" height="512" rx="120"></rect></clipPath>
+  </defs>
+
+  <rect width="512" height="512" rx="120" fill="url(#tile)"></rect>
+
+  <g clip-path="url(#clip)" fill="none" stroke-linecap="round" stroke-width="30">
+    <g transform="rotate(-95 256 256)">
+      <circle cx="256" cy="256" r="176" stroke="#ffffff" stroke-opacity=".16"></circle>
+      <circle cx="256" cy="256" r="176" stroke="#CF9B6C" stroke-dasharray="730 376"></circle>
+    </g>
+    <g transform="rotate(-20 256 256)">
+      <circle cx="256" cy="256" r="120" stroke="#ffffff" stroke-opacity=".16"></circle>
+      <circle cx="256" cy="256" r="120" stroke="#7BA7C4" stroke-dasharray="407 347"></circle>
+    </g>
+    <g transform="rotate(60 256 256)">
+      <circle cx="256" cy="256" r="72" stroke="#ffffff" stroke-opacity=".16"></circle>
+      <circle cx="256" cy="256" r="72" stroke="#C98A97" stroke-dasharray="344 109"></circle>
+    </g>
+  </g>
+
+  <rect x="1.5" y="1.5" width="509" height="509" rx="118.5" fill="none" stroke="#ffffff" stroke-opacity=".35" stroke-width="3"></rect>
+</svg>

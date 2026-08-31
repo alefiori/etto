@@ -10,9 +10,9 @@
     </linearGradient>
   </defs>
   <rect width="64" height="64" rx="15" fill="url(#fav)"></rect>
-  <g fill="none" stroke-linecap="round" transform="rotate(-90 32 32)">
-    <circle cx="32" cy="32" r="19" stroke="#ffffff" stroke-opacity=".24" stroke-width="9"></circle>
-    <circle cx="32" cy="32" r="19" stroke="#CF9B6C" stroke-width="9" stroke-dasharray="119.4" stroke-dashoffset="30"></circle>
+  <g fill="none" stroke-linecap="round" transform="rotate(-95 32 32)">
+    <circle cx="32" cy="32" r="19" stroke="#ffffff" stroke-opacity=".22" stroke-width="9"></circle>
+    <circle cx="32" cy="32" r="19" stroke="#CF9B6C" stroke-width="9" stroke-dasharray="79 40"></circle>
   </g>
   <circle cx="32" cy="32" r="6.5" fill="#7BA7C4"></circle>
 </svg>

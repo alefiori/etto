@@ -1,0 +1,35 @@
+<svg width="496" height="200" viewBox="0 0 496 200" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t">
+  <title id="t">Etto wordmark</title>
+  <!-- Custom letterforms, not set type: a monolinear geometric "Etto" with
+       rounded terminals that echo the icon's stroke. Two moves make it the
+       brand's own:
+         1. each t carries its own crossbar with a ~24px gap centred between
+            them — close enough to rhyme, apart enough that "tt" never reads
+            as "H" (a single shared bar did: the wordmark rendered "EHO");
+         2. the 'o' opens with a small gap at the bottom.
+       The E's three arms can optionally take the macro triad
+       (#CF9B6C / #7BA7C4 / #C98A97) instead of sage — see the commented arms.
+       Baseline y=165, cap height 130, stroke ~24. -->
+  <g fill="#2F3624">
+    <!-- E -->
+    <rect x="24" y="35" width="24" height="130" rx="6"></rect>
+    <rect x="24" y="35" width="104" height="24" rx="6"></rect>
+    <rect x="24" y="88" width="86" height="24" rx="6"></rect>
+    <rect x="24" y="141" width="104" height="24" rx="6"></rect>
+    <!-- macro-triad arms (swap in for the three arms above):
+    <rect x="24" y="35"  width="104" height="24" rx="6" fill="#CF9B6C"></rect>
+    <rect x="24" y="88"  width="86"  height="24" rx="6" fill="#7BA7C4"></rect>
+    <rect x="24" y="141" width="104" height="24" rx="6" fill="#C98A97"></rect>
+    -->
+
+    <!-- t t : two stems, a crossbar on each with a ~24px gap centred at x=233 -->
+    <rect x="176" y="18" width="24" height="147" rx="12"></rect>
+    <rect x="266" y="18" width="24" height="147" rx="12"></rect>
+    <rect x="152" y="70" width="69" height="22" rx="11"></rect>
+    <rect x="245" y="70" width="69" height="22" rx="11"></rect>
+  </g>
+
+  <!-- o, with the aperture gap at the bottom -->
+  <circle cx="408" cy="100" r="63" fill="none" stroke="#2F3624" stroke-width="24"
+          stroke-linecap="round" stroke-dasharray="330 66" stroke-dashoffset="-132"></circle>
+</svg>

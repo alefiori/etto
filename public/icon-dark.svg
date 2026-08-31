@@ -28,16 +28,19 @@
     <rect width="512" height="512" fill="url(#glow)"></rect>
   </g>
 
-  <g clip-path="url(#clipDark)" transform="rotate(-90 256 256)">
-    <g fill="none" stroke-linecap="round">
-      <circle cx="256" cy="256" r="150" stroke="#14180F" stroke-opacity=".32" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="150" stroke="#E0AC7D" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
-
-      <circle cx="256" cy="256" r="106" stroke="#14180F" stroke-opacity=".32" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="106" stroke="#8FB8D4" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
-
-      <circle cx="256" cy="256" r="62" stroke="#14180F" stroke-opacity=".32" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="62" stroke="#D99BA6" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
+  <!-- "Meridian" rings — geometry in step with icon.svg, dark palette. -->
+  <g clip-path="url(#clipDark)" fill="none" stroke-linecap="round" stroke-width="30">
+    <g transform="rotate(-95 256 256)">
+      <circle cx="256" cy="256" r="176" stroke="#14180F" stroke-opacity=".32"></circle>
+      <circle cx="256" cy="256" r="176" stroke="#E0AC7D" stroke-dasharray="730 376"></circle>
+    </g>
+    <g transform="rotate(-20 256 256)">
+      <circle cx="256" cy="256" r="120" stroke="#14180F" stroke-opacity=".32"></circle>
+      <circle cx="256" cy="256" r="120" stroke="#8FB8D4" stroke-dasharray="407 347"></circle>
+    </g>
+    <g transform="rotate(60 256 256)">
+      <circle cx="256" cy="256" r="72" stroke="#14180F" stroke-opacity=".32"></circle>
+      <circle cx="256" cy="256" r="72" stroke="#D99BA6" stroke-dasharray="344 109"></circle>
     </g>
   </g>
 

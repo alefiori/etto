@@ -19,16 +19,23 @@
 
   <rect width="512" height="512" rx="120" fill="url(#tile)"></rect>
 
-  <g clip-path="url(#clip)" transform="rotate(-90 256 256)">
-    <g fill="none" stroke-linecap="round">
-      <circle cx="256" cy="256" r="150" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="150" stroke="#CF9B6C" stroke-width="34" stroke-dasharray="942" stroke-dashoffset="236"></circle>
-
-      <circle cx="256" cy="256" r="106" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="106" stroke="#7BA7C4" stroke-width="34" stroke-dasharray="666" stroke-dashoffset="200"></circle>
-
-      <circle cx="256" cy="256" r="62" stroke="#ffffff" stroke-opacity=".22" stroke-width="34"></circle>
-      <circle cx="256" cy="256" r="62" stroke="#C98A97" stroke-width="34" stroke-dasharray="390" stroke-dashoffset="156"></circle>
+  <!-- "Meridian": three macro arcs (carbs / protein / fat) on a wide radius
+       spread, each ring's gap rotated to its own angle so the openings spiral
+       rather than stack into a bullseye. Geometry is shared verbatim with
+       design/logo-concepts/01-meridian.svg, assets/icon-only.svg,
+       assets/icon-foreground.svg and scripts/build-splash.py. -->
+  <g clip-path="url(#clip)" fill="none" stroke-linecap="round" stroke-width="30">
+    <g transform="rotate(-95 256 256)">
+      <circle cx="256" cy="256" r="176" stroke="#ffffff" stroke-opacity=".16"></circle>
+      <circle cx="256" cy="256" r="176" stroke="#CF9B6C" stroke-dasharray="730 376"></circle>
+    </g>
+    <g transform="rotate(-20 256 256)">
+      <circle cx="256" cy="256" r="120" stroke="#ffffff" stroke-opacity=".16"></circle>
+      <circle cx="256" cy="256" r="120" stroke="#7BA7C4" stroke-dasharray="407 347"></circle>
+    </g>
+    <g transform="rotate(60 256 256)">
+      <circle cx="256" cy="256" r="72" stroke="#ffffff" stroke-opacity=".16"></circle>
+      <circle cx="256" cy="256" r="72" stroke="#C98A97" stroke-dasharray="344 109"></circle>
     </g>
   </g>
 
