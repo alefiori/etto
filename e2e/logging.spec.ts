@@ -99,6 +99,11 @@ test.describe('a logged food row', () => {
     await page.goto('/')
 
     const row = page.getByRole('button', { name: /Rolled oats/ })
+    // Into view before the box is read: `<main>` is the scroller, and where the
+    // meal cards start down the page moves with whatever sits above them. The
+    // press has to land on the row, not on the coordinates it had on some
+    // earlier version of the dashboard.
+    await row.scrollIntoViewIfNeeded()
     const box = (await row.boundingBox())!
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
     await page.mouse.down()

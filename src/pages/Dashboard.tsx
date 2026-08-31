@@ -39,6 +39,37 @@ const CLEAR_ARIA = {
   food: 'dashboard.clearCopiedFood',
 } as const
 
+/** Which figure the macro dials lead with. */
+type MacroUnit = 'percent' | 'grams'
+
+/**
+ * Where the choice is remembered.
+ *
+ * `localStorage` rather than the profile row: this is how one person likes to
+ * read one card, not a setting worth a round trip and a column, and a reader
+ * who prefers grams wants them back on the next launch, not on the next device.
+ * Every access is guarded — a private window, a WebView with site data blocked,
+ * and the thumbnail capture all throw on the accessor itself.
+ */
+const MACRO_UNIT_KEY = 'etto.macroUnit'
+
+function storedMacroUnit(): MacroUnit {
+  try {
+    return localStorage.getItem(MACRO_UNIT_KEY) === 'grams' ? 'grams' : 'percent'
+  } catch {
+    return 'percent'
+  }
+}
+
+function rememberMacroUnit(unit: MacroUnit): void {
+  try {
+    localStorage.setItem(MACRO_UNIT_KEY, unit)
+  } catch {
+    // Nothing to do and nothing to tell the reader: the card still works, it
+    // just opens on the default next time.
+  }
+}
+
 export default function Dashboard() {
   const {
     selectedDate,
@@ -74,6 +105,22 @@ export default function Dashboard() {
     bumpWeightVersion()
     await Promise.all([refetchLogs(), refetchTargets(), refetchMeals()])
   })
+
+  // Percentage or grams in the macro dials. The artboard leads with the
+  // percentage; the grams are the number you act on, so which one is big is
+  // the reader's to pick rather than mine.
+  const [macroUnit, setMacroUnitState] = useState<MacroUnit>(storedMacroUnit)
+  function setMacroUnit(unit: MacroUnit) {
+    setMacroUnitState(unit)
+    rememberMacroUnit(unit)
+  }
+
+  // Hoisted rather than inlined into the JSX: the icon-subset checker reads
+  // `name={...}` ternaries literally, so a quoted `'percent'` in the condition
+  // would look to it like an icon called "percent" that the font is missing.
+  // See scripts/subset-icon-font.py.
+  const showingPercent = macroUnit === 'percent'
+  const unitToggleLabel = t(showingPercent ? 'dashboard.showAsGrams' : 'dashboard.showAsPercent')
 
   const [pasting, setPasting] = useState(false)
   const [pastingMeal, setPastingMeal] = useState<MealKey | null>(null)
@@ -336,101 +383,143 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Macro lenses. Three separate cards at every width now, rather than
-              one shared box on phones: on glass a single box holding three
-              rings reads as one reading split in three, and the row is three
-              independent readings. Each floats a blurred wash of its own accent
-              behind the ring, which is what tells the three apart before any
-              label is read — hence the overflow-hidden and the relative box. */}
-          <section className="grid animate-rise grid-cols-3 gap-2 md:gap-lg">
-            {MACROS.map((m, i) => {
-              const c = consumed[m.field]
-              const tgt = targetMacros[m.field]
-              return (
-                <div
-                  key={m.key}
-                  className="flex flex-col items-center overflow-hidden rounded-lens px-2 py-md md:p-lg glass"
-                >
-                  {/* Sized to the card, not to a fixed number: at 140px this
-                      flooded a 110px-wide phone card and the lens became a
-                      solid block of the accent instead of a tint of it. */}
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute -right-6 -top-8 h-[96px] w-[96px] animate-breathe rounded-full blur-[26px] md:-right-8 md:-top-10 md:h-[150px] md:w-[150px] md:blur-[36px]"
-                    style={{ backgroundColor: `color-mix(in srgb, ${m.color} 24%, transparent)` }}
-                  />
-                  <div className="relative flex w-full items-center justify-center md:mb-4 md:justify-between">
-                    <h3 className="font-label-md text-label-md text-on-surface-variant">
-                      {t(`macro.${m.key}`)}
-                    </h3>
-                    <span
-                      className="hidden min-h-[30px] min-w-[30px] items-center justify-center rounded-full p-1 md:flex"
-                      style={{ color: m.color, backgroundColor: m.tint }}
+          {/* One grid for everything under the header, so a phone and a desktop
+              can disagree about the order without the calorie card being
+              rendered twice.
+
+              Phone reads calories → macros → meals → water → weight, which is
+              the artboard's order and the order of the questions: what is left
+              today, how is the split going, what did I eat, did I drink, where
+              is the weight. Calories used to arrive fourth here, below every
+              meal, because it was the head of the sidebar column — right at a
+              desktop width, wrong at a phone's. `order` fixes the phone; the
+              explicit row and column placement below fixes the desktop, where
+              the sidebar returns.
+
+              The pieces arrive a beat apart so the page assembles top-down
+              rather than all at once. The meal list fades where the others
+              rise: its rows open sheets and dialogs at `position: fixed`, and a
+              transform on an ancestor — even one that lasts 650ms — would lay
+              those out inside a meal card. See the entrance note in
+              src/index.css. */}
+          <div className="grid grid-cols-1 items-start gap-lg lg:grid-cols-3">
+
+          {/* One card, three readings — the artboard's "Macronutrients" box,
+              where this used to be three separate cards side by side. Three
+              cards each carried their own padding, border and shadow around a
+              74px dial, so most of the row was card rather than reading; under
+              one title the dials sit closer, line up on a shared baseline, and
+              read as the three parts of one split that they are.
+
+              The dial leads with the percentage and the grams sit under the
+              name. Which of the two is in the ring is the reader's call — see
+              the unit toggle in the header, and `macroUnit` above. */}
+            <section className="order-2 animate-rise rounded-lens p-md md:p-lg glass lg:order-none lg:col-span-3 lg:row-start-1">
+            <div className="mb-md flex items-center justify-between gap-sm">
+              <h3 className="font-label-md text-label-md tracking-wide text-on-surface-variant">
+                {t('dashboard.macronutrients')}
+              </h3>
+              {/* Icon-only, like the share and copy controls a meal header
+                  carries, and for the same reason: the words that name this
+                  action ("show macros as percentages") do not fit a card header
+                  beside its title in seven languages. The glyph shows the unit
+                  you would switch *to* — a scale for grams, a dial for the
+                  share of target.
+
+                  `monitor_weight` and `donut_small` rather than the more
+                  obvious `scale` and `percent`, which are not in the shipped
+                  icon subset: the font carries only the glyphs the app uses,
+                  and an unsubsetted name renders as its own literal text. See
+                  scripts/subset-icon-font.py, whose `--check` mode catches
+                  exactly this in CI — it caught these two. */}
+              <button
+                type="button"
+                onClick={() => setMacroUnit(showingPercent ? 'grams' : 'percent')}
+                aria-label={unitToggleLabel}
+                title={unitToggleLabel}
+                className="tap-target flex min-h-9 min-w-9 shrink-0 items-center justify-center rounded-full text-outline transition-colors hover:bg-(--glass-chip-hover) hover:text-primary"
+              >
+                <Icon name={showingPercent ? 'monitor_weight' : 'donut_small'} className="text-[1.125rem]" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-1 md:gap-md">
+              {MACROS.map((m, i) => {
+                const c = consumed[m.field]
+                const tgt = targetMacros[m.field]
+                const pct = tgt > 0 ? Math.round((c / tgt) * 100) : 0
+                return (
+                  <div key={m.key} className="flex flex-col items-center gap-2">
+                    <ProgressRing
+                      consumed={c}
+                      target={tgt}
+                      color={m.color}
+                      trackColor={RING_TRACK}
+                      drawDelay={drawDelay(i)}
+                      label={t('dashboard.macroRingAria', {
+                        macro: t(`macro.${m.key}`),
+                        consumed: round(c, 0),
+                        target: round(tgt, 0),
+                        remaining: round(remaining(tgt, c), 0),
+                      })}
+                      // Fluid, not fixed. A dial is a box drawn around type, so
+                      // it has to grow with the type — but it also lives in a
+                      // third of a phone's width, so it must never grow past
+                      // the column. `w-full` up to the drawn size does both.
+                      className="aspect-square w-full max-w-[4.75rem] md:max-w-[7rem]"
                     >
-                      <Icon name={m.icon} className="text-[1.0625rem]" />
-                    </span>
+                      {showingPercent ? (
+                        <span
+                          className="font-headline-md text-base md:text-2xl"
+                          style={{ color: m.textColor }}
+                        >
+                          {pct}%
+                        </span>
+                      ) : (
+                        <span className="font-headline-md text-base text-on-surface md:text-2xl">
+                          {round(c, 0)}
+                          <span className="text-xs font-normal text-on-surface-variant">g</span>
+                        </span>
+                      )}
+                    </ProgressRing>
+
+                    <div className="text-center">
+                      <div className="font-label-md text-label-md text-on-surface-variant">
+                        {t(`macro.${m.key}`)}
+                      </div>
+                      {/* Whichever unit is not in the dial. Both readings are
+                          on the card either way — the toggle only decides
+                          which one is the big one. */}
+                      <div className="mt-0.5 text-xs text-outline">
+                        {showingPercent
+                          ? t('dashboard.macroAmountOfTarget', {
+                              consumed: round(c, 0),
+                              target: round(tgt, 0),
+                            })
+                          : t('dashboard.percentOfGoal', { value: pct })}
+                      </div>
+                    </div>
+
+                    <p
+                      className="rounded-full px-2.5 py-1 text-center font-label-md text-xs md:px-3.5 md:text-label-md"
+                      style={{ backgroundColor: m.tint, color: m.textColor }}
+                    >
+                      {/* "N g left", at every width. `dashboard.remaining`
+                          ("41g remaining") wrapped to three lines in the longer
+                          languages inside a chip this narrow; `macroLeft` is
+                          the short form for exactly this spot. */}
+                      {t('dashboard.macroLeft', { value: round(remaining(tgt, c), 0) })}
+                    </p>
                   </div>
-                  <ProgressRing
-                    consumed={c}
-                    target={tgt}
-                    color={m.color}
-                    trackColor={RING_TRACK}
-                    drawDelay={drawDelay(i)}
-                    label={t('dashboard.macroRingAria', {
-                      macro: t(`macro.${m.key}`),
-                      consumed: round(c, 0),
-                      target: round(tgt, 0),
-                      remaining: round(remaining(tgt, c), 0),
-                    })}
-                    // Fluid, not fixed. A dial is a box drawn around type, so it has to
-                    // grow with the type — but it also lives in a third of a phone's
-                    // width, so it must never grow past the card and get clipped by
-                    // its `overflow-hidden`. `w-full` up to the drawn size does both:
-                    // identical at the reader's default, and it gives up its own
-                    // proportions rather than the numbers inside it when text scales.
-                    className="relative mt-2 aspect-square w-full max-w-[5.25rem] md:max-w-[7.75rem]"
-                  >
-                    <span className="font-headline-md text-xl text-on-surface md:text-[1.875rem] md:leading-8">
-                      {round(c, 0)}
-                      <span className="text-xs font-normal text-on-surface-variant md:text-sm">g</span>
-                    </span>
-                    <span className="mt-0.5 text-center text-xs font-semibold text-on-surface-variant">
-                      /{round(tgt, 0)}g
-                    </span>
-                  </ProgressRing>
-                  {/* The remaining figure is the one number a glance is after,
-                      so it gets the accent chip rather than sitting as plain
-                      caption text under the ring. */}
-                  <p
-                    className="relative mt-3 rounded-full px-2.5 py-1 text-center font-label-md text-xs md:px-3.5 md:text-label-md"
-                    style={{ backgroundColor: m.tint, color: m.textColor }}
-                  >
-                    {/* "N g left", at every width — the artboard's chip, and
-                        the word is what makes the number mean something to
-                        someone who has not read the ring behind it. It used to
-                        be a bare "41g" on phones because `dashboard.remaining`
-                        ("41g remaining") wrapped to three lines in the longer
-                        languages inside a chip this narrow. `macroLeft` is the
-                        short form for exactly this spot, and the chip wraps
-                        rather than clipping where a language still needs two
-                        lines. */}
-                    {t('dashboard.macroLeft', { value: round(remaining(tgt, c), 0) })}
-                  </p>
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
           </section>
 
-          {/* Food log + calorie summary */}
-          {/* The two columns arrive behind the macro row, a beat apart, so the
-              page assembles top-down rather than all at once. The meal list
-              fades where the others rise: its rows open sheets and dialogs at
-              `position: fixed`, and a transform on an ancestor — even one that
-              lasts 650ms — would lay those out inside a meal card. See the
-              entrance note in src/index.css. */}
-          <div className="grid grid-cols-1 gap-lg lg:grid-cols-3">
+            {/* The meals, which are most of the page and all of the width a
+                desktop can give them. */}
             <div
-              className="flex animate-rise-in-place flex-col gap-lg lg:col-span-2"
+              className="order-3 flex animate-rise-in-place flex-col gap-lg lg:order-none lg:col-span-2 lg:col-start-1 lg:row-span-2 lg:row-start-2"
               style={{ animationDelay: '120ms' }}
             >
               {error && (
@@ -466,9 +555,10 @@ export default function Dashboard() {
               )}
             </div>
 
-            {/* Calorie summary */}
+            {/* Calories: first thing on a phone, head of the sidebar on a
+                desktop. */}
             <div
-              className="flex animate-rise flex-col gap-lg lg:col-span-1"
+              className="order-1 animate-rise lg:order-none lg:col-start-3 lg:row-start-2"
               style={{ animationDelay: '190ms' }}
             >
               {/* A card like every other, not the one solid tinted slab it
@@ -523,7 +613,7 @@ export default function Dashboard() {
                     rule read as one figure broken into parts, which is what
                     they are. */}
                 <div className="stat-split mt-md w-full border-t border-outline-variant/20 pt-md">
-                  <div className="min-w-0 flex-1 text-center">
+                  <div className="min-w-0 flex-1 px-1 text-center">
                     <span className="block font-label-md text-label-md text-outline">
                       {t('dashboard.goal')}
                     </span>
@@ -532,7 +622,7 @@ export default function Dashboard() {
                     </span>
                   </div>
                   <div className="stat-split-sep bg-outline-variant/20" />
-                  <div className="min-w-0 flex-1 text-center">
+                  <div className="min-w-0 flex-1 px-1 text-center">
                     <span className="block font-label-md text-label-md text-outline">
                       {t('dashboard.consumed')}
                     </span>
@@ -541,7 +631,7 @@ export default function Dashboard() {
                     </span>
                   </div>
                   <div className="stat-split-sep bg-outline-variant/20" />
-                  <div className="min-w-0 flex-1 text-center">
+                  <div className="min-w-0 flex-1 px-1 text-center">
                     <span className="block font-label-md text-label-md text-outline">
                       {t('dashboard.remainingLabel')}
                     </span>
@@ -552,8 +642,16 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <WaterCard />
+            </div>
 
+            {/* Water and weight: the two readings that are not about today's
+                food, so they come after it on a phone and sit under the
+                calorie card on a desktop. */}
+            <div
+              className="order-4 flex animate-rise flex-col gap-lg lg:order-none lg:col-start-3 lg:row-start-3"
+              style={{ animationDelay: '260ms' }}
+            >
+              <WaterCard />
               <WeightCard />
             </div>
           </div>
