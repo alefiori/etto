@@ -11,6 +11,7 @@ import { radioTabIndex, useRadioGroupKeys } from '@/hooks/useRadioGroupKeys'
 import type { TranslationKey } from '@/lib/i18n'
 import { Icon } from '@/components/ui/Icon'
 import { SettingsIcon } from '@/components/profile/SettingsIcon'
+import { SettingsRow } from '@/components/profile/SettingsRow'
 import { Spinner } from '@/components/ui/Spinner'
 import { MealSettings } from '@/components/profile/MealSettings'
 import { BodyMetrics } from '@/components/profile/BodyMetrics'
@@ -102,11 +103,11 @@ export default function Profile() {
           what they cannot do is tell "Meals" from "Etto Pro", which is what the
           card boundaries are for.
 
-          What the artboard also draws, and this does not, is each setting as a
-          row with its value and a trailing chevron. That is a different app:
-          these sections are edited in place, so a chevron would promise a
-          screen that does not exist. Reaching it means a sub-route (or a sheet)
-          per setting, which is feature work and not a reskin. */}
+          Inside the cards, every setting is a row you open: icon, name, current
+          value, chevron. See SettingsRow for why. Appearance is the one that
+          stays open, because the artboard draws it that way and it is right to:
+          three labelled options are smaller than the row that would hide them,
+          and it is the setting most likely to be the reason someone came. */}
       <div className="flex flex-col gap-lg rounded-lens p-lg glass">
         <div className="flex items-center gap-md">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-container text-on-primary-container">
@@ -127,7 +128,7 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-lg rounded-lens p-lg glass">
+      <div className="flex flex-col gap-sm rounded-lens p-lg glass">
         {/* Appearance. "System" is the absence of a choice, not a third scheme:
             picking it clears the stored preference so the app goes back to
             following prefers-color-scheme — the same shape as the language
@@ -181,16 +182,12 @@ export default function Profile() {
         <hr className="border-surface-container-highest" />
 
         {/* App + food database language (single preference) */}
-        <div className="flex flex-col gap-sm">
-          <div className="flex items-center gap-2">
-            <SettingsIcon name="translate" />
-            <label
-              htmlFor="locale"
-              className="font-label-md text-label-md text-on-surface"
-            >
-              {t('profile.languageLabel')}
-            </label>
-          </div>
+        <SettingsRow
+          icon="translate"
+          label={t('profile.languageLabel')}
+          value={LOCALES.find((l) => l.code === locale)?.label}
+          busy={savingLang ? <Spinner className="h-4 w-4 shrink-0 text-primary" /> : null}
+        >
           <p className="font-body-md text-sm text-on-surface-variant">
             {t('profile.languageDescription')}
           </p>
@@ -201,8 +198,12 @@ export default function Profile() {
             </p>
           )}
           <div className="relative">
+            {/* The row's trigger carries the label now, so the field names
+                itself with the same words rather than pointing a `<label for>`
+                at a panel that may be closed. */}
             <select
               id="locale"
+              aria-label={t('profile.languageLabel')}
               value={locale}
               disabled={profileLoading || savingLang}
               onChange={(e) => handleLanguageChange(e.target.value as Locale)}
@@ -228,7 +229,7 @@ export default function Profile() {
               {langError}
             </p>
           )}
-        </div>
+        </SettingsRow>
 
         <hr className="border-surface-container-highest" />
 
@@ -256,7 +257,7 @@ export default function Profile() {
           really looking for this. It brings its own tinted card. */}
       <ProSubscription />
 
-      <div className="flex flex-col gap-lg rounded-lens p-lg glass">
+      <div className="flex flex-col gap-sm rounded-lens p-lg glass">
         {/* Take everything with you — Pro */}
         <DataExport />
 

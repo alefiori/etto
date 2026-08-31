@@ -3,7 +3,7 @@ import { useI18n } from '@/context/I18nContext'
 import { useMeals, type MealView } from '@/context/MealsContext'
 import { MAX_MEALS } from '@/lib/constants'
 import { Icon } from '@/components/ui/Icon'
-import { SettingsIcon } from '@/components/profile/SettingsIcon'
+import { SettingsRow } from '@/components/profile/SettingsRow'
 import { Spinner, LoadingBlock } from '@/components/ui/Spinner'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 
@@ -56,11 +56,11 @@ export function MealSettings() {
   }
 
   return (
-    <div className="flex flex-col gap-sm">
-      <div className="flex items-center gap-2">
-        <SettingsIcon name="restaurant_menu" />
-        <h3 className="font-label-md text-label-md text-on-surface">{t('meals.title')}</h3>
-      </div>
+    <SettingsRow
+      icon="restaurant_menu"
+      label={t('meals.title')}
+      value={loading ? undefined : String(meals.length)}
+    >
       <p className="font-body-md text-sm text-on-surface-variant">{t('meals.description')}</p>
 
       {error && (
@@ -159,7 +159,7 @@ export function MealSettings() {
         onConfirm={confirmRemove}
         onCancel={() => setPending(null)}
       />
-    </div>
+    </SettingsRow>
   )
 }
 

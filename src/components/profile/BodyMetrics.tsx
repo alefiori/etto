@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useProfile } from '@/context/ProfileContext'
 import { useI18n } from '@/context/I18nContext'
 import { Icon } from '@/components/ui/Icon'
-import { SettingsIcon } from '@/components/profile/SettingsIcon'
+import { SettingsRow } from '@/components/profile/SettingsRow'
 import { Spinner } from '@/components/ui/Spinner'
 import { cmToFeetInches, feetInchesToCm, weightUnit } from '@/lib/units'
 import type { ActivityLevel, GoalDirection, Sex, UnitSystem } from '@/lib/database.types'
@@ -63,12 +63,11 @@ export function BodyMetrics() {
   }
 
   return (
-    <div className="flex flex-col gap-sm">
-      <div className="flex items-center gap-2">
-        <SettingsIcon name="accessibility_new" />
-        <h3 className="font-label-md text-label-md text-on-surface">{t('body.title')}</h3>
-        {saving && <Spinner className="h-4 w-4 text-primary" />}
-      </div>
+    <SettingsRow
+      icon="accessibility_new"
+      label={t('body.title')}
+      busy={saving ? <Spinner className="h-4 w-4 shrink-0 text-primary" /> : null}
+    >
       <p className="font-body-md text-sm text-on-surface-variant">{t('body.description')}</p>
 
       {error && (
@@ -176,7 +175,7 @@ export function BodyMetrics() {
           </p>
         </div>
       )}
-    </div>
+    </SettingsRow>
   )
 }
 

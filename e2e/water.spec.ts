@@ -1,4 +1,5 @@
 import { test, expect, seedSession, seedPro, USER_ID } from './fixtures/supabase'
+import { openSetting } from './fixtures/profile'
 
 function todayISO(): string {
   const d = new Date()
@@ -147,6 +148,7 @@ test.describe('water tracking', () => {
   test('saves an explicit goal from the profile page', async ({ page, store }) => {
     await seedSession(page)
     await page.goto('/profile')
+    await openSetting(page, /^Daily water goal/)
 
     await expect(page.getByLabel('Daily water goal (ml)')).toHaveValue('')
 
@@ -160,6 +162,7 @@ test.describe('water tracking', () => {
     store.profiles[0].water_goal_ml = 2500
     await seedSession(page)
     await page.goto('/profile')
+    await openSetting(page, /^Daily water goal/)
 
     // Wait for the stored goal to land before clearing it: blurring an
     // already-empty field is correctly a no-op, so clearing too early would

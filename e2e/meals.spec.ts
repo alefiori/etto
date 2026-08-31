@@ -1,4 +1,5 @@
 import { test, expect, seedSession, type Store } from './fixtures/supabase'
+import { openSetting } from './fixtures/profile'
 
 const DEFAULT_MEALS = ['Breakfast', 'Lunch', 'Snack', 'Dinner']
 
@@ -28,6 +29,7 @@ test.describe('meals', () => {
   test('renaming a meal in the profile renames it on the dashboard', async ({ page }) => {
     await seedSession(page)
     await page.goto('/profile')
+    await openSetting(page, /^Meals/)
 
     const field = page.getByLabel('Name of Snack')
     await field.fill('Merenda')
@@ -43,6 +45,7 @@ test.describe('meals', () => {
   test('a meal can be added and moved', async ({ page }) => {
     await seedSession(page)
     await page.goto('/profile')
+    await openSetting(page, /^Meals/)
 
     // Added at the end…
     await page.getByLabel('New meal name').fill('Mid-morning')
@@ -66,6 +69,7 @@ test.describe('meals', () => {
   test('deleting a meal asks first and drops it from the dashboard', async ({ page }) => {
     await seedSession(page)
     await page.goto('/profile')
+    await openSetting(page, /^Meals/)
 
     await page.getByLabel('Delete Snack').click()
     // Items logged in it move to the meal above.

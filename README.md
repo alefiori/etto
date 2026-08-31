@@ -19,7 +19,12 @@ before creating an account.
 
 The UI is **Grove**: a sage accent on a warm oat-green ground, solid tonal cards
 with soft warm-tinted shadows, floating chrome, and Figtree under an Instrument
-Serif display face. It replaces the violet Liquid Glass the app shipped with —
+Serif display face. Every setting on the Profile page is a disclosure row —
+icon, name, current value, chevron — so the page reads as a table of contents
+rather than as every field the app owns in one column; see
+[`SettingsRow`](src/components/profile/SettingsRow.tsx), and `openSetting` in
+[`e2e/fixtures/profile.ts`](e2e/fixtures/profile.ts) for how the specs reach
+inside one. It replaces the violet Liquid Glass the app shipped with —
 translucent, specular-edged lenses over a blurred backdrop — which is why the
 `.glass*` classes are still named for a material that is no longer there; see
 [Theming](#theming). The direction is drawn in

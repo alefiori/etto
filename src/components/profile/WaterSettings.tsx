@@ -5,7 +5,7 @@ import { useEntitlement } from '@/context/EntitlementContext'
 import { useAppShell } from '@/context/AppShellContext'
 import { ProGate } from '@/components/paywall/ProGate'
 import { ProBadge } from '@/components/paywall/ProBadge'
-import { SettingsIcon } from '@/components/profile/SettingsIcon'
+import { SettingsRow } from '@/components/profile/SettingsRow'
 import { Spinner } from '@/components/ui/Spinner'
 import { volumeForDisplay, volumeToMl, volumeUnit } from '@/lib/water'
 
@@ -77,15 +77,16 @@ export function WaterSettings() {
   }
 
   return (
-    <div className="flex flex-col gap-sm">
-      <div className="flex flex-wrap items-center gap-2">
-        <SettingsIcon name="water_drop" />
-        <label htmlFor="water-goal" className="font-label-md text-label-md text-on-surface">
-          {t('water.goalSettingLabel', { unit })}
-        </label>
-        <ProBadge />
-        {saving && <Spinner className="h-4 w-4 text-primary" />}
-      </div>
+    <SettingsRow
+      icon="water_drop"
+      label={t('water.goalSettingLabel', { unit })}
+      // The stored goal, or nothing where it is derived from bodyweight — the
+      // hint inside the row says so, and a number here would claim a setting
+      // the user has not made.
+      value={draft === '' ? undefined : `${draft} ${unit}`}
+      badge={<ProBadge />}
+      busy={saving ? <Spinner className="h-4 w-4 shrink-0 text-primary" /> : null}
+    >
       <p className="font-body-md text-sm text-on-surface-variant">{t('water.goalSettingHint')}</p>
 
       {error && (
@@ -94,11 +95,15 @@ export function WaterSettings() {
         </p>
       )}
 
+      {/* The row's own trigger carries the label now, and a `<label for>`
+          pointing into a panel that may be closed is a label for nothing. The
+          field names itself instead, with the same words. */}
       <input
         id="water-goal"
         type="number"
         inputMode="numeric"
         min={0}
+        aria-label={t('water.goalSettingLabel', { unit })}
         placeholder={t('water.goalPlaceholder')}
         className={inputClass}
         disabled={loading || saving}
@@ -106,6 +111,6 @@ export function WaterSettings() {
         onChange={(e) => setDraft(e.target.value)}
         onBlur={commit}
       />
-    </div>
+    </SettingsRow>
   )
 }

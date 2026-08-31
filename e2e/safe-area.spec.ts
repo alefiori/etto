@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { test, expect, seedSession } from './fixtures/supabase'
+import { openSetting } from './fixtures/profile'
 
 /**
  * Safe areas, with a notch faked in.
@@ -105,6 +106,7 @@ test.describe('safe areas on a notched phone', () => {
   test('a confirmation sheet keeps its actions off the home indicator', async ({ page }) => {
     await seedSession(page)
     await page.goto('/profile')
+    await openSetting(page, /^Meals/)
     await page.getByLabel('Delete Snack').click()
 
     await expect(page.getByRole('alertdialog')).toBeVisible()

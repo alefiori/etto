@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { Profile } from '@/lib/database.types'
 
@@ -29,9 +29,22 @@ beforeEach(() => {
   h.state = stub()
 })
 
+/**
+ * The section is a disclosure row now, so it opens before anything inside it
+ * can be asserted on. `fireEvent` rather than `userEvent` so the tests that do
+ * not otherwise await anything stay synchronous. See SettingsRow.
+ */
+function renderOpen() {
+  const result = render(<BodyMetrics />)
+  // Scoped to this render's own container: a test that renders the
+  // component twice would otherwise find two row triggers.
+  fireEvent.click(within(result.container).getByRole('button', { name: /^Body & goal/ }))
+  return result
+}
+
 describe('BodyMetrics', () => {
   it('renders every field empty for a profile that has answered nothing', () => {
-    render(<BodyMetrics />)
+    renderOpen()
     expect(screen.getByLabelText('Sex')).toHaveValue('')
     expect(screen.getByLabelText('Daily activity')).toHaveValue('')
     expect(screen.getByLabelText('Goal')).toHaveValue('')
@@ -40,7 +53,7 @@ describe('BodyMetrics', () => {
 
   it('saves a sex selection', async () => {
     const user = userEvent.setup()
-    render(<BodyMetrics />)
+    renderOpen()
 
     await user.selectOptions(screen.getByLabelText('Sex'), 'female')
     expect(h.updateProfile).toHaveBeenCalledWith({ sex: 'female' })
@@ -49,7 +62,7 @@ describe('BodyMetrics', () => {
   it('clears a value back to null rather than saving an empty string', async () => {
     h.state = stub({ sex: 'male' })
     const user = userEvent.setup()
-    render(<BodyMetrics />)
+    renderOpen()
 
     await user.selectOptions(screen.getByLabelText('Sex'), '')
     expect(h.updateProfile).toHaveBeenCalledWith({ sex: null })
@@ -57,7 +70,7 @@ describe('BodyMetrics', () => {
 
   it('commits height on blur, not on every keystroke', async () => {
     const user = userEvent.setup()
-    render(<BodyMetrics />)
+    renderOpen()
 
     const input = screen.getByLabelText('Height')
     await user.type(input, '178')
@@ -70,7 +83,7 @@ describe('BodyMetrics', () => {
   it('converts an imperial height to centimetres', async () => {
     h.state = stub(null, 'imperial')
     const user = userEvent.setup()
-    render(<BodyMetrics />)
+    renderOpen()
 
     await user.type(screen.getByLabelText('Height in feet'), '5')
     // Moving between the two boxes must not commit a half-typed height.
@@ -85,37 +98,37 @@ describe('BodyMetrics', () => {
 
   it('shows a stored height in feet and inches under imperial units', () => {
     h.state = stub({ height_cm: 182.88 }, 'imperial')
-    render(<BodyMetrics />)
+    renderOpen()
 
     expect(screen.getByLabelText('Height in feet')).toHaveValue(6)
     expect(screen.getByLabelText('Height in inches')).toHaveValue(0)
   })
 
   it('hides the rate field until a direction is chosen', () => {
-    render(<BodyMetrics />)
+    renderOpen()
     expect(screen.queryByLabelText(/^Rate/)).not.toBeInTheDocument()
   })
 
   it('hides the rate field for a maintain goal, which has no rate', () => {
     h.state = stub({ goal_direction: 'maintain' })
-    render(<BodyMetrics />)
+    renderOpen()
     expect(screen.queryByLabelText(/^Rate/)).not.toBeInTheDocument()
   })
 
   it('shows the rate field in the display units once losing or gaining', () => {
     h.state = stub({ goal_direction: 'lose' })
-    render(<BodyMetrics />)
+    renderOpen()
     expect(screen.getByLabelText('Rate (kg per week)')).toBeInTheDocument()
 
     h.state = stub({ goal_direction: 'lose' }, 'imperial')
-    render(<BodyMetrics />)
+    renderOpen()
     expect(screen.getByLabelText('Rate (lb per week)')).toBeInTheDocument()
   })
 
   it('clamps a goal rate to the 1.5 kg/week the column allows', async () => {
     h.state = stub({ goal_direction: 'lose' })
     const user = userEvent.setup()
-    render(<BodyMetrics />)
+    renderOpen()
 
     await user.type(screen.getByLabelText('Rate (kg per week)'), '5')
     await user.tab()
@@ -125,7 +138,7 @@ describe('BodyMetrics', () => {
   it('surfaces a save failure without throwing', async () => {
     h.updateProfile.mockRejectedValue(new Error('nope'))
     const user = userEvent.setup()
-    render(<BodyMetrics />)
+    renderOpen()
 
     await user.selectOptions(screen.getByLabelText('Sex'), 'male')
     expect(await screen.findByText('Could not save. Please try again.')).toBeInTheDocument()

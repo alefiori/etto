@@ -1,6 +1,6 @@
 import { useI18n } from '@/context/I18nContext'
 import { Icon } from '@/components/ui/Icon'
-import { SettingsIcon } from '@/components/profile/SettingsIcon'
+import { SettingsRow } from '@/components/profile/SettingsRow'
 import { SOURCE_ATTRIBUTION } from '@/lib/foodSources'
 
 /**
@@ -19,11 +19,7 @@ export function DataSources() {
   const entries = Object.values(SOURCE_ATTRIBUTION).filter((e) => !!e)
 
   return (
-    <div className="flex flex-col gap-sm">
-      <div className="flex items-center gap-2">
-        <SettingsIcon name="table_view" />
-        <h3 className="font-label-md text-label-md text-on-surface">{t('dataSources.title')}</h3>
-      </div>
+    <SettingsRow icon="table_view" label={t('dataSources.title')}>
 
       <p className="px-2 font-body-md text-sm text-on-surface-variant">
         {t('dataSources.description')}
@@ -54,6 +50,6 @@ export function DataSources() {
           </li>
         ))}
       </ul>
-    </div>
+    </SettingsRow>
   )
 }

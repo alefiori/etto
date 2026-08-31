@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 const h = vi.hoisted(() => ({
@@ -38,9 +38,22 @@ beforeEach(() => {
   ]
 })
 
+/**
+ * The section is a disclosure row now, so it opens before anything inside it
+ * can be asserted on. `fireEvent` rather than `userEvent` so the tests that do
+ * not otherwise await anything stay synchronous. See SettingsRow.
+ */
+function renderOpen() {
+  const result = render(<MealSettings />)
+  // Scoped to this render's own container: a test that renders the
+  // component twice would otherwise find two row triggers.
+  fireEvent.click(within(result.container).getByRole('button', { name: /^Meals/ }))
+  return result
+}
+
 describe('MealSettings', () => {
   it('lists the meals in order', () => {
-    render(<MealSettings />)
+    renderOpen()
     const names = screen.getAllByRole('textbox').map((i) => (i as HTMLInputElement).placeholder)
     // Built-in meals show their translated label as a placeholder; the renamed
     // one holds its own name, and the last field is the "add meal" input.
@@ -50,7 +63,7 @@ describe('MealSettings', () => {
   it('renames a meal when its field loses focus', async () => {
     h.rename.mockResolvedValue(undefined)
     const user = userEvent.setup()
-    render(<MealSettings />)
+    renderOpen()
 
     const field = screen.getByLabelText('Name of Breakfast')
     await user.type(field, 'Colazione')
@@ -61,7 +74,7 @@ describe('MealSettings', () => {
 
   it('does not save when the name is unchanged', async () => {
     const user = userEvent.setup()
-    render(<MealSettings />)
+    renderOpen()
 
     await user.click(screen.getByLabelText('Name of Lunch'))
     await user.tab()
@@ -72,7 +85,7 @@ describe('MealSettings', () => {
   it('adds a meal', async () => {
     h.addMeal.mockResolvedValue(undefined)
     const user = userEvent.setup()
-    render(<MealSettings />)
+    renderOpen()
 
     await user.type(screen.getByLabelText('New meal name'), 'Mid-morning')
     await user.click(screen.getByRole('button', { name: 'Add meal' }))
@@ -82,7 +95,7 @@ describe('MealSettings', () => {
 
   it('reorders meals, with the ends disabled', async () => {
     const user = userEvent.setup()
-    render(<MealSettings />)
+    renderOpen()
 
     expect(screen.getByLabelText('Move Breakfast up')).toBeDisabled()
     expect(screen.getByLabelText('Move Merenda down')).toBeDisabled()
@@ -94,7 +107,7 @@ describe('MealSettings', () => {
   it('deletes a meal only after confirming, naming where its items go', async () => {
     h.remove.mockResolvedValue(undefined)
     const user = userEvent.setup()
-    render(<MealSettings />)
+    renderOpen()
 
     await user.click(screen.getByLabelText('Delete Merenda'))
     expect(h.remove).not.toHaveBeenCalled()
@@ -107,7 +120,7 @@ describe('MealSettings', () => {
 
   it('blocks adding once the limit is reached', () => {
     h.atLimit = true
-    render(<MealSettings />)
+    renderOpen()
     expect(screen.getByLabelText('New meal name')).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Add meal' })).toBeDisabled()
   })

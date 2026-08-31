@@ -1,6 +1,6 @@
 import { useI18n } from '@/context/I18nContext'
 import { Icon } from '@/components/ui/Icon'
-import { SettingsIcon } from '@/components/profile/SettingsIcon'
+import { SettingsRow } from '@/components/profile/SettingsRow'
 import { PRIVACY_URL, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL } from '@/lib/legal'
 
 /**
@@ -24,11 +24,7 @@ export function AboutSection() {
     'flex min-h-2xl items-center justify-between gap-sm rounded-lg px-2 font-body-md text-body-md text-on-surface transition-colors hover:bg-(--glass-chip-hover)'
 
   return (
-    <div className="flex flex-col gap-sm">
-      <div className="flex items-center gap-2">
-        <SettingsIcon name="info" />
-        <h3 className="font-label-md text-label-md text-on-surface">{t('about.title')}</h3>
-      </div>
+    <SettingsRow icon="info" label={t('about.title')}>
 
       <p className="rounded-lg glass-chip px-md py-sm font-body-md text-sm text-on-surface-variant">
         {t('about.disclaimer')}
@@ -65,6 +61,6 @@ export function AboutSection() {
       <p className="px-2 font-label-md text-label-md text-outline">
         {t('about.version', { version: __APP_VERSION__ })}
       </p>
-    </div>
+    </SettingsRow>
   )
 }

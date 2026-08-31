@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import { renderWithProviders as render } from '@/test/utils'
 import userEvent from '@testing-library/user-event'
 
@@ -111,6 +111,14 @@ beforeEach(() => {
   h.isPro = false
 })
 
+/**
+ * Language is a disclosure row now, so it opens before the picker exists. See
+ * SettingsRow. `fireEvent` keeps the synchronous tests synchronous.
+ */
+function openLanguage() {
+  fireEvent.click(screen.getByRole('button', { name: /^Language/ }))
+}
+
 describe('Profile page', () => {
   it('shows the signed-in email', () => {
     render(<Profile />)
@@ -120,11 +128,13 @@ describe('Profile page', () => {
   it('says so while the language just follows the device', () => {
     h.profile = stubProfile({ isLocaleExplicit: false })
     render(<Profile />)
+    openLanguage()
     expect(screen.getByText('Following your device language.')).toBeInTheDocument()
   })
 
   it('drops the device-language note once a language is chosen', () => {
     render(<Profile />) // isLocaleExplicit: true
+    openLanguage()
     expect(screen.queryByText('Following your device language.')).not.toBeInTheDocument()
   })
 
@@ -132,6 +142,7 @@ describe('Profile page', () => {
     h.setLocale.mockResolvedValue(undefined)
     const user = userEvent.setup()
     render(<Profile />)
+    openLanguage()
 
     // The page now has several selects (body metrics), so target this one by
     // its label rather than assuming it is the only combobox.

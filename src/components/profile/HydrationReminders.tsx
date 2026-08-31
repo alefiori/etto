@@ -6,7 +6,7 @@ import { useAppShell } from '@/context/AppShellContext'
 import { ProGate } from '@/components/paywall/ProGate'
 import { ProBadge } from '@/components/paywall/ProBadge'
 import { Icon } from '@/components/ui/Icon'
-import { SettingsIcon } from '@/components/profile/SettingsIcon'
+import { SettingsRow } from '@/components/profile/SettingsRow'
 import { Spinner } from '@/components/ui/Spinner'
 import { Toggle } from '@/components/ui/Toggle'
 import { radioTabIndex, useRadioGroupKeys } from '@/hooks/useRadioGroupKeys'
@@ -112,21 +112,16 @@ export function HydrationReminders() {
   }
 
   return (
-    <div className="flex flex-col gap-sm">
+    <SettingsRow
+      icon="notifications_active"
+      label={t('water.remindersLabel')}
+      badge={<ProBadge />}
+      busy={saving ? <Spinner className="h-4 w-4 shrink-0 text-primary" /> : null}
+    >
       <div className="flex items-start justify-between gap-md">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <SettingsIcon name="notifications_active" />
-            <span className="font-label-md text-label-md text-on-surface">
-              {t('water.remindersLabel')}
-            </span>
-            <ProBadge />
-            {saving && <Spinner className="h-4 w-4 text-primary" />}
-          </div>
-          <p className="mt-1 font-body-md text-sm text-on-surface-variant">
-            {t('water.remindersDescription')}
-          </p>
-        </div>
+        <p className="min-w-0 font-body-md text-sm text-on-surface-variant">
+          {t('water.remindersDescription')}
+        </p>
         <Toggle
           checked={settings.enabled}
           disabled={loading || saving}
@@ -249,7 +244,7 @@ export function HydrationReminders() {
           </p>
         </div>
       )}
-    </div>
+    </SettingsRow>
   )
 }
 

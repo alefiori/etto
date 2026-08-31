@@ -1,4 +1,5 @@
 import { test, expect, seedSession, seedPro, USER_ID } from './fixtures/supabase'
+import { openSetting } from './fixtures/profile'
 
 /**
  * The Pro surfaces on the Profile page: the subscription card, hydration
@@ -125,6 +126,7 @@ test.describe('hydration reminders', () => {
     seedPro(store)
     await seedSession(page)
     await page.goto('/profile')
+    await openSetting(page, /^Hydration reminders/)
 
     await page.getByRole('switch', { name: 'Hydration reminders' }).click()
 
@@ -142,6 +144,7 @@ test.describe('hydration reminders', () => {
     seedPro(store)
     await seedSession(page)
     await page.goto('/profile')
+    await openSetting(page, /^Hydration reminders/)
 
     await page.getByRole('radio', { name: '1h' }).click()
 
@@ -155,6 +158,7 @@ test.describe('hydration reminders', () => {
     seedPro(store)
     await seedSession(page)
     await page.goto('/profile')
+    await openSetting(page, /^Hydration reminders/)
 
     await page.getByLabel('From').selectOption('22')
 
@@ -166,6 +170,7 @@ test.describe('hydration reminders', () => {
     seedPro(store)
     await seedSession(page)
     await page.goto('/profile')
+    await openSetting(page, /^Hydration reminders/)
 
     await expect(page.getByText(/Reminders arrive in the iOS and Android apps/)).toBeVisible()
   })
@@ -234,6 +239,7 @@ test.describe('data export', () => {
     seedPro(store)
     await seedSession(page)
     await page.goto('/profile')
+    await openSetting(page, /^Export your data/)
 
     const download = page.waitForEvent('download')
     await page.getByRole('button', { name: /Food log \(CSV\)/ }).click()
@@ -251,6 +257,7 @@ test.describe('data export', () => {
     seedPro(store)
     await seedSession(page)
     await page.goto('/profile')
+    await openSetting(page, /^Export your data/)
 
     const download = page.waitForEvent('download')
     await page.getByRole('button', { name: /Food log \(CSV\)/ }).click()
@@ -275,6 +282,7 @@ test.describe('data export', () => {
     seedPro(store)
     await seedSession(page)
     await page.goto('/profile')
+    await openSetting(page, /^Export your data/)
 
     const download = page.waitForEvent('download')
     await page.getByRole('button', { name: /Everything \(JSON\)/ }).click()
