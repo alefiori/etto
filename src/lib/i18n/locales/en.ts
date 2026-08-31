@@ -128,6 +128,7 @@ export const en = {
     signUp: 'Sign Up',
     signInAction: 'Sign in',
     createAccount: 'Create account',
+    newHere: 'New to Etto?',
     emailAddress: 'Email Address',
     password: 'Password',
     confirmPassword: 'Confirm Password',

@@ -123,6 +123,7 @@ export const pt: Translation = {
     signUp: 'Registar',
     signInAction: 'Iniciar sessão',
     createAccount: 'Criar conta',
+    newHere: 'Novo no Etto?',
     emailAddress: 'Endereço de Email',
     password: 'Palavra-passe',
     confirmPassword: 'Confirmar Palavra-passe',

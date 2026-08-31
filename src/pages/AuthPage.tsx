@@ -24,6 +24,7 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
   const navigate = useNavigate()
 
   const [tab, setTab] = useState<Tab>(initialTab)
+  const signingIn = tab === 'signin'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -146,42 +147,6 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
             <p className="font-body-lg text-body-lg text-on-surface-variant">
               {t('auth.tagline')}
             </p>
-          </div>
-
-          {/* Tabs */}
-          <div className="mt-sm flex w-full border-b border-surface-container-high">
-            <button
-              type="button"
-              // The selected tab was bold with an underline and nothing else —
-              // a purely visual state. `aria-pressed` is the shape the rest of
-              // the app already uses for a chosen option among several (the
-              // source filters, the meal picker, the chart ranges).
-              aria-pressed={tab === 'signin'}
-              onClick={() => switchTab('signin')}
-              className={`flex-1 pb-sm text-center font-label-md text-label-md transition-colors ${
-                tab === 'signin'
-                  ? 'border-b-2 border-primary font-bold text-primary'
-                  : 'border-b-2 border-transparent text-on-surface-variant hover:text-on-surface'
-              }`}
-            >
-              {t('auth.signIn')}
-            </button>
-            <button
-              type="button"
-              // The selected tab was bold with an underline and nothing else —
-              // a purely visual state. `aria-pressed` is the shape the rest of
-              // the app already uses for a chosen option among several (the
-              // source filters, the meal picker, the chart ranges).
-              aria-pressed={tab === 'signup'}
-              onClick={() => switchTab('signup')}
-              className={`flex-1 pb-sm text-center font-label-md text-label-md transition-colors ${
-                tab === 'signup'
-                  ? 'border-b-2 border-primary font-bold text-primary'
-                  : 'border-b-2 border-transparent text-on-surface-variant hover:text-on-surface'
-              }`}
-            >
-              {t('auth.signUp')}
-            </button>
           </div>
 
           {notice && (
@@ -333,6 +298,27 @@ export default function AuthPage({ initialTab = 'signin' }: { initialTab?: Tab }
             <Icon name="person_outline" className="text-[1.125rem]" />
             <span>{t('auth.continueAsGuest')}</span>
           </button>
+
+          {/* Where the other mode lives, in place of the Sign In / Sign Up tab
+              pair this screen used to open with.
+
+              Two tabs presented the two as an even choice, which they are not:
+              almost everyone arriving here has an account, and the ones who
+              don't have a better door — the guest button directly above, which
+              costs nothing and upgrades in place later. So the form is one
+              form, its submit button names what it does, and creating an
+              account is a sentence at the bottom. That is also what the
+              artboard draws. */}
+          <p className="text-center font-body-md text-body-md text-on-surface-variant">
+            {signingIn ? t('auth.newHere') : t('guest.haveAccount')}{' '}
+            <button
+              type="button"
+              onClick={() => switchTab(signingIn ? 'signup' : 'signin')}
+              className="rounded font-label-md text-label-md text-primary underline underline-offset-2 transition-colors hover:text-primary-hover"
+            >
+              {signingIn ? t('auth.createAccount') : t('auth.signInAction')}
+            </button>
+          </p>
         </div>
       </main>
     </div>
