@@ -40,7 +40,7 @@ export function BootScreen({
 
   return (
     <div
-      // The aurora is painted on <body> and shows through: the icon's violet
+      // The aurora is painted on <body> and shows through: the icon's sage
       // glow needs something to fall on, and a flat page under it would make
       // the shadow read as a smudge.
       className="flex min-h-dvh flex-col items-center justify-center gap-lg px-lg py-2xl"

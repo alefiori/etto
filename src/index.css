@@ -733,10 +733,10 @@
    * So it is defined once, here, for everything. `:focus-visible` rather
    * than `:focus`, so a mouse press doesn't ring the button it clicked.
    *
-   * Two rings, not one: the violet is the app's own accent and reads
+   * Two rings, not one: the sage is the app's own accent and reads
    * against the pale surfaces, and the halo behind it is what keeps that
-   * violet legible when the control happens to sit on a violet card (the
-   * calorie lens, a selected nav item, any of the gradient CTAs). That pair
+   * sage legible when the control happens to sit on a solid sage fill (the
+   * compose FAB, a checked toggle, a dialog's confirm button). That pair
    * is also what carries the 3:1 contrast WCAG asks of the indicator
    * itself, against both of the surfaces it can land on.
    *
