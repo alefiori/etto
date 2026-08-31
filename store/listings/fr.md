@@ -90,8 +90,8 @@ choisissiez une. Thèmes clair et sombre, qui suivent aussi votre appareil. Une
 vraie mise en page pour tablette, pas un téléphone agrandi.
 
 **Etto Pro (facultatif)**
-La saisie, le scanner, vos aliments et ceux de la communauté, les repas et les
-sept langues sont gratuits, sans compte. Pro ajoute ce qui vient ensuite : le
+La saisie, le scanner, vos aliments et ceux de la communauté, les repas, les
+objectifs hebdomadaires et les sept langues sont gratuits, sans compte. Pro ajoute ce qui vient ensuite : le
 poids et l'eau, les rappels d'hydratation, l'export de tout votre journal, et
 les objectifs adaptatifs — qui calculent ce que vous dépensez réellement en
 comparant vos saisies à l'évolution réelle de votre poids, au lieu de multiplier

@@ -91,13 +91,18 @@ Families" programme.
 > purchases is reachable immediately.
 >
 > To review the paywall, open Weekly Targets and tap "See Pro" on the Adaptive
-> targets card, or Profile → Etto Pro. Pro unlocks four things: adaptive
-> targets (Weekly Targets), the weight trend chart and its 30/90/365-day history
-> (Dashboard → Weight), hydration reminders (Profile → Hydration reminders,
-> which asks for notification permission when switched on), and data export
-> (Profile → Export your data). Everything else — logging, barcode scanning,
-> custom and community foods, water and weight logging, all 7 languages — is
-> free and needs no purchase.
+> targets card, or Profile → Etto Pro. Pro unlocks five things: adaptive
+> targets (Weekly Targets); weight tracking — every weigh-in, the smoothed
+> trend line and its 90-day and yearly history (Dashboard → Weight); water
+> tracking, with a daily goal that follows your weight (Dashboard → Water, and
+> the goal itself at Profile → Daily water goal); hydration reminders (Profile
+> → Hydration reminders, which asks for notification permission when switched
+> on); and data export (Profile → Export your data). The water and weight cards
+> are gated *whole* rather than split into free logging and a paid readout: a
+> free account sees each card's heading and a description of what it does, but
+> logs nothing into either. Everything else — food logging, barcode scanning,
+> custom and community foods, meals, weekly targets, all 7 languages — is free
+> and needs no purchase.
 >
 > Restore purchases is available without a subscription, at Profile →
 > Etto Pro and on the paywall itself.
@@ -125,10 +130,15 @@ Guideline 2.1 rejection.
 - [ ] `delete-account` deployed (CI does this on `main`)
 - [ ] Listing copy matches what the build actually contains — in particular,
       **the paywall must not advertise features the binary does not have** (an
-      App Store 2.3.1 rejection). All four of the features it lists now exist:
-      adaptive targets, weight trends, hydration reminders and data export. If
-      one is ever pulled, its line comes out of `FEATURE_KEYS` in
-      `src/components/paywall/PaywallModal.tsx` first.
+      App Store 2.3.1 rejection). All five of the features it lists now exist:
+      adaptive targets, weight tracking, water tracking, hydration reminders and
+      data export. If one is ever pulled, its line comes out of `FEATURE_KEYS`
+      in `src/components/paywall/PaywallModal.tsx` first — and the App Review
+      notes above, which count them, have to be recounted with it.
+- [ ] Screenshots regenerated from the **final** build and uploaded —
+      `pnpm run store:screenshots`, then once more per locale you list in. They
+      are derived from the running UI, so a set taken before the interface is
+      frozen is a picture of an app you are not shipping.
 - [ ] The three products exist and are **approved** in App Store Connect and the
       Play Console: `etto_pro_monthly`, `etto_pro_yearly`,
       `etto_pro_lifetime`. Apple will not review a build whose IAPs are
