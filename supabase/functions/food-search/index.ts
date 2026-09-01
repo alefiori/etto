@@ -17,7 +17,15 @@
 // A source backed by our own tables additionally needs a migration and a data
 // load — see scripts/import-reference-foods.mjs.
 //
+// Abuse limits: every caller presents a verified JWT (this function is deployed
+// *with* verification — CI passes --no-verify-jwt only to revenuecat-webhook),
+// so requests are counted per `sub` against a Postgres-backed fixed window. See
+// supabase/migrations/0018_search_rate_limits.sql, and ./rateLimit.ts for the
+// arithmetic. That is what stops one account draining the USDA/OFF quotas; the
+// LRU cache further down is a performance measure, not a limit.
+//
 // Deploy:  supabase functions deploy food-search
+//          (needs migration 0018 applied first, or the rate limit fails open)
 //          supabase secrets set USDA_API_KEY=...   (optional; defaults to DEMO_KEY)
 //          supabase secrets set OFF_USERNAME=... OFF_PASSWORD=...   (optional; a
 //          regular Open Food Facts account — OFF has no API keys. When set, OFF
@@ -39,6 +47,17 @@ import {
   type OffProduct,
   type ReferenceRow,
 } from './normalize.ts'
+// Window arithmetic and the caps live in ./rateLimit.ts for the same reason
+// normalization does: no Deno globals, so vitest can test them directly.
+import {
+  evaluateRateLimit,
+  queryTooLong,
+  subjectFromAuthHeader,
+  MAX_QUERY_CHARS,
+  SEARCH_RATE_LIMIT,
+  SEARCH_RATE_WINDOW_SECONDS,
+  type RateLimitVerdict,
+} from './rateLimit.ts'
 
 // Text search uses Open Food Facts' Search-a-licious endpoint
 // (search.openfoodfacts.org) — the search API OFF actively maintains. It stays
@@ -71,11 +90,66 @@ const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') || ''
 const OFF_USERNAME = Deno.env.get('OFF_USERNAME') || ''
 const OFF_PASSWORD = Deno.env.get('OFF_PASSWORD') || ''
 
-const CORS_HEADERS: Record<string, string> = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'authorization, apikey, content-type',
-  'Access-Control-Max-Age': '86400',
+// The service role is used for exactly one thing: the rate-limit counter in
+// public.search_rate_limits, which has RLS on and no policies, so nothing short
+// of the service role can reach it (by design — see migration 0018). It is
+// deliberately a *second* client rather than a replacement for `db` above: the
+// reference-food search proxies a user-supplied query string and has no
+// business running with a key that bypasses RLS.
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+
+// ---------------------------------------------------------------------------
+// CORS
+// ---------------------------------------------------------------------------
+//
+// An explicit allowlist rather than `*`, or the reflect-any-Origin pattern that
+// only looks like an allowlist. JWT verification is what actually protects this
+// function, so `*` was not itself a hole — but it also let any page on the web
+// spend a visitor's rate-limit budget from their browser, and there is no
+// origin we want that we cannot name.
+//
+// Anything not on the list simply gets no Access-Control-Allow-Origin header
+// back, which a browser turns into a blocked response. Non-browser callers
+// (curl, the native HTTP stack, a server) send no Origin and are unaffected —
+// CORS is enforced by browsers, not by us, so this is a guard against hostile
+// *pages*, never an authentication mechanism.
+const ALLOWED_ORIGINS = new Set([
+  // Production web app: the VITE_SITE_URL default in .env.example, which
+  // src/lib/legal.ts falls back to.
+  'https://etto.fitness',
+  // The two native shells. Capacitor serves the bundle from its own origin —
+  // `capacitor://localhost` on iOS, `https://localhost` on Android — and
+  // capacitor.config.ts overrides neither scheme, so these are the defaults.
+  // Same strings as in the src/lib/legal.ts and externalPurchase.ts comments.
+  'capacitor://localhost',
+  'https://localhost',
+  // Local development: `pnpm dev` (Vite's default port) against a local
+  // `supabase start`, on both spellings of loopback, plus `pnpm preview:test`.
+  // CI never exercises this — the e2e suite intercepts the function with
+  // page.route (e2e/fixtures/supabase.ts) and no request leaves the browser.
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:4173',
+  'http://127.0.0.1:4173',
+])
+
+/**
+ * CORS headers for one request. The Allow-Origin header is present only for an
+ * allowlisted Origin; `Vary: Origin` is not optional once the response varies
+ * by it, or a shared cache will serve one origin's answer to another.
+ */
+function corsHeaders(req: Request): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'authorization, apikey, content-type',
+    'Access-Control-Max-Age': '86400',
+    Vary: 'Origin',
+  }
+  const origin = req.headers.get('Origin')
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    headers['Access-Control-Allow-Origin'] = origin
+  }
+  return headers
 }
 
 type SearchFn = (q: string, lang: string, signal: AbortSignal) => Promise<ExternalFood[]>
@@ -304,25 +378,117 @@ async function searchAllSources(q: string, lang: string, signal: AbortSignal): P
 }
 
 // ---------------------------------------------------------------------------
+// Per-user rate limit
+//
+// The LRU above protects upstream from *repeated* queries. This protects it
+// from one account issuing endless *distinct* ones, which is what would drain
+// the USDA key's quota (DEMO_KEY when USDA_API_KEY is unset — shared with every
+// other project using the default) or trip OFF's per-account limit and silently
+// drop both sources out of every user's results.
+//
+// Deliberately not in memory: isolates are recycled and run concurrently, so an
+// in-isolate counter resets at unpredictable moments and is outrun by spreading
+// requests across isolates. The counter lives in Postgres instead.
+// ---------------------------------------------------------------------------
+
+const admin =
+  SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
+    ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } })
+    : null
+
+interface RateLimitRow {
+  allowed: boolean
+  request_count: number
+  window_started_at: string
+}
+
+/**
+ * Count this request against the caller's window and decide on it. One RPC
+ * round trip; the increment, the window rollover and the comparison all happen
+ * inside a single atomic statement (see migration 0018).
+ *
+ * Returns null — meaning "no opinion", the request proceeds — when the limit
+ * cannot be evaluated. **Fail open is the deliberate choice**: this guards a
+ * third-party quota, not anyone's data, so a database blip or an unapplied
+ * migration must degrade to the previous behaviour rather than take food search
+ * down for everybody. The console.error is what makes that state visible.
+ */
+async function checkRateLimit(userId: string): Promise<RateLimitVerdict | null> {
+  if (!admin) return null
+  const { data, error } = await admin.rpc('increment_and_check_rate_limit', {
+    p_user_id: userId,
+    p_limit: SEARCH_RATE_LIMIT,
+    p_window_seconds: SEARCH_RATE_WINDOW_SECONDS,
+  })
+  if (error) {
+    console.error(`rate limit check failed for ${userId}: ${error.message}`)
+    return null
+  }
+  const row = (data as RateLimitRow[] | null)?.[0]
+  if (!row) return null
+  return evaluateRateLimit(
+    { count: row.request_count, windowStartedAtMs: Date.parse(row.window_started_at) },
+    Date.now(),
+  )
+}
+
+// ---------------------------------------------------------------------------
 // HTTP handler
 // ---------------------------------------------------------------------------
 
-function json(body: unknown, status: number): Response {
+function json(
+  body: unknown,
+  status: number,
+  cors: Record<string, string>,
+  extra: Record<string, string> = {},
+): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    headers: { ...cors, ...extra, 'Content-Type': 'application/json' },
   })
 }
 
 Deno.serve(async (req: Request) => {
+  const cors = corsHeaders(req)
+
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: CORS_HEADERS })
+    return new Response('ok', { headers: cors })
   }
 
   try {
     const url = new URL(req.url)
     const lang = (url.searchParams.get('lang') ?? DEFAULT_LANG).trim() || DEFAULT_LANG
     const barcode = (url.searchParams.get('barcode') ?? '').trim()
+    const q = (url.searchParams.get('q') ?? '').trim()
+
+    // Nothing to look up: answered before the rate limit, so an empty search box
+    // never costs the user any of their budget.
+    if (!barcode && !q) return json([], 200, cors)
+
+    // `q` is forwarded verbatim to OFF and USDA, so an uncapped one turns this
+    // into a free proxy for arbitrarily large upstream requests. Rejected rather
+    // than truncated — a silently shortened query returns confidently wrong
+    // results. See MAX_QUERY_CHARS for why the cap sits where it does.
+    if (queryTooLong(q)) {
+      return json({ error: `Query too long (max ${MAX_QUERY_CHARS} characters).` }, 400, cors)
+    }
+
+    // Every caller reaches this function with a platform-verified JWT, so `sub`
+    // identifies who is asking — a far better key than an IP, which is shared by
+    // everyone behind one carrier NAT and free to rotate. A token carrying no
+    // `sub` (a bare anon key, which names the project rather than a person)
+    // cannot be attributed to anyone, so there is nothing to count it against.
+    const userId = subjectFromAuthHeader(req.headers.get('Authorization'))
+    if (userId) {
+      const verdict = await checkRateLimit(userId)
+      if (verdict && !verdict.allowed) {
+        // 429 + Retry-After: src/lib/retry.ts already treats 429 as retryable
+        // and backs off, so the client handles this without a change.
+        return json({ error: 'Too many searches. Try again shortly.' }, 429, cors, {
+          'Retry-After': String(verdict.retryAfterSeconds),
+        })
+      }
+    }
 
     if (barcode) {
       // Open Food Facts first (richer, localized, far better European
@@ -336,7 +502,7 @@ Deno.serve(async (req: Request) => {
       for (const lookup of lookups) {
         try {
           const food = await lookup()
-          if (food) return json([food], 200)
+          if (food) return json([food], 200, cors)
         } catch (err) {
           if (err instanceof Error && err.name === 'AbortError') throw err
           // A failing source falls through to the next rather than sinking the
@@ -345,17 +511,14 @@ Deno.serve(async (req: Request) => {
           console.error(`barcode ${barcode}: ${err instanceof Error ? err.message : err}`)
         }
       }
-      return json([], 200)
+      return json([], 200, cors)
     }
 
-    const q = (url.searchParams.get('q') ?? '').trim()
-    if (!q) return json([], 200)
-
-    return json(await searchAllSources(q, lang, req.signal), 200)
+    return json(await searchAllSources(q, lang, req.signal), 200, cors)
   } catch (err) {
     if (err instanceof Error && err.name === 'AbortError') {
-      return new Response(null, { status: 499, headers: CORS_HEADERS })
+      return new Response(null, { status: 499, headers: cors })
     }
-    return json({ error: err instanceof Error ? err.message : 'Search failed.' }, 500)
+    return json({ error: err instanceof Error ? err.message : 'Search failed.' }, 500, cors)
   }
 })

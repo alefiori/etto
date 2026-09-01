@@ -4,6 +4,83 @@
 # working directory name when running `supabase init`.
 project_id = "etto"
 
+# ===========================================================================
+# PRODUCTION AUTH POLICY — NOT ENFORCED BY THIS FILE
+# ===========================================================================
+#
+# Read this before changing anything under [auth] below.
+#
+# This file configures `supabase start` — the local stack — and nothing else.
+# The hosted project's equivalent settings live in the Supabase dashboard
+# (Authentication → Sign In / Providers, Rate Limits, Attack Protection) and are
+# edited by hand there. CI pushes migrations, functions and the six email
+# templates; it never pushes this file's auth settings, so a value below can be
+# right locally and wrong in production indefinitely with nothing to notice.
+#
+# Hence this block: the intended production state, in git, next to the local
+# settings it is easy to mistake for it. It is documentation, not configuration.
+# Changing a line here changes nothing in production; someone has to open the
+# dashboard. Re-check it after any dashboard work.
+#
+# ---------------------------------------------------------------------------
+# 1. Anonymous sign-ins: ON  (dashboard: Authentication → Sign In / Providers)
+# ---------------------------------------------------------------------------
+# Mirrors `enable_anonymous_sign_ins = true` under [auth] below, and carries the
+# same reasoning — restated here because that setting being true locally says
+# nothing about the hosted project.
+#
+# The app opens *as* a guest. That is its default state, not an opt-in: the
+# guest bootstrap in AuthContext creates an anonymous session on first load,
+# with no interaction. Turn this off and that call fails, the app falls back to
+# the sign-in screen, and a store reviewer with no demo account meets a login
+# wall on launch — an App Store Guideline 2.1 rejection, which store/README.md
+# already calls out as the highest-probability rejection reason for this app.
+#
+# ---------------------------------------------------------------------------
+# 2. Auth rate limits: raise ONLY after custom SMTP is confirmed
+#    (dashboard: Authentication → Rate Limits; local equivalents in
+#    [auth.rate_limit] below)
+# ---------------------------------------------------------------------------
+# Supabase's default cap is 30 emails/hour on the shared, best-effort built-in
+# sender — enough for development and not for a launch, where a burst of
+# sign-ups silently stops getting confirmation mail.
+#
+# ORDER MATTERS. Raise the limit only *after* the custom Resend SMTP sender is
+# configured and verified (dashboard → Authentication → SMTP Settings, with SPF,
+# DKIM and DMARC passing on the sending domain). Raising it first does not
+# deliver more mail; it just lets more mail fail, or land in spam, faster — and
+# spam complaints on a fresh domain are hard to undo. Confirm a real
+# confirmation email arrives, then raise the limit.
+#
+# The `anonymous_users` limit (30/hour per IP locally) deserves its own look:
+# every first launch consumes one, so shared/NAT'd networks — a conference, an
+# office, a review lab — can exhaust it and see the guest bootstrap fail for
+# reasons that look nothing like a rate limit from inside the app.
+#
+# ---------------------------------------------------------------------------
+# 3. CAPTCHA: OFF  (dashboard: Authentication → Attack Protection; local
+#    equivalent is the commented-out [auth.captcha] section below)
+# ---------------------------------------------------------------------------
+# Leave it off, and keep it off deliberately rather than by omission.
+#
+# hCaptcha/Turnstile protection applies to sign-in and sign-up — which includes
+# the anonymous sign-in the guest bootstrap performs before the user has touched
+# anything. There is nowhere for that challenge to be solved: no widget has been
+# rendered, and no interaction has happened. Enabling CAPTCHA therefore breaks
+# first launch for every new user, which is the single worst place in the
+# product to break.
+#
+# If bot sign-ups ever become a real problem, the fix is a challenge on the
+# *email* sign-up form only (where a widget can actually be shown), not a
+# project-wide toggle.
+#
+# ---------------------------------------------------------------------------
+# Also outside this file: function secrets. USDA_API_KEY, OFF_USERNAME,
+# OFF_PASSWORD and REVENUECAT_WEBHOOK_SECRET are set with `supabase secrets set`
+# and are deliberately left untouched by CI. USDA_API_KEY unset means the
+# food-search function falls back to the shared, heavily-throttled DEMO_KEY.
+# ===========================================================================
+
 [api]
 enabled = true
 # Port to use for the API URL.
