@@ -4,8 +4,10 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom'
 
 const h = vi.hoisted(() => ({
   signInAnonymously: vi.fn(),
+  retry: vi.fn(),
   session: null as { user: { id: string } } | null,
   loading: false,
+  error: null as Error | null,
   locale: 'en',
   isLocaleExplicit: false,
 }))
@@ -14,6 +16,8 @@ vi.mock('@/context/AuthContext', () => ({
   useAuth: () => ({
     session: h.session,
     loading: h.loading,
+    error: h.error,
+    retry: h.retry,
     signInAnonymously: h.signInAnonymously,
   }),
 }))
@@ -45,6 +49,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   h.session = null
   h.loading = false
+  h.error = null
   h.locale = 'en'
   h.isLocaleExplicit = false
   h.signInAnonymously.mockResolvedValue(undefined)
@@ -118,5 +123,25 @@ describe('RequireAuth', () => {
     renderGuard()
     await waitFor(() => expect(h.signInAnonymously).toHaveBeenCalledTimes(1))
     expect(screen.queryByText('sign in screen')).not.toBeInTheDocument()
+  })
+
+  it('offers a retry instead of guessing at a guest sign-in when the session restore itself failed', () => {
+    // A rejected getSession() (offline cold start) is not "signed out" — the
+    // network is already known to be down, so attempting signInAnonymously
+    // would just hang a second time before falling back to a sign-in screen
+    // that cannot succeed either.
+    h.error = new Error('offline')
+    renderGuard()
+    expect(h.signInAnonymously).not.toHaveBeenCalled()
+    expect(screen.queryByText('the app')).not.toBeInTheDocument()
+    expect(screen.queryByText('sign in screen')).not.toBeInTheDocument()
+  })
+
+  it('retries the session restore rather than starting a guest session', () => {
+    h.error = new Error('offline')
+    renderGuard()
+    screen.getByRole('button', { name: /try again/i }).click()
+    expect(h.retry).toHaveBeenCalledTimes(1)
+    expect(h.signInAnonymously).not.toHaveBeenCalled()
   })
 })

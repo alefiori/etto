@@ -3,6 +3,7 @@ import { Modal } from '@/components/ui/Modal'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
 import { SourceTag } from '@/components/ui/SourceTag'
+import { ErrorBoundary, isChunkLoadError } from '@/components/ErrorBoundary'
 import { useFoodSearch, type SearchResult } from '@/hooks/useFoodSearch'
 import { useAppShell } from '@/context/AppShellContext'
 import { useAuth } from '@/context/AuthContext'
@@ -23,6 +24,37 @@ import type { FoodSource } from '@/lib/database.types'
 const BarcodeScanner = lazy(() =>
   import('@/components/addfood/BarcodeScanner').then((m) => ({ default: m.BarcodeScanner })),
 )
+
+/**
+ * What the scanner overlay shows instead of taking the whole modal — or the
+ * whole app — down with it.
+ *
+ * A failed chunk fetch is the realistic case (the same stale-deploy scenario
+ * `ErrorBoundary`'s default fallback names), but a genuine crash inside the
+ * scanner is caught here too rather than climbing to the route boundary, which
+ * would otherwise blow away the food search underneath a broken camera
+ * overlay. `onClose` is exactly the prop the working scanner already calls to
+ * dismiss itself, so recovering here means nothing more than handing that same
+ * callback to the failure state.
+ */
+function ScannerErrorFallback({ error, onClose }: { error: Error; onClose: () => void }) {
+  const { t } = useI18n()
+  const stale = isChunkLoadError(error)
+  return (
+    <div className="absolute inset-0 z-70 flex flex-col items-center justify-center gap-md bg-black px-lg text-center text-white">
+      <Icon name={stale ? 'cloud_sync' : 'info'} className="text-3xl" />
+      <p className="font-body-md text-body-md">{t(stale ? 'errors.chunkBody' : 'errors.boundaryBody')}</p>
+      <button
+        type="button"
+        onClick={onClose}
+        className="tap-target flex items-center gap-sm rounded-full border border-white/30 px-4 py-2 font-label-md text-label-md hover:bg-white/10 active:scale-95"
+      >
+        <Icon name="close" />
+        {t('common.close')}
+      </button>
+    </div>
+  )
+}
 
 interface NormalizedFood extends MacroGrams {
   name: string
@@ -198,15 +230,22 @@ export function AddFoodModal({
     <Modal open={open} onClose={onClose} labelledBy="add-food-title">
       <div className="relative flex h-full flex-col lg:flex-row">
         {scanning && (
-          <Suspense
-            fallback={
-              <div className="absolute inset-0 z-70 flex items-center justify-center bg-black text-white">
-                <Spinner className="h-6 w-6" />
-              </div>
-            }
+          <ErrorBoundary
+            label="scanner"
+            fallback={(error) => (
+              <ScannerErrorFallback error={error} onClose={() => setScanning(false)} />
+            )}
           >
-            <BarcodeScanner onDetected={handleScanned} onClose={() => setScanning(false)} />
-          </Suspense>
+            <Suspense
+              fallback={
+                <div className="absolute inset-0 z-70 flex items-center justify-center bg-black text-white">
+                  <Spinner className="h-6 w-6" />
+                </div>
+              }
+            >
+              <BarcodeScanner onDetected={handleScanned} onClose={() => setScanning(false)} />
+            </Suspense>
+          </ErrorBoundary>
         )}
         {/* Search + results column — hidden on mobile once a food is selected */}
         <section

@@ -13,6 +13,20 @@ interface AuthContextValue {
   session: Session | null
   user: User | null
   loading: boolean
+  /**
+   * Set when restoring the session *rejected* — no network, DNS down, the
+   * project unreachable — as opposed to resolving with no session, which is
+   * the ordinary signed-out case and not an error. Non-null means the app
+   * never got far enough to know who the user is; BootScreen shows a retry
+   * rather than letting the guest-session fallback spin against a dead
+   * network. Cleared by {@link retry}.
+   */
+  error: Error | null
+  /**
+   * Try restoring the session again. Re-runs the same effect, so a success
+   * clears {@link error} and lands a session exactly as a first load would.
+   */
+  retry: () => void
   /** True while signed in as an anonymous (guest) user. */
   isAnonymous: boolean
   signIn: (email: string, password: string) => Promise<void>
@@ -42,17 +56,49 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
+  // Bumped by retry() to re-run the restore below. A counter rather than a
+  // boolean so a second retry after a second failure still re-runs it.
+  const [attempt, setAttempt] = useState(0)
 
+  // Restoring the session, on mount and on every retry.
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session)
-      setLoading(false)
-    })
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (cancelled) return
+        setSession(data.session)
+        setLoading(false)
+      })
+      // Without this, a rejected promise left `loading` true forever and the
+      // boot screen span its bar until the tab was closed. getSession() reads
+      // local storage, but it hits the network whenever the stored token has
+      // expired — so a cold start offline, which is the case this whole file
+      // is about, is exactly when it rejects.
+      .catch((cause: unknown) => {
+        if (cancelled) return
+        setSession(null)
+        setError(cause instanceof Error ? cause : new Error(String(cause)))
+        setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [attempt])
 
+  // Its own effect, subscribed once: a retry must not tear down and rebuild the
+  // auth listener, and an event arriving mid-retry is still the truth.
+  useEffect(() => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession)
+      // A session arriving by any route means the restore is moot, and a stale
+      // failure must not keep the boot screen up over a working app.
+      if (newSession) setError(null)
     })
 
     return () => subscription.unsubscribe()
@@ -63,6 +109,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       user: session?.user ?? null,
       loading,
+      error,
+      retry: () => setAttempt((n) => n + 1),
       isAnonymous: session?.user?.is_anonymous ?? false,
       async signIn(email, password) {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
@@ -119,7 +167,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await supabase.auth.signOut().catch(() => {})
       },
     }),
-    [session, loading],
+    [session, loading, error],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
