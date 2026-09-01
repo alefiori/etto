@@ -48,6 +48,13 @@ const config: CapacitorConfig = {
       // position:fixed scroll lock in useScrollLock expects.
       resize: KeyboardResize.Native,
     },
+    // No BarcodeScanner block, and that is checked rather than assumed:
+    // @capacitor-mlkit/barcode-scanning 8.1.1's README says "No configuration
+    // required for this plugin", and it registers no `Config` interface. Its
+    // options — barcode formats, lens facing, resolution — are per-call
+    // arguments to `startScan`, and are passed there from
+    // src/components/addfood/barcode/native.ts, which is where the four retail
+    // formats the app scans for are defined.
     LocalNotifications: {
       // Android draws the small icon as a *silhouette* — alpha only, colours
       // discarded — so the full-colour launcher icon it falls back to arrives in

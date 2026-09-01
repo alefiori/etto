@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@capacitor-mlkit/barcode-scanning':
+        specifier: ^8.1.1
+        version: 8.1.1(@capacitor/core@8.5.0)
       '@capacitor/app':
         specifier: ^8.1.1
         version: 8.1.1(@capacitor/core@8.5.0)
@@ -688,6 +691,11 @@ packages:
 
   '@canvas/image-data@1.1.0':
     resolution: {integrity: sha512-QdObRRjRbcXGmM1tmJ+MrHcaz1MftF2+W7YI+MsphnsCrmtyfS0d5qJbk0MeSbUeyM/jCb0hmnkXPsy026L7dA==}
+
+  '@capacitor-mlkit/barcode-scanning@8.1.1':
+    resolution: {integrity: sha512-hVhxTIBXlZzhejtjSe5If3+JknWXKeAdRpV2QDuj1Tn/nS38i/Ty3tKLEa7whvQjclM6SQOYVCvZvkMORlhT1w==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
 
   '@capacitor/android@8.5.0':
     resolution: {integrity: sha512-Rb3prJeQiTp0pQhSSOReJuG9VgibOGMG4ECs+UhMwr6TCCHZ3NCZO811bDA0HxD0xrT/gCrJAsY5yfEATu84JQ==}
@@ -5106,6 +5114,10 @@ snapshots:
       css-tree: 3.2.1
 
   '@canvas/image-data@1.1.0': {}
+
+  '@capacitor-mlkit/barcode-scanning@8.1.1(@capacitor/core@8.5.0)':
+    dependencies:
+      '@capacitor/core': 8.5.0
 
   '@capacitor/android@8.5.0(@capacitor/core@8.5.0)':
     dependencies:

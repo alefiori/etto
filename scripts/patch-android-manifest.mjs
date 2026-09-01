@@ -2,22 +2,32 @@
 /**
  * Declare the Android camera permission the barcode scanner needs.
  *
- * BarcodeScanner.tsx opens the camera with plain `getUserMedia` (via @zxing/
- * browser) rather than a Capacitor camera plugin, so nothing in the dependency
- * tree contributes a manifest entry for it. Capacitor's own template declares
- * only INTERNET.
- *
- * That combination fails in a way that looks like the user denied the prompt,
- * because no prompt is ever shown. `BridgeWebChromeClient.onPermissionRequest`
- * sees the WebView's VIDEO_CAPTURE request and launches a runtime request for
- * `android.permission.CAMERA`; Android denies an undeclared permission
- * immediately and silently; Capacitor calls `request.deny()`; `getUserMedia`
- * rejects with NotAllowedError, and the scanner renders `scanner.denied` — "you
- * denied camera access", to a user who was never asked. There is no way out
- * from the app's side, and nothing useful in logcat.
+ * Written for the getUserMedia-based scanner this app used to ship, and kept
+ * on purpose now that src/components/addfood/barcode/native.ts drives the
+ * camera through @capacitor-mlkit/barcode-scanning instead. That plugin's own
+ * bundled manifest most likely declares android.permission.CAMERA itself — but
+ * this script runs on `cap sync android`'s freshly generated
+ * android/app/src/main/AndroidManifest.xml, well before Gradle's manifest
+ * merger ever reads the plugin's own AAR at build time, so there is nothing
+ * yet to detect and nothing lost by writing it here too: Android's merger
+ * de-duplicates two sources declaring the identical permission without
+ * complaint, and this script is what makes the declaration exist even if a
+ * future scanner swap ever drops the plugin that currently also supplies it.
+ * The original failure mode this guards against, for the record:
+ * `BridgeWebChromeClient.onPermissionRequest` sees the WebView's VIDEO_CAPTURE
+ * request and launches a runtime request for `android.permission.CAMERA`;
+ * Android denies an undeclared permission immediately and silently; Capacitor
+ * calls `request.deny()`; `getUserMedia` rejects with NotAllowedError, and the
+ * scanner renders `scanner.denied` — "you denied camera access", to a user who
+ * was never asked. There is no way out from the app's side, and nothing useful
+ * in logcat. ML Kit fails differently (a rejected `checkPermissions()`/
+ * `requestPermissions()` call, handled in native.ts's `ensurePermission`), but
+ * only once the permission is actually declared for it to check.
  *
  * This is the Android half of the camera wiring whose iOS half is
- * NSCameraUsageDescription in scripts/patch-ios-project.mjs.
+ * NSCameraUsageDescription in scripts/patch-ios-project.mjs — needed
+ * regardless of which scanning backend is behind it, since both ultimately
+ * open the same OS camera.
  *
  * The two `uses-feature` lines are not decoration. Declaring the CAMERA
  * permission makes Google Play *imply* `android.hardware.camera` and
@@ -44,10 +54,11 @@ export const CAMERA_BLOCK = `
         Added by scripts/patch-android-manifest.mjs — android/ is regenerated on
         every build, so edit the script, not this file.
 
-        The barcode scanner reaches the camera through getUserMedia, not a
-        Capacitor plugin, so no plugin manifest contributes this. Without it
-        Android denies the WebView's permission request without prompting and
-        the scanner reports a denial the user never made.
+        Written unconditionally regardless of what the scanning plugin's own
+        manifest may also declare (Android's build-time manifest merger
+        de-duplicates a repeated identical permission without complaint), so
+        the camera stays declared even if the scanning backend ever changes
+        again. See the script's own header for the full history.
     -->
     <uses-permission android:name="android.permission.CAMERA" />
 
