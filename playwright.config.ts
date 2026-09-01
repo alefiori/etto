@@ -15,6 +15,14 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
+  // Global comparison settings for e2e/visual.spec.ts's toHaveScreenshot()
+  // calls, so no test configures its own threshold. A small tolerance absorbs
+  // sub-pixel anti-aliasing differences between machines without hiding a real
+  // layout or colour regression; `toHaveScreenshot`'s own default of disabling
+  // CSS/web animations before capture already handles motion.
+  expect: {
+    toHaveScreenshot: { maxDiffPixelRatio: 0.02 },
+  },
   use: {
     baseURL,
     trace: 'on-first-retry',

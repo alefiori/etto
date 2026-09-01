@@ -40,6 +40,17 @@ export default defineConfig({
       reporter: ['text', 'html', 'lcov'],
       include: ['src/**'],
       exclude: ['src/**/*.test.*', 'src/test/**', 'src/**/*.d.ts', 'src/main.tsx'],
+      // Ratcheted a few points below the actual numbers as of the commit that
+      // added this gate (statements 46.67 / branches 41.23 / functions 45.6 /
+      // lines 47.5), so the gate fails on a real regression rather than on
+      // landing. Raise these as coverage improves — never lower them to make a
+      // failing PR pass.
+      thresholds: {
+        statements: 44,
+        branches: 38,
+        functions: 43,
+        lines: 45,
+      },
     },
   },
 })
