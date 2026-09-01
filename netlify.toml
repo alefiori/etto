@@ -36,7 +36,16 @@
   # one over a feature that isn't shippable yet either way. Unset, it writes a
   # placeholder and prints a warning to the deploy log — Universal/App Links
   # simply do not activate until the real values are set here.
-  command = "node scripts/build-legal.mjs --strict && node scripts/generate-well-known.mjs && pnpm run build"
+  #
+  # generate-og-image.mjs renders public/og-image.png, which index.html's
+  # og:image tag points at. It is gitignored (a derived asset, like the two
+  # files above) and needs no env var, so nothing here can fail — but without
+  # this call the file simply does not exist in the deploy, and a request for
+  # it falls through the SPA catch-all below to index.html: a link preview
+  # then fetches 200 text/html where it expected a PNG and renders no image at
+  # all, which is exactly what shipped the first time this file's build
+  # command was missing this line.
+  command = "node scripts/build-legal.mjs --strict && node scripts/generate-well-known.mjs && node scripts/generate-og-image.mjs && pnpm run build"
   publish = "dist"
 
 # --- Redirects -------------------------------------------------------------
