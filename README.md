@@ -461,6 +461,12 @@ if a Capacitor upgrade reshapes what it patches:
 - Password reset needs a real Universal Link / App Link and a `/reset-password`
   route; `AuthContext.resetPassword` still builds its `redirectTo` from
   `window.location.origin`, which is `capacitor://localhost` natively.
+- **Store screenshots have to be taken last.** `pnpm run store:screenshots`
+  drives the real UI, so a set is only truthful once the interface is frozen —
+  regenerate it, per locale, after the last UI change lands rather than before.
+  The other two graphics are stable: `pnpm run store:assets` renders the
+  marketing icon and the Play feature graphic from `assets/icon-only.svg`, and
+  both currently come out in the shipped Grove sage.
 - Enable anonymous sign-ins on the **production** Supabase project.
   [`supabase/config.toml`](supabase/config.toml) only configures a local
   `supabase start`; with them off in production the app falls back to a sign-in
@@ -491,7 +497,9 @@ if a Capacitor upgrade reshapes what it patches:
 
 Everything else a submission is refused for — the legal documents, in-app
 account deletion, the camera usage string, the privacy manifest, version numbers
-that increment, the listing copy and graphics — is in place. See
+that increment, the listing copy in all 7 languages, the form answers and the
+marketing graphics — is in place. The screenshots are the one piece that cannot
+be finished early, for the reason above. See
 [`store/README.md`](store/README.md) for the form answers and the pre-upload
 checklist.
 
