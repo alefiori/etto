@@ -90,6 +90,11 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_SITE_URL: ${{ secrets.VITE_SITE_URL }}
           VITE_SUPPORT_EMAIL: ${{ secrets.VITE_SUPPORT_EMAIL }}
+          # Publishable, and inlined into the bundle — that is how RevenueCat is
+          # designed to work (see .env.example). Without it `purchasesAvailable()`
+          # is false in the store binary and the paywall says purchases are
+          # unavailable, so Pro is unbuyable in the very build that ships.
+          VITE_REVENUECAT_ANDROID_KEY: ${{ secrets.VITE_REVENUECAT_ANDROID_KEY }}
         # --strict: a release must not publish legal documents that name a
         # placeholder contact. See scripts/build-legal.mjs.
         run: |
@@ -102,7 +107,19 @@ jobs:
           pnpm exec cap add android
           pnpm exec cap sync android
           node scripts/patch-android-webview.mjs
+          # These two were missing here, so every signed build shipped without
+          # the CAMERA permission: Android denies the WebView's request without
+          # prompting and the barcode scanner reports a denial the user was
+          # never asked to make, with no way out and nothing in logcat. The
+          # uses-feature opt-outs in the same script are what stop Play
+          # delisting the app on devices with no autofocus rear camera. Order
+          # mirrors package.json's `sync:native`, the canonical list.
+          node scripts/patch-android-manifest.mjs
+          node scripts/patch-android-notification-icon.mjs
           node scripts/generate-native-icons.mjs
+          # Fails the release rather than uploading an AAB whose scanner cannot
+          # open the camera. See scripts/verify-android.mjs.
+          node scripts/verify-android.mjs
 
       - name: Decode the keystore
         if: steps.gate.outputs.ready == 'true'
@@ -205,6 +222,10 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_SITE_URL: ${{ secrets.VITE_SITE_URL }}
           VITE_SUPPORT_EMAIL: ${{ secrets.VITE_SUPPORT_EMAIL }}
+          # Same reasoning as the Android job: without this the signed IPA ships
+          # with Pro unbuyable. The web key is deliberately not passed here —
+          # that one belongs to the Netlify build, not a store binary.
+          VITE_REVENUECAT_IOS_KEY: ${{ secrets.VITE_REVENUECAT_IOS_KEY }}
         run: |
           node scripts/build-legal.mjs --strict
           pnpm run build:native

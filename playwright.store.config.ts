@@ -60,9 +60,16 @@ export default defineConfig({
     },
   })),
   webServer: {
-    command: 'ppnpm run build:test && ppnpm run preview:test',
+    // Same build as playwright.config.ts uses: build:test bakes .env.test in
+    // with no `--` separator for pnpm to forward and vite to drop.
+    command: 'pnpm run build:test && pnpm run preview:test',
     url: baseURL,
-    reuseExistingServer: true,
+    // Not a hardcoded `true`. That is what hid a typo in the command above
+    // (`ppnpm`, which is not a command) for as long as it did: a preview server
+    // already listening on 4173 from an earlier run satisfied the URL check, so
+    // the command never ran and the screenshots came out of a stale build. On CI
+    // there is no server to inherit, so the command has to work.
+    reuseExistingServer: !process.env.CI,
     timeout: 180_000,
   },
 })
