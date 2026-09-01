@@ -1,0 +1,5 @@
+# Allow everything, including /legal/* — the terms, privacy policy and other
+# legal documents at that path must stay crawlable for app store reviewers
+# and regulators, not just people.
+User-agent: *
+Allow: /
