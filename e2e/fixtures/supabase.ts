@@ -57,6 +57,28 @@ export function makeSession(user: ReturnType<typeof makeUser>) {
   }
 }
 
+/**
+ * A real-*shaped* (unsigned) JWT, for the one path in this app that decodes
+ * its access token client-side rather than treating it as an opaque string:
+ * `supabase.auth.setSession()`, which ResetPassword.tsx and lib/deepLinks.ts
+ * call with the tokens a password-recovery link carries. supabase-js's
+ * `decodeJWT` requires three base64url dot-separated segments and throws
+ * `AuthInvalidJwtError` on anything else — the plain `'fake-access-token'`
+ * above works everywhere else in this fixture only because `seedSession()`
+ * writes it straight into localStorage, a path that never decodes it.
+ *
+ * The signature segment is never verified client-side (nor is this a real
+ * project to verify it against), so any base64url string satisfies the shape
+ * check.
+ */
+export function makeAccessToken(overrides: Record<string, unknown> = {}): string {
+  const now = Math.floor(Date.now() / 1000)
+  const header = { alg: 'HS256', typ: 'JWT' }
+  const payload = { sub: USER_ID, aud: 'authenticated', role: 'authenticated', exp: now + 3600, ...overrides }
+  const b64url = (obj: unknown) => Buffer.from(JSON.stringify(obj)).toString('base64url')
+  return `${b64url(header)}.${b64url(payload)}.stub-signature`
+}
+
 let idCounter = 0
 const genId = () => `stub-${++idCounter}`
 

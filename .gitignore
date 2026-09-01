@@ -14,6 +14,12 @@ dist-ssr
 # must not be committed.
 /public/legal
 
+# Universal Links / App Links association files rendered by
+# scripts/generate-well-known.mjs. Not secrets, but generated — the source of
+# truth is APPLE_TEAM_ID and ANDROID_ASSETLINKS_SHA256_FINGERPRINTS, and a
+# committed copy would go stale the day either one changes.
+/public/.well-known
+
 # env — never commit secrets
 .env
 .env.*

@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 /**
- * Declare the Android camera permission the barcode scanner needs.
+ * Declare the Android camera permission the barcode scanner needs, and the
+ * App Links intent-filter that opens the password-reset email's link
+ * straight in the app. Two independent, unrelated concerns that happen to
+ * share one generated file and one run-after-`cap sync` script; see each
+ * section's own comment below for what it does and why.
+ *
+ * ---------------------------------------------------------------------------
+ * Camera permission
+ * ---------------------------------------------------------------------------
  *
  * Written for the getUserMedia-based scanner this app used to ship, and kept
  * on purpose now that src/components/addfood/barcode/native.ts drives the
@@ -47,6 +55,102 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
 const MANIFEST = 'android/app/src/main/AndroidManifest.xml'
+
+// ---------------------------------------------------------------------------
+// App Links (the password-reset email opens the app, not a browser tab)
+// ---------------------------------------------------------------------------
+
+/** Kept in step with APP_PATHS in scripts/generate-well-known.mjs. */
+export const APP_LINK_HOST = 'etto.fitness'
+export const APP_LINK_PATHS = ['/reset-password', '/signin']
+
+/**
+ * The `<intent-filter>` added to MainActivity.
+ *
+ * `android:autoVerify="true"` is what makes this an App Link rather than an
+ * ordinary (unverified, chooser-prompting) deep link: it has Android fetch
+ * https://etto.fitness/.well-known/assetlinks.json — rendered by
+ * scripts/generate-well-known.mjs — at install time and check it against the
+ * app's signing certificate before granting the link straight to the app.
+ * This is only the app-side half of that handshake; the file Android fetches
+ * is the other half. One filter for both paths, since Android combines every
+ * `<data>` element inside a single intent-filter into the set of URLs it
+ * matches, rather than needing one filter per path.
+ */
+export const APP_LINK_INTENT_FILTER = `
+        <!--
+            Added by scripts/patch-android-manifest.mjs — android/ is
+            regenerated on every build, so edit the script, not this file.
+
+            App Links for the password-reset email (and, for future use, a
+            plain sign-in link). See this script's own header comment for
+            the full autoVerify handshake.
+        -->
+        <intent-filter android:autoVerify="true">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+${APP_LINK_PATHS.map(
+  (path) => `            <data android:scheme="https" android:host="${APP_LINK_HOST}" android:path="${path}" />`,
+).join('\n')}
+        </intent-filter>
+`
+
+/** Whether `manifest` already declares the App Links intent-filter. */
+export function hasAppLinkIntentFilter(manifest) {
+  return manifest.includes('android:autoVerify="true"') && manifest.includes(`android:host="${APP_LINK_HOST}"`)
+}
+
+/**
+ * `manifest` with the App Links intent-filter added inside MainActivity.
+ *
+ * Found by index rather than one attribute-matching regex, and deliberately
+ * so: confirmed against a real `pnpm exec cap add android` output (not only
+ * the trimmed fixture below), Capacitor's actual current template declares
+ * MainActivity across several lines with `android:name` in the *middle* of a
+ * handful of other attributes — not first, not on one line, and not
+ * self-closing, since it already carries the stock MAIN/LAUNCHER
+ * intent-filter as a body. A regex anchored on `<activity\s+android:name=`
+ * (the natural first attempt) never matches that shape at all. Locating
+ * `android:name=".MainActivity"` first and working outward from it — nearest
+ * preceding `<activity`, nearest following `>` — matches regardless of
+ * attribute order, line breaks, or whether the tag is self-closing or
+ * already has a body. Android manifests never nest `<activity>` elements, so
+ * the next `</activity>` after this one's opening tag is always this one's,
+ * which is what makes "nearest following" safe here.
+ *
+ * Leaves the manifest untouched — rather than guessing at a different
+ * anchor — if MainActivity cannot be found at all, the same fail-safe
+ * `withCameraPermission` uses for a manifest it cannot parse.
+ */
+export function withAppLinks(manifest) {
+  if (hasAppLinkIntentFilter(manifest)) return manifest
+
+  const nameIndex = manifest.indexOf('android:name=".MainActivity"')
+  if (nameIndex === -1) return manifest
+
+  const tagStart = manifest.lastIndexOf('<activity', nameIndex)
+  if (tagStart === -1) return manifest
+
+  const tagEnd = manifest.indexOf('>', nameIndex)
+  if (tagEnd === -1) return manifest
+
+  if (manifest[tagEnd - 1] === '/') {
+    // Self-closing: turn `... />` into `... >` + the filter + a close tag.
+    return (
+      manifest.slice(0, tagEnd - 1) +
+      '>' +
+      APP_LINK_INTENT_FILTER +
+      '        </activity>' +
+      manifest.slice(tagEnd + 1)
+    )
+  }
+
+  // Already open/close: insert just before *this* activity's own closing tag.
+  const closeIndex = manifest.indexOf('</activity>', tagEnd)
+  if (closeIndex === -1) return manifest
+  return manifest.slice(0, closeIndex) + APP_LINK_INTENT_FILTER + '        ' + manifest.slice(closeIndex)
+}
 
 /** The block inserted ahead of `</manifest>`. */
 export const CAMERA_BLOCK = `
@@ -101,17 +205,44 @@ if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop()
   }
 
   const original = readFileSync(MANIFEST, 'utf8')
-  if (hasCameraPermission(original)) {
-    console.log('patch-android-manifest: CAMERA permission already declared, nothing to do.')
-    process.exit(0)
+  // Two independent concerns now, so each is checked and applied on its own
+  // rather than the single early-exit this had when the camera permission was
+  // the only patch: an already-declared permission must not skip adding the
+  // App Links filter, and vice versa.
+  let patched = original
+  const notes = []
+
+  if (hasCameraPermission(patched)) {
+    notes.push('CAMERA permission already declared')
+  } else {
+    const withCamera = withCameraPermission(patched)
+    if (withCamera === patched) {
+      console.warn(`patch-android-manifest: no </manifest> in ${MANIFEST}; camera permission left unchanged.`)
+    } else {
+      patched = withCamera
+      notes.push('declared the CAMERA permission')
+    }
   }
 
-  const patched = withCameraPermission(original)
+  if (hasAppLinkIntentFilter(patched)) {
+    notes.push('App Links intent-filter already declared')
+  } else {
+    const withLinks = withAppLinks(patched)
+    if (withLinks === patched) {
+      console.warn(
+        `patch-android-manifest: no MainActivity found in ${MANIFEST}; App Links intent-filter left unchanged.`,
+      )
+    } else {
+      patched = withLinks
+      notes.push('declared the App Links intent-filter')
+    }
+  }
+
   if (patched === original) {
-    console.warn(`patch-android-manifest: no </manifest> in ${MANIFEST}; left unchanged.`)
+    console.log(`patch-android-manifest: ${notes.join('; ')}, nothing to write.`)
     process.exit(0)
   }
 
   writeFileSync(MANIFEST, patched)
-  console.log(`patch-android-manifest: declared the CAMERA permission in ${MANIFEST}`)
+  console.log(`patch-android-manifest: ${notes.join('; ')} in ${MANIFEST}`)
 }
