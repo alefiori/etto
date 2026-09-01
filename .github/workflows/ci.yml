@@ -195,8 +195,21 @@ jobs:
           pnpm exec cap add android
           pnpm exec cap sync android
           node scripts/patch-android-webview.mjs
+          # The camera permission the barcode scanner needs, plus the two
+          # uses-feature opt-outs that keep Play from delisting the app on
+          # cameraless devices. Same relative order as package.json's
+          # `sync:native`, which is the canonical list.
+          node scripts/patch-android-manifest.mjs
           node scripts/patch-android-notification-icon.mjs
           node scripts/generate-native-icons.mjs
+
+      # android/ is regenerated every run, so there is no checked-in manifest to
+      # review — the camera permission and the notification icon exist only
+      # because the patch steps above ran. Without this, dropping one of them
+      # still produces a green build and an installable APK whose scanner is
+      # dead. See scripts/verify-android.mjs.
+      - name: Verify the Android configuration
+        run: node scripts/verify-android.mjs
 
       - name: Assemble debug APK
         run: |
@@ -218,6 +231,10 @@ jobs:
     # keep that in check. It earns its cost by catching the breakage the Android
     # job cannot see: Swift Package Manager resolution of the Capacitor plugins,
     # Swift compatibility, and the iPad invariants checked below.
+    #
+    # If the macOS-runner minute budget ever runs short, the lever is
+    # `if: github.event_name != 'pull_request'` here — it keeps the cover on main
+    # and gives it up on pull requests, at ~80 min/run (see the README).
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4

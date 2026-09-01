@@ -1,0 +1,165 @@
+# Netlify configuration for the web build of Etto.
+#
+# Versioned on purpose. All of this previously lived — if it lived anywhere — in
+# the Netlify dashboard, where it is invisible in review, absent from a fork or a
+# preview deploy, and impossible to bisect. A site whose SPA routing is a UI
+# setting is one misclick from 404ing every deep link.
+#
+# Build environment variables are NOT set here. `VITE_SITE_URL`,
+# `VITE_SUPPORT_EMAIL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` and
+# `VITE_REVENUECAT_WEB_KEY` must be set in the Netlify UI under Site
+# configuration → Environment variables. They are either secrets or
+# deploy-specific; .env.example documents what each one is. The first two are
+# load-bearing for the build command below.
+
+[build]
+  # Deliberately not the bare `pnpm run build`.
+  #
+  # `build` chains a NON-strict `build:legal`, which falls back to
+  # `support@example.invalid` and `https://etto.fitness` when VITE_SUPPORT_EMAIL
+  # / VITE_SITE_URL are unset — and then builds happily. A misconfigured Netlify
+  # environment would therefore ship a live privacy policy telling regulators to
+  # email a placeholder address, with a green deploy and no warning anywhere.
+  #
+  # Running the strict variant first turns that into a failed deploy. The
+  # non-strict run inside `build` then re-renders the same documents from the
+  # same environment, so it is a harmless repeat rather than a silent downgrade.
+  # scripts/build-legal.mjs's own contract is untouched: --strict is exactly the
+  # mode the release-mobile workflow already uses for store builds.
+  command = "node scripts/build-legal.mjs --strict && pnpm run build"
+  publish = "dist"
+
+# --- Redirects -------------------------------------------------------------
+#
+# Ordering is first-match-wins, so everything that must NOT become the SPA has
+# to appear above the catch-all.
+#
+# Strictly speaking these first two rules are belt and braces: Netlify checks
+# the filesystem BEFORE applying a redirect whose `force` is false (the
+# default), so a real file at dist/legal/terms.html is served untouched even
+# with the `/*` rule present. They are written out anyway because that
+# precedence is a piece of Netlify behaviour, not a property of this repo — it
+# is invisible in the config, nobody would notice it changing, and both of these
+# paths break quietly and consequentially:
+#
+#   /legal/*  Terms and Privacy, rendered by scripts/build-legal.mjs as plain
+#             static HTML with zero JS between an App Store or Play reviewer and
+#             the text. Swallowed by the SPA fallback they would boot the whole
+#             React app instead, and a reviewer's dead policy link is a rejected
+#             submission. They must also keep working when the SPA does not.
+#   /email/*  Header art the Supabase auth email templates <img> from
+#             https://etto.fitness/email/* (see .github/workflows/ci.yml). An
+#             email client fetching one of these gets no JavaScript and no
+#             second chance: an HTML document served in place of a PNG is just a
+#             broken image in every verification mail that goes out.
+#
+# `status = 200` with the path mapped to itself is a rewrite that resolves to
+# the same static file, i.e. an explicit "serve this, do not fall through".
+# A miss stays a 404, which is the honest answer for both of these.
+
+[[redirects]]
+  from = "/legal/*"
+  to = "/legal/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/email/*"
+  to = "/email/:splat"
+  status = 200
+
+# SPA fallback. src/App.tsx uses React Router's BrowserRouter, so /targets,
+# /foods, /profile and friends exist only once the JS bundle has booted and
+# taken over routing. Without this, a cold load or a refresh on any of them asks
+# Netlify for a file that was never built and gets a 404.
+#
+# `force` is left at its default of false so genuine files — hashed assets, the
+# service worker, the manifest, everything under the two rules above — keep
+# winning over this rule.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# --- Security headers ------------------------------------------------------
+
+[[headers]]
+  for = "/*"
+
+  [headers.values]
+    # Stop the browser second-guessing a declared Content-Type. Cheapest
+    # mitigation there is for a response being reinterpreted as script.
+    X-Content-Type-Options = "nosniff"
+    # Send the origin cross-site but the full path same-origin: enough for
+    # referral analytics, without leaking a path to a third party.
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # Nothing here is designed to be framed, and this is the clickjacking floor.
+    X-Frame-Options = "DENY"
+    # camera=(self): the barcode scanner reaches the camera through plain
+    # getUserMedia, so the origin itself must keep the permission — this is the
+    # web counterpart of the Android CAMERA permission in
+    # scripts/patch-android-manifest.mjs. Geolocation and the microphone are
+    # denied outright; the app asks for neither, so nothing embedded should be
+    # able to.
+    Permissions-Policy = "camera=(self), geolocation=(), microphone=()"
+    # HSTS. Netlify terminates TLS and redirects to HTTPS already; this is what
+    # stops the first request of a session being made in cleartext at all.
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+    # No Content-Security-Policy in this pass, deliberately.
+    #
+    # The obvious reading — that @revenuecat/purchases-js is bundled from
+    # node_modules and therefore same-origin — is not the whole story. The Web
+    # Billing SDK is a checkout UI: at runtime it reaches api.revenuecat.com,
+    # loads Stripe from js.stripe.com and Paddle from cdn.paddle.com, pulls
+    # assets from sdk.revenuecat-static.com and a CloudFront origin, and mounts
+    # the payment form in a third-party iframe. A CSP written from the bundle
+    # alone would pass every local check and then break paying for Pro in
+    # production — a failure nobody sees until a real customer's card form
+    # refuses to render, on the one flow that earns money.
+    #
+    # Getting it right means enumerating those origins against RevenueCat's and
+    # Stripe's current documentation and exercising a real sandbox checkout
+    # behind the policy, plus `Report-Only` for a while first. That is its own
+    # piece of work, not a line to guess at here.
+
+# --- Caching ---------------------------------------------------------------
+
+# Vite writes content-hashed files to dist/assets (confirmed against the actual
+# build output, not assumed). The hash IS the version, so a given URL's bytes
+# can never change and a year is as safe as a minute.
+[[headers]]
+  for = "/assets/*"
+
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# The three unhashed files at the root, which must never be cached.
+#
+# index.html carries the <script src> for the current hashed entry chunk. Cache
+# it and a returning browser boots an old build manifest that points at assets
+# the deploy has already removed — a pinned, half-broken app that a hard refresh
+# fixes and nothing else does.
+#
+# sw.js and registerSW.js are the service worker (vite-plugin-pwa, generateSW —
+# filenames confirmed from the build output) and its registration shim. A stale
+# service worker is worse than a stale page: it keeps serving its own precached
+# shell to a user who has no idea there is a newer one, and `registerType:
+# 'autoUpdate'` can only pick up a new build if the browser is allowed to see
+# that these two changed.
+[[headers]]
+  for = "/index.html"
+
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/sw.js"
+
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/registerSW.js"
+
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
