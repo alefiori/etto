@@ -23,6 +23,21 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Etto" />
+
+    <!-- Canonical + social preview. og:title/og:description reuse the title
+         and description above verbatim (see the comment on them) so the page,
+         its link previews and the install prompt keep saying the same thing.
+         og-image.png is rendered by scripts/generate-og-image.mjs. -->
+    <link rel="canonical" href="https://etto.fitness/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://etto.fitness/" />
+    <meta property="og:title" content="Etto — Daily Macro Tracker" />
+    <meta
+      property="og:description"
+      content="Track carbs, protein and fats against goals you set for each day of the week."
+    />
+    <meta property="og:image" content="https://etto.fitness/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
     <!-- Fonts: Figtree (UI text) + Instrument Serif (headline-lg) + Material
          Symbols Outlined, self-hosted from /public/fonts. They must not come
          from a CDN: Icon.tsx renders Material Symbols as a *ligature*, so if
