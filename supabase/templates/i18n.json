@@ -20,6 +20,24 @@
       "de": "Verfolge deine Makros, jeden Tag.",
       "pt": "Acompanhe os seus macros, todos os dias.",
       "nl": "Houd elke dag je macro’s bij."
+    },
+    "appLinkIntro": {
+      "en": "Already have the Etto app installed?",
+      "it": "Hai già l’app Etto installata?",
+      "fr": "Vous avez déjà l’app Etto installée ?",
+      "es": "¿Ya tienes la app Etto instalada?",
+      "de": "Hast du die Etto-App bereits installiert?",
+      "pt": "Já tem a app Etto instalada?",
+      "nl": "Heb je de Etto-app al geïnstalleerd?"
+    },
+    "appLinkText": {
+      "en": "Open in the Etto app",
+      "it": "Apri nell’app Etto",
+      "fr": "Ouvrir dans l’app Etto",
+      "es": "Abrir en la app Etto",
+      "de": "In der Etto-App öffnen",
+      "pt": "Abrir na app Etto",
+      "nl": "Openen in de Etto-app"
     }
   },
 

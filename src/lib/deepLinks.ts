@@ -36,6 +36,31 @@
  * `setSession()` explicitly with tokens this module extracted itself, which
  * is idempotent (calling it again after supabase-js's own auto-detect already
  * ran changes nothing) and works identically whether detection is on or off.
+ *
+ * ---------------------------------------------------------------------------
+ * The `etto://` fallback link carries an OTP, not raw tokens
+ * ---------------------------------------------------------------------------
+ *
+ * The auth emails also carry a second, `etto://app/verify` link (see
+ * scripts/build-email-templates.mjs's appLinkRow) for a device where the
+ * Universal Link / App Link association has not verified yet, or simply as an
+ * unambiguous "open the app" affordance. It cannot carry the same
+ * access_token/refresh_token pair the primary link does — the fragment above
+ * only exists because Supabase's own `/auth/v1/verify` endpoint constructs it
+ * as part of a server-side redirect, and there is no equivalent server step
+ * for a raw `etto://` URI a Go email template writes by hand.
+ *
+ * What it carries instead is `{{ .Email }}` and `{{ .Token }}` — the same
+ * six-digit OTP already shown as a fallback code in every one of these
+ * templates — plus which flow it belongs to. Those three are handed straight
+ * to `supabase.auth.verifyOtp({ email, token, type })`
+ * (`VerifyEmailOtpParams` in @supabase/auth-js), which is the officially
+ * supported way to complete an email OTP flow without a redirect at all, and
+ * — unlike reconstructing `.ConfirmationURL`'s own token — needs nothing this
+ * app has to reverse-engineer from GoTrue's internals: `.Email` and `.Token`
+ * are both already proven template variables in this codebase (see
+ * supabase/templates/email_change.html and the code-box in every template
+ * that has one).
  */
 
 import { supabase } from './supabase'
@@ -53,6 +78,15 @@ export interface RecoverySession {
   refreshToken: string
 }
 
+/** The three email-OTP flows the app's own auth screens can trigger. */
+export type OtpVerificationType = 'recovery' | 'signup' | 'magiclink'
+
+export interface OtpVerification {
+  email: string
+  token: string
+  type: OtpVerificationType
+}
+
 /**
  * What an incoming deep link resolves to.
  *
@@ -65,10 +99,16 @@ export interface RecoverySession {
 export type DeepLinkAction =
   | { kind: 'reset-password'; session: RecoverySession }
   | { kind: 'reset-password-expired' }
+  | { kind: 'otp'; verification: OtpVerification }
   | { kind: 'ignored' }
 
 /** Paths this app currently acts on when they arrive as a deep link. */
-const ACTIONABLE_PATHS = new Set(['/reset-password'])
+const ACTIONABLE_PATHS = new Set(['/reset-password', '/verify'])
+
+/** {@link OtpVerificationType} narrowed from an untyped query param. */
+function isOtpType(value: string | null): value is OtpVerificationType {
+  return value === 'recovery' || value === 'signup' || value === 'magiclink'
+}
 
 /**
  * Parse a URL the OS (or, on the web, the browser navigating to it directly)
@@ -76,10 +116,11 @@ const ACTIONABLE_PATHS = new Set(['/reset-password'])
  *
  * Routed on `pathname` first and deliberately kept open to more cases later —
  * a path this app does not recognize is `'ignored'` rather than assumed to be
- * the one case that exists today. Recovery parameters are read from *both*
- * the query string and the fragment: GoTrue's implicit-grant redirect puts
- * them in the fragment, but reading both means a future flow that used the
- * query string instead is not a silent miss.
+ * the one case that exists today. Parameters are read from *both* the query
+ * string and the fragment: GoTrue's implicit-grant redirect puts the recovery
+ * session in the fragment, the `etto://app/verify` fallback link puts its OTP
+ * in the query string, and reading both unconditionally means a flow that
+ * used the other one is not a silent miss.
  */
 export function parseDeepLink(rawUrl: string): DeepLinkAction {
   let url: URL
@@ -94,6 +135,16 @@ export function parseDeepLink(rawUrl: string): DeepLinkAction {
   const params = new URLSearchParams(url.search)
   for (const [key, value] of new URLSearchParams(url.hash.replace(/^#/, ''))) {
     params.set(key, value)
+  }
+
+  if (url.pathname === '/verify') {
+    const email = params.get('email')
+    const token = params.get('token')
+    const type = params.get('type')
+    if (email && token && isOtpType(type)) {
+      return { kind: 'otp', verification: { email, token, type } }
+    }
+    return { kind: 'ignored' }
   }
 
   // GoTrue's own shape for an expired or already-consumed recovery link:
@@ -125,6 +176,22 @@ export async function applyRecoverySession(session: RecoverySession): Promise<vo
   const { error } = await supabase.auth.setSession({
     access_token: session.accessToken,
     refresh_token: session.refreshToken,
+  })
+  if (error) throw error
+}
+
+/**
+ * Complete an email-OTP flow from the `etto://app/verify` fallback link.
+ * `verifyOtp` both verifies the code *and* establishes the resulting session
+ * in one call — there is no separate `setSession` step the way the recovery
+ * fragment above needs, since the tokens it would set are never exposed to
+ * this module in the first place.
+ */
+export async function applyOtpVerification(verification: OtpVerification): Promise<void> {
+  const { error } = await supabase.auth.verifyOtp({
+    email: verification.email,
+    token: verification.token,
+    type: verification.type,
   })
   if (error) throw error
 }
@@ -165,11 +232,25 @@ function navigate(path: string): void {
   else pendingNavigate = path
 }
 
-/** In-app path for a {@link DeepLinkAction}. HashRouter turns this into `#path`. */
+/**
+ * In-app path for a {@link DeepLinkAction}. HashRouter turns this into `#path`.
+ *
+ * An `'otp'` verification lands on `/reset-password` only for `type:
+ * 'recovery'` — that is the one flow with a screen of its own, to actually
+ * set the new password. `signup`/`magiclink` need nothing beyond the session
+ * `applyOtpVerification` already established by the time this runs, so they
+ * land on `/`, same as opening the app normally once signed in.
+ */
 function inAppPath(action: DeepLinkAction): string | null {
-  return action.kind === 'reset-password' || action.kind === 'reset-password-expired'
-    ? '/reset-password'
-    : null
+  switch (action.kind) {
+    case 'reset-password':
+    case 'reset-password-expired':
+      return '/reset-password'
+    case 'otp':
+      return action.verification.type === 'recovery' ? '/reset-password' : '/'
+    case 'ignored':
+      return null
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -198,11 +279,12 @@ export async function registerDeepLinks(): Promise<void> {
 }
 
 /**
- * Act on one incoming URL: establish the session a recovery link carries (or
- * note that it had expired), then navigate the in-app router there either
- * way — an expired link still has somewhere useful to land (ResetPassword.tsx
- * shows the expired state and a way back to /forgot-password), rather than
- * opening the app to whatever screen happened to be behind it.
+ * Act on one incoming URL: establish the session a recovery link or an OTP
+ * fallback link carries (or note that it had expired), then navigate the
+ * in-app router there either way — an expired link still has somewhere
+ * useful to land (ResetPassword.tsx shows the expired state and a way back
+ * to /forgot-password), rather than opening the app to whatever screen
+ * happened to be behind it.
  */
 async function handleIncomingUrl(url: string): Promise<void> {
   const action = parseDeepLink(url)
@@ -217,6 +299,15 @@ async function handleIncomingUrl(url: string): Promise<void> {
       // here, from a link that was already invalid — ResetPassword.tsx's own
       // fallback (no session, no token in its URL) lands on the same expired
       // state either way.
+    }
+  } else if (action.kind === 'otp') {
+    try {
+      await applyOtpVerification(action.verification)
+    } catch {
+      // Same reasoning as above: a `recovery` failure still lands on
+      // ResetPassword.tsx's expired state. `signup`/`magiclink` land signed
+      // out at '/' — the ordinary guest flow this app already opens to, not
+      // a dead end, since there is no dedicated failure screen for either.
     }
   }
   navigate(path)

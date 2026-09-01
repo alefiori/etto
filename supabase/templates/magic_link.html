@@ -108,6 +108,14 @@
                   </td>
                 </tr>
                 <tr>
+                  <td class="faint" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#8a9887;padding-top:2px;padding-bottom:10px;">{{if eq .Data.locale "it"}}Hai già l’app Etto installata?{{else if eq .Data.locale "fr"}}Vous avez déjà l’app Etto installée ?{{else if eq .Data.locale "es"}}¿Ya tienes la app Etto instalada?{{else if eq .Data.locale "de"}}Hast du die Etto-App bereits installiert?{{else if eq .Data.locale "pt"}}Já tem a app Etto instalada?{{else if eq .Data.locale "nl"}}Heb je de Etto-app al geïnstalleerd?{{else}}Already have the Etto app installed?{{end}}</td>
+                </tr>
+                <tr>
+                  <td style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;padding-bottom:26px;">
+                    <a class="link" href="etto://app/verify?type=magiclink&amp;email={{ .Email }}&amp;token={{ .Token }}" style="color:#4f7458;">{{if eq .Data.locale "it"}}Apri nell’app Etto{{else if eq .Data.locale "fr"}}Ouvrir dans l’app Etto{{else if eq .Data.locale "es"}}Abrir en la app Etto{{else if eq .Data.locale "de"}}In der Etto-App öffnen{{else if eq .Data.locale "pt"}}Abrir na app Etto{{else if eq .Data.locale "nl"}}Openen in de Etto-app{{else}}Open in the Etto app{{end}}</a>
+                  </td>
+                </tr>
+                <tr>
                   <td class="hr" style="border-top:1px solid #e4e8dd;font-size:0;line-height:0;">&nbsp;</td>
                 </tr>
                 <tr>

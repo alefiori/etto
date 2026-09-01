@@ -14,6 +14,8 @@ import {
   registerEntitlementsFile,
   patchEntitlementsSetting,
   patchAssociatedDomains,
+  URL_SCHEME,
+  urlSchemeEntries,
 } from './patch-ios-project.mjs'
 import { LOCALES as I18N_LOCALES } from '../src/lib/i18n/index.ts'
 
@@ -122,8 +124,28 @@ describe('patchInfoPlist', () => {
     for (const locale of LOCALES) expect(patched).toContain(`<string>${locale}</string>`)
   })
 
+  it('registers the etto:// custom scheme', () => {
+    expect(patched).toContain('<key>CFBundleURLTypes</key>')
+    expect(patched).toContain('<key>CFBundleURLSchemes</key>')
+    expect(patched).toContain(`<string>${URL_SCHEME}</string>`)
+  })
+
   it('is idempotent — a second run adds nothing', () => {
     expect(patchInfoPlist(patched)).toBe(patched)
+  })
+
+  it('leaves an existing CFBundleURLTypes alone rather than adding a second one', () => {
+    // Invalid plist: a dict can't declare the same top-level key twice. Should
+    // a plugin ever register its own URL type first, this must skip rather
+    // than duplicate the key — see urlSchemeEntries's own comment on why that
+    // is a guard, not a merge, for now.
+    const withExisting = TEMPLATE_PLIST.replace(
+      '</dict>\n</plist>',
+      '\t<key>CFBundleURLTypes</key>\n\t<array/>\n</dict>\n</plist>',
+    )
+    const result = patchInfoPlist(withExisting)
+    expect(result.match(/<key>CFBundleURLTypes<\/key>/g)).toHaveLength(1)
+    expect(result).not.toContain(URL_SCHEME)
   })
 
   it('leaves the template keys alone', () => {
@@ -199,6 +221,24 @@ describe('associatedDomainsEntitlements', () => {
 
   it('says where it came from, since ios/ is regenerated', () => {
     expect(associatedDomainsEntitlements()).toContain('scripts/patch-ios-project.mjs')
+  })
+})
+
+describe('urlSchemeEntries', () => {
+  it('registers the scheme and names the bundle id', () => {
+    const entries = urlSchemeEntries()
+    expect(entries).toContain('<key>CFBundleURLSchemes</key>')
+    expect(entries).toContain(`<string>${URL_SCHEME}</string>`)
+    expect(entries).toContain('<key>CFBundleURLName</key>')
+    expect(entries).toContain('<string>fitness.etto</string>')
+  })
+
+  it('names etto specifically', () => {
+    expect(URL_SCHEME).toBe('etto')
+  })
+
+  it('takes a scheme override, for a test that wants a different one', () => {
+    expect(urlSchemeEntries('other')).toContain('<string>other</string>')
   })
 })
 
@@ -372,8 +412,9 @@ describe('checkAll', () => {
 
   it('reports each thing a Capacitor template change could break', () => {
     const failures = checkAll(TEMPLATE_PLIST, TEMPLATE_PBXPROJ, false, null, false)
-    expect(failures).toHaveLength(8)
+    expect(failures).toHaveLength(9)
     expect(failures.join(' ')).toMatch(/NSCameraUsageDescription/)
+    expect(failures.join(' ')).toMatch(/CFBundleURLTypes/)
     expect(failures.join(' ')).toMatch(/CODE_SIGN_ENTITLEMENTS/)
     expect(failures.join(' ')).toMatch(/App\.entitlements/)
   })

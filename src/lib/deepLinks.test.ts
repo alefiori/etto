@@ -82,6 +82,86 @@ describe('parseDeepLink', () => {
       session: { accessToken: 'abc123', refreshToken: 'def456' },
     })
   })
+
+  describe('the etto:// fallback link (/verify)', () => {
+    it('reads a well-formed recovery verification', () => {
+      const action = parseDeepLink(
+        'etto://app/verify?type=recovery&email=sam%40example.com&token=123456',
+      )
+      expect(action).toEqual({
+        kind: 'otp',
+        verification: { email: 'sam@example.com', token: '123456', type: 'recovery' },
+      })
+    })
+
+    it('reads a well-formed signup verification', () => {
+      const action = parseDeepLink(
+        'etto://app/verify?type=signup&email=sam%40example.com&token=654321',
+      )
+      expect(action).toEqual({
+        kind: 'otp',
+        verification: { email: 'sam@example.com', token: '654321', type: 'signup' },
+      })
+    })
+
+    it('reads a well-formed magiclink verification', () => {
+      const action = parseDeepLink(
+        'etto://app/verify?type=magiclink&email=sam%40example.com&token=111222',
+      )
+      expect(action).toEqual({
+        kind: 'otp',
+        verification: { email: 'sam@example.com', token: '111222', type: 'magiclink' },
+      })
+    })
+
+    it('the host is not part of the route — any app-ish host works, the pathname decides', () => {
+      // etto://app/verify and etto:///verify (empty host) both resolve to
+      // pathname "/verify"; this pins that the host is decorative, not load
+      // -bearing, since a non-special scheme like etto: puts everything after
+      // // into the host until the next "/" — see the file's own header
+      // comment for why "app" was chosen deliberately over no host at all.
+      const action = parseDeepLink('etto:///verify?type=recovery&email=a%40b.com&token=1')
+      expect(action).toEqual({
+        kind: 'otp',
+        verification: { email: 'a@b.com', token: '1', type: 'recovery' },
+      })
+    })
+
+    it('rejects an unrecognized type rather than guessing', () => {
+      const action = parseDeepLink(
+        'etto://app/verify?type=email_change&email=sam%40example.com&token=123456',
+      )
+      expect(action).toEqual({ kind: 'ignored' })
+    })
+
+    it('ignores a verify link missing the email', () => {
+      const action = parseDeepLink('etto://app/verify?type=recovery&token=123456')
+      expect(action).toEqual({ kind: 'ignored' })
+    })
+
+    it('ignores a verify link missing the token', () => {
+      const action = parseDeepLink('etto://app/verify?type=recovery&email=sam%40example.com')
+      expect(action).toEqual({ kind: 'ignored' })
+    })
+
+    it('ignores a verify link missing the type', () => {
+      const action = parseDeepLink('etto://app/verify?email=sam%40example.com&token=123456')
+      expect(action).toEqual({ kind: 'ignored' })
+    })
+
+    it('does not fall through to the reset-password token/error parsing for this path', () => {
+      // /verify and /reset-password are parsed by two different branches;
+      // an access_token on a /verify URL must not be misread as a recovery
+      // session, and an error param on it must not be misread as expired.
+      const withAccessToken = parseDeepLink(
+        'etto://app/verify?access_token=abc&refresh_token=def',
+      )
+      expect(withAccessToken).toEqual({ kind: 'ignored' })
+
+      const withError = parseDeepLink('etto://app/verify?error=access_denied')
+      expect(withError).toEqual({ kind: 'ignored' })
+    })
+  })
 })
 
 describe('setDeepLinkNavigator', () => {

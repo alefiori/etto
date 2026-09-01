@@ -168,6 +168,36 @@ const linkRows = (introStyle) =>
                   </td>
                 </tr>`;
 
+/**
+ * A secondary "Open in the Etto app" link, using the etto:// custom scheme —
+ * alongside `linkRows`' primary https://etto.fitness one, never instead of
+ * it. See src/lib/deepLinks.ts's header comment for why this carries
+ * `{{ .Email }}`/`{{ .Token }}` rather than trying to reuse
+ * `{{ .ConfirmationURL }}`'s own tokens, and scripts/patch-ios-project.mjs /
+ * patch-android-manifest.mjs for where the native side registers the scheme.
+ *
+ * `verifyType` is this template's own flow — 'recovery' here, 'signup' for
+ * confirmation.html, 'magiclink' for magic_link.html — spelled exactly as
+ * `EmailOtpType` in @supabase/auth-js, since `src/lib/deepLinks.ts` passes it
+ * straight through to `supabase.auth.verifyOtp({ type })` unchanged.
+ *
+ * `&amp;` between the query params is not decorative: this string is HTML
+ * template *source*, not a value Go's html/template will autoescape for us —
+ * an unescaped literal `&` in a hand-written attribute is invalid HTML.
+ * `{{ .Email }}` sitting inside an href's query-string position *is* one of
+ * html/template's documented auto-escaping contexts, so that variable itself
+ * needs no explicit encoding here.
+ */
+const appLinkRow = (verifyType) =>
+  `                <tr>
+                  <td class="faint" style="font-family:${SANS};font-size:13px;line-height:1.6;color:#8a9887;padding-top:2px;padding-bottom:10px;">${sw(i18n.common.appLinkIntro)}</td>
+                </tr>
+                <tr>
+                  <td style="font-family:${SANS};font-size:13px;line-height:1.6;padding-bottom:26px;">
+                    <a class="link" href="etto://app/verify?type=${verifyType}&amp;email={{ .Email }}&amp;token={{ .Token }}" style="color:#4f7458;">${sw(i18n.common.appLinkText)}</a>
+                  </td>
+                </tr>`;
+
 const hr = (extra = '') =>
   `                <tr>
                   <td class="hr" style="border-top:1px solid #e4e8dd;font-size:0;line-height:0;${extra}">&nbsp;</td>
@@ -248,6 +278,7 @@ const PAGES = {
       button(t.button),
       codeWell(t.codeLabel),
       linkRows('padding:24px 0 6px;'),
+      appLinkRow('signup'),
       hr(),
       footnote(t.footnote),
     ]);
@@ -273,6 +304,7 @@ const PAGES = {
       button(t.button),
       codeWell(t.codeLabel),
       linkRows('padding:24px 0 6px;'),
+      appLinkRow('magiclink'),
       hr(),
       footnote(t.footnote),
     ]);
@@ -300,6 +332,7 @@ const PAGES = {
       button(t.button),
       codeWell(t.codeLabel),
       linkRows('padding:24px 0 6px;'),
+      appLinkRow('recovery'),
       hr(),
       footnote(t.footnote),
     ]);

@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 /**
- * Declare the Android camera permission the barcode scanner needs, and the
- * App Links intent-filter that opens the password-reset email's link
- * straight in the app. Two independent, unrelated concerns that happen to
- * share one generated file and one run-after-`cap sync` script; see each
- * section's own comment below for what it does and why.
+ * Declare the Android camera permission the barcode scanner needs, the App
+ * Links intent-filter that opens the password-reset email's link straight in
+ * the app, and the etto:// custom-scheme intent-filter that email's fallback
+ * link uses. Three independent, unrelated concerns that happen to share one
+ * generated file and one run-after-`cap sync` script; see each section's own
+ * comment below for what it does and why.
  *
  * ---------------------------------------------------------------------------
  * Camera permission
@@ -102,7 +103,11 @@ export function hasAppLinkIntentFilter(manifest) {
 }
 
 /**
- * `manifest` with the App Links intent-filter added inside MainActivity.
+ * `manifest` with `filterXml` (a complete `<intent-filter>...</intent-filter>`
+ * block, indentation included) added inside MainActivity. Shared by
+ * {@link withAppLinks} and {@link withUrlScheme} — MainActivity takes more
+ * than one intent-filter, and this is the "find the right place, once"
+ * primitive both build on.
  *
  * Found by index rather than one attribute-matching regex, and deliberately
  * so: confirmed against a real `pnpm exec cap add android` output (not only
@@ -123,9 +128,7 @@ export function hasAppLinkIntentFilter(manifest) {
  * anchor — if MainActivity cannot be found at all, the same fail-safe
  * `withCameraPermission` uses for a manifest it cannot parse.
  */
-export function withAppLinks(manifest) {
-  if (hasAppLinkIntentFilter(manifest)) return manifest
-
+function insertIntoMainActivity(manifest, filterXml) {
   const nameIndex = manifest.indexOf('android:name=".MainActivity"')
   if (nameIndex === -1) return manifest
 
@@ -140,7 +143,7 @@ export function withAppLinks(manifest) {
     return (
       manifest.slice(0, tagEnd - 1) +
       '>' +
-      APP_LINK_INTENT_FILTER +
+      filterXml +
       '        </activity>' +
       manifest.slice(tagEnd + 1)
     )
@@ -149,7 +152,53 @@ export function withAppLinks(manifest) {
   // Already open/close: insert just before *this* activity's own closing tag.
   const closeIndex = manifest.indexOf('</activity>', tagEnd)
   if (closeIndex === -1) return manifest
-  return manifest.slice(0, closeIndex) + APP_LINK_INTENT_FILTER + '        ' + manifest.slice(closeIndex)
+  return manifest.slice(0, closeIndex) + filterXml + '        ' + manifest.slice(closeIndex)
+}
+
+/** `manifest` with the App Links intent-filter added inside MainActivity. */
+export function withAppLinks(manifest) {
+  if (hasAppLinkIntentFilter(manifest)) return manifest
+  return insertIntoMainActivity(manifest, APP_LINK_INTENT_FILTER)
+}
+
+// ---------------------------------------------------------------------------
+// Custom URL scheme (etto://) — the auth emails' fallback link, alongside the
+// App Links filter above. A *different* filter, not more paths on the same
+// one: App Links' <data> elements are scheme-and-host-specific by design
+// (https + etto.fitness), and a custom scheme's whole point is that it needs
+// neither — no autoVerify, no domain, no .well-known handshake, just "does
+// some app on this device claim this scheme". See patch-ios-project.mjs's
+// header comment for why this exists alongside, not instead of, App Links.
+// ---------------------------------------------------------------------------
+
+/** Kept in sync with URL_SCHEME in scripts/patch-ios-project.mjs. */
+export const URL_SCHEME = 'etto'
+
+export const URL_SCHEME_INTENT_FILTER = `
+        <!--
+            Added by scripts/patch-android-manifest.mjs — android/ is
+            regenerated on every build, so edit the script, not this file.
+
+            The etto:// fallback link the auth emails carry alongside the
+            https://etto.fitness one — see this script's own header comment.
+        -->
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="${URL_SCHEME}" />
+        </intent-filter>
+`
+
+/** Whether `manifest` already declares the custom-scheme intent-filter. */
+export function hasUrlSchemeIntentFilter(manifest) {
+  return manifest.includes(`android:scheme="${URL_SCHEME}"`)
+}
+
+/** `manifest` with the custom-scheme intent-filter added inside MainActivity. */
+export function withUrlScheme(manifest) {
+  if (hasUrlSchemeIntentFilter(manifest)) return manifest
+  return insertIntoMainActivity(manifest, URL_SCHEME_INTENT_FILTER)
 }
 
 /** The block inserted ahead of `</manifest>`. */
@@ -235,6 +284,20 @@ if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop()
     } else {
       patched = withLinks
       notes.push('declared the App Links intent-filter')
+    }
+  }
+
+  if (hasUrlSchemeIntentFilter(patched)) {
+    notes.push(`${URL_SCHEME}:// intent-filter already declared`)
+  } else {
+    const withScheme = withUrlScheme(patched)
+    if (withScheme === patched) {
+      console.warn(
+        `patch-android-manifest: no MainActivity found in ${MANIFEST}; ${URL_SCHEME}:// intent-filter left unchanged.`,
+      )
+    } else {
+      patched = withScheme
+      notes.push(`declared the ${URL_SCHEME}:// intent-filter`)
     }
   }
 

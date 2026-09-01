@@ -8,6 +8,9 @@ import {
   APP_LINK_PATHS,
   hasAppLinkIntentFilter,
   withAppLinks,
+  URL_SCHEME,
+  hasUrlSchemeIntentFilter,
+  withUrlScheme,
 } from './patch-android-manifest.mjs'
 
 /** Capacitor's stock template, which is what `pnpm exec cap add android` writes. */
@@ -248,5 +251,89 @@ describe('hasAppLinkIntentFilter', () => {
   it('is not fooled by autoVerify or the host appearing alone', () => {
     expect(hasAppLinkIntentFilter('android:autoVerify="true"')).toBe(false)
     expect(hasAppLinkIntentFilter(`android:host="${APP_LINK_HOST}"`)).toBe(false)
+  })
+})
+
+describe('withUrlScheme', () => {
+  const patched = withUrlScheme(TEMPLATE)
+
+  it('declares the etto scheme, not the https App Links data element', () => {
+    expect(patched).toContain(`<data android:scheme="${URL_SCHEME}" />`)
+    expect(patched).not.toContain('android:autoVerify')
+  })
+
+  it('declares the VIEW action and the DEFAULT/BROWSABLE categories a deep link needs', () => {
+    expect(patched).toContain('<action android:name="android.intent.action.VIEW" />')
+    expect(patched).toContain('<category android:name="android.intent.category.DEFAULT" />')
+    expect(patched).toContain('<category android:name="android.intent.category.BROWSABLE" />')
+  })
+
+  it('inserts the filter inside MainActivity, not as a sibling element', () => {
+    const activityStart = patched.indexOf('<activity android:name=".MainActivity"')
+    const activityEnd = patched.indexOf('</activity>')
+    const filterIndex = patched.indexOf(`android:scheme="${URL_SCHEME}"`)
+    expect(filterIndex).toBeGreaterThan(activityStart)
+    expect(filterIndex).toBeLessThan(activityEnd)
+  })
+
+  it('is idempotent, since the build re-runs it over a synced project', () => {
+    expect(withUrlScheme(patched)).toBe(patched)
+  })
+
+  it('leaves a manifest with no MainActivity untouched rather than guessing at an anchor', () => {
+    const noActivity = TEMPLATE.replace(
+      '<activity android:name=".MainActivity" android:exported="true" />',
+      '',
+    )
+    expect(withUrlScheme(noActivity)).toBe(noActivity)
+  })
+
+  it('says where it came from, since android/ is regenerated', () => {
+    expect(patched).toContain('scripts/patch-android-manifest.mjs')
+  })
+
+  it('composes with withAppLinks — both filters land, neither displaces the other', () => {
+    // The real order the runner applies these in: camera, then App Links,
+    // then the URL scheme, each over the previous result.
+    const both = withUrlScheme(withAppLinks(TEMPLATE))
+    expect(hasAppLinkIntentFilter(both)).toBe(true)
+    expect(hasUrlSchemeIntentFilter(both)).toBe(true)
+    // Two distinct <intent-filter> blocks inside MainActivity, plus the
+    // template's own MAIN/LAUNCHER one make three — not one filter that
+    // swallowed the other's <data> elements.
+    const activity = both.slice(both.indexOf('<activity'), both.indexOf('</activity>'))
+    expect(activity.match(/<intent-filter/g)).toHaveLength(2)
+  })
+
+  describe('against the real cap add android output (REAL_TEMPLATE)', () => {
+    const real = withUrlScheme(REAL_TEMPLATE)
+
+    it('finds MainActivity despite android:name not being the first attribute', () => {
+      expect(hasUrlSchemeIntentFilter(real)).toBe(true)
+    })
+
+    it('is idempotent against the real shape too', () => {
+      expect(withUrlScheme(real)).toBe(real)
+    })
+
+    it('composes with the App Links filter against the real template too', () => {
+      const both = withUrlScheme(withAppLinks(REAL_TEMPLATE))
+      expect(hasAppLinkIntentFilter(both)).toBe(true)
+      expect(hasUrlSchemeIntentFilter(both)).toBe(true)
+    })
+  })
+})
+
+describe('hasUrlSchemeIntentFilter', () => {
+  it('is false for the stock template', () => {
+    expect(hasUrlSchemeIntentFilter(TEMPLATE)).toBe(false)
+  })
+
+  it('is true once patched', () => {
+    expect(hasUrlSchemeIntentFilter(withUrlScheme(TEMPLATE))).toBe(true)
+  })
+
+  it('names etto specifically', () => {
+    expect(URL_SCHEME).toBe('etto')
   })
 })
