@@ -62,3 +62,8 @@ DerivedData
 
 # Cached upstream pages for scripts/build-reference-foods.mjs (re-fetchable).
 data/reference/.cache/
+
+# Claude Code agent worktrees — full copies of this tree for background
+# agents, nested under the repo by the harness. Not ours to track; .claude/
+# itself still carries real project files (skills/), so only this subpath.
+.claude/worktrees/

@@ -21,8 +21,21 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 export default tseslint.config(
   {
     // Generated, vendored or not ours: the native projects, the build output,
-    // and the Stitch design export that ships as raw HTML.
-    ignores: ['dist', 'dev-dist', 'ios', 'android', 'coverage', 'design', 'playwright-report', 'test-results'],
+    // the Stitch design export that ships as raw HTML, and any agent
+    // worktrees Claude Code nests under .claude/ — full copies of this same
+    // tree, so leaving them unignored multiplies every real finding by one
+    // extra hit per active worktree.
+    ignores: [
+      'dist',
+      'dev-dist',
+      'ios',
+      'android',
+      'coverage',
+      'design',
+      'playwright-report',
+      'test-results',
+      '.claude',
+    ],
   },
 
   // ── App source ───────────────────────────────────────────────────────────
