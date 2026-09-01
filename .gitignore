@@ -71,3 +71,6 @@ data/reference/.cache/
 # agents, nested under the repo by the harness. Not ours to track; .claude/
 # itself still carries real project files (skills/), so only this subpath.
 .claude/worktrees/
+
+# A local pnpm store, if one ever gets created here instead of the global one.
+/.pnpm-store/

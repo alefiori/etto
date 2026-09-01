@@ -99,7 +99,11 @@ jobs:
       - name: Check the icon font covers every icon used
         run: python3 scripts/subset-icon-font.py --check
 
-      # Coverage is reported, not gated — upload it for inspection.
+      # `pnpm run test:coverage` already failed the job above if coverage
+      # dropped below the thresholds ratcheted into vitest.config.ts (vitest
+      # run --coverage exits non-zero on its own when a configured threshold
+      # isn't met — no separate check needed here). This upload is purely for
+      # inspection of the numbers behind that gate.
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v4
