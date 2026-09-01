@@ -12,6 +12,7 @@
 
 import { isNativePlatform } from './platform'
 import { CHROME_COLOR, documentTheme, type ResolvedTheme } from './theme'
+import { registerDeepLinks } from './deepLinks'
 
 export async function bootstrapNative(): Promise<void> {
   if (!isNativePlatform()) return
@@ -21,6 +22,11 @@ export async function bootstrapNative(): Promise<void> {
   // the status bar is never light behind a dark first paint.
   await Promise.all([syncNativeChrome(documentTheme()), configureKeyboard()])
   await registerBackButton()
+  // Attached before React renders, same as the back button above — the
+  // listener has to exist before the OS can possibly fire an appUrlOpen
+  // event, and lib/deepLinks.ts queues a call that arrives before <Router>
+  // has mounted a navigator to receive it.
+  await registerDeepLinks()
   await hideSplash()
 }
 

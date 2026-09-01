@@ -1,5 +1,5 @@
-import { lazy, Suspense, type ReactNode } from 'react'
-import { BrowserRouter, HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { lazy, Suspense, useEffect, type ReactNode } from 'react'
+import { BrowserRouter, HashRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { AuthProvider } from '@/context/AuthContext'
 import { AppShellProvider } from '@/context/AppShellContext'
 import { ProfileProvider } from '@/context/ProfileContext'
@@ -11,12 +11,14 @@ import { MealsProvider } from '@/context/MealsContext'
 import { RequireAuth } from '@/components/RequireAuth'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { LoadingBlock } from '@/components/ui/Spinner'
+import { setDeepLinkNavigator } from '@/lib/deepLinks'
 import AppLayout from '@/components/layout/AppLayout'
 
 // Route-level code splitting: each page ships in its own chunk so the initial
 // load only pulls in the route the user actually lands on.
 const AuthPage = lazy(() => import('@/pages/AuthPage'))
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'))
+const ResetPassword = lazy(() => import('@/pages/ResetPassword'))
 const Dashboard = lazy(() => import('@/pages/Dashboard'))
 const Targets = lazy(() => import('@/pages/Targets'))
 const MyFoods = lazy(() => import('@/pages/MyFoods'))
@@ -50,6 +52,24 @@ function RoutedErrorBoundary({ children }: { children: ReactNode }) {
       {children}
     </ErrorBoundary>
   )
+}
+
+/**
+ * Hands `lib/deepLinks.ts` a way to navigate, since it runs outside the
+ * component tree — `nativeBootstrap.ts` registers the native listener before
+ * React has rendered anything, and the listener's callback fires later, from
+ * a Capacitor event, with no `useNavigate()` of its own to call. This is the
+ * one component whose entire job is holding that reference: it renders
+ * nothing, and unregisters on unmount so a stale navigator from a torn-down
+ * router is never called into.
+ */
+function DeepLinkNavigator() {
+  const navigate = useNavigate()
+  useEffect(() => {
+    setDeepLinkNavigator(navigate)
+    return () => setDeepLinkNavigator(null)
+  }, [navigate])
+  return null
 }
 
 /**
@@ -90,6 +110,7 @@ export default function App() {
                     between them — failing before any of that chrome exists to
                     protect. See RoutedErrorBoundary for why it is keyed on
                     the path. */}
+                <DeepLinkNavigator />
                 <RoutedErrorBoundary>
                   <Suspense fallback={<RouteFallback />}>
                     <Routes>
@@ -97,6 +118,10 @@ export default function App() {
                       <Route path="/signin" element={<AuthPage initialTab="signin" />} />
                       <Route path="/signup" element={<AuthPage initialTab="signup" />} />
                       <Route path="/forgot-password" element={<ForgotPassword />} />
+                      {/* Not behind RequireAuth: arriving here means a Supabase
+                          password-recovery session, not an ordinary signed-in
+                          one — see ResetPassword.tsx and lib/deepLinks.ts. */}
+                      <Route path="/reset-password" element={<ResetPassword />} />
 
                       {/* Guarded app routes */}
                       <Route

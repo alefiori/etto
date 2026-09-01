@@ -9,6 +9,11 @@ import {
   patchPbxproj,
   patchSigning,
   checkAll,
+  ASSOCIATED_DOMAIN,
+  associatedDomainsEntitlements,
+  registerEntitlementsFile,
+  patchEntitlementsSetting,
+  patchAssociatedDomains,
 } from './patch-ios-project.mjs'
 import { LOCALES as I18N_LOCALES } from '../src/lib/i18n/index.ts'
 
@@ -181,6 +186,93 @@ describe('privacyManifest', () => {
   })
 })
 
+describe('associatedDomainsEntitlements', () => {
+  it('declares the applinks domain', () => {
+    const entitlements = associatedDomainsEntitlements()
+    expect(entitlements).toContain('<key>com.apple.developer.associated-domains</key>')
+    expect(entitlements).toContain(`<string>${ASSOCIATED_DOMAIN}</string>`)
+  })
+
+  it('names etto.fitness specifically', () => {
+    expect(ASSOCIATED_DOMAIN).toBe('applinks:etto.fitness')
+  })
+
+  it('says where it came from, since ios/ is regenerated', () => {
+    expect(associatedDomainsEntitlements()).toContain('scripts/patch-ios-project.mjs')
+  })
+})
+
+describe('registerEntitlementsFile', () => {
+  const patched = registerEntitlementsFile(TEMPLATE_PBXPROJ)
+
+  it('adds the file reference', () => {
+    expect(patched).toMatch(/isa = PBXFileReference;.*path = App\.entitlements;/)
+  })
+
+  it('shows it in the App group, so it is visible in Xcode', () => {
+    const group = patched.slice(
+      patched.indexOf('/* Begin PBXGroup section */'),
+      patched.indexOf('/* End PBXGroup section */'),
+    )
+    expect(group).toContain('App.entitlements')
+  })
+
+  it('does not add it to the Resources build phase — entitlements are not a bundle resource', () => {
+    const phase = patched.slice(patched.indexOf('PBXResourcesBuildPhase'))
+    expect(phase).not.toContain('App.entitlements')
+  })
+
+  it('is idempotent — a second run adds no duplicate object', () => {
+    expect(registerEntitlementsFile(patched)).toBe(patched)
+    // The file reference line names App.entitlements twice (its `/* comment
+    // */` and its `path =`), plus once more in the group's children list.
+    expect(patched.match(/App\.entitlements/g)).toHaveLength(3)
+  })
+})
+
+describe('patchEntitlementsSetting', () => {
+  it('sets CODE_SIGN_ENTITLEMENTS on every config that declares the App target\'s bundle id', () => {
+    const { pbxproj, count } = patchEntitlementsSetting(TEMPLATE_PBXPROJ)
+    expect(count).toBe(2)
+    expect([...pbxproj.matchAll(/CODE_SIGN_ENTITLEMENTS = App\/App\.entitlements;/g)]).toHaveLength(2)
+  })
+
+  it('is idempotent — a second run changes nothing', () => {
+    const once = patchEntitlementsSetting(TEMPLATE_PBXPROJ).pbxproj
+    expect(patchEntitlementsSetting(once)).toEqual({ pbxproj: once, count: 0 })
+  })
+
+  it('leaves the rest of each build configuration alone', () => {
+    const { pbxproj } = patchEntitlementsSetting(TEMPLATE_PBXPROJ)
+    expect(pbxproj).toContain('CODE_SIGN_STYLE = Automatic;')
+    expect(pbxproj).toContain('PRODUCT_BUNDLE_IDENTIFIER = fitness.etto;')
+  })
+
+  it('still applies when DEVELOPMENT_TEAM is absent entirely', () => {
+    // Confirmed by actually running `pnpm exec cap add ios` against this
+    // repo's pinned Capacitor CLI: the generated project declares no
+    // DEVELOPMENT_TEAM key at all until Xcode or a developer adds one — an
+    // earlier version of this function anchored on that key and silently
+    // patched nothing against a real project, while passing every test
+    // written against TEMPLATE_PBXPROJ (which, unlike the real output, does
+    // carry the key). This fixture is TEMPLATE_PBXPROJ with it stripped, to
+    // pin the fix and keep the real shape from silently drifting back.
+    const withoutTeam = TEMPLATE_PBXPROJ.replace(/\s*DEVELOPMENT_TEAM = "";/g, '')
+    expect(withoutTeam).not.toContain('DEVELOPMENT_TEAM')
+    const { pbxproj, count } = patchEntitlementsSetting(withoutTeam)
+    expect(count).toBe(2)
+    expect([...pbxproj.matchAll(/CODE_SIGN_ENTITLEMENTS = App\/App\.entitlements;/g)]).toHaveLength(2)
+  })
+})
+
+describe('patchAssociatedDomains', () => {
+  it('applies both the file reference and the build setting together', () => {
+    const { pbxproj } = patchAssociatedDomains(TEMPLATE_PBXPROJ)
+    expect(pbxproj).toContain('App.entitlements')
+    expect(pbxproj).toContain('CODE_SIGN_ENTITLEMENTS = App/App.entitlements;')
+  })
+})
+
 describe('patchPbxproj', () => {
   const patched = patchPbxproj(TEMPLATE_PBXPROJ)
 
@@ -266,32 +358,51 @@ describe('patchSigning', () => {
   })
 })
 
+/** pbxproj with every registered patch applied — privacy manifest and entitlements, not signing. */
+function fullyPatchedPbxproj() {
+  return patchAssociatedDomains(patchPbxproj(TEMPLATE_PBXPROJ)).pbxproj
+}
+
 describe('checkAll', () => {
   it('passes a fully patched project', () => {
-    expect(checkAll(patchInfoPlist(TEMPLATE_PLIST), patchPbxproj(TEMPLATE_PBXPROJ), true)).toEqual([])
+    expect(
+      checkAll(patchInfoPlist(TEMPLATE_PLIST), fullyPatchedPbxproj(), true, null, true),
+    ).toEqual([])
   })
 
   it('reports each thing a Capacitor template change could break', () => {
-    const failures = checkAll(TEMPLATE_PLIST, TEMPLATE_PBXPROJ, false)
-    expect(failures).toHaveLength(5)
+    const failures = checkAll(TEMPLATE_PLIST, TEMPLATE_PBXPROJ, false, null, false)
+    expect(failures).toHaveLength(8)
     expect(failures.join(' ')).toMatch(/NSCameraUsageDescription/)
+    expect(failures.join(' ')).toMatch(/CODE_SIGN_ENTITLEMENTS/)
+    expect(failures.join(' ')).toMatch(/App\.entitlements/)
+  })
+
+  it('says nothing about entitlements existence when not asked (the pure string-patching case)', () => {
+    // entitlementsExists defaults to null — the same "not asked" shape teamId
+    // uses — so a caller exercising only the string functions, with nothing
+    // written to disk, is not told a file "was not written" it never asked
+    // about.
+    const failures = checkAll(patchInfoPlist(TEMPLATE_PLIST), fullyPatchedPbxproj(), true)
+    expect(failures.join(' ')).not.toMatch(/was not written/)
   })
 
   it('says nothing about signing when no team was asked for', () => {
     // CI's simulator build is unsigned on purpose, and a contributor with no
     // Apple account must still get a clean run.
-    expect(checkAll(patchInfoPlist(TEMPLATE_PLIST), patchPbxproj(TEMPLATE_PBXPROJ), true)).toEqual(
-      [],
-    )
+    expect(
+      checkAll(patchInfoPlist(TEMPLATE_PLIST), fullyPatchedPbxproj(), true, null, true),
+    ).toEqual([])
   })
 
   it('catches a team that was asked for but did not land', () => {
     expect(
       checkAll(
         patchInfoPlist(TEMPLATE_PLIST),
-        patchPbxproj(TEMPLATE_PBXPROJ),
+        fullyPatchedPbxproj(),
         true,
         'A1B2C3D4E5',
+        true,
       ),
     ).toEqual([
       'DEVELOPMENT_TEAM was not set to A1B2C3D4E5 — Xcode will refuse to sign for a device.',
@@ -299,23 +410,29 @@ describe('checkAll', () => {
   })
 
   it('passes a project that was signed as well as patched', () => {
-    const { pbxproj } = patchSigning(patchPbxproj(TEMPLATE_PBXPROJ), 'A1B2C3D4E5')
-    expect(checkAll(patchInfoPlist(TEMPLATE_PLIST), pbxproj, true, 'A1B2C3D4E5')).toEqual([])
+    const { pbxproj } = patchSigning(fullyPatchedPbxproj(), 'A1B2C3D4E5')
+    expect(
+      checkAll(patchInfoPlist(TEMPLATE_PLIST), pbxproj, true, 'A1B2C3D4E5', true),
+    ).toEqual([])
   })
 
   it('catches a project where only the group insertion missed', () => {
     // The two pbxproj edits match on different anchors, so a template change
     // can break one and leave the other working.
-    const patched = patchPbxproj(TEMPLATE_PBXPROJ)
+    const patched = fullyPatchedPbxproj()
     const groupStart = patched.indexOf('/* Begin PBXGroup section */')
     const groupEnd = patched.indexOf('/* End PBXGroup section */')
     const withoutGroupEntry =
       patched.slice(0, groupStart) +
-      patched.slice(groupStart, groupEnd).replace(/^.*PrivacyInfo\.xcprivacy.*\n/m, '') +
+      patched
+        .slice(groupStart, groupEnd)
+        .replace(/^.*PrivacyInfo\.xcprivacy.*\n/m, '')
+        .replace(/^.*App\.entitlements.*\n/m, '') +
       patched.slice(groupEnd)
 
-    expect(checkAll(patchInfoPlist(TEMPLATE_PLIST), withoutGroupEntry, true)).toEqual([
+    expect(checkAll(patchInfoPlist(TEMPLATE_PLIST), withoutGroupEntry, true, null, true)).toEqual([
       'PrivacyInfo.xcprivacy is not in the App group, so it is invisible in Xcode.',
+      'App.entitlements is not in the App group, so it is invisible in Xcode.',
     ])
   })
 })

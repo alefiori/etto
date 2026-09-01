@@ -8,6 +8,7 @@ import {
 } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
+import { SITE_URL } from '@/lib/legal'
 
 interface AuthContextValue {
   session: Session | null
@@ -42,6 +43,16 @@ interface AuthContextValue {
   upgradeAccount: (email: string, password: string) => Promise<{ needsConfirmation: boolean }>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<void>
+  /**
+   * Set a new password from an active password-recovery session — the second
+   * half of the reset flow, called from ResetPassword.tsx once the recovery
+   * link's tokens have been handed to Supabase (see lib/deepLinks.ts). A thin
+   * wrapper around the same `updateUser` call {@link upgradeAccount} makes,
+   * minus the email, so every write to the signed-in user's credentials goes
+   * through this one context rather than a page reaching for `supabase.auth`
+   * directly.
+   */
+  updatePassword: (password: string) => Promise<void>
   /**
    * Erase the account and everything in it, permanently. Runs server-side (the
    * `delete-account` Edge Function) because removing an auth user needs the
@@ -149,9 +160,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (error) throw error
       },
       async resetPassword(email) {
+        // SITE_URL (src/lib/legal.ts), not window.location.origin: natively the
+        // origin is `capacitor://localhost`, a scheme nothing outside the app can
+        // open, so a link built from it opens nothing when the email is read on
+        // the device the app is installed on. SITE_URL is the same real,
+        // deployed HTTPS origin the legal-document links already resolve
+        // "what does this app's canonical web address mean" against — a link
+        // built from it is one the OS can hand back to the app as a Universal
+        // Link / App Link (see the association files under public/.well-known/
+        // and lib/deepLinks.ts) on top of working as a plain page on the web.
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/signin`,
+          redirectTo: `${SITE_URL}/reset-password`,
         })
+        if (error) throw error
+      },
+      async updatePassword(password) {
+        const { error } = await supabase.auth.updateUser({ password })
         if (error) throw error
       },
       async deleteAccount() {

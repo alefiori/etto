@@ -26,7 +26,17 @@
   # same environment, so it is a harmless repeat rather than a silent downgrade.
   # scripts/build-legal.mjs's own contract is untouched: --strict is exactly the
   # mode the release-mobile workflow already uses for store builds.
-  command = "node scripts/build-legal.mjs --strict && pnpm run build"
+  #
+  # generate-well-known.mjs runs non-strict, deliberately unlike build-legal.mjs
+  # above: it renders public/.well-known/{apple-app-site-association,
+  # assetlinks.json} — the server half of Universal Links / App Links — from
+  # APPLE_TEAM_ID and ANDROID_ASSETLINKS_SHA256_FINGERPRINTS (see .env.example).
+  # The Android one in particular cannot exist until a Play release track does,
+  # so failing every web deploy on it would trade a working site for a broken
+  # one over a feature that isn't shippable yet either way. Unset, it writes a
+  # placeholder and prints a warning to the deploy log — Universal/App Links
+  # simply do not activate until the real values are set here.
+  command = "node scripts/build-legal.mjs --strict && node scripts/generate-well-known.mjs && pnpm run build"
   publish = "dist"
 
 # --- Redirects -------------------------------------------------------------
@@ -52,6 +62,14 @@
 #             email client fetching one of these gets no JavaScript and no
 #             second chance: an HTML document served in place of a PNG is just a
 #             broken image in every verification mail that goes out.
+#   /.well-known/*
+#             apple-app-site-association and assetlinks.json (rendered by
+#             scripts/generate-well-known.mjs) — what iOS and Android fetch to
+#             verify the password-reset link's Universal Link / App Link. The
+#             OS makes this request directly, with no browser and no SPA to
+#             fall back to; getting index.html back instead of JSON reads to it
+#             as "not found", and the link silently keeps opening a browser tab
+#             instead of the app.
 #
 # `status = 200` with the path mapped to itself is a rewrite that resolves to
 # the same static file, i.e. an explicit "serve this, do not fall through".
@@ -65,6 +83,11 @@
 [[redirects]]
   from = "/email/*"
   to = "/email/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/.well-known/*"
+  to = "/.well-known/:splat"
   status = 200
 
 # SPA fallback. src/App.tsx uses React Router's BrowserRouter, so /targets,
@@ -121,6 +144,29 @@
     # Stripe's current documentation and exercising a real sandbox checkout
     # behind the policy, plus `Report-Only` for a while first. That is its own
     # piece of work, not a line to guess at here.
+
+# --- Well-known association files -------------------------------------------
+#
+# Apple requires apple-app-site-association served as `application/json` —
+# Netlify's default MIME lookup, keyed on the file extension, has no rule for
+# one with no extension at all, so without this it would serve as
+# application/octet-stream (or plain text) and Universal Links would refuse
+# to verify. assetlinks.json's own `.json` extension already resolves
+# correctly by default; declared here anyway so both halves of the same
+# handshake read identically in this file rather than one looking
+# unexplained. Netlify header rules are additive per path, so this adds to —
+# never replaces — the security headers set on `/*` above.
+[[headers]]
+  for = "/.well-known/apple-app-site-association"
+
+  [headers.values]
+    Content-Type = "application/json"
+
+[[headers]]
+  for = "/.well-known/assetlinks.json"
+
+  [headers.values]
+    Content-Type = "application/json"
 
 # --- Caching ---------------------------------------------------------------
 
