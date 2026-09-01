@@ -45,6 +45,11 @@ interface ProfileValue {
   offLanguage: string
   loading: boolean
   error: string | null
+  /**
+   * Refetch the profile. Exposed for the boot screen's retry — a cold start
+   * that failed at the network level has nothing to show and no other way back.
+   */
+  retry: () => void
 }
 
 const ProfileContext = createContext<ProfileValue | undefined>(undefined)
@@ -63,42 +68,66 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  // Bumped by retry() to re-run the fetch below. A counter rather than a
+  // boolean so a second retry after a second failure still re-runs it.
+  const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
     // Signed out (auth pages): the stored choice, or the device language.
     if (!user) {
       setProfile(null)
+      setError(null)
       if (!authLoading) setLoading(false)
       return
     }
     let cancelled = false
     setLoading(true)
-    supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .maybeSingle()
+    // Promise.resolve(...): the query builder is only a `PromiseLike`, not a
+    // real `Promise` — it implements `.then()` but not `.catch()`. Wrapping it
+    // is what makes the `.catch()` below typecheck at all, not just a style
+    // choice.
+    Promise.resolve(
+      supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+    )
       .then(({ data, error }) => {
         if (cancelled) return
         setProfile(data ?? null)
-        if (error) setError(error.message)
-        else if (data?.off_language && isLocale(data.off_language)) {
-          // The account has a language of its own: it wins everywhere.
-          setChoice({ locale: data.off_language, explicit: true })
-          storeLocale(data.off_language)
+        if (error) {
+          setError(error.message)
         } else {
-          // No preference saved on the account. Keep a choice made in this
-          // browser if there is one; otherwise follow the device.
-          setChoice((current) =>
-            current.explicit ? current : { locale: detectBrowserLocale(), explicit: false },
-          )
+          // A resolved, error-free fetch clears whatever an earlier attempt
+          // left behind — otherwise retry() (or a plain re-render after a
+          // transient failure) could succeed and still leave the stale
+          // message on screen forever, since nothing else ever clears it.
+          setError(null)
+          if (data?.off_language && isLocale(data.off_language)) {
+            // The account has a language of its own: it wins everywhere.
+            setChoice({ locale: data.off_language, explicit: true })
+            storeLocale(data.off_language)
+          } else {
+            // No preference saved on the account. Keep a choice made in this
+            // browser if there is one; otherwise follow the device.
+            setChoice((current) =>
+              current.explicit ? current : { locale: detectBrowserLocale(), explicit: false },
+            )
+          }
         }
+        setLoading(false)
+      })
+      // The `error` field above is Supabase *resolving* with a failure — a
+      // policy denial, a bad column. This is the promise itself rejecting,
+      // which is what a cold start with no network does, and it never reached
+      // that handler: `loading` stayed true and the boot screen span forever.
+      .catch((cause: unknown) => {
+        if (cancelled) return
+        setProfile(null)
+        setError(cause instanceof Error ? cause.message : String(cause))
         setLoading(false)
       })
     return () => {
       cancelled = true
     }
-  }, [user, authLoading])
+  }, [user, authLoading, attempt])
 
   async function setLocale(code: Locale) {
     const previous = { locale, explicit }
@@ -152,6 +181,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         offLanguage: locale,
         loading,
         error,
+        retry: () => setAttempt((n) => n + 1),
       }}
     >
       {children}

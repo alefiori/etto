@@ -1,4 +1,5 @@
 import { useI18n } from '@/context/I18nContext'
+import { Icon } from '@/components/ui/Icon'
 
 /**
  * The launch screen — what fills the window while the session is being
@@ -19,8 +20,22 @@ import { useI18n } from '@/context/I18nContext'
  * It replaces a bare centred spinner. A spinner says "wait"; this says which
  * app you are waiting for, on a cold start over a slow connection where that is
  * the whole question.
+ *
+ * `failed` swaps the indeterminate bar for a retry. Waiting is only honest
+ * while something is still in flight; once the session restore has *rejected*
+ * (see AuthContext) nothing more will happen on its own, and a bar that keeps
+ * moving over a dead network is the bug this screen used to have.
  */
-export function BootScreen({ label }: { label: string }) {
+export function BootScreen({
+  label,
+  failed = false,
+  onRetry,
+}: {
+  label: string
+  /** Boot has stopped for good — show the failure instead of the bar. */
+  failed?: boolean
+  onRetry?: () => void
+}) {
   const { t } = useI18n()
 
   return (
@@ -66,10 +81,35 @@ export function BootScreen({ label }: { label: string }) {
         </p>
       </div>
 
-      {/* The status lives on the track, not on the moving part: `role="status"`
-          on something that animates forever would have some screen readers
-          announce it forever. The visible caption below carries the same words
-          for everyone else. */}
+      {/* Failure takes the bar's place rather than sitting under it: two
+          messages, one of them still claiming progress, is worse than either.
+          `role="alert"` per the app's convention for errors — and it is the
+          right register here, since it replaces a screen the reader was told
+          to wait on. */}
+      {failed ? (
+        <div
+          role="alert"
+          className="mt-xl flex w-full max-w-[22rem] flex-col items-center gap-md text-center"
+        >
+          <p className="font-body-md text-body-md text-on-surface-variant">
+            {t('errors.bootFailed')}
+          </p>
+          {onRetry && (
+            <button
+              type="button"
+              onClick={onRetry}
+              className="settle flex items-center justify-center gap-sm rounded-2xl px-6 py-3 font-label-md text-label-md hover:brightness-105 active:scale-98 grad-primary"
+            >
+              <Icon name="refresh" />
+              {t('errors.retry')}
+            </button>
+          )}
+        </div>
+      ) : (
+      /* The status lives on the track, not on the moving part: `role="status"`
+         on something that animates forever would have some screen readers
+         announce it forever. The visible caption below carries the same words
+         for everyone else. */
       <div className="mt-xl flex flex-col items-center gap-md">
         <div
           role="status"
@@ -89,6 +129,7 @@ export function BootScreen({ label }: { label: string }) {
           {label}
         </span>
       </div>
+      )}
     </div>
   )
 }

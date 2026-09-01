@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { useAppShell } from '@/context/AppShellContext'
 import { useI18n } from '@/context/I18nContext'
@@ -8,7 +8,9 @@ import type { TranslationKey } from '@/lib/i18n'
 import { AddFoodModal } from '@/components/addfood/AddFoodModal'
 import { CustomFoodModal } from '@/components/addfood/CustomFoodModal'
 import { PaywallModal } from '@/components/paywall/PaywallModal'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { GuestBanner } from '@/components/layout/GuestBanner'
+import { OfflineBanner } from '@/components/layout/OfflineBanner'
 import { PullToRefresh } from '@/components/layout/PullToRefresh'
 import { useReminderSync } from '@/hooks/useReminderSync'
 import { useChromeMetrics } from '@/hooks/useChromeMetrics'
@@ -393,6 +395,8 @@ export default function AppLayout() {
     _runRefresh,
   } = useAppShell()
   const { t } = useI18n()
+  // For the boundary around <Outlet /> below — see its comment.
+  const { pathname } = useLocation()
 
   // The two pieces of phone chrome the content lane has to clear. Their height
   // is no longer a constant — it follows the reader's text size — so it is
@@ -456,6 +460,11 @@ export default function AppLayout() {
         // answering one gesture is one too many.
         className="w-full flex-1 overflow-y-auto overscroll-contain pb-bottomnav pt-topbar outline-hidden md:ml-[104px] md:pb-lg md:pt-lg lg:ml-[312px]"
       >
+        {/* First child, so its `sticky top-0` starts exactly where <main>'s own
+            top padding already put it — below the phone header, or below
+            nothing once the rail replaces it — with no offset math of its own.
+            See OfflineBanner.tsx. */}
+        <OfflineBanner />
         <PullToRefresh
           phase={pull.phase}
           distance={pull.distance}
@@ -465,7 +474,22 @@ export default function AppLayout() {
           enabled={_refreshable}
         />
         <GuestBanner />
-        <Outlet />
+        {/* The route-level boundary in App.tsx sits above this whole shell —
+            it exists to catch AppLayout itself failing to mount (a crashing
+            provider above it, say), and did originally sit alone. But
+            Dashboard/Targets/MyFoods/Profile are each still their own lazy()
+            chunk, loaded here through this <Outlet />, and a failure in any
+            one of them bubbling all the way up past AppLayout would take the
+            sidebar, the tab bar and Add Food down with it over one broken
+            page — the sign-out button included, on the one screen a user
+            would most want it. This inner boundary catches it here instead,
+            so only the content lane goes down and the chrome stays usable —
+            including the nav links to the pages that still work. Keyed on
+            pathname for the same reason as RoutedErrorBoundary: it has to
+            reset when the user leaves the page that crashed. */}
+        <ErrorBoundary key={pathname} label="outlet">
+          <Outlet />
+        </ErrorBoundary>
       </main>
 
       {/* Carries the primary action itself — see the note on BottomNav. */}
