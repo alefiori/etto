@@ -7,11 +7,14 @@
  * none of this can be a checked-in file edited by hand — the same
  * regenerate-then-patch shape as patch-android-webview.mjs and verify-ipad.mjs.
  *
- *   1. **NSCameraUsageDescription.** The barcode scanner calls getUserMedia
- *      through WKWebView, which is a camera access like any other. Without a
- *      usage string iOS does not merely refuse — it terminates the app the
- *      instant the camera is requested. So the current build crashes on the
- *      first scan, and would crash in front of a reviewer.
+ *   1. **NSCameraUsageDescription.** The barcode scanner opens the camera
+ *      natively — through ML Kit's own AVFoundation session
+ *      (src/components/addfood/barcode/native.ts), not getUserMedia in
+ *      WKWebView as the web build still does — but iOS requires this key for
+ *      either: any AVCaptureSession, WebView-mediated or not, needs a usage
+ *      string. Without one iOS does not merely refuse — it terminates the app
+ *      the instant the camera is requested. So the current build crashes on
+ *      the first scan, and would crash in front of a reviewer.
  *
  *   2. **CFBundleLocalizations.** The app is translated into 7 languages in
  *      JavaScript, so the bundle carries no .lproj directories and iOS believes

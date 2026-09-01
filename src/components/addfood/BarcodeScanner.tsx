@@ -1,53 +1,33 @@
 import { useEffect, useId, useRef, useState } from 'react'
-import { BrowserMultiFormatOneDReader, type IScannerControls } from '@zxing/browser'
-import { BarcodeFormat, DecodeHintType } from '@zxing/library'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { useOverlayDismiss } from '@/hooks/useOverlayDismiss'
 import { useI18n } from '@/context/I18nContext'
-import type { TranslationKey } from '@/lib/i18n'
 import { Icon } from '@/components/ui/Icon'
 import { Spinner } from '@/components/ui/Spinner'
+import {
+  SCANNER_VIEW_CLASS,
+  scannerBackend,
+  scannerPreview,
+  scannerErrorKey,
+  type ScannerErrorKey,
+  type ScannerSession,
+} from '@/components/addfood/barcode'
 
 /**
- * Retail product barcodes — restricting formats speeds up and steadies decoding.
+ * Full-screen camera barcode scanner. Prefers the rear camera, decodes EAN/UPC
+ * product barcodes, and reports the first decoded value via {@link onDetected}.
+ * The camera is always released on unmount or close.
  *
- * These are all one-dimensional, which is why the reader below is the *OneD*
- * variant. The general `BrowserMultiFormatReader` wraps ZXing's
- * `MultiFormatReader`, and that statically imports the Aztec, DataMatrix,
- * MaxiCode, MicroQR, PDF417 and QR readers — none of which can ever fire here,
- * because the hints below exclude them. Hints filter at *runtime*; only the
- * narrower reader keeps that code out of the bundle, and this chunk is one the
- * service worker precaches (see globIgnores in vite.config.ts), so its size is
- * paid on every first visit rather than only by someone who opens the camera.
- */
-const PRODUCT_FORMATS = [
-  BarcodeFormat.EAN_13,
-  BarcodeFormat.EAN_8,
-  BarcodeFormat.UPC_A,
-  BarcodeFormat.UPC_E,
-]
-
-/** Map a getUserMedia error to a translation key for a friendly message. */
-function cameraErrorKey(err: unknown): TranslationKey {
-  const name = err instanceof Error ? err.name : ''
-  switch (name) {
-    case 'NotAllowedError':
-    case 'SecurityError':
-      return 'scanner.denied'
-    case 'NotFoundError':
-    case 'OverconstrainedError':
-      return 'scanner.notFound'
-    case 'NotReadableError':
-      return 'scanner.inUse'
-    default:
-      return 'scanner.genericError'
-  }
-}
-
-/**
- * Full-screen camera barcode scanner. Prefers the rear camera on mobile,
- * decodes EAN/UPC product barcodes, and reports the first decoded value via
- * {@link onDetected}. The camera stream is always released on unmount or close.
+ * This is the UI only. *How* a camera is opened and a barcode decoded differs
+ * completely between platforms — ML Kit's native pipeline in the app shells,
+ * ZXing over `getUserMedia` in a browser — so that lives behind the seam in
+ * `barcode/`, chosen at runtime, and this component never learns which it got
+ * beyond one question: whether the preview arrives in the `<video>` below or on
+ * a native surface underneath the whole WebView.
+ *
+ * The public contract is `{ onDetected, onClose }` and nothing else. AddFoodModal
+ * lazy-loads this by name and passes exactly those two, and it did not have to
+ * change for any of the above.
  */
 export function BarcodeScanner({
   onDetected,
@@ -59,10 +39,13 @@ export function BarcodeScanner({
   const { t } = useI18n()
   const videoRef = useRef<HTMLVideoElement>(null)
   const rootRef = useRef<HTMLDivElement>(null)
-  const controlsRef = useRef<IScannerControls | null>(null)
   const titleId = useId()
   const [status, setStatus] = useState<'starting' | 'scanning' | 'error'>('starting')
-  const [errorKey, setErrorKey] = useState<TranslationKey | null>(null)
+  const [errorKey, setErrorKey] = useState<ScannerErrorKey | null>(null)
+
+  // Known synchronously — see scannerPreview's own comment for why this does
+  // not need the backend itself to have loaded yet.
+  const preview = scannerPreview()
 
   // It covers the Add Food modal rather than replacing it, so without a trap of
   // its own Tab would walk the search results still mounted underneath. Escape
@@ -74,48 +57,76 @@ export function BarcodeScanner({
   useEffect(() => {
     let cancelled = false
     let done = false
+    let session: ScannerSession | null = null
 
-    const hints = new Map()
-    hints.set(DecodeHintType.POSSIBLE_FORMATS, PRODUCT_FORMATS)
-    const reader = new BrowserMultiFormatOneDReader(hints)
+    function fail(key: ScannerErrorKey) {
+      if (cancelled) return
+      setErrorKey(key)
+      setStatus('error')
+    }
 
     async function start() {
       try {
-        const controls = await reader.decodeFromConstraints(
-          { video: { facingMode: { ideal: 'environment' } } },
-          videoRef.current!,
-          (result, _err, ctrl) => {
-            // `_err` is mostly NotFoundException per-frame (no barcode yet) — ignore it.
-            if (cancelled || done || !result) return
+        // Loads whichever backend this platform needs — see scannerBackend's
+        // comment for why that decision, not just the SDK inside it, is what
+        // is behind the dynamic import.
+        const backend = await scannerBackend()
+        if (cancelled) return
+        const started = await backend.start({
+          video: videoRef.current,
+          onDetected: (code) => {
+            if (cancelled || done) return
             done = true
-            ctrl.stop()
-            onDetected(result.getText())
+            // Stop before handing the code up: the parent unmounts us in
+            // response, and a camera that is still running while React tears
+            // the tree down is how a scanner ends up holding the device.
+            void session?.stop()
+            onDetected(code)
           },
-        )
-        if (cancelled) {
-          controls.stop()
+          onFailed: fail,
+        })
+        // A result or a close can both land while start() is still in flight,
+        // and the session that resolves afterwards is then nobody's to stop
+        // but ours.
+        if (cancelled || done) {
+          void started.stop()
           return
         }
-        controlsRef.current = controls
+        session = started
         setStatus('scanning')
       } catch (err) {
         if (cancelled) return
-        setErrorKey(cameraErrorKey(err))
-        setStatus('error')
+        fail(scannerErrorKey(err))
       }
     }
 
-    start()
+    void start()
     return () => {
       cancelled = true
-      controlsRef.current?.stop()
+      void session?.stop()
     }
+    // scannerPreview/scannerBackend are stable module-level functions, not
+    // reactive values, so they need no place in this list.
   }, [onDetected])
+
+  /**
+   * Whether the camera is currently painting *behind* the page.
+   *
+   * Only then does the black backdrop have to go — and only then is it safe for
+   * it to go. It comes back for the error state, where the native camera has
+   * already been torn down and the page restored, and white-on-nothing would
+   * otherwise land on top of the app's own background.
+   */
+  const seeThrough = preview === 'behind-webview' && status === 'scanning'
 
   return (
     <div
       ref={rootRef}
-      className="absolute inset-0 z-70 flex flex-col bg-black"
+      // SCANNER_VIEW_CLASS is what src/index.css paints back in over the page a
+      // native scan hides; it selects nothing on the web.
+      className={`${SCANNER_VIEW_CLASS} absolute inset-0 z-70 flex flex-col ${
+        seeThrough ? '' : 'bg-black'
+      }`}
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -135,19 +146,28 @@ export function BarcodeScanner({
       </header>
 
       <div className="relative min-h-0 flex-1">
-        <video
-          ref={videoRef}
-          aria-hidden="true"
-          className="h-full w-full object-cover"
-          muted
-          playsInline
-        />
+        {/* Only the ZXing backend decodes out of a DOM element. ML Kit has no
+            node to render — the preview is an OS surface below the WebView —
+            and an empty <video> there would be one more opaque thing between
+            the user and the camera. */}
+        {preview === 'video' && (
+          <video
+            ref={videoRef}
+            aria-hidden="true"
+            className="h-full w-full object-cover"
+            muted
+            playsInline
+          />
+        )}
 
         {/* Starting → scanning → failed is the entire state of this screen, and
             none of it is visible to a screen reader: the reticle is a border and
-            the preview is a video. Announcing the transitions is what makes the
-            scanner usable without sight of it — including the failure, which is
-            otherwise a silent black rectangle. */}
+            the preview is a video (or, natively, not in the page at all).
+            Announcing the transitions is what makes the scanner usable without
+            sight of it — including the failure, which is otherwise a silent
+            black rectangle. Identical on both backends, deliberately: which
+            camera API the platform happens to use is not something a screen
+            reader user should be able to tell. */}
         <p role="status" aria-live="polite" className="sr-only">
           {status === 'starting' && t('scanner.starting')}
           {status === 'scanning' && t('scanner.pointCamera')}

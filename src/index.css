@@ -1232,3 +1232,44 @@ input[type='number'] {
   background-color: var(--scrollbar-thumb);
   border-radius: 20px;
 }
+
+/* ---------------------------------------------------------------------
+ * Native barcode scanning.
+ *
+ * ML Kit does not render into the page. `startScan` inserts an OS camera
+ * surface *underneath* the WebView and makes the WebView itself transparent —
+ * which leaves the document as the only thing still in the way, and under Grove
+ * the document is thoroughly opaque: `body` carries `bg-background` plus the
+ * aurora gradient, and the Add Food modal draws a solid `glass-sheet` on top of
+ * that.
+ *
+ * `visibility: hidden` on the body is the one rule that covers all of it,
+ * including the sheet and every card inside it, without this file having to
+ * enumerate the ancestors that happen to paint today. The scanner's own root
+ * paints back in — visibility is inherited and a descendant may override it —
+ * so the header, reticle and close button stay over the camera.
+ *
+ * The background properties are *not* redundant next to that. A body background
+ * is propagated to the canvas, and the canvas is painted for the whole viewport
+ * regardless of the body's own visibility: hide the body and the ground colour
+ * stays, over the camera. So the propagated background has to be cleared too.
+ *
+ * Deliberately outside `@layer base`: unlayered rules beat every layered one, so
+ * this wins against `body { @apply bg-background }` without an `!important`.
+ *
+ * The class is added and removed only by `src/components/addfood/barcode/native.ts`,
+ * on every exit path including the failures — a page left hidden is an app that
+ * looks broken until it is force-quit. On the web nothing sets it: the preview
+ * there is a `<video>` inside the page, and hiding the page would hide it too.
+ * --------------------------------------------------------------------- */
+body.scanning {
+  visibility: hidden;
+  background-color: transparent;
+  background-image: none;
+}
+body.scanning #root {
+  background-color: transparent;
+}
+body.scanning .barcode-scanner-view {
+  visibility: visible;
+}

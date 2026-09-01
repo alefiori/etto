@@ -7,3 +7,5 @@
 # scripts/generate-store-assets.mjs and @vite-pwa/assets-generator.
 allowBuilds:
   sharp: true
+minimumReleaseAgeExclude:
+  - '@capacitor-mlkit/barcode-scanning@8.1.1'

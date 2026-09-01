@@ -26,6 +26,17 @@ export default defineConfig(({ mode }) => ({
     // Anything *else* crossing this line is a real regression worth the noise.
     chunkSizeWarningLimit: 800,
     rolldownOptions: {
+      // For the **web** build only, but still needed there.
+      //
+      // ZXing is now one of two scanning backends: the app shells decode with
+      // ML Kit through @capacitor-mlkit/barcode-scanning, and only the browser
+      // reaches src/components/addfood/barcode/web.ts. Because that file is the
+      // sole importer and it imports dynamically, a native build never fetches
+      // the chunk — so this workaround buys nothing there and costs nothing
+      // either. It stays because the web build is still a real build with a real
+      // budget (scripts/verify-bundle-budget.mjs), and the chunk is one the
+      // service worker precaches.
+      //
       // @zxing/library's entry does `export * from './browser'`, dragging in its
       // legacy browser layer — BrowserPDF417Reader, BrowserAztecCodeReader and
       // friends — and every decoder behind them. The package ships no
@@ -112,7 +123,7 @@ export default defineConfig(({ mode }) => ({
         //
         // The barcode scanner stays precached on purpose: scanning in a shop with
         // bad signal is a real thing this app is for. It is affordable now that it
-        // only carries the one-dimensional readers — see BarcodeScanner.tsx.
+        // only carries the one-dimensional readers — see barcode/web.ts.
         //
         // Named by the `purchases-web` code-splitting group above rather than by
         // whatever Rolldown would derive from the SDK's entry module.
