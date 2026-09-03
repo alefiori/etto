@@ -60,9 +60,16 @@ export function useFoodSearch(query: string, offLanguage?: string) {
           externalPromise,
         ])
         if (cancelled) return
-        if (localErr) throw new Error(localErr.message)
 
-        const local = (localData ?? []) as Food[]
+        // The local query is degraded to [] on failure, exactly like the
+        // external one above — a stale/expired session token (most common on
+        // an anonymous guest session, whose refresh is the flakiest) makes
+        // this SELECT 401, and that must not throw away external results that
+        // came back fine. Only when there is nothing at all to show does the
+        // failure surface as an error.
+        if (localErr && externalData.length === 0) throw new Error(localErr.message)
+
+        const local = (localErr ? [] : (localData ?? [])) as Food[]
 
         // Track what's already represented so we don't show duplicates.
         const seen = new Set<string>()
