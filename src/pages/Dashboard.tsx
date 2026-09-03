@@ -517,9 +517,11 @@ export default function Dashboard() {
           </section>
 
             {/* The meals, which are most of the page and all of the width a
-                desktop can give them. */}
+                desktop can give them. On a desktop this is one cell beside the
+                right-hand sidebar (calories + water + weight), so it no longer
+                spans two rows — the sidebar owns its own vertical rhythm now. */}
             <div
-              className="order-3 flex animate-rise-in-place flex-col gap-lg lg:order-none lg:col-span-2 lg:col-start-1 lg:row-span-2 lg:row-start-2"
+              className="order-3 flex animate-rise-in-place flex-col gap-lg lg:order-none lg:col-span-2 lg:col-start-1 lg:row-start-2"
               style={{ animationDelay: '120ms' }}
             >
               {error && (
@@ -555,10 +557,20 @@ export default function Dashboard() {
               )}
             </div>
 
+            {/* The right-hand sidebar: calories, then water and weight. On a
+                phone it is `display: contents` so the three cards fall straight
+                into the single-column grid and each keeps its own `order` (this
+                stack is split there — calories first, water and weight last,
+                with the meals between). On a desktop it becomes one grid cell
+                and a flex column, so the space between the calorie card and the
+                water card is exactly one `gap-lg` — not `gap-lg` plus whatever
+                slack the tall meals column left in a shared grid row. */}
+            <div className="contents lg:col-start-3 lg:row-start-2 lg:flex lg:flex-col lg:gap-lg">
+
             {/* Calories: first thing on a phone, head of the sidebar on a
                 desktop. */}
             <div
-              className="order-1 animate-rise lg:order-none lg:col-start-3 lg:row-start-2"
+              className="order-1 animate-rise lg:order-none"
               style={{ animationDelay: '190ms' }}
             >
               {/* A card like every other, not the one solid tinted slab it
@@ -648,11 +660,12 @@ export default function Dashboard() {
                 food, so they come after it on a phone and sit under the
                 calorie card on a desktop. */}
             <div
-              className="order-4 flex animate-rise flex-col gap-lg lg:order-none lg:col-start-3 lg:row-start-3"
+              className="order-4 flex animate-rise flex-col gap-lg lg:order-none"
               style={{ animationDelay: '260ms' }}
             >
               <WaterCard />
               <WeightCard />
+            </div>
             </div>
           </div>
         </>
