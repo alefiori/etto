@@ -249,7 +249,7 @@ export function AddFoodModal({
         )}
         {/* Search + results column — hidden on mobile once a food is selected */}
         <section
-          className={`min-h-0 flex-1 flex-col border-(--glass-row-border) lg:flex lg:border-r ${
+          className={`min-h-0 min-w-0 flex-1 flex-col border-(--glass-row-border) lg:flex lg:border-r ${
             selected ? 'hidden' : 'flex'
           }`}
         >
@@ -474,9 +474,16 @@ export function AddFoodModal({
           </div>
         </section>
 
-        {/* Detail / log panel — takes over the sheet on mobile when selected */}
+        {/* Detail / log panel — takes over the sheet on mobile when selected.
+            `25rem` (400px at the drawn scale), not a raw px value: this column
+            holds the same headings, numbers and buttons as the rest of the
+            app, and at a reader's larger text size (see lib/textScale.ts) a
+            fixed-px column stops growing while its contents keep getting
+            bigger — the macro row and the log button then overlap or spill
+            past the card's right edge on a tablet, where this two-column
+            layout is what's showing. */}
         <section
-          className={`min-h-0 w-full flex-1 flex-col border-(--glass-row-border) lg:flex lg:w-[400px] lg:flex-none lg:border-l ${
+          className={`min-h-0 w-full flex-1 flex-col border-(--glass-row-border) lg:flex lg:w-100 lg:flex-none lg:border-l ${
             selected ? 'flex' : 'hidden lg:flex'
           }`}
         >
@@ -510,14 +517,17 @@ export function AddFoodModal({
               </div>
 
               <div className="flex min-h-0 flex-1 flex-col gap-xl overflow-y-auto p-xl">
-                {/* Live macro totals */}
-                <div className="flex items-center justify-around">
+                {/* Live macro totals. A grid, not `flex justify-around`: its
+                    tracks are `minmax(0, 1fr)`, so at a reader's larger text
+                    size the three labels shrink together instead of holding
+                    their natural width and running into each other. */}
+                <div className="grid grid-cols-3 items-center">
                   {MACROS.map((m) => (
-                    <div key={m.key} className="flex flex-col items-center">
+                    <div key={m.key} className="flex min-w-0 flex-col items-center">
                       <span className="font-headline-md text-headline-md text-on-surface">
                         {round(scaled![m.field])}g
                       </span>
-                      <span className="font-label-md text-label-md" style={{ color: m.color }}>
+                      <span className="max-w-full truncate font-label-md text-label-md" style={{ color: m.color }}>
                         {t(`macro.${m.key}`)}
                       </span>
                     </div>

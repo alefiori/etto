@@ -347,6 +347,57 @@ test.describe('text scaling', () => {
     })
   }
 
+  test.describe('the Add Food two-column layout on a tablet', () => {
+    // Italian deliberately: this is the locale the bug was reported in, and
+    // it is not incidental — "Carboidrati / Proteine / Grassi" is long enough
+    // to overflow a fixed column at 200% where the shorter English "Carbs /
+    // Protein / Fats" still happens to fit, so an English-only version of
+    // this test would pass on the broken layout.
+    test.use({ locale: 'it-IT' })
+
+    test('reflows at 200% text instead of spilling past the card', async ({ page, store }) => {
+      // The two-column split (search results | selected food) only exists at
+      // `lg:` — a phone always shows one panel at a time, full-width — so the
+      // 390px and 320px sweeps above never touch it. The detail column used
+      // to be a raw `w-[400px]`, the one dimension in this dialog that didn't
+      // grow with the reader's text size (see lib/textScale.ts), so at a
+      // tablet width with larger text its own macro row and log button
+      // spilled past the card's right edge instead of the column widening.
+      seedDay(store)
+      await seedSession(page)
+      await page.setViewportSize({ width: 1366, height: 1024 }) // iPad Pro 12.9" landscape
+      await page.goto('/')
+      await expect(page.getByRole('heading', { name: 'Calorie' })).toBeVisible()
+
+      await page.getByRole('button', { name: 'Aggiungi alimento' }).click()
+      await page.getByLabel('Cerca alimenti').fill('rice')
+      await page.getByText('Stub Rice Noodles').click()
+      await expect(page.getByRole('heading', { level: 2, name: 'Stub Rice Noodles' })).toBeVisible()
+
+      await setTextScale(page, 2)
+
+      const dialog = page.getByRole('dialog')
+      const card = dialog.locator('> div').first()
+      const cardBox = (await card.boundingBox())!
+
+      const edges = { left: cardBox.x, right: cardBox.x + cardBox.width }
+      const cutOff = await dialog.evaluate((dialogEl, box) => {
+        return Array.from(dialogEl.querySelectorAll('*'))
+          .filter((el) => {
+            const r = el.getBoundingClientRect()
+            return r.width > 0 && (r.right > box.right + 1 || r.left < box.left - 1)
+          })
+          .slice(0, 5)
+          .map((el) => `${el.tagName}.${(el.className || '').toString().slice(0, 60)}`)
+      }, edges)
+      expect(cutOff, 'content spills past the dialog card edge').toEqual([])
+
+      const logButtonPrefix = new RegExp('^Aggiungi a ')
+      await expect(dialog.getByRole('button', { name: logButtonPrefix })).toBeVisible()
+      await page.screenshot({ path: 'test-results/a11y-tablet-add-food-200.png' })
+    })
+  })
+
   test('the tab bar sheds its micro-labels rather than truncating them', async ({ page, store }) => {
     seedDay(store)
     await seedSession(page)
